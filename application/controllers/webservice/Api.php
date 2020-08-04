@@ -894,52 +894,49 @@ class Api extends CC_Controller
 
 				$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '18', 'emailstatus' => '1']);
 				
-				if($notificationdata && $this->input->post('submit') == 'log'){
+				if($notificationdata){
 					$body 		= str_replace(['{Plumbers Name and Surname}', '{number}'], [$userdata['name'].' '.$userdata['surname'], $cocId], $notificationdata['email_body']);
 					$subject 	= str_replace(['{cocno}'], [$cocId], $notificationdata['subject']);
 					$this->CC_Model->sentMail($userdata['email'], $subject, $body);
 				}
 
-				if ($this->input->post('submit') == 'log') {
-
-					if(isset($post['ncemail']) && $post['ncemail']=='1'){
-						$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '23', 'emailstatus' => '1']);
-						$replacetext = ['', '', '', '', '', '', ''];							
-						if(isset($post['name'])) 		$post[0] = $post['name'];
-						if(isset($post['address'])) 	$post[1] = $post['address'];
-						if(isset($post['street'])) 		$post[2] = $post['street'];
-						if(isset($post['number'])) 		$post[3] = $post['number'];
-						if(isset($post['province'])){
-							$provincename 	= 	$this->Managearea_Model->getListProvince('row', ['id' => $post['province']]);
-							$nc_data[4] 	=  $provincename['name'];
-						} 	
-						if(isset($post['city'])){
-							$cityname 	= 	$this->Managearea_Model->getListCity('row', ['id' => $post['city']]);
-							$nc_data[5] =  $cityname['name'];
-						} 		
-						if(isset($post['suburb'])){
-							$suburbname = 	$this->Managearea_Model->getListSuburb('row', ['id' => $post['suburb']]);
-							$nc_data[6] =  $suburbname['name'];
-						} 	
+				if(isset($post['ncemail']) && $post['ncemail']=='1'){
+					$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '23', 'emailstatus' => '1']);
+					$replacetext = ['', '', '', '', '', '', ''];							
+					if(isset($post['name'])) 		$post[0] = $post['name'];
+					if(isset($post['address'])) 	$post[1] = $post['address'];
+					if(isset($post['street'])) 		$post[2] = $post['street'];
+					if(isset($post['number'])) 		$post[3] = $post['number'];
+					if(isset($post['province'])){
+						$provincename 	= 	$this->Managearea_Model->getListProvince('row', ['id' => $post['province']]);
+						$nc_data[4] 	=  $provincename['name'];
+					} 	
+					if(isset($post['city'])){
+						$cityname 	= 	$this->Managearea_Model->getListCity('row', ['id' => $post['city']]);
+						$nc_data[5] =  $cityname['name'];
+					} 		
+					if(isset($post['suburb'])){
+						$suburbname = 	$this->Managearea_Model->getListSuburb('row', ['id' => $post['suburb']]);
+						$nc_data[6] =  $suburbname['name'];
+					} 	
+					
+					if(isset($post['email']) && $post['email']!='' && $notificationdata){
 						
-						if(isset($post['email']) && $post['email']!='' && $notificationdata){
-							
-							$subject 	= str_replace(['{Customer Name}', '{Complex Name}', '{Street}', '{Number}', '{Suburb}', '{City}', '{Province}'], $nc_data, $notificationdata['subject']);
-							$body 		= str_replace(['{Customer Name}', '{Plumber Name}', '{plumbers company name}', '{company contact number}'], [$nc_data[0], $userdata['name'].' '.$userdata['surname'], $userdata['companyname'], $userdata['companymobile']], $notificationdata['email_body']);
-							
-							$pdf 		= FCPATH.'assets/uploads/temp/'.$cocId.'.pdf';
-							$this->pdfnoncompliancereport($cocId, $userid, $pdf);
-							$this->CC_Model->sentMail($post['email'], $subject, $body, $pdf, $userdata['email']);
-							if(file_exists($pdf)) unlink($pdf);  
-						}				
+						$subject 	= str_replace(['{Customer Name}', '{Complex Name}', '{Street}', '{Number}', '{Suburb}', '{City}', '{Province}'], $nc_data, $notificationdata['subject']);
+						$body 		= str_replace(['{Customer Name}', '{Plumber Name}', '{plumbers company name}', '{company contact number}'], [$nc_data[0], $userdata['name'].' '.$userdata['surname'], $userdata['companyname'], $userdata['companymobile']], $notificationdata['email_body']);
 						
-						if(isset($post['contact_no']) && $post['contact_no']!='' && $this->config->item('otpstatus')!='1'){
-							$smsdata 	= $this->Communication_Model->getList('row', ['id' => '23', 'smsstatus' => '1']);
-				
-							if($smsdata){
-								$sms = str_replace(['{Customer Name}', '{Complex Name}', '{Street}', '{Number}', '{Suburb}', '{City}', '{Province}'], $nc_data, $smsdata['sms_body']);
-								$this->sms(['no' => $post['contact_no'], 'msg' => $sms]);
-							}
+						$pdf 		= FCPATH.'assets/uploads/temp/'.$cocId.'.pdf';
+						$this->pdfnoncompliancereport($cocId, $userid, $pdf);
+						$this->CC_Model->sentMail($post['email'], $subject, $body, $pdf, $userdata['email']);
+						if(file_exists($pdf)) unlink($pdf);  
+					}				
+					
+					if(isset($post['contact_no']) && $post['contact_no']!='' && $this->config->item('otpstatus')!='1'){
+						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '23', 'smsstatus' => '1']);
+			
+						if($smsdata){
+							$sms = str_replace(['{Customer Name}', '{Complex Name}', '{Street}', '{Number}', '{Suburb}', '{City}', '{Province}'], $nc_data, $smsdata['sms_body']);
+							$this->sms(['no' => $post['contact_no'], 'msg' => $sms]);
 						}
 					}
 				}
