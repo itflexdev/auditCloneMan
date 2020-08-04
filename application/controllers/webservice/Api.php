@@ -637,7 +637,7 @@ class Api extends CC_Controller
 				}
 			}
 
-			//$jsonData['result'] 			= $result;
+			$jsonData['result'] 			= $result;
 
 			//$jsonData['designation2'] 		= $this->config->item('designation2');
 			//$jsonData['ncnotice'] 			= $this->config->item('ncnotice');
