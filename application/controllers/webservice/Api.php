@@ -696,8 +696,8 @@ class Api extends CC_Controller
 
 				// Save
 
-				if ($this->input->post('id') != '') { // id = log coc autoincrement id
-					$id 			= 	$this->input->post('id');
+				if ($this->input->post('cl_id') != '') { // cl_id = log coc autoincrement id
+					$id 			= 	$this->input->post('cl_id');
 				}else{
 					$id 			= 	'';
 				}
@@ -823,13 +823,13 @@ class Api extends CC_Controller
 				$specialisations 				= explode(',', $userdata['specialisations']);
 				$post['company_details'] 		= 	$userdata['company_details'];
 
-				// Save
+				// // Save
 
-				if ($this->input->post('id') != '') { // id = log coc autoincrement id
-					$id 			= 	$this->input->post('id');
-				}else{
-					$id 			= 	'';
-				}
+				// if ($this->input->post('id') != '') { // id = log coc autoincrement id
+				// 	$id 			= 	$this->input->post('id');
+				// }else{
+				// 	$id 			= 	'';
+				// }
 
 				if ($post['file1'] != '') {
 					$data = $this->fileupload(['files' => $post['file1'], 'file_name' => $post['file1_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
@@ -868,17 +868,17 @@ class Api extends CC_Controller
 				
 				$request['file2'] 					= (isset($post['file2'])) ? $post['file2'] : '';
 
-				if($id==''){
+				// if($id==''){
 					$request['created_at'] = $datetime;
 					$request['created_by'] = $plumberID;
 					$actiondata = $this->db->insert('coc_log', $request);
-				}else{
-					$request		=	[
-						'updated_at' 		=> $datetime,
-						'updated_by' 		=> $plumberID
-					];
-					$actiondata = $this->db->update('coc_log', $request, ['id' => $id]);
-				}
+				// }else{
+				// 	$request		=	[
+				// 		'updated_at' 		=> $datetime,
+				// 		'updated_by' 		=> $plumberID
+				// 	];
+				// 	$actiondata = $this->db->update('coc_log', $request, ['id' => $id]);
+				// }
 				
 				$cocstatus = '2';
 				$this->db->set('count', 'count + 1',FALSE); 
