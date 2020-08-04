@@ -795,9 +795,7 @@ class Api extends CC_Controller
 	public function logcoc_log(){
 
 		if ($this->input->post() && $this->input->post('submit') == 'log') {
-			//echo "hooo";die;
 			
-
 			$this->form_validation->set_rules('completion_date','Completeion date','trim|required');
 			$this->form_validation->set_rules('name','Owners name','trim|required');
 			$this->form_validation->set_rules('street','Street','trim|required');
@@ -807,7 +805,7 @@ class Api extends CC_Controller
 			$this->form_validation->set_rules('installationtype[]','Instalaltion type','trim|required');
 			$this->form_validation->set_rules('specialisations[]','Specialisations','trim|required');
 			$this->form_validation->set_rules('installation_detail','Instalaltion details','trim|required');
-			$this->form_validation->set_rules('ncnotice','non compliance notice','trim|required');
+			$this->form_validation->set_rules('ncnotice','non compliance notice','required');
 			
 
 			if ($this->form_validation->run()==FALSE) {
@@ -832,11 +830,11 @@ class Api extends CC_Controller
 				// 	$id 			= 	'';
 				// }
 
-				if ($post['file1'] != '') {
+				if (isset($post['file1']) && $post['file1'] != '') {
 					$data = $this->fileupload(['files' => $post['file1'], 'file_name' => $post['file1_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
 				$post['file1'] = $data[0];
 				}
-				if ($post['file2'] != '') {
+				if (isset($post['file2']) && $post['file2'] != '') {
 					$data = $this->fileupload(['files' => $post['file2'], 'file_name' => $post['file2_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
 				$post['file2'] = $data[0];
 				}
@@ -945,7 +943,6 @@ class Api extends CC_Controller
 
 				$jsonData['userdata'] 			= $userdata;
 				$jsonData['cocid'] 				= $cocId;
-				$jsonData['log_coc_id'] 		= $id;
 				$jsonData['result'] 			= $result;
 				$jsonData['notification'] 		= $this->getNotification();
 				$jsonData['province'] 			= $this->getProvinceList();
@@ -955,7 +952,7 @@ class Api extends CC_Controller
 				$jsonData['installation'] 		= $this->Installationtype_Model->getList('all', ['designation' => $userdata['designation'], 'specialisations' => [], 'ids' => range(1,8)]);
 				$jsonData['specialisations']	= $this->Installationtype_Model->getList('all', ['designation' => $userdata['designation'], 'specialisations' => $specialisations, 'ids' => range(1,8)]);
 			
-				$noncompliance					= $this->Noncompliance_Model->getList('all', ['coc_id' => $id, 'user_id' => $plumberID]);		
+				$noncompliance					= $this->Noncompliance_Model->getList('all', ['coc_id' => $cocId, 'user_id' => $plumberID]);		
 				$jsonData['noncompliance']		= [];
 				foreach($noncompliance as $compliance){
 					$jsonData['noncompliance'][] = [
