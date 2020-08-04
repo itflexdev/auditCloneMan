@@ -650,7 +650,7 @@ class Api extends CC_Controller
 			// 		'file' 		=> $compliance['file']
 			// 	];
 			// }
-			
+
 			$jsonData['agreement'] = [ 'header' => ["I ".$userdata['name'].' '.$userdata['surname'].", Licensed registration number ".$userdata['registration_no'].", certify that, the above compliance certifcate details are true and correct and will be logged in accordance with the prescribed requirements as defned by the PIRB. Select either A or B as appropriate"],'agreement1' => ['description' => 'A: The above plumbing work was carried out by me or under my supervision, and that it complies in all respects to the plumbing regulations, laws, National Compulsory Standards and Local bylaws.', 'agreementid' => '1'], 'agreement2' => ['description' => 'B: I have fully inspected and tested the work started but not completed by another Licensed plumber. I further certify that the inspected and tested work and the necessary completion work was carried out by me or under my supervision- complies in all respects to the plumbing regulations, laws, National Compulsory Standards and Local bylaws.', 'agreementid' => '2'], 
 			];
 
@@ -871,13 +871,13 @@ class Api extends CC_Controller
 				if($id==''){
 					$request['created_at'] = $datetime;
 					$request['created_by'] = $plumberID;
-					$this->db->insert('coc_log', $request);
+					$actiondata = $this->db->insert('coc_log', $request);
 				}else{
 					$request		=	[
 						'updated_at' 		=> $datetime,
 						'updated_by' 		=> $plumberID
 					];
-					$this->db->update('coc_log', $request, ['id' => $id]);
+					$actiondata = $this->db->update('coc_log', $request, ['id' => $id]);
 				}
 				
 				$cocstatus = '2';
@@ -891,6 +891,58 @@ class Api extends CC_Controller
 
 				$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $plumberID], ['users', 'usersdetail', 'usersplumber', 'company']);
 				$specialisations 				= explode(',', $userdata['specialisations']);
+
+				$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '18', 'emailstatus' => '1']);
+				
+				if($notificationdata && $this->input->post('submit') == 'log'){
+					$body 		= str_replace(['{Plumbers Name and Surname}', '{number}'], [$userdata['name'].' '.$userdata['surname'], $cocId], $notificationdata['email_body']);
+					$subject 	= str_replace(['{cocno}'], [$cocId], $notificationdata['subject']);
+					$this->CC_Model->sentMail($userdata['email'], $subject, $body);
+				}
+
+				if ($this->input->post('submit') == 'log') {
+
+					if(isset($post['ncemail']) && $post['ncemail']=='1'){
+						$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '23', 'emailstatus' => '1']);
+						$replacetext = ['', '', '', '', '', '', ''];							
+						if(isset($post['name'])) 		$post[0] = $post['name'];
+						if(isset($post['address'])) 	$post[1] = $post['address'];
+						if(isset($post['street'])) 		$post[2] = $post['street'];
+						if(isset($post['number'])) 		$post[3] = $post['number'];
+						if(isset($post['province'])){
+							$provincename 	= 	$this->Managearea_Model->getListProvince('row', ['id' => $post['province']]);
+							$nc_data[4] 	=  $provincename['name'];
+						} 	
+						if(isset($post['city'])){
+							$cityname 	= 	$this->Managearea_Model->getListCity('row', ['id' => $post['city']]);
+							$nc_data[5] =  $cityname['name'];
+						} 		
+						if(isset($post['suburb'])){
+							$suburbname = 	$this->Managearea_Model->getListSuburb('row', ['id' => $post['suburb']]);
+							$nc_data[6] =  $suburbname['name'];
+						} 	
+						
+						if(isset($post['email']) && $post['email']!='' && $notificationdata){
+							
+							$subject 	= str_replace(['{Customer Name}', '{Complex Name}', '{Street}', '{Number}', '{Suburb}', '{City}', '{Province}'], $nc_data, $notificationdata['subject']);
+							$body 		= str_replace(['{Customer Name}', '{Plumber Name}', '{plumbers company name}', '{company contact number}'], [$nc_data[0], $userdata['name'].' '.$userdata['surname'], $userdata['companyname'], $userdata['companymobile']], $notificationdata['email_body']);
+							
+							$pdf 		= FCPATH.'assets/uploads/temp/'.$cocId.'.pdf';
+							$this->pdfnoncompliancereport($cocId, $userid, $pdf);
+							$this->CC_Model->sentMail($post['email'], $subject, $body, $pdf, $userdata['email']);
+							if(file_exists($pdf)) unlink($pdf);  
+						}				
+						
+						if(isset($post['contact_no']) && $post['contact_no']!='' && $this->config->item('otpstatus')!='1'){
+							$smsdata 	= $this->Communication_Model->getList('row', ['id' => '23', 'smsstatus' => '1']);
+				
+							if($smsdata){
+								$sms = str_replace(['{Customer Name}', '{Complex Name}', '{Street}', '{Number}', '{Suburb}', '{City}', '{Province}'], $nc_data, $smsdata['sms_body']);
+								$this->sms(['no' => $post['contact_no'], 'msg' => $sms]);
+							}
+						}
+					}
+				}
 
 
 				$jsonData['userdata'] 			= $userdata;
@@ -1690,7 +1742,7 @@ class Api extends CC_Controller
 			$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$data);
 		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('id') && $this->input->post('pagetype') =='edit') {
 
-			$id 	= $this->input->post('id');
+			$id 	= $this->input->post('id'); // id = non compliance id
 			$userid = $this->input->post('user_id');
 			$result = $this->Noncompliance_Model->getList('row', ['id' => $id]);
 			if ($result) {
