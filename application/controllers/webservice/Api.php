@@ -623,6 +623,7 @@ class Api extends CC_Controller
 			$jsonData['page_lables'] = [ 'plumbingwork' => 'Plumbing Work Completion Date *', 'insuranceclaim' => "Insurance Claim/Order no: (if relevant)", 'certificate' => "Certificate Number: ".$id."", 'installationimages' => "Installation Images", 'address' => "Physical Address Details of Installation", 'ownersname' => "Owners Name *", 'complex' => "Name of Complex/Flat and Unit Number (if applicable)", 'street' => "Street *", 'number' => "Number *", 'province' => "Province *", 'city' => "City *", 'suburb' => "Suburb *", 'contact' => "Contact Mobile *", 'alternate_no' => "Alternate Contact", 'email' => "Email Address"
 			];
 
+			$jsonData['result'] 			= $result;
 			$jsonData['userdata'] 			= $userdata;
 			$jsonData['cocid'] 				= $id;
 			$jsonData['installation'] 		= $this->Installationtype_Model->getList('all', ['designation' => $userdata['designation'], 'specialisations' => [], 'ids' => range(1,8)]);
@@ -636,9 +637,6 @@ class Api extends CC_Controller
 					];
 				}
 			}
-
-			$jsonData['result'] 			= $result;
-
 			//$jsonData['designation2'] 		= $this->config->item('designation2');
 			//$jsonData['ncnotice'] 			= $this->config->item('ncnotice');
 			//$jsonData['installationtype']	= $this->getInstallationTypeList();
@@ -652,6 +650,9 @@ class Api extends CC_Controller
 			// 		'file' 		=> $compliance['file']
 			// 	];
 			// }
+			
+			$jsonData['agreement'] = [ 'header' => ["I ".$userdata['name'].' '.$userdata['surname'].", Licensed registration number ".$userdata['registration_no'].", certify that, the above compliance certifcate details are true and correct and will be logged in accordance with the prescribed requirements as defned by the PIRB. Select either A or B as appropriate"],'agreement1' => ['description' => 'A: The above plumbing work was carried out by me or under my supervision, and that it complies in all respects to the plumbing regulations, laws, National Compulsory Standards and Local bylaws.', 'agreementid' => '1'], 'agreement2' => ['description' => 'B: I have fully inspected and tested the work started but not completed by another Licensed plumber. I further certify that the inspected and tested work and the necessary completion work was carried out by me or under my supervision- complies in all respects to the plumbing regulations, laws, National Compulsory Standards and Local bylaws.', 'agreementid' => '2'], 
+			];
 
 			$jsonArray = array("status"=>'1', "message"=>'Plumber CoC Detail', "result"=>$jsonData);
 			
