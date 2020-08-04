@@ -1298,7 +1298,7 @@ class Api extends CC_Controller
 			$jsonData 			= [];
 			$cocid 		= $this->input->post('cocid');  
 			$fromto 	= $this->input->post('userid');   // fromto = userid
-			$data 		= $this->chat_view(['cocid' => $cocid, 'fromto' => $fromto]);
+			$data 		= $this->chat_sync(['cocid' => $cocid, 'fromto' => $fromto]);
 
 			$jsonArray = ['status' => '1', "message"=>'Chat History', 'result' => $data];
 		
@@ -1331,24 +1331,24 @@ class Api extends CC_Controller
 			
 			$result = $this->Chat_Model->action($post);
 			if ($result) {
-				$data = $this->chat_view(['cocid' => $post['cocid'], 'fromto' => $post['fromid']]);
+				$data = $this->chat_sync(['cocid' => $post['cocid'], 'fromto' => $post['fromid']]);
 				$jsonArray = array("status"=>'1', "message"=>'chat inserted sucessfully', "result"=>$data);
 			}
 			
 		}elseif($this->input->post() && $this->input->post('id') && $this->input->post('action') == "delete" && $this->input->post('coc_id') && $this->input->post('user_id')) { // id =chat id
 			$delete = $this->db->delete('chat', ['id' => $this->input->post('id')]);
 			if ($delete) {
-				$data = $this->chat_view(['cocid' => $this->input->post('coc_id'), 'fromto' => $this->input->post('user_id')]);
+				$data = $this->chat_sync(['cocid' => $this->input->post('coc_id'), 'fromto' => $this->input->post('user_id')]);
 				$jsonArray = array("status"=>'1', "message"=>'chat deleted sucessfully', "result"=>$data);
 			}
 		}elseif($this->input->post() && $this->input->post('id') && $this->input->post('action') == "quote" && $this->input->post('coc_id') && $this->input->post('user_id')) { // id =chat id
-			$chat = $this->chat_view(['id' => $this->input->post('id')]);
+			$chat = $this->chat_sync(['id' => $this->input->post('id')]);
 			if ($chat) {
 				$id 				= $this->input->post('id');
 				$request['quote'] 	= $this->input->post('quote_message');
 				$this->db->update('chat', $request, ['id' => $id]);
 				$insertid = $id;
-				$data = $this->chat_view(['cocid' => $this->input->post('coc_id'), 'fromto' => $this->input->post('user_id')]);
+				$data = $this->chat_sync(['cocid' => $this->input->post('coc_id'), 'fromto' => $this->input->post('user_id')]);
 				$jsonArray = array("status"=>'1', "message"=>'quote added sucessfully', "result"=>$data);
 
 			}else{
@@ -1359,7 +1359,7 @@ class Api extends CC_Controller
 		}
 		echo json_encode($jsonArray);
 	}
-	public function chat_view($data = []){
+	public function chat_sync($data = []){
 		$result 			= $this->Chat_Model->getList('all', $data);
 		if(count($result)){
 			foreach ($result as $key => $value) {
