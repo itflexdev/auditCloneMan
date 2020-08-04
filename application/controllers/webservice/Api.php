@@ -701,11 +701,11 @@ class Api extends CC_Controller
 				}else{
 					$id 			= 	'';
 				}
-				if ($post['file1'] != '') {
+				if (isset($post['file1']) && $post['file1'] !='') {
 					$data = $this->fileupload(['files' => $post['file1'], 'file_name' => $post['file1_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
 				$post['file1'] = $data[0];
 				}
-				if ($post['file2'] != '') {
+				if (isset($post['file2']) && $post['file2'] != '') {
 					$data = $this->fileupload(['files' => $post['file2'], 'file_name' => $post['file2_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
 				$post['file2'] = $data[0];
 				}
@@ -753,7 +753,7 @@ class Api extends CC_Controller
 				$cocstatus = '5';
 				if(isset($cocstatus)) $this->db->update('stock_management', ['coc_status' => $cocstatus], ['id' => $cocId]);
 				
-				$result							= $this->Coc_Model->getCOCList('row', ['id' => $id, 'user_id' => $plumberID]);
+				$result							= $this->Coc_Model->getCOCList('row', ['id' => $cocId, 'user_id' => $plumberID]);
 
 				$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $plumberID], ['users', 'usersdetail', 'usersplumber', 'company']);
 				$specialisations 				= explode(',', $userdata['specialisations']);
@@ -795,6 +795,7 @@ class Api extends CC_Controller
 	public function logcoc_log(){
 
 		if ($this->input->post() && $this->input->post('submit') == 'log') {
+			//echo "hooo";die;
 			
 
 			$this->form_validation->set_rules('completion_date','Completeion date','trim|required');
@@ -887,7 +888,7 @@ class Api extends CC_Controller
 
 				if(isset($cocstatus)) $this->db->update('stock_management', ['coc_status' => $cocstatus], ['id' => $cocId]);
 				
-				$result							= $this->Coc_Model->getCOCList('row', ['id' => $id, 'user_id' => $plumberID]);
+				$result							= $this->Coc_Model->getCOCList('row', ['id' => $cocId, 'user_id' => $plumberID]);
 
 				$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $plumberID], ['users', 'usersdetail', 'usersplumber', 'company']);
 				$specialisations 				= explode(',', $userdata['specialisations']);
@@ -1366,7 +1367,7 @@ class Api extends CC_Controller
 		if(count($result)){
 			foreach ($result as $key => $value) {
 				if ($value['attachment'] !='') {
-					$attachment = base_url().'assets/uploads/chat/'.$data['fromto'].'/'.$value['attachment'].'';
+					$attachment = base_url().'assets/uploads/chat/'.$data['cocid'].'/'.$value['attachment'].'';
 				}else{
 					$attachment = '';
 				}
