@@ -1308,7 +1308,7 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 	public function chat_action(){
-		if ($this->input->post() && $this->input->post('user_id')) {
+		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('action') == "insert") {
 
 			if ($this->input->post('file') !='') {
 				$data = $this->fileupload(['files' => $this->input->post('file'), 'file_name' => $this->input->post('file_name'), 'user_id' => $this->input->post('coc_id'), 'page' => 'chat']);
