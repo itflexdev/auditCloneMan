@@ -226,11 +226,11 @@ class Api extends CC_Controller
 		
 	}
 
-	// Plumber Dashboard:
+	// Common Dashboard:
 
-	public function plumber_dashoard(){
+	public function dashoard(){
 
-		if ($this->input->post('user_id')) {
+		if ($this->input->post('user_id')  && $this->input->post('type') == 'plumber') {
 			$id 										= $this->input->post('user_id');
 			$userdata 									= $this->getUserDetails($id);
 			$userdetails 								= $this->Plumber_Model->getList('row', ['id' => $id], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
@@ -396,6 +396,14 @@ class Api extends CC_Controller
 			$jsonArray = array("status"=>'1', "message"=>'User details', "result"=>$jsonData);
 
 		
+		}elseif($this->input->post('user_id')  && $this->input->post('type') == 'auditor'){
+			$id 				= $this->input->post('user_id');
+			$userdata 			= $this->getUserDetails($id);
+			$history			= $this->Auditor_Model->getReviewHistoryCount(['auditorid' => $id]);	
+			$unread_chat		= $this->Chat_Model->getList('count',['viewed' => $id]);
+			
+			$jsonData['auditor_data'][] = ['id' => $userdata['id'], 'namesurname' => $userdata['name'], 'total' => $history['total'], 'noaudit' => $history['noaudit'], 'cautionary' => $history['cautionary'], 'refixincomplete' => $history['refixincomplete'], 'refixcomplete' => $history['refixcomplete'], 'compliment' => $history['compliment'], 'openaudits' => $history['openaudits'], 'unread_chat' => $unread_chat];
+			$jsonArray = array("status"=>'1', "message"=>'Auditor Dashboard Details', "result"=>$jsonData);
 		}else{
 
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
