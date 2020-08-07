@@ -1933,35 +1933,48 @@ class Api extends CC_Controller
 			$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$jsonData);
 		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('pagetype') =='action') {
 
-			$post 			= $this->input->post();
-			$userid			= 	$this->input->post('user_id');
-			if($this->input->post('id') !=''){$id = $this->input->post('id');}else{$id ='';}
-			$datetime		= 	date('Y-m-d H:i:s');
-			$request		=	[
+			$this->form_validation->set_rules('installation','installationtype','trim|required');
+			$this->form_validation->set_rules('subtype','subtype','trim|required');
+			$this->form_validation->set_rules('statement','statement','trim|required');
+			$this->form_validation->set_rules('comment','comments','trim|required');
+			$this->form_validation->set_rules('favour_name','favour name','trim|required');
 
-				'updated_at' 		=> $datetime,
-				'updated_by' 		=> $userid
-			];
-		
-			$request['user_id'] = $userid;	
-			if(isset($post['installation'])) 	$request['installationtype_id'] 	= $post['installation'];
-			if(isset($post['subtype'])) 		$request['subtype_id'] 				= $post['subtype'];
-			if(isset($post['statement'])) 		$request['statement_id'] 			= $post['statement'];
-			if(isset($post['comment'])) 		$request['comments'] 				= $post['comment'];
-			if(isset($post['favour_name'])) 	$request['favour_name'] 			= $post['favour_name'];
-			$request['status'] 	= (isset($post['status'])) ? $post['status'] : '0';
-			if($id==''){
-				$request['created_at'] = $datetime;
-				$request['created_by'] = $userid;
-				$this->db->insert('auditor_report_listing', $request);
-				$insert_id = $this->db->insert_id();
-				$message = "My Report Listing Added Sucessfully";
+			if ($this->form_validation->run()==FALSE) {
+				$errorMsg = validation_errors();
+				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
 			}else{
-				$this->db->update('auditor_report_listing', $request, ['id' => $id]);
-				$insert_id = $id;
-				$message = "My Report Listing Updated Sucessfully";
+				$post 			= $this->input->post();
+				$userid			= 	$this->input->post('user_id');
+				if($this->input->post('id') !=''){$id = $this->input->post('id');}else{$id ='';}
+				$datetime		= 	date('Y-m-d H:i:s');
+				$request		=	[
+
+					'updated_at' 		=> $datetime,
+					'updated_by' 		=> $userid
+				];
+			
+				$request['user_id'] = $userid;	
+				if(isset($post['installation'])) 	$request['installationtype_id'] 	= $post['installation'];
+				if(isset($post['subtype'])) 		$request['subtype_id'] 				= $post['subtype'];
+				if(isset($post['statement'])) 		$request['statement_id'] 			= $post['statement'];
+				if(isset($post['comment'])) 		$request['comments'] 				= $post['comment'];
+				if(isset($post['favour_name'])) 	$request['favour_name'] 			= $post['favour_name'];
+				$request['status'] 	= (isset($post['status'])) ? $post['status'] : '0';
+				if($id==''){
+					$request['created_at'] = $datetime;
+					$request['created_by'] = $userid;
+					$this->db->insert('auditor_report_listing', $request);
+					$insert_id = $this->db->insert_id();
+					$message = "My Report Listing Added Sucessfully";
+				}else{
+					$this->db->update('auditor_report_listing', $request, ['id' => $id]);
+					$insert_id = $id;
+					$message = "My Report Listing Updated Sucessfully";
+				}
+				$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$insert_id);
+
 			}
-		$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$insert_id);
+
 
 		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('id') && $this->input->post('pagetype') =='delete') {
 
