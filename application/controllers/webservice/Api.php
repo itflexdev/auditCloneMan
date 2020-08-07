@@ -569,10 +569,10 @@ class Api extends CC_Controller
 			
 			foreach ($results as $key => $value) {
 				if ( $this->config->item('cocstatus')[$value['coc_status']] == 'Logged') {
-					$colorcode 	= '#ade33d';
+					$colorcode = '#7f694f';
 					$coc_status = 'Logged';
 				}else{
-					$colorcode = '#7f694f';
+					$colorcode 	= '#ade33d';
 					$coc_status = 'Un Logged';
 				}
 				$jsonData['coc_statement'][] = [ 'coc_number' => $value['id'], 'plumberid' => $value['user_id'], 'coc_status' =>  $coc_status, 'coc_type' => $this->config->item('coctype')[$value['type']], 'cl_name' => $value['cl_name'], 'colorcode' => $colorcode, 'totalcount' => $totalcount
