@@ -871,6 +871,7 @@ class Api extends CC_Controller
 				if(isset($post['ncnotice'])) 			$request['ncnotice'] 				= $post['ncnotice'];
 				if(isset($post['ncemail'])) 			$request['ncemail'] 				= $post['ncemail'];
 				if(isset($post['ncreason'])) 			$request['ncreason'] 				= $post['ncreason'];
+				$request['log_date'] = date('Y-m-d H:i:s');
 				
 				
 				$request['file2'] 					= (isset($post['file2'])) ? $post['file2'] : '';
