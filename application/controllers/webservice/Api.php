@@ -649,15 +649,15 @@ class Api extends CC_Controller
 			//$jsonData['ncnotice'] 			= $this->config->item('ncnotice');
 			//$jsonData['installationtype']	= $this->getInstallationTypeList();
 		
-			//$noncompliance					= $this->Noncompliance_Model->getList('all', ['coc_id' => $id, 'user_id' => $plumberID]);		
-			//$jsonData['noncompliance']		= [];
-			// foreach($noncompliance as $compliance){
-			// 	$jsonData['noncompliance'][] = [
-			// 		'id' 		=> $compliance['id'],
-			// 		'details' 	=> $this->parsestring($compliance['details']),
-			// 		'file' 		=> $compliance['file']
-			// 	];
-			// }
+			$noncompliance					= $this->Noncompliance_Model->getList('all', ['coc_id' => $id, 'user_id' => $plumberID]);		
+			$jsonData['noncompliance']		= [];
+			foreach($noncompliance as $compliance){
+				$jsonData['noncompliance'][] = [
+					'id' 		=> $compliance['id'],
+					'details' 	=> $this->parsestring($compliance['details']),
+					'file' 		=> base_url().'assets/uploads/plumber/'.$plumberID.'/log/'.$compliance['file']
+				];
+			}
 
 			$jsonData['agreement'] = [ 'header' => ["I ".$userdata['name'].' '.$userdata['surname'].", Licensed registration number ".$userdata['registration_no'].", certify that, the above compliance certifcate details are true and correct and will be logged in accordance with the prescribed requirements as defned by the PIRB. Select either A or B as appropriate"],'agreement1' => ['description' => 'A: The above plumbing work was carried out by me or under my supervision, and that it complies in all respects to the plumbing regulations, laws, National Compulsory Standards and Local bylaws.', 'agreementid' => '1'], 'agreement2' => ['description' => 'B: I have fully inspected and tested the work started but not completed by another Licensed plumber. I further certify that the inspected and tested work and the necessary completion work was carried out by me or under my supervision- complies in all respects to the plumbing regulations, laws, National Compulsory Standards and Local bylaws.', 'agreementid' => '2'], 
 			];
