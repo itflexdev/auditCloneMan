@@ -1627,7 +1627,7 @@ class Api extends CC_Controller
 				if(isset($post['user_id']))  			$requestData1['user_id'] 	    	= $post['user_id'];
 				if(isset($post['name_surname']))  		$requestData1['name_surname']  		= $post['name_surname'];
 				if(isset($post['activity'])) 			$requestData1['cpd_activity']  		= $post['activity'];
-				if(isset($post['startdate'])) 	 		$requestData1['cpd_start_date'] 	= date("Y-m-d H:i:s", strtotime($post['startdate']));
+				if(isset($post['startdate'])) 	 		$requestData1['cpd_start_date'] 	= date("Y-m-d H:i:s", strtotime(str_replace('/','-',$post['startdate'])));
 				if(isset($post['comments'])) 	 		$requestData1['comments'] 			= $post['comments'];
 				if(isset($image)) 		 				$requestData1['file1'] 				= $image;
 				if(isset($post['points'])) 		 		$requestData1['points'] 			= $post['points'];
