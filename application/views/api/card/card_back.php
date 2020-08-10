@@ -74,7 +74,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link href="<?php echo base_url().'assets/css/mobile.css?version=3.0'; ?>" rel="stylesheet">
+    <link href="<?php echo base_url().'assets/css/mobile.css?version=3.0.css'; ?>" rel="stylesheet">
     <script src="<?php echo base_url().'assets/plugins/jquery/jquery-3.2.1.min.js?version=5.0'; ?>"></script>
       <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -86,14 +86,14 @@
       <div class="pb_card">
          <div class="p_top">
          <p class="pb_first_txt">This card holder is only entitled to purchase and issue Plumbing COC’s for the following categories of plumbing and plumbing specialisations</p>
-         <p style="margin-top: -9px; margin-bottom: 0;"><span><img src="<?php echo $backcard; ?>"></span><span>Above Ground Drainage</span>
-         <span><img src="<?php echo $backcard6; ?>"></span><span>Hot Water</span>
-         <span><img src="<?php echo $backcard1; ?>"></span><span>Below Ground Drainage</span>
-         <span><img src="<?php echo $backcard; ?>"></span><span>Solar Water Heating</span>
-         <span><img src="<?php echo $backcard; ?>"></span><span>Rain Water Drainage</span>
-         <span><img src="<?php echo $backcard; ?>"></span><span>Heat Pumps</span>
-         <span><img src="<?php echo $backcard; ?>"></span><span>Cold Water</span>
-         <span><img src="<?php echo $backcard; ?>"></span><span>Gas</span></p>
+         <p class="add_width img-txt" style="margin-top: 2px; height: 42px; margin-bottom: 0;"><span  class="abve--img"><img src="<?php echo $backcard; ?>"></span><span class="txt-img-card abve-grnd--ttle">Above Ground Drainage</span>
+         <span class="abve--img"><img src="<?php echo $backcard6; ?>"></span><span  class="txt-img-card abve-grnd--ttle">Hot Water</span>
+         <span class="abve--img"><img src="<?php echo $backcard1; ?>"></span><span  class="txt-img-card abve-grnd--ttle">Below Ground Drainage</span>
+         <span class="abve--img"><img src="<?php echo $backcard; ?>"></span><span  class="txt-img-card abve-grnd--ttle">Solar Water Heating</span>
+         <span class="abve--img"><img src="<?php echo $backcard; ?>"></span><span  class="txt-img-card abve-grnd--ttle">Rain Water Drainage</span>
+         <span class="abve--img"><img src="<?php echo $backcard; ?>"></span><span  class="txt-img-card abve-grnd--ttle">Heat Pumps</span>
+         <span class="abve--img"><img src="<?php echo $backcard; ?>"></span><span  class="txt-img-card abve-grnd--ttle">Cold Water</span>
+         <span class="abve--img"><img src="<?php echo $backcard; ?>"></span><span  class="txt-img-card abve-grnd--ttle">Gas</span></p>
          </div>
          <div class="pb_bottom_left">
             <span class="pb_title">Current</span><br>
