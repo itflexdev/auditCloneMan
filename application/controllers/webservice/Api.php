@@ -104,6 +104,16 @@ class Api extends CC_Controller
         return FALSE;
     }
 
+    public function plumberprofile_api(){
+    	if ($this->input->post() && $this->input->post('user_id')) {
+    		$result = $this->Plumber_Model->getList('row', ['id' => $id, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+    		$jsonArray = $result;
+    	}else{
+    		$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+    	}
+    	echo json_encode($jsonArray);
+    }
+
 	// Plumber Registration:
 
 	public function plumber_registration()
@@ -334,6 +344,7 @@ class Api extends CC_Controller
 				$jsonData['plumber_details'] = [
 					'plumberid' 		=> $userdata['id'],
 					'renewaldate' 		=> date('d-m-Y', strtotime($userdata['expirydate'])),
+					'renewaldate_milli' => $userdata['expirydate'],
 					'name' 				=> $userdata['name'],
 					'regno' 			=> $userdata['registration_no'],
 					'status' 			=> $this->config->item('plumberstatus')[$userdetails['plumberstatus']],
@@ -1400,7 +1411,7 @@ class Api extends CC_Controller
 			$mycpd 			= $this->userperformancestatus(['userid' => $user_id, 'performancestatus' => '1', 'auditorstatement' => '1']);
 			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
 
-			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points'
+			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'Comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further declare that I understand that I must keep verifiable evidence of all my CPD Activities for at least two years, as the PIRB may conduct a random audit of my activities, which would require me to submit the evidence to the PIRB.', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points'
 			];
 			$jsonData['total_cpd_point'] 	= $mycpd;
 			$jsonData['renewal_cpd_point'] 	= '';
@@ -1993,6 +2004,38 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
+	public function auditstatement_auditor(){
+		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('type') == 'list') {
+			$userid = $this->input->post('user_id');
+
+			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid]);
+			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid]);
+			if ($results) {
+				foreach ($results as $key => $value) {
+					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => ''];
+				}
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>'Audit Statement', "result"=>$jsonData);
+		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('type') == 'search' && $this->input->post('keywords')) {
+			$userid 		= $this->input->post('user_id');
+			$keywords 		= $this->input->post('keywords');
+			$post['page'] 	= 'auditorstatement';
+			$post['search'] = ['value' => $keywords, 'regex' => false];
+
+			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid]+$post);
+			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid]+$post);
+			if ($results) {
+				foreach ($results as $key => $value) {
+					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => ''];
+				}
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>'Audit Statement', "result"=>$jsonData);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
 	public function getInstallationTypeList_api($data = []){
 
 		if (!isset($data['id']) && !isset($data['type'])) {
@@ -2312,23 +2355,35 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
-	public function featchcity(){
-		$getcity = $this->Managearea_Model->getListCity('all', ['status' => ['1']]);
-		if(count($getcity) > 0) {
-			$citydata=  ['' => 'Select City']+array_column($getcity, 'name', 'id');
+	public function featchprovince($data = []){
+		$getprovince = $this->Managearea_Model->getListProvince('row', ['id' => $data['id']]);
+		if(count($getprovince) > 0) {
+			$provincedata[]=  [ 'id' => $value['id'], 'name' => $value['name']
+				];
 		}else{
-			$citydata = [];
+			$provincedata = [];
+		}
+		return $provincedata;
+	}
+
+	public function featchcity($data = []){
+		$getcity = $this->Managearea_Model->getListCity('row', ['id' => $data['id']]);
+		if(count($getcity) > 0) {
+			$citydata[]=  [ 'id' => $value['id'], 'name' => $value['name']
+				];
+		}else{
+			$citydata[] = [];
 		}
 		return $citydata;
 	}
 
-	public function featchsuburb(){
-		$getsuburb = $this->Managearea_Model->getListSuburb('all', ['status' => ['1']]);
+	public function featchsuburb($data = []){
+		$getsuburb = $this->Managearea_Model->getListSuburb('row', ['status' => $data['id']]);
 		if(count($getsuburb) > 0) {
-			$suburbdata=  ['' => 'Select City']+array_column($getsuburb, 'name', 'id');
+			$suburbdata[]=  [ 'id' => $value['id'], 'name' => $value['name']];
 		}
 		else {
-			$suburbdata = [];
+			$suburbdata[] = [];
 		}
 		return $suburbdata;
 	}
