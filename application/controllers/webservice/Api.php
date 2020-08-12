@@ -607,6 +607,15 @@ class Api extends CC_Controller
 		$jsonArray = array("status"=>'1', "message"=>'company list', 'result' => $jsonData);
 		echo json_encode($jsonArray);
 	}
+	public function degisgnation_api(){
+		$designation1 = $this->config->item('designation1');
+		$plumberrates = $this->getPlumberRates();
+		foreach($designation1 as $k => $design){
+			$jsonData['designation_array'][] =  sprintf($design, $plumberrates[$k]);
+		}
+		$jsonArray = array("status"=>'1', "message"=>'company list', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
 
 	// Common Dashboard:
 
@@ -860,7 +869,7 @@ class Api extends CC_Controller
 			$jsonData['cocelectronic']	=	['id' => $cocelectronic['id'], 'supllyname' => $cocelectronic['supplyitem'], 'amount' => $cocelectronic['amount']];
 			$jsonData['cocpaperwork']	=	['id' => $cocpaperwork['id'], 'supllyname' => $cocpaperwork['supplyitem'], 'amount' => $cocpaperwork['amount']];
 
-			if ($userdata1['coc_electronic'] == '0') {
+			if ($userdata1['coc_electronic'] != '0') {
 				$coc_electronic = '1';
 			}else{
 				$coc_electronic = '2';
