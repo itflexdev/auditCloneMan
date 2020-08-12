@@ -560,7 +560,7 @@ class Api extends CC_Controller
 
 	public function qualificationtype_api(){
 		$jsonData['qualificationtype'][] = $this->config->item('qualificationtype');
-		$jsonArray = array("status"=>'1', "message"=>'Skill list', 'result' => $jsonData);
+		$jsonArray = array("status"=>'1', "message"=>'Qulification types', 'result' => $jsonData);
 		echo json_encode($jsonArray);
 	}
 	public function getQualificationRouteList_api(){
@@ -614,6 +614,19 @@ class Api extends CC_Controller
 			$jsonData['designation_array'][] =  sprintf($design, $plumberrates[$k]);
 		}
 		$jsonArray = array("status"=>'1', "message"=>'company list', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
+	public function reg_declaration_api(){
+		if ($this->input->post('registerprocedure')) {
+			$jsonData['registerprocedure'] 	= $this->config->item('registerprocedure');
+		}elseif($this->input->post('acknowledgement')){
+			$jsonData['acknowledgement'] 	= $this->config->item('acknowledgement');
+		}elseif($this->input->post('codeofconduct')){
+			$jsonData['codeofconduct'] 		= $this->config->item('codeofconduct');
+		}elseif($this->input->post('declaration')){
+			$jsonData['declaration'] 		= $this->config->item('declaration');
+		}
+		$jsonArray = array("status"=>'1', "message"=>'Declaration Tab', 'result' => $jsonData);
 		echo json_encode($jsonArray);
 	}
 
