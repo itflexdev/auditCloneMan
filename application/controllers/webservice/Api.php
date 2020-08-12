@@ -657,7 +657,7 @@ class Api extends CC_Controller
 		foreach($designation1 as $k => $design){
 			$jsonData['designation_array'][] =  sprintf($design, $plumberrates[$k]);
 		}
-		$jsonArray = array("status"=>'1', "message"=>'company list', 'result' => $jsonData);
+		$jsonArray = array("status"=>'1', "message"=>'designation list', 'result' => $jsonData);
 		echo json_encode($jsonArray);
 	}
 	public function reg_declaration_api(){
@@ -2068,7 +2068,7 @@ class Api extends CC_Controller
 				$plumberID 			= $this->input->post('user_id');
 				$datetime			= date('Y-m-d H:i:s');
 
-				if ($post['image1'] != '') {
+				if (isset($post['image1']) && $post['image1'] != '') {
 					$data = $this->fileupload(['files' => $post['image1'], 'file_name' => $post['file_name'], 'user_id' => $plumberID, 'page' => 'plumbercpd']);
 					$image = $data[0];
 				}
