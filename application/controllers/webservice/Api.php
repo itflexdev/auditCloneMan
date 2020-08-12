@@ -266,6 +266,86 @@ class Api extends CC_Controller
     	echo json_encode($jsonArray);
     }
 
+    // Plumber profile action:
+    public function plumber_profile_action(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			// Physical address
+			$this->form_validation->set_rules('address[1][address]','Physical Address ','trim|required');
+			$this->form_validation->set_rules('address[1][province]','Physical Province ','trim|required');
+			$this->form_validation->set_rules('address[1][city]','Physical City ','trim|required');
+			$this->form_validation->set_rules('address[1][suburb]','Physical Suburb ','trim|required');
+
+			// Postal address
+			$this->form_validation->set_rules('address[2][address]','Postal Address','trim|required');
+			$this->form_validation->set_rules('address[2][province]','Postal Province ','trim|required');
+			$this->form_validation->set_rules('address[2][city]','Postal City ','trim|required');
+			$this->form_validation->set_rules('address[2][suburb]','Postal Suburb ','trim|required');
+			$this->form_validation->set_rules('address[2][postal_code]','Postal Suburb ','trim|required');
+
+			// Billing details
+			$this->form_validation->set_rules('company_name','Billing name','trim|required');
+			$this->form_validation->set_rules('billing_email','Billing email','trim|required');
+			$this->form_validation->set_rules('billing_contact','Billing Contact','trim|required');
+			// Billing address
+			$this->form_validation->set_rules('address[3][address]','Billing Address','trim|required');
+			$this->form_validation->set_rules('address[3][province]','Billing Province','trim|required');
+			$this->form_validation->set_rules('address[3][city]','Billing City','trim|required');
+			$this->form_validation->set_rules('address[3][suburb]','Billing Suburb','trim|required');
+			$this->form_validation->set_rules('address[3][postal_code]','Postal code','trim|required');	
+
+			if ($this->form_validation->run()==FALSE) {
+				$errorMsg =  validation_errors();
+				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+			}else{
+				$post 				= $this->input->post();
+				$plumberID 			= $this->input->post('user_id');
+
+				$userdata			= $this->Plumber_Model->getList('row', ['id' => $plumberID, 'status' => ['0','1']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+				$post['user_id']	 	= 	$plumberID;
+				$post['usersdetailid'] 	= 	$userdata['usersdetailid'];
+				$post['usersplumberid'] = 	$userdata['usersplumberid'];
+
+				if ((isset($post['address'][1]['id']) && $post['address'][1]['id'] !='') && (isset($post['address'][1]['type']) && $post['address'][1]['type'] !='')) {
+					$post['address'][1]['id'] 	= $post['address'][1]['id'];
+					$post['address'][1]['type'] = $post['address'][2]['type'];
+				}else{
+					$post['address'][1]['id'] 	= '';
+					$post['address'][1]['type'] = '';
+				}
+
+				if ((isset($post['address'][2]['id']) && $post['address'][2]['id'] !='') && (isset($post['address'][2]['type']) && $post['address'][2]['type'] !='')) {
+					$post['address'][2]['id'] 	= $post['address'][2]['id'];
+					$post['address'][2]['type'] = $post['address'][2]['type'];
+				}else{
+					$post['address'][2]['id'] 	= '';
+					$post['address'][2]['type'] = '';
+				}
+
+				if ((isset($post['address'][3]['id']) && $post['address'][3]['id'] !='') && (isset($post['address'][3]['type']) && $post['address'][3]['type'] !='')) {
+					
+					$post['address'][3]['id'] 	= $post['address'][3]['id'];
+					$post['address'][3]['type'] = $post['address'][3]['type'];
+				}else{
+					$post['address'][3]['id'] 	= '';
+					$post['address'][3]['type'] = '';
+				}
+				$data 				=  	$this->Plumber_Model->action($post);
+
+				if ($data) {
+					$jsonData['userdata'] = $userdata;
+					$jsonArray = array("status"=>'1', "message"=>'Profile Updated Successfully', "result"=>$post);
+				}else{
+					$jsonArray = array("status"=>'0', "message"=>'Something went wrong Please try again!!!', 'result' => []);
+				}
+			}	
+
+		}else{
+
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
     public function plumber_registration_index(){
     	$jsonData = [];
 
