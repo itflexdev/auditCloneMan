@@ -228,6 +228,8 @@ class Api extends CC_Controller
 			$jsonData['physical']['city1'] 			= isset($physicaladdress[4]) ? $physicaladdress[4] : '';
 			$jsonData['physical']['province1'] 		= isset($physicaladdress[5]) ? $physicaladdress[5] : '';
 			$jsonData['physical']['postalcode1'] 	= isset($physicaladdress[6]) ? $physicaladdress[6] : '';
+			$jsonData['physical']['type'] 			= isset($physicaladdress[6]) ? $physicaladdress[7] : '';
+			$jsonData['physical']['id'] 			= isset($physicaladdress[6]) ? $physicaladdress[0] : '';
 
 			// Postal address
 			$postaladdress 			= isset($result['postaladdress']) ? explode('@-@', $result['postaladdress']) : [];
@@ -237,6 +239,8 @@ class Api extends CC_Controller
 			$jsonData['postal']['city2'] 			= isset($postaladdress[4]) ? $postaladdress[4] : '';
 			$jsonData['postal']['province2'] 		= isset($postaladdress[5]) ? $postaladdress[5] : '';
 			$jsonData['postal']['postalcode2'] 		= isset($postaladdress[6]) ? $postaladdress[6] : '';
+			$jsonData['postal']['type'] 			= isset($postaladdress[6]) ? $postaladdress[7] : '';
+			$jsonData['postal']['id'] 				= isset($postaladdress[6]) ? $postaladdress[0] : '';
 
 			// Billing address
 			$billingaddress 		= isset($result['billingaddress']) ? explode('@-@', $result['billingaddress']) : [];
@@ -246,6 +250,9 @@ class Api extends CC_Controller
 			$jsonData['billing']['city3'] 			= isset($billingaddress[4]) ? $billingaddress[4] : '';
 			$jsonData['billing']['province3'] 		= isset($billingaddress[5]) ? $billingaddress[5] : '';
 			$jsonData['billing']['postalcode3'] 	= isset($billingaddress[6]) ? $billingaddress[6] : '';
+			$jsonData['billing']['type'] 			= isset($billingaddress[6]) ? $billingaddress[7] : '';
+			$jsonData['billing']['id'] 				= isset($billingaddress[6]) ? $billingaddress[0] : '';
+
 			$jsonData['plumber_result'] 			= $result;
 
 			if ($result['file1'] !='') {
@@ -300,7 +307,7 @@ class Api extends CC_Controller
 				$post 				= $this->input->post();
 				$plumberID 			= $this->input->post('user_id');
 
-				$userdata			= $this->Plumber_Model->getList('row', ['id' => $plumberID, 'status' => ['0','1']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+				$userdata			= $this->Plumber_Model->getList('row', ['id' => $id, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
 				$post['user_id']	 	= 	$plumberID;
 				$post['usersdetailid'] 	= 	$userdata['usersdetailid'];
 				$post['usersplumberid'] = 	$userdata['usersplumberid'];
@@ -322,7 +329,6 @@ class Api extends CC_Controller
 				}
 
 				if ((isset($post['address'][3]['id']) && $post['address'][3]['id'] !='') && (isset($post['address'][3]['type']) && $post['address'][3]['type'] !='')) {
-					
 					$post['address'][3]['id'] 	= $post['address'][3]['id'];
 					$post['address'][3]['type'] = $post['address'][3]['type'];
 				}else{
