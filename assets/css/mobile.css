@@ -84,7 +84,7 @@ div#card_front {
 /* card back */
 .pb_inner {
     position: absolute;
-    top: 60%;
+    top: 55%;
     left: 50%;
 }
 
@@ -93,12 +93,12 @@ div#card_front {
 }
 
 .pb_card {
-    width: 150px;
+    width: 170px;
     height: 136px;
     position: relative;
     background: #F5F8FD;
     padding: 0px 35px;
-    padding-right: 26px;
+    padding-right: 0px;
     padding-left: 15px;
     font-family: 'Helvetica' !important;
     transform: scale(2.65);
@@ -106,7 +106,7 @@ div#card_front {
 .p_top {
    width: 100%;
     border-bottom: 1px solid #737476;
-    padding: 0 9px 0px 12px;
+    padding: 0 0px 0px 12px;
     margin: 0 0 0 -16px;
 } 
 .pb_first_txt {
@@ -161,9 +161,9 @@ div#card_front {
     height: 362px;
 }
 p.plumber_name.add_style{
-   top: 47%;
+       top: 49%;
     position: absolute;
-    right: 63%;
+    right: 60%;
     margin: 0 0;
     font-size: 5px;
 }
@@ -215,4 +215,14 @@ span.txt-img-card.abve-grnd--ttle {
     padding-right: 7px;
     vertical-align: middle;
     align-items: center;
+}
+
+p.plumber_name.add_style:after {
+    content: "";
+    display: block;
+    border-bottom: 1px solid #00000073;
+    position: relative;
+    top: 4.5px;
+    left: 16px;
+    width: 65%;
 }
