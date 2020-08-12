@@ -139,10 +139,10 @@ div#card_front {
 }
 
 .pb_p {
-  font-size: 5px;
+ font-size: 5px;
     margin-left: -15px;
     padding-left: 15px;
-    margin-top: 1px;
+    margin-top: 4px;
     padding-bottom: 0px;
 }
 
@@ -161,11 +161,12 @@ div#card_front {
     height: 362px;
 }
 p.plumber_name.add_style{
-       top: 49%;
+   top: 45%;
     position: absolute;
     right: 60%;
     margin: 0 0;
     font-size: 5px;
+    width: 10%;
 }
 h2.pb_lic {
   position: absolute;
@@ -222,7 +223,7 @@ p.plumber_name.add_style:after {
     display: block;
     border-bottom: 1px solid #00000073;
     position: relative;
-    top: 4.5px;
-    left: 16px;
-    width: 65%;
+    top: 0px;
+    left: 10px;
+    width: 87%;
 }
