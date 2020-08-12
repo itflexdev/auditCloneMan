@@ -2836,28 +2836,31 @@ class Api extends CC_Controller
 
 // Selvamani
 	public function get_cocplumber(){
-
 		if ($this->input->post('COCno')) {
 			$jsonData = [];
 			$id = $this->input->post('COCno');
 			$userdata = $this->Coc_Model->getCOCList('row', ['id' => $id]);
 			if(!empty($userdata)){
-				if($userdata['coc_status'] == '4' || $userdata['coc_status'] == '2'){
+				if($userdata['coc_status'] == '2'){
 					$jsonData['pName']  = $userdata['u_name'];
 					$jsonData['pRegNo'] = $userdata['plumberregno'];
 					$jsonArray = array("status"=>'1', "message"=>'Plumber Detail', "result"=> $jsonData);
+				}elseif($userdata['coc_status'] == '4' || $userdata['coc_status'] == '5'){
+					$jsonArray = array("status"=>'1', "message"=>'Error: COC has not been logged', "result"=> (object) null);
+				}elseif($userdata['coc_status'] == '3'){
+					$jsonArray = array("status"=>'1', "message"=>'There is no plumber assigned to this COC.', "result"=> (object) null);
 				}else{
 					if($userdata['user_id'] == '0'){
-						$jsonArray = array("status"=>'1', "message"=>'There is no plumber assigned to this COC.', "result"=> $jsonData);
+							$jsonArray = array("status"=>'1', "message"=>'There is no plumber assigned to this COC.', "result"=> (object) null);
 					}else{
-						$jsonArray = array("status"=>'1', "message"=>'Error: plumber cannot be found', "result"=> $jsonData);
+							$jsonArray = array("status"=>'1', "message"=>'Error: plumber cannot be found', "result"=> (object) null);
 					}
 				}
 			}else{
-				$jsonArray = array("status"=>'1', "message"=>'There is no COC with the number '.$id, "result"=> $jsonData);
+				$jsonArray = array("status"=>'1', "message"=>'There is no COC with the number '.$id, "result"=> (object) null);
 			}
 		}else{
-			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> []);
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> (object) null);
 		}
 		echo json_encode($jsonArray);
 	}
