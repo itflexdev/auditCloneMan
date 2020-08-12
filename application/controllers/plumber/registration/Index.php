@@ -9,6 +9,7 @@ class Index extends CC_Controller
 		$this->load->model('CC_Model');
 		$this->load->model('Plumber_Model');
 		$this->load->model('Communication_Model');
+		$this->load->model('Systemsettings_Model');
 		$this->load->model('Diary_Model');
 	}
 	
@@ -41,7 +42,8 @@ class Index extends CC_Controller
 					$this->CC_Model->sentMail($plumberdata['email'], $notificationdata['subject'], $body);
 				}
 			
-				if($this->config->item('otpstatus')!='1'){
+				$settingsdetail = $this->Systemsettings_Model->getList('row');
+				if($settingsdetail && $settingsdetail['otp']=='1'){
 					$smsdata 	= $this->Communication_Model->getList('row', ['id' => '4', 'smsstatus' => '1']);
 		
 					if($smsdata){

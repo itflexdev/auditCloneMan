@@ -51,7 +51,7 @@
 				</div>
 				<button type="submit" name="submit" value="login" class="btn btn-success <?php if($usertype=='3'){ echo 'plumberloginbtn';} ?>" >Login</button>
 				<?php if($usertype=='3'){ ?>
-					<div><button type="button" class="btn btn-success" data-toggle="modal" data-target="#register_popup">Register</button></div>
+					<!--<div><button type="button" class="btn btn-success" data-toggle="modal" data-target="#register_popup">Register</button></div>-->
 				<?php } ?>	
 			</form>
 		</div>
@@ -71,7 +71,7 @@
 				<div class="card card-body">
 					<h4 class="card-title"><?php echo $header_title; ?></h4>
 					<h5 class="card-subtitle"> <?php echo $header_title2; ?> </h5>
-					<a href="http://new.pirb.co.za/registrations/"><?php echo $pointer_title; ?></a>
+					<a href="http://pirb.co.za/registrations/"><?php echo $pointer_title; ?></a>
 					<form method="post" action="<?php echo base_url().'login/'.$usertypename; ?>" class="form-horizontal mt-4 register">
 						<div class="form-group">
 							<label for="email2">Email Address</label>

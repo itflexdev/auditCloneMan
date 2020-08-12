@@ -59,9 +59,6 @@ $config['noaudit']					= 	'12';
 
 $config['rollingaverage']			= 	'13';
 
-
-$config['otpstatus'] 				= 	'1';
-
 $config['usertype1'] 				= 	[
 											'plumber' 	=> '3',
 											'company' 	=> '4',
@@ -80,6 +77,11 @@ $config['status'] 					= 	[
 											'' 	=> '',
 											'1' => 'Active',
 											'0' => 'InActive'
+										];
+										
+$config['status2'] 					= 	[
+											'1' => 'Enabled',
+											'0' => 'Disabled'
 										];
 
 $config['statusicon'] 				= 	[

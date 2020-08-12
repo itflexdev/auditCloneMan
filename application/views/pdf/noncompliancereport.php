@@ -194,21 +194,19 @@ $logoimg = base64conversion(base_url().'assets/images/pitrb-logo.png');
 			<td>
 				<table class="auditor_details_overall">
 					<tbody>
-					<tr>
-							<td style="padding: 0;"><h3>PLUMBERS DETAILS</h3></td>
-					</tr>
-						
-					<tr>
+						<tr>
+							<td colspan="3" style="padding-left: 0;"><h3>PLUMBERS DETAILS</h3></td>
+						</tr>
+						<tr>
 							<td style="padding: 0;"><label>Plumbers Name and Surname</label></td>
 							<td><label>Company of Plumber</label></td>
 							<td><label>Company Contact (work number)</label></td>
-					</tr>
-
-					<tr>
+						</tr>
+						<tr>
 							<td style="padding: 0;"><input type="text" value="<?php echo $plumbername; ?>"></td>
 							<td><input type="text" value="<?php echo $plumbercompany; ?>"></td>
 							<td><input type="text" value="<?php echo $plumberwork; ?>"></td>
-					</tr>
+						</tr>
 					</tbody>
 				</table>
 			</td>

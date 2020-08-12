@@ -289,6 +289,7 @@
 									<div class="form-group">
 										<label>Next Renewal Date</label>
 										<input type="text" class="form-control" value="<?php echo $renewal_date; ?>" disabled>			
+										<input type="hidden" name="plumberpreviousexpirydate" value="<?php echo $renewal_date; ?>">			
 									</div>
 								</div>
 							</div>					
@@ -438,7 +439,7 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>ID Number</label>
-												<input type="text" class="form-control" name="idcard" value="<?php echo $idcard; ?>" <?php echo $disabled1; ?>>
+												<input type="text" class="form-control" name="idcard" id="idcard" value="<?php echo $idcard; ?>" <?php echo $disabled1; ?>>
 												</div>
 										</div>
 									</div>
@@ -454,7 +455,7 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Alternative ID *</label>
-												<input type="text" class="form-control" name="otheridcard" value="<?php echo $otheridcard; ?>" <?php echo $disabled1; ?>>
+												<input type="text" class="form-control" name="otheridcard" id="otheridcard" value="<?php echo $otheridcard; ?>" <?php echo $disabled1; ?>>
 												</div>
 										</div>
 									</div>
@@ -1035,15 +1036,37 @@ $(function(){
 			nationality : {
 				required	: true,
 			},
+			idcard : {
+				maxlength	: 	13,
+				minlength	: 	13,
+				remote		: 	{
+									url		: 	"<?php echo base_url().'ajax/index/ajaxplumberidentitynumber'; ?>",
+									type	: 	"post",
+									async	: 	false,
+									data	: 	{
+													idcard: function() { return $("#idcard").val();	},
+													id : userid
+												}
+								}
+			},
 			othernationality : {
 				required:  	function() {
 								return $('#nationality').val() == "2";
 							}
 			},
 			otheridcard 	: {
-				required:  	function() {
-								return $('#nationality').val() == "2";
-							}
+				required	:  	function() {
+									return $('#nationality').val() == "2";
+								},
+				remote		: 	{
+									url		: 	"<?php echo base_url().'ajax/index/ajaxplumberidentitynumber'; ?>",
+									type	: 	"post",
+									async	: 	false,
+									data	: 	{
+													otheridcard: function() { return $("#otheridcard").val(); },
+													id : userid
+												}
+								}
 			},
 			homelanguage : {
 				required	: true,
@@ -1112,10 +1135,6 @@ $(function(){
 												}
 								}
 			},
-			idcard : {
-				maxlength: 13,
-				minlength: 13,
-			},
 			company_name : {
 				required	: true,
 			},
@@ -1142,29 +1161,28 @@ $(function(){
 				required	: true,
 				number 	: true
 			},
-			
 			company_details : {
 				required:  	function() {
 								return $("#employment_details").val() == "1";
 							}
 			},
-			attachmenthidden 	: {
-				required:  	function() {
-								return roletype!="3" && ($("#designation2").val() == "4" || $("#designation2").val() == "5" || $("#designation2").val() == "6");
-							},
-				remote	: 	{
-								url		: 	"<?php echo base_url().'ajax/index/ajaxqualificationvalidation'; ?>",
-								type	: 	"post",
-								async	: 	false,
-								data	: 	{
-												id 			: 	userid,
-												roletype 	: 	roletype,
-												designation	: 	function() {
-																	return $("#designation2").val();
-																}
-											}
-							}
-			},
+			//attachmenthidden 	: {
+				//required:  	function() {
+								//return roletype!="3" && ($("#designation2").val() == "4" || $("#designation2").val() == "5" || $("#designation2").val() == "6");
+							//},
+				//remote	: 	{
+								//url		: 	"<?php echo base_url().'ajax/index/ajaxqualificationvalidation'; ?>",
+								//type	: 	"post",
+								//async	: 	false,
+								//data	: 	{
+												//id 			: 	userid,
+												//roletype 	: 	roletype,
+												//designation	: 	function() {
+																	//return $("#designation2").val();
+																//}
+											//}
+							//}
+			//},
 			qualification_year 	: {
 				required:  	function() {
 								return ($("#designation2").val() == "4" || $("#designation2").val() == "5" || $("#designation2").val() == "6");
@@ -1197,11 +1215,17 @@ $(function(){
 			nationality : {
 				required	: "nationality field is required.",
 			},
+			idcard : {
+				maxlength	: "Please Enter 13 Numbers Only.",
+				minlength	: "Please Enter 13 Numbers Only.",
+				remote		: "ID Number already exists."
+			},
 			othernationality : {
 				required	: "Other nationality field is required.",
 			},
 			otheridcard : {
-				required	: "Alternative ID Card  field is required.",
+				required	: "Alternative ID Card field is required.",
+				remote		: "Alternative ID already exists."
 			},
 			homelanguage : {
 				required	: "Home Language field is required.",
@@ -1259,10 +1283,6 @@ $(function(){
 				required	: "Email  field is required.",
 				email       : "Please Enter Valid Mail",
 				remote		: "Email already exists."
-			},
-			idcard : {
-				maxlength: "Please Enter 13 Numbers Only.",
-				minlength: "Please Enter 13 Numbers Only.",
 			},
 			company_name 	: {
 				required	: "Billing name field is required.",
@@ -1360,8 +1380,12 @@ $('#nationality').change(function(){
 
 function othernationalityidcardbox(value, citizen=''){
 	if(value=='2'){
+		$('#idcard').val('').prop('readonly', true);
+		$('#otheridcard').prop('readonly', false);
 		$('.othernationalityidcardbox').show();
 	}else{
+		$('#idcard').prop('readonly', false);
+		$('#otheridcard').val('').prop('readonly', true);
 		$('.othernationalityidcardbox').hide();
 	}
 	

@@ -26,10 +26,10 @@ if(count($permission) > 0){
 		<nav class="sidebar-nav">
 			<ul id="sidebarnav">
 				<?php if($type=='1' || $type=='2'){ ?>
-					<li><a href="<?php echo base_url().'admin/dashboard/index'; ?>">Dashboard</a></li>
+					<li><a href="<?php echo base_url().'admin/dashboard/index'; ?>"><img class="admin_dash_icon src=" src="<?php echo base_url().'assets/images/sidebar/menu1.png'; ?>" alt="">Dashboard</a></li>
 					<?php if($menu=='1' || ($menu=='2' && in_array('1', $parent))){ ?>
-						<li class="setp one"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">Administration</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu2.png'; ?>" alt=""><span class="hide-menu">Administration</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('30', $readpermission) || in_array('30', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/administration/noncompliancelisting/index'; ?>">Non Compliance Listings</a></li>
@@ -45,8 +45,8 @@ if(count($permission) > 0){
 							</ul>
 						</li>
 					<?php } if($menu=='1' || ($menu=='2' && in_array('2', $parent))){ ?>
-						<li class="step three"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu"></span>Communication Management</a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu3.png'; ?>" alt=""><span class="hide-menu"></span>Communication Management</a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('5', $readpermission) || in_array('5', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/communication/notification/index'; ?>">Notification and SMS Templates</a></li>
@@ -54,8 +54,8 @@ if(count($permission) > 0){
 							</ul>
 						</li>
 					<?php } if($menu=='1' || ($menu=='2' && in_array('3', $parent))){ ?>
-						<li class="step coc_manage"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu" style="white-space: nowrap;">COC Management</span></a>
+						<li class="coc_manage"> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu4.png'; ?>" alt=""><span class="hide-menu" style="white-space: nowrap;">COC Management</span></a>
 							<ul aria-expanded="false" class="collapse">	
 								<?php if($menu=='1' || ($menu=='2' && (in_array('6', $readpermission) || in_array('6', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/cocstatement/cocdetails/index'; ?>">COC Details</a></li>
@@ -67,8 +67,8 @@ if(count($permission) > 0){
 							</ul>						
 						</li>	
 					<?php } if($menu=='1' || ($menu=='2' && in_array('4', $parent))){ ?>					
-						<li class="step two"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">System Setup</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu6.png'; ?>" alt=""><span class="hide-menu">System Setup</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('9', $readpermission) || in_array('9', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/systemsetup/systemusers/systemusers'; ?>">System Users</a></li>
@@ -88,8 +88,8 @@ if(count($permission) > 0){
 							</ul>						
 						</li>
 					<?php } if($menu=='1' || ($menu=='2' && in_array('5', $parent))){ ?>
-						<li class="step three"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">CPD</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu7.png'; ?>" alt=""><span class="hide-menu">CPD Management</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('16', $readpermission) || in_array('16', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/cpd/cpdtypesetup'; ?>">CPD Types</a></li>		
@@ -99,8 +99,8 @@ if(count($permission) > 0){
 							</ul>
 						</li>
 					<?php } if($menu=='1' || ($menu=='2' && in_array('6', $parent))){ ?>
-						<li class="step four"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">Plumber</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu8.png'; ?>" alt=""><span class="hide-menu">Plumber Registration</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('18', $readpermission) || in_array('18', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/plumber/index'; ?>">Plumber Registration</a></li>
@@ -110,8 +110,8 @@ if(count($permission) > 0){
 							</ul>
 						</li>
 					<?php } if($menu=='1' || ($menu=='2' && in_array('7', $parent))){ ?>
-						<li class="step five"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">Company</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu9.png'; ?>" alt=""><span class="hide-menu">Company Registration</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('20', $readpermission) || in_array('20', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/company/index'; ?>">Company</a></li>
@@ -121,8 +121,8 @@ if(count($permission) > 0){
 							</ul>
 						</li>
 					<?php } if($menu=='1' || ($menu=='2' && in_array('8', $parent))){ ?>
-						<li class="step three"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">Accounts</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu10.png'; ?>" alt=""><span class="hide-menu">Accounts</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('22', $readpermission) || in_array('22', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/accounts/renewal_plumber/index'; ?>">Renewal Plumber Registration Invoices</a></li>
@@ -134,8 +134,8 @@ if(count($permission) > 0){
 							</ul>
 						</li>
 					<?php } if($menu=='1' || ($menu=='2' && in_array('9', $parent))){ ?>
-						<li class="step five"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">Audits</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu11.png'; ?>" alt=""><span class="hide-menu">Audits</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('25', $readpermission) || in_array('25', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/audits/index'; ?>">Manage Auditors</a></li>
@@ -149,8 +149,8 @@ if(count($permission) > 0){
 							</ul>
 						</li>		
 					<?php } if($menu=='1' || ($menu=='2' && in_array('10', $parent))){ ?>
-						<li class="step five"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">Resellers</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu13.png'; ?>" alt=""><span class="hide-menu">Resellers Management</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('29', $readpermission) || in_array('29', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/resellers/index'; ?>">Resellers</a></li>
@@ -158,8 +158,8 @@ if(count($permission) > 0){
 							</ul>
 						</li>				      
 					<?php }if($menu=='1' || ($menu=='2' && in_array('11', $parent))){ ?>
-						<li class="step five"> 
-							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-email"></i><span class="hide-menu">Help</span></a>
+						<li class=""> 
+							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu14.png'; ?>" alt=""><span class="hide-menu">Help</span></a>
 							<ul aria-expanded="false" class="collapse">
 								<?php if($menu=='1' || ($menu=='2' && (in_array('31', $readpermission) || in_array('31', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/help/index'; ?>">Help</a></li>

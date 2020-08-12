@@ -18,6 +18,7 @@ class Index extends CC_Controller
 		$this->load->model('Auditor_Reportlisting_Model');
 		$this->load->model('Chat_Model');
 		$this->load->model('Auditor_Model');
+		$this->load->model('Systemsettings_Model');
 	}
 	
 	public function ajaxfileupload()
@@ -379,7 +380,8 @@ class Index extends CC_Controller
 			$this->db->insert('otp', ['otp' => $otp, 'mobile' => $mobile, 'user_id' => $userid]);
 		}		
 		
-		if($this->config->item('otpstatus')=='1'){
+		$settingsdetail = $this->Systemsettings_Model->getList('row');
+		if($settingsdetail && $settingsdetail['otp']=='0'){
 			echo $otp;
 		}else{
 			$this->sms(['no' => $mobile, 'msg' => 'One Time Password is '.$otp]);
@@ -464,6 +466,17 @@ class Index extends CC_Controller
 		}else{
 			$result = "true";
 		}
+		echo $result;
+	}
+	
+	public function ajaxplumberidentitynumber()
+	{
+		$post 	= $this->input->post();		
+		$result	= $this->Plumber_Model->plumberidentitynumber($post);
+			
+		if($result) $result = "false";
+		else $result = "true";
+	
 		echo $result;
 	}
 	

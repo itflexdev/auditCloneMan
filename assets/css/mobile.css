@@ -1,7 +1,7 @@
 /* card front */
-.p_card{    
-    height: 145px;
-    width: 160px;
+.p_card{
+          height: 80px;
+    width: 230px;
     position: relative;
     background: #F5F8FD;
     padding: 30px 3px;
@@ -9,20 +9,19 @@
     transform: scale(2.65);
 }
 .p_admin{
-         width: 44px;
-    height: 50px;
+       width: 56px;
+    height: 70px;
     position: relative;
     object-fit: cover;
 }
 .p_card p{
     margin-bottom: 8px;
-    font-size: 6px;
+    font-size: 8px;
     margin-top: 0;
 }
 .p_logo{
- width: 70px;
+    width: 100px;
     margin-bottom: 10px;
-    padding-top: 10px;
 }
 .p_left{
     width: 70%;
@@ -31,60 +30,50 @@
     width: 30%;
 }
 .p_profile{
-        width: 48px;
-    height: 54px;
+        width: 56px;
+    height: 68px;
     position: absolute;
     top: 23%;
-    right: 9%;
+    right: 10%;
     border: 2px solid #EC2829;
-    margin-top: 10px;
 }
 .p_bottom{
-          background: #EA0000;
+       background: #EA0000;
     position: absolute;
     width: 100%;
     left: 0;
-    bottom: -9px;
+    bottom: -14px;
     color: white;
     text-align: center;
-    height: 24px;
+    height: 34px;
 }
 .inner {
     position: absolute;
-    top: 55%;
+    top: 50%;
     left: 50%;
-}
-
-div#card_back {
-    margin: 70px 0;
-}
-
-
-div#card_front {
-    margin: 70px 0;
 }
 
 .rotate {  
     transform:  translateX(-70%) translateY(-50%) rotate(-90deg);
 }
 .p_lic{
- position: absolute;
+      position: absolute;
     background: white;
-    width: 12px;
+    width: 19px;
     top: 15%;
     left: 15%;
 }
 .p_h2{
-        width: 80%;
-    padding: 0;
-    font-size: 9px;
+    width: 70%;
     float: right;
+    padding: 0;
+    font-size: 12px;
 }
 
 /* card back */
 .pb_inner {
     position: absolute;
-    top: 60%;
+    top: 50%;
     left: 50%;
 }
 
@@ -93,7 +82,7 @@ div#card_front {
 }
 
 .pb_card {
-    width: 150px;
+    width: 200px;
     height: 136px;
     position: relative;
     background: #F5F8FD;
@@ -110,7 +99,7 @@ div#card_front {
     margin: 0 0 0 -16px;
 } 
 .pb_first_txt {
-    font-size: 4px;
+    font-size: 6px;
     text-align: center;
     /* width: 80%; */
     /* border-bottom: 1px solid #737476; */
@@ -139,16 +128,16 @@ div#card_front {
 }
 
 .pb_p {
-  font-size: 5px;
+  font-size: 6px;
     margin-left: -15px;
     padding-left: 15px;
     margin-top: 1px;
-    padding-bottom: 0px;
+    padding-bottom: 2px;
 }
 
 .pb_right {
     position: absolute;
-    top: 44%;
+    top: 52%;
     right: 24%;
 }
 
@@ -161,9 +150,9 @@ div#card_front {
     height: 362px;
 }
 p.plumber_name.add_style{
-   top: 47%;
+    top: 54%;
     position: absolute;
-    right: 63%;
+    right: 67%;
     margin: 0 0;
     font-size: 5px;
 }
@@ -180,39 +169,16 @@ h2.pb_lic {
 }
 
 .p_top span {
-font-size: 4px;
-    letter-spacing: 0.2px;
-    margin: 0 0 0 2px;
+   font-size: 5px;
+   letter-spacing: 0.2px;
+   margin: 0 0 0 2px;
 }
 .p_bot_img{
     width: 15px;
 }
 
 .pb_right p {
-    font-size: 6px !important;
+    font-size: 7px !important;
         margin-bottom: 0px !important;
 }
 
-
-.add_width.img-txt span:nth-child(4n + 1) {
-    clear: both;
-}
-
-.abve--img {
-    margin-left: 0px;
-    float: left;
-    width: 5%;
-    padding-right: 0px;
-    margin-bottom: 4px;
-}
-
-span.txt-img-card.abve-grnd--ttle {
-    margin-left: 0;
-    margin-right: 0;
-    float: left;
-    width: 34%;
-    padding-left: 7px;
-    padding-right: 7px;
-    vertical-align: middle;
-    align-items: center;
-}

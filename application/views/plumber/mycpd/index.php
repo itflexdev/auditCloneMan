@@ -346,7 +346,8 @@ $heading 				= isset($result['id']) ? 'Submit' : 'Submit';
 		    req2 = $.ajax({
 		        type: "POST",
 		        url: '<?php echo base_url()."plumber/mycpd/index/activityDetails"; ?>',
-		        data: {'search_keyword' : value},        
+		        data: {'search_keyword' : value},    
+				async:false,    
 		        beforeSend: function(){
 					// $("#search_reg_no").css("background","#FFF url(LoaderIcon.gif) no-repeat 165px");
 				},
@@ -386,5 +387,14 @@ $heading 				= isset($result['id']) ? 'Submit' : 'Submit';
 		';
 
 		sweetalert(action, data);
+	})
+	
+	$('.form').submit(function(){
+		var stream = $("#hidden_stream_id").val();
+		if($.inArray(stream, ['1','2','3']) !== -1){}else{
+			$("#points, #cpdstream, #activity_id_hide").val('');
+			$('.form').valid();
+			return false;
+		}
 	})
 </script>

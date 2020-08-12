@@ -15,6 +15,7 @@ class Index extends CC_Controller
 		$this->load->model('Plumber_Model');
 	 	$this->load->model('Coc_Model');
 	 	$this->load->model('Communication_Model');
+	 	$this->load->model('Systemsettings_Model');
 	}
 	
 
@@ -53,6 +54,7 @@ class Index extends CC_Controller
 				$invtype 		= $this->config->item('invtype');
 				$invoicedata 	= $this->db->select('*')->from('invoice')->where(['inv_id' => $id])->get()->row_array();
 				$userdata		= $this->Plumber_Model->getList('row', ['id' => $invoicedata['user_id']], ['users', 'usersdetail']);
+				$settingsdetail = $this->Systemsettings_Model->getList('row');
 				
 				$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '15', 'emailstatus' => '1']);
 				
@@ -61,7 +63,7 @@ class Index extends CC_Controller
 					$this->CC_Model->sentMail($userdata['email'], $notificationdata['subject'], $body);
 				}
 				
-				if($this->config->item('otpstatus')!='1'){
+				if($settingsdetail && $settingsdetail['otp']=='1'){
 					$smsdata 	= $this->Communication_Model->getList('row', ['id' => '15', 'smsstatus' => '1']);
 		
 					if($smsdata){
@@ -77,7 +79,7 @@ class Index extends CC_Controller
 					$this->CC_Model->sentMail($userdata['email'], $notificationdata['subject'], $body);
 				}
 				
-				if($this->config->item('otpstatus')!='1'){
+				if($settingsdetail && $settingsdetail['otp']=='1'){
 					$smsdata 	= $this->Communication_Model->getList('row', ['id' => '16', 'smsstatus' => '1']);
 		
 					if($smsdata){

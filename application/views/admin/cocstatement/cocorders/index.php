@@ -2,11 +2,11 @@
 echo $customview;
 
 $vat 					= $settings["vat_percentage"];
-$cocpaperwork 			= currencyconvertor($cocpaperwork["amount"]);
-$cocelectronic 			= currencyconvertor($cocelectronic["amount"]);
-$postage 				= currencyconvertor($postage["amount"]);
-$couriour 				= currencyconvertor($couriour["amount"]);
-$collectedbypirb 		= currencyconvertor($collectedbypirb["amount"]);
+$cocpaperwork 			= $cocpaperwork["amount"];
+$cocelectronic 			= $cocelectronic["amount"];
+$postage 				= $postage["amount"];
+$couriour 				= $couriour["amount"];
+$collectedbypirb 		= $collectedbypirb["amount"];
 
 $created_at 			= (isset($result['created_at']) && date('d-m-Y', strtotime($result['created_at']))!='01-01-1970') ? date('d-m-Y', strtotime($result['created_at'])) : '';
 
@@ -584,6 +584,7 @@ function coccalculation(){
 	var coctypeval = 0;
 	if(coctype==1) coctypeval = parseFloat(cocelectronic) * quantity;
 	else if(coctype==2) coctypeval = parseFloat(cocpaperwork) * quantity;
+	coctypeval = parseFloat(removelastchr(coctypeval));
 	
 	var deliverytypeval = 0;
 	if(coctype==2){
@@ -591,18 +592,20 @@ function coccalculation(){
 		else if(deliverytype==2) deliverytypeval = parseFloat(couriour);
 		else if(deliverytype==3) deliverytypeval = parseFloat(postage);
 	}
+	deliverytypeval = parseFloat(removelastchr(deliverytypeval));
 	
 	var vat 	= parseFloat(vatpercentage);
 	var vatval 	= 0;
 	if(coctypeval!=0){
 		vatval = parseFloat(((coctypeval + deliverytypeval) * vat)/100);
 	}
+	vatval = parseFloat(removelastchr(vatval));
 	
 	var totalval = parseFloat(coctypeval + deliverytypeval + vatval);
 	
-	$('#cost_value').val(currencyconvertor(coctypeval));
-	$('#delivery_cost').val(currencyconvertor(deliverytypeval));
-	$('#vat').val(currencyconvertor(vatval));
+	$('#cost_value').val(removelastchr(coctypeval));
+	$('#delivery_cost').val(removelastchr(deliverytypeval));
+	$('#vat').val(removelastchr(vatval));
 	$('#total_due').val(currencyconvertor(totalval));
 }
 

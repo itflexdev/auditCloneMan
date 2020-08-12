@@ -4,7 +4,7 @@ function baseurl(){
 	if(base.host=='localhost'){
 		return base.protocol + "//" + base.host + "/nantha/pirb/";
 	}else{
-		return base.protocol + "//" + base.host + "/auditit_new/pirb/";
+		return base.protocol + "//" + base.host + "/auditit_new/pirb_new/pirb/";
 	}
 }
 
@@ -72,8 +72,8 @@ function validation(selector, rules, messages, extras=[])
 	}, "Please Enter Letters Only.");
 	
 	$.validator.addMethod("lettersandhypen", function(value, element) {
-	  return this.optional(element) || /^[a-z-\s]+$/i.test(value);
-	}, "Please Enter Letters and Hypens Only.");
+	  return this.optional(element) || /^[a-z0-9#-\s]+$/i.test(value);
+	}, "Please Enter Letters, Number, Asterisk and Hypens Only.");
 	
 	$.validator.addMethod("noSpace", function(value, element) { 
 		return value.indexOf(" ") < 0 && value != ""; 
@@ -1252,14 +1252,19 @@ function meterchart(selector, value){
 	});
 }
 
+
+function removelastchr(number){
+	return parseFloat(number).toFixed(3).slice(0,-1);
+}
+
 function currencyconvertor(currency){
-	amount 	= (Math.floor(currency*100)/100).toFixed(2);
-	lastchr	= amount[amount.length-1];
+	var amount 	= (Math.floor(currency*100)/100).toFixed(2);
+	var lastchr	= amount[amount.length-1];
 	
 	if(lastchr < 5){
-		amount[amount.length-1] = '0';
+		amount = amount.substring(0, amount.length - 1)+'0';
 	}else{
-		amount[amount.length-1] = '5';
+		amount = amount.substring(0, amount.length - 1)+'5';
 	}
 	
 	return amount;

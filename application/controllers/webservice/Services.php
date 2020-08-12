@@ -9,6 +9,7 @@ class Services extends CC_Controller
 		$this->load->model('Plumber_Model');
 		$this->load->model('Managearea_Model');
 		$this->load->model('Friends_Model');
+		$this->load->model('Systemsettings_Model');
 	}
 	
 	public function national_ranking()
@@ -19,12 +20,11 @@ class Services extends CC_Controller
 			$this->form_validation->set_rules('id', 'ID', 'trim|required');
 			
 			if ($this->form_validation->run()==FALSE) {
-				$json = array("status" => "0", "message" => validation_errors(), 'result' => []);
+				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
 			}else{
 				$rollingavg 	= $this->getRollingAverage();
 				$date			= date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
 				$ranking 		= $this->Plumber_Model->performancestatus('all', ['date' => $date, 'archive' => '0', 'overall' => '1']);
-				print_r($ranking);die;
 				
 				if(count($ranking) > 0){
 					$result = [];
@@ -67,7 +67,7 @@ class Services extends CC_Controller
 			$this->form_validation->set_rules('id', 'ID', 'trim|required');
 			
 			if ($this->form_validation->run()==FALSE) {
-				$json = array("status" => "0", "message" => validation_errors(), 'result' => []);
+				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
 			}else{
 				$post			= $this->input->post();
 				
@@ -121,7 +121,7 @@ class Services extends CC_Controller
 			$this->form_validation->set_rules('id', 'ID', 'trim|required');
 			
 			if ($this->form_validation->run()==FALSE) {
-				$json = array("status" => "0", "message" => validation_errors(), 'result' => []);
+				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
 			}else{
 				$post			= $this->input->post();
 				$id				= $post['id'];
@@ -170,5 +170,43 @@ class Services extends CC_Controller
 		}
 		
 		echo json_encode($json+$extras);
+	}
+	
+	public function otp(){
+		if($this->input->post()){
+			$this->form_validation->set_rules('id', 'ID', 'trim|required');
+			$this->form_validation->set_rules('mobile', 'Mobile Number', 'trim|required');
+			
+			if ($this->form_validation->run()==FALSE) {
+				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
+			}else{
+				$post		= $this->input->post();
+				$userid 	= $post['id'];
+				$mobile 	= str_replace([' ', '(', ')', '-'], ['', '', '', ''], trim($post['mobile']));
+				$otp		= rand (10000, 99999);
+				
+				$query = $this->db->get_where('otp', ['user_id' => $userid]);
+				if ($query->num_rows() == 1) {
+					$this->db->update('otp', ['otp' => $otp, 'mobile' => $mobile], ['user_id' => $userid]);
+				}else{
+					$this->db->insert('otp', ['otp' => $otp, 'mobile' => $mobile, 'user_id' => $userid]);
+				}		
+				
+				$settingsdetail = $this->Systemsettings_Model->getList('row');
+				if($settingsdetail && $settingsdetail['otp']=='1'){
+					$this->sms(['no' => $mobile, 'msg' => 'One Time Password is '.$otp]);
+				}
+				
+				$json = array("status" => "1", "message" => "OTP sent successfully.", "result" => $otp);
+			}
+		}else{
+			$json = array("status" => "0", "message" => "Invalid Request", "result" => []);
+		}
+		
+		echo json_encode($json);
+	}
+	
+	function errormessage($error){
+		return str_replace("\n", "", strip_tags($error));
 	}
 }

@@ -71,8 +71,9 @@ class Index extends CC_Controller
 				$data 			=  	$this->Stock_Model->action($requestData);	
 
 				if($data){
-					$inv_id = $this->db->select('*')->from('coc_orders')->where(['id' => $requestData['order_id']])->get()->row_array();
-					$userdata1				= 	$this->Plumber_Model->getList('row', ['id' => $requestData['user_id']], ['users', 'usersdetail']);
+					$inv_id 		= $this->db->select('*')->from('coc_orders')->where(['id' => $requestData['order_id']])->get()->row_array();
+					$userdata1		= $this->Plumber_Model->getList('row', ['id' => $requestData['user_id']], ['users', 'usersdetail']);
+					$settingsdetail = $this->Systemsettings_Model->getList('row');
 					
 					if ($inv_id) {
 						$this->db->update('invoice', ['order_status' => '1'], ['inv_id' => $inv_id['inv_id']]);
@@ -88,7 +89,7 @@ class Index extends CC_Controller
 						}	
 						
 						if($invoicedata['sms_track']!='0'){
-							if($this->config->item('otpstatus')!='1'){
+							if($settingsdetail && $settingsdetail['otp']=='1'){
 								$smsdata 	= $this->Communication_Model->getList('row', ['id' => '8', 'smsstatus' => '1']);
 					
 								if($smsdata){
@@ -121,7 +122,7 @@ class Index extends CC_Controller
 						}
 						
 						if(isset($requestData['sms_coc_track'])){
-							if($this->config->item('otpstatus')!='1'){
+							if($settingsdetail && $settingsdetail['otp']=='1'){
 								$smsdata 	= $this->Communication_Model->getList('row', ['id' => '17', 'smsstatus' => '1']);
 								
 								if($smsdata){

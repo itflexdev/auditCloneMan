@@ -8,6 +8,7 @@ class Index extends CC_Controller
 		parent::__construct();
 		$this->load->model('Auditor_allocatecoc_Model');
 		$this->load->model('Communication_Model');
+		$this->load->model('Systemsettings_Model');
 		$this->load->model('CC_Model');
 	}
 	
@@ -28,10 +29,10 @@ class Index extends CC_Controller
 				if($result){
 					$this->CC_Model->diaryactivity(['adminid' => $this->getUserID(), 'plumberid' => $plumberid, 'auditorid' => $auditorid, 'cocid' => $cocid, 'action' => '8', 'type' => '1']);
 					
-					$plumberdata	= 	$this->getUserDetails($plumberid);				
-					$auditordata	= 	$this->getUserDetails($auditorid);				
-					
+					$plumberdata		= $this->getUserDetails($plumberid);				
+					$auditordata		= $this->getUserDetails($auditorid);				
 					$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '20', 'emailstatus' => '1']);
+					$settingsdetail 	= $this->Systemsettings_Model->getList('row');
 					
 					if($notificationdata){
 						$array1 = ['{Plumbers Name and Surname}','{COC number}', '{Auditors Names and Surname}'];
@@ -42,7 +43,7 @@ class Index extends CC_Controller
 						$this->CC_Model->sentMail($plumberdata['email'], $subject, $body);
 					}
 					
-					if($this->config->item('otpstatus')!='1'){
+					if($settingsdetail && $settingsdetail['otp']=='1'){
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '20', 'smsstatus' => '1']);
 			
 						if($smsdata){

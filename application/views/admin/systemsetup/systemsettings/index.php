@@ -81,6 +81,7 @@ if(isset($result) && $result){
 	$audit_percentage 				= (set_value('audit_percentage')) ? set_value('audit_percentage') : $result['audit_percentage'];
 	$penalty 						= (set_value('penalty')) ? set_value('penalty') : $result['penalty'];
 	$expired 						= (set_value('expired')) ? set_value('expired') : $result['expired'];
+	$otp 							= (set_value('otp')) ? set_value('otp') : $result['otp'];
 
 	
 	
@@ -147,6 +148,7 @@ if(isset($result) && $result){
 	$audit_percentage			= set_value('audit_percentage');
 	$penalty					= set_value('penalty');
 	$expired					= set_value('expired');
+	$otp						= set_value('otp');
 
 	$physical_province			= set_value('physical_province');
 	$postal_province			= set_value('postal_province');
@@ -348,6 +350,10 @@ if(isset($result) && $result){
 								<div class="form-group col-md-6">
 									<label for="expired">Days allowed after regsitration date has passed before making registration expired</label>
 									<input type="number" class="form-control" id="expired" name="expired" placeholder="Enter Days allowed after regsitration date has passed before making registration expired *" value="<?php echo $expired; ?>">
+								</div>
+								<div class="form-group col-md-6">
+									<label for="otp">OTP Status</label>
+									<?php echo form_dropdown("otp", $status, $otp, ['id' => 'otp', 'class' => 'form-control']); ?>
 								</div>
 							</div>
 						</div>

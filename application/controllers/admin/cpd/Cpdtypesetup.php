@@ -206,7 +206,7 @@ class Cpdtypesetup extends CC_Controller
 			if($result){
 				$pagedata['result'] = $result;
 				if ($result['cpd_activity']!='') {
-					$pagedata['strem_id'] = $this->config->item('cpdstream')[$pagedata['result']['cpd_stream']];
+					$pagedata['strem_id'] = isset($this->config->item('cpdstream')[$pagedata['result']['cpd_stream']]) ? $this->config->item('cpdstream')[$pagedata['result']['cpd_stream']] : '';
 				}else{
 					$pagedata['strem_id'] = '';
 				}

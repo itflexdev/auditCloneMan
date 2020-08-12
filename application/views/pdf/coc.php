@@ -7,14 +7,14 @@
 
 	function currencyconvertors($currency){
 		$amount 	= number_format(floor($currency*100)/100, 2,".","");
-		$lastchr	= $amount[strlen($amount)-1];
+		/*$lastchr	= $amount[strlen($amount)-1];
 		
 		if($lastchr < 5){
 			$amount[strlen($amount)-1] = '0';
 		}else{
 			$amount[strlen($amount)-1] = '5';
 		}
-		
+		*/
 		return $amount;
 	}
 	
@@ -31,9 +31,11 @@
 	$courierdetails 			= "";
 		
 	if ($rowData['coc_type'] == '1') {
+		$cocname = 'Electronic';
 		$coc_type_id = 14;
 		$PDF_rate 	 = $this->db->select('amount')->from('rates')->where('id',$coc_type_id)->get()->row_array();
 	}elseif($rowData['coc_type'] == '2'){
+		$cocname = 'Paper-Based';
 		$coc_type_id = 13;
 		
 		if ($rowData['delivery_type'] == '1') {
@@ -330,7 +332,7 @@
 									<?php if(isset($extras['description'])){ ?>
 										<?php echo $extras['description']; ?>
 									<?php }else{ ?>
-										Purchase of <?php echo $rowData['quantity']; ?> PIRB Certificate of Compliance
+										Purchase of <?php echo $rowData['quantity']; ?> <?php if(isset($cocname)){ echo ' '.$cocname.' '; } ?> Certificate(s) of Compliance 
 									<?php } ?>
 									</td>       
 									<td style="width: 10%;  margin: 0; padding: 10px 0 10px 0;text-align: center;"><?php echo $rowData['quantity']; ?></td>

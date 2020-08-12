@@ -131,7 +131,7 @@
 					<p>We would like to commend you for choosing to register with the PIRB. By registering with the PIRB you are ultimately striving towards better plumbing practices within South Africa. </p>
 					<p>The PIRB is a professional board and registrar of plumbers in South Africa, as well as a trusted professional body that is recognised by the South African Qualifications Authority (SAQA). We provide a comprehensive registration system for plumbers and, we encourage and monitor their performance for the purpose of protecting the health and safety of both the community and environment. </p>
 					<p>The PIRB’s Continuous Professional Development (CPD) process allows for plumbers to continuously improve their skills and knowledge, and ensures that they remain a source of reliable, trustworthy, and well-respected professional tradespeople within the plumbing industry. It also allows for plumbers who are registered with the PIRB as Learners, Technical Assistant Practitioners and Technical Operator Practitioners, to become qualified and appropriately accredited, which further promotes a sense of pride and accountability within the plumbing industry.</p>
-					<p>Read more about the various categories under which plumbing practitioners can register with the PIRB: <a href="http://new.pirb.co.za/pirb-designations" target="_blank">http://new.pirb.co.za/pirb-designations</a></p>
+					<p>Read more about the various categories under which plumbing practitioners can register with the PIRB: <a href="http://pirb.co.za/pirb-designations" target="_blank">http://pirb.co.za/pirb-designations</a></p>
 					<p>To find out more about the PIRB and what will be expected from you as a plumber, feel free to watch the video at the following Youtube link: <a href="https://www.youtube.com/watch?v=Hzv0CGyJtAs&t=1s" target="_blank">https://www.youtube.com/watch?v=Hzv0CGyJtAs&t=1s</a></p>
 				</div>
 				
@@ -204,7 +204,7 @@
 							<div class="col-md-6">
 								<div class="form-group">
 									<label>ID Number</label>
-									<input type="text" class="form-control" name="idcard" value="<?php echo $idcard; ?>">
+									<input type="text" class="form-control" name="idcard" id="idcard" value="<?php echo $idcard; ?>">
 									</div>
 							</div>
 						</div>
@@ -220,7 +220,7 @@
 							<div class="col-md-6">
 								<div class="form-group">
 									<label>Alternative ID *</label>
-									<input type="text" class="form-control percentageslide" name="otheridcard" value="<?php echo $otheridcard; ?>">
+									<input type="text" class="form-control percentageslide" name="otheridcard" id="otheridcard" value="<?php echo $otheridcard; ?>">
 									</div>
 							</div>
 						</div>
@@ -622,8 +622,8 @@
 					<form class="form5">
 						<h4 class="card-title">Designation</h4>
 						<p>Applications for Master Plumber and/or specialisations can only be done once your registration has been verified and approved.</p>
-						<p>Please select the relevant designation being applied for. <a style="margin-left: 10px;" href="http://new.pirb.co.za/pirb-designations/" target="_blank">View the designation requirements</a></p>                    	
-						<p class="mt-5">Registation fees can be viewed in <a href="http://new.pirb.co.za/registration-fees/" target="_blank">here</a></p>
+						<p>Please select the relevant designation being applied for. <a style="margin-left: 10px;" href="http://pirb.co.za/pirb-designations/" target="_blank">View the designation requirements</a></p>                    	
+						<p class="mt-5">Registation fees can be viewed in <a href="http://pirb.co.za/registration-fees/" target="_blank">here</a></p>
 						<p>Admin fee : <?php echo $latefee; ?></p>
 						<p>Plumber Card cost : <?php echo $cardfee; ?></p>
 						<?php 
@@ -891,15 +891,37 @@ $(function(){
 			nationality : {
 				required	: true,
 			},
+			idcard : {
+				maxlength	: 	13,
+				minlength	: 	13,
+				remote		: 	{
+									url		: 	"<?php echo base_url().'ajax/index/ajaxplumberidentitynumber'; ?>",
+									type	: 	"post",
+									async	: 	false,
+									data	: 	{
+													idcard: function() { return $("#idcard").val();	},
+													id : userid
+												}
+								}
+			},
 			othernationality : {
-				required:  	function() {
-								return $('#nationality').val() == "2";
-							}
+				required	:  	function() {
+									return $('#nationality').val() == "2";
+								}
 			},
 			otheridcard 	: {
-				required:  	function() {
-								return $('#nationality').val() == "2";
-							}
+				required	:  	function() {
+									return $('#nationality').val() == "2";
+								},
+				remote		: 	{
+									url		: 	"<?php echo base_url().'ajax/index/ajaxplumberidentitynumber'; ?>",
+									type	: 	"post",
+									async	: 	false,
+									data	: 	{
+													otheridcard: function() { return $("#otheridcard").val(); },
+													id : userid
+												}
+								}
 			},
 			homelanguage : {
 				required	: true,
@@ -967,10 +989,6 @@ $(function(){
 													type: 3
 												}
 								}
-			},
-			idcard : {
-				maxlength: 13,
-				minlength: 13,
 			}
 		},
 		{
@@ -995,11 +1013,17 @@ $(function(){
 			nationality : {
 				required	: "nationality field is required.",
 			},
+			idcard : {
+				maxlength	: "Please Enter 13 Numbers Only.",
+				minlength	: "Please Enter 13 Numbers Only.",
+				remote		: "ID Number already exists."
+			},
 			othernationality : {
 				required	: "Other nationality field is required.",
 			},
 			otheridcard : {
-				required	: "Alternative ID Card  field is required.",
+				required	: "Alternative ID Card field is required.",
+				remote		: "Alternative ID already exists."
 			},
 			homelanguage : {
 				required	: "Home Language field is required.",
@@ -1057,10 +1081,6 @@ $(function(){
 				required	: "Email  field is required.",
 				email       : "Please Enter Valid Mail",
 				remote		: "Email already exists."
-			},
-			idcard : {
-				maxlength: "Please Enter 13 Numbers Only.",
-				minlength: "Please Enter 13 Numbers Only.",
 			}
 		},
 		{
@@ -1453,8 +1473,12 @@ $('#nationality').change(function(){
 
 function othernationalityidcardbox(value, citizen=''){
 	if(value=='2'){
+		$('#idcard').val('').prop('readonly', true);
+		$('#otheridcard').prop('readonly', false);
 		$('.othernationalityidcardbox').show();
 	}else{
+		$('#idcard').prop('readonly', false);
+		$('#otheridcard').val('').prop('readonly', true);
 		$('.othernationalityidcardbox').hide();
 	}
 	

@@ -335,7 +335,7 @@ $(function(){
 			
 			company : {
 				required	: true,
-				lettersonly	: true
+				lettersandhypen	: true
 			},
 			name : {
 				required	: true,

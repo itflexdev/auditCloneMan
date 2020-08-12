@@ -279,7 +279,7 @@ class Cron extends CC_Controller {
 						$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
 					}
 					
-					if($this->config->item('otpstatus')!='1'){
+					if($settings && $settings['otp']=='1'){
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '1', 'smsstatus' => '1']);
 			
 						if($smsdata){
@@ -343,10 +343,11 @@ class Cron extends CC_Controller {
 					$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}'];
 					$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes]];
 					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
-					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+					//$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+					$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
 				}
 				
-				if($this->config->item('otpstatus')!='1'){
+				if($settings && $settings['otp']=='1'){
 					$smsdata 	= $this->Communication_Model->getList('row', ['id' => '2', 'smsstatus' => '1']);
 		
 					if($smsdata){
@@ -413,10 +414,11 @@ class Cron extends CC_Controller {
 					$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}'];
 					$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes]];
 					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
-					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+					//$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+					$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
 				}
 				
-				if($this->config->item('otpstatus')!='1'){
+				if($settings && $settings['otp']=='1'){
 					$smsdata 	= $this->Communication_Model->getList('row', ['id' => '3', 'smsstatus' => '1']);
 		
 					if($smsdata){
@@ -440,7 +442,8 @@ class Cron extends CC_Controller {
 		$fileName 	= base_url().'common/cron/renewalreminder4';
 		$starttime = date('Y-m-d H:i:s');
 
-		$result = $this->Renewal_Model->getUserids_alert4();		
+		$result = $this->Renewal_Model->getUserids_alert4();	
+		$settings = $this->Systemsettings_Model->getList('row');	
 		
 		foreach($result as $data)
 		{						
@@ -460,10 +463,11 @@ class Cron extends CC_Controller {
 				$array1 = ['{Plumbers Name and Surname}','{date of purchase}'];
 				$array2 = [$data['name']." ".$data['surname'], $mail_date];
 				$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
-				$this->CC_Model->sentMail($data['email'], $notificationdata['subject'], $body);
+				//$this->CC_Model->sentMail($data['email'], $notificationdata['subject'], $body);
+				$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body);
 			}
 			
-			if($this->config->item('otpstatus')!='1'){
+			if($settings && $settings['otp']=='1'){
 				$smsdata 	= $this->Communication_Model->getList('row', ['id' => '3', 'smsstatus' => '1']);
 	
 				if($smsdata){
@@ -483,6 +487,7 @@ class Cron extends CC_Controller {
 	{	
 		$plumbers	= 	$this->Plumber_Model->getList('all', ['plumberstatus' => ['1']], ['users', 'usersdetail']);
 		$date		= 	date('d-m-Y');
+		$settings 	=	$this->Systemsettings_Model->getList('row');
 		
 		foreach($plumbers as $plumber){
 			$id 			= $plumber['id'];
@@ -500,7 +505,7 @@ class Cron extends CC_Controller {
 				$this->CC_Model->sentMail($plumber['email'], $notificationdata['subject'], $body);
 			}
 			
-			if($this->config->item('otpstatus')!='1'){
+			if($settings && $settings['otp']=='1'){
 				$smsdata 	= $this->Communication_Model->getList('row', ['id' => '13', 'smsstatus' => '1']);
 	
 				if($smsdata){
@@ -513,8 +518,9 @@ class Cron extends CC_Controller {
 
 	public function monthlycoc()
 	{	
-		$plumbers	= 	$this->Plumber_Model->getList('all', ['plumberstatus' => ['1']], ['users', 'usersdetail']);
-		$date		= 	date('d-m-Y');
+		$plumbers	= $this->Plumber_Model->getList('all', ['plumberstatus' => ['1']], ['users', 'usersdetail']);
+		$date		= date('d-m-Y');
+		$settings 	= $this->Systemsettings_Model->getList('row');
 		
 		foreach($plumbers as $plumber){
 			$id 			= $plumber['id'];
@@ -533,7 +539,7 @@ class Cron extends CC_Controller {
 				$this->CC_Model->sentMail($plumber['email'], $notificationdata['subject'], $body);
 			}
 			
-			if($this->config->item('otpstatus')!='1'){
+			if($settings && $settings['otp']=='1'){
 				$smsdata 	= $this->Communication_Model->getList('row', ['id' => '19', 'smsstatus' => '1']);
 	
 				if($smsdata){

@@ -89,6 +89,9 @@ class Plumber_Model extends CC_Model
 		if(isset($requestdata['status']))				$this->db->where_in('u.status', $requestdata['status']);
 		if(isset($requestdata['approvalstatus']))		$this->db->where_in('up.approval_status', $requestdata['approvalstatus']);
 		if(isset($requestdata['plumberstatus']))		$this->db->where_in('ud.status', $requestdata['plumberstatus']);
+		if(isset($requestdata['gender']))				$this->db->where_in('ud.gender', $requestdata['gender']);
+		if(isset($requestdata['designation']))			$this->db->where_in('up.designation', $requestdata['designation']);
+		if(isset($requestdata['racial']))				$this->db->where_in('up.racial', $requestdata['racial']);
 		if(isset($requestdata['searchregno']))			$this->db->like('up.registration_no', $requestdata['searchregno']);
 		
 		if($type!=='count' && isset($requestdata['start']) && isset($requestdata['length'])){
@@ -296,7 +299,13 @@ class Plumber_Model extends CC_Model
 		if(isset($data['expirydate'])) $request5['expirydate'] = date('Y-m-d H:i:s', strtotime($data['expirydate']));
 		if(isset($data['plumberstatus']) && ($data['plumberstatus']=='3' || $data['plumberstatus']=='4' || $data['plumberstatus']=='5')) 	$request5['status'] = '2';
 		if(isset($data['plumberstatus']) && ($data['plumberstatus']=='1' || $data['plumberstatus']=='2')) 	$request5['status'] = '1';
-		if(isset($data['plumberstatus']) && $data['plumberstatus']=='1' && isset($data['plumberpreviousstatus']) && $data['plumberpreviousstatus']=='3') 	$request5['expirydate'] = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s'). ' +365 days'));
+		if(isset($data['plumberstatus']) && $data['plumberstatus']=='1' && isset($data['plumberpreviousstatus']) && $data['plumberpreviousstatus']=='3' && isset($data['plumberpreviousexpirydate'])){
+			$plumberpreviousexpirydate  = explode('-', $data['plumberpreviousexpirydate']);
+			$plumberday 	= (isset($plumberpreviousexpirydate[0]) && $plumberpreviousexpirydate[0]=='00') ? date('d') : date('d', strtotime($data['plumberpreviousexpirydate']));
+			$plumbermonth 	= (isset($plumberpreviousexpirydate[1]) && $plumberpreviousexpirydate[1]=='00') ? date('m') : date('m', strtotime($data['plumberpreviousexpirydate']));
+			$plumberyear 	= date('Y', strtotime(date('Y-m-d H:i:s'). ' +365 days'));
+			$request5['expirydate'] = $plumberyear.'-'.$plumbermonth.'-'.$plumberday;
+		}
 		
 		if(isset($request5)){
 			if(isset($data['user_id'])){
@@ -350,9 +359,10 @@ class Plumber_Model extends CC_Model
 			$exploderegno = explode('/', $row['registration_no']);
 			if(isset($exploderegno[0])) $count = $exploderegno[0];
 		}else{
-			$count 		= $this->getList('count', ['type' => '3', 'approvalstatus' => ['1']], ['users', 'usersdetail', 'usersplumber']);
-			$count 		= ($counts=='') ? $count+1 : $counts;
+			$count 		= $this->db->select("MAX(SUBSTRING_INDEX(registration_no, '/', 1)) as maxcount")->get('users_plumber')->row_array();
+			$count 		= ($counts=='') ? $count['maxcount']+1 : $counts;
 			$checkcount = str_pad($count, 5, '0', STR_PAD_LEFT);
+			$checkcount = ($checkcount[0]=='0') ? substr($checkcount, 1) : $checkcount;
 			
 			$checkregno = $this->getList('count', ['type' => '3', 'approvalstatus' => ['1'], 'searchregno' => $checkcount], ['users', 'usersdetail', 'usersplumber']);			
 			if($checkregno > 0){				
@@ -370,7 +380,9 @@ class Plumber_Model extends CC_Model
 			$prefix = '/'.substr($year, 2, 2);
 		}
 		
-		return str_pad($count, 5, '0', STR_PAD_LEFT).$prefix;
+		$regno = str_pad($count, 5, '0', STR_PAD_LEFT).$prefix;
+		
+		return ($regno[0]=='0') ? substr($regno, 1) : $regno;
 	}
 	
 	public function performancestatus($type, $requestdata=[]){	
@@ -511,6 +523,18 @@ class Plumber_Model extends CC_Model
 	
 	public function qualificationvalidation($data){
 		$result = $this->db->get_where('users_plumber_skill', ['user_id' => $data['id'], 'qualification' => $data['designation']])->row_array();
+		if ($result) {
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public function plumberidentitynumber($data){
+		if(isset($data['idcard'])) 		$post = ['idcard' => $data['idcard']];
+		if(isset($data['otheridcard'])) $post = ['otheridcard' => $data['otheridcard']];
+		
+		$result = $this->db->get_where('users_plumber', ['user_id !=' => $data['id']]+$post)->row_array();
 		if ($result) {
 			return true;
 		}else{

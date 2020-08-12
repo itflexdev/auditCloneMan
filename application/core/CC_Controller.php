@@ -402,6 +402,7 @@ class CC_Controller extends CI_Controller
 			}
 			
 			if(isset($data)){
+				$settingsdetail = $this->Systemsettings_Model->getList('row');
 				
 				if(isset($requestData['submit']) && $requestData['submit']=='approvalsubmit'){
 					if(isset($requestData['approval_status'])){
@@ -416,7 +417,7 @@ class CC_Controller extends CI_Controller
 								$this->CC_Model->sentMail($result['email'], $notificationdata['subject'], $body);
 							}
 							
-							if($this->config->item('otpstatus')!='1'){
+							if($settingsdetail && $settingsdetail['otp']=='1'){
 								$smsdata 	= $this->Communication_Model->getList('row', ['id' => '5', 'smsstatus' => '1']);
 					
 								if($smsdata){
@@ -434,7 +435,7 @@ class CC_Controller extends CI_Controller
 								$this->CC_Model->sentMail($result['email'], $notificationdata['subject'], $body);
 							}
 							
-							if($this->config->item('otpstatus')!='1'){
+							if($settingsdetail && $settingsdetail['otp']=='1'){
 								$smsdata 	= $this->Communication_Model->getList('row', ['id' => '6', 'smsstatus' => '1']);
 					
 								if($smsdata){
@@ -454,7 +455,7 @@ class CC_Controller extends CI_Controller
 						$this->CC_Model->sentMail($result['email'], $notificationdata['subject'], $body);
 					}
 					
-					if($this->config->item('otpstatus')!='1'){
+					if($settingsdetail && $settingsdetail['otp']=='1'){
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '7', 'smsstatus' => '1']);
 			
 						if($smsdata){
@@ -680,7 +681,8 @@ class CC_Controller extends CI_Controller
 
 			$data 	=  $this->Resellers_Model->action($requestData);
 		
-			if($data) $this->session->set_flashdata('success', 'Resellers '.(($id=='') ? 'created' : 'updated').' successfully.');
+			if($data && is_array($data)) $this->session->set_flashdata('success', 'Resellers '.(($id=='') ? 'created' : 'updated').' successfully.');
+			elseif(!is_array($data) && $data=='outofstock') $this->session->set_flashdata('error', 'Reseller purchase limit cannot be less than reseller in stock.');
 			else $this->session->set_flashdata('error', 'Try Later.');
 			
 			if($extras['redirect']) redirect($extras['redirect']); 
@@ -750,6 +752,7 @@ class CC_Controller extends CI_Controller
 		$specialisations 				= explode(',', $userdata['specialisations']);
 		
 		if($this->input->post()){
+			$settingsdetail 					= 	$this->Systemsettings_Model->getList('row');
 			$requestData 						= 	$this->input->post();
 			$requestData['company_details'] 	= 	$userdata['company_details'];
 			
@@ -764,14 +767,14 @@ class CC_Controller extends CI_Controller
 					$this->CC_Model->diaryactivity(['plumberid' => $this->getUserID(), 'cocid' => $requestData['coc_id'], 'action' => '7', 'type' => '2']);
 										
 					$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '18', 'emailstatus' => '1']);
-				
+					
 					if($notificationdata){
 						$body 		= str_replace(['{Plumbers Name and Surname}', '{number}'], [$userdata['name'].' '.$userdata['surname'], $id], $notificationdata['email_body']);
 						$subject 	= str_replace(['{cocno}'], [$id], $notificationdata['subject']);
 						$this->CC_Model->sentMail($userdata['email'], $subject, $body);
 					}				
 					
-					if($this->config->item('otpstatus')!='1'){
+					if($settingsdetail && $settingsdetail['otp']=='1'){
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '18', 'smsstatus' => '1']);
 			
 						if($smsdata){
@@ -811,7 +814,7 @@ class CC_Controller extends CI_Controller
 							if(file_exists($pdf)) unlink($pdf);  
 						}				
 						
-						if(isset($requestData['contact_no']) && $requestData['contact_no']!='' && $this->config->item('otpstatus')!='1'){
+						if(isset($requestData['contact_no']) && $requestData['contact_no']!='' && $settingsdetail && $settingsdetail['otp']=='1'){
 							$smsdata 	= $this->Communication_Model->getList('row', ['id' => '23', 'smsstatus' => '1']);
 				
 							if($smsdata){
@@ -880,6 +883,7 @@ class CC_Controller extends CI_Controller
 			$datetime 		=  date('Y-m-d H:i:s');
 			$requestData 	=  $this->input->post();
 			$data 			=  $this->Auditor_Model->actionStatement($requestData);
+			$settingsdetail =  $this->Systemsettings_Model->getList('row');
 						
 			if($data){
 				if($requestData['submit']=='save' && isset($requestData['hold'])){
@@ -894,7 +898,7 @@ class CC_Controller extends CI_Controller
 					$auditreviewrow = $this->Auditor_Model->getReviewList('row', ['coc_id' => $pagedata['result']['id'], 'reviewtype' => '1', 'status' => '0']);
 					if($auditreviewrow){
 						$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '22', 'emailstatus' => '1']);
-
+						
 						if($notificationdata){
 							$pdf 		= FCPATH.'assets/uploads/temp/'.$id.'.pdf';
 							$this->pdfauditreport($id, $pdf);
@@ -907,7 +911,7 @@ class CC_Controller extends CI_Controller
 							if(file_exists($pdf)) unlink($pdf);  
 						}
 						
-						if($this->config->item('otpstatus')!='1'){
+						if($settingsdetail && $settingsdetail['otp']=='1'){
 							$smsdata 	= $this->Communication_Model->getList('row', ['id' => '22', 'smsstatus' => '1']);
 				
 							if($smsdata){
@@ -951,7 +955,7 @@ class CC_Controller extends CI_Controller
 						}
 						
 						// SMS
-						if($this->config->item('otpstatus')!='1'){
+						if($settingsdetail && $settingsdetail['otp']=='1'){
 							$smsdata 	= $this->Communication_Model->getList('row', ['id' => '21', 'smsstatus' => '1']);
 				
 							if($smsdata){
@@ -1253,9 +1257,10 @@ class CC_Controller extends CI_Controller
 	
 	public function performancestatusmail()
 	{
-		$warnings	= $this->Global_performance_Model->getWarningList('all', ['status' => ['1']]);
-		$rollingavg = $this->getRollingAverage();
-		$date		= date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
+		$warnings		= $this->Global_performance_Model->getWarningList('all', ['status' => ['1']]);
+		$rollingavg 	= $this->getRollingAverage();
+		$date			= date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
+		$settingsdetail = $this->Systemsettings_Model->getList('row');
 		
 		$datas = $this->Plumber_Model->performancestatus('all', ['plumbergroup' => '1', 'archive' => '0', 'date' => $date, 'performancestatus' => '1']);
 		foreach($datas as $data){
@@ -1296,7 +1301,7 @@ class CC_Controller extends CI_Controller
 						$this->CC_Model->sentMail($plumber['email'], $notificationdata['subject'], $body);
 					}
 					
-					if($this->config->item('otpstatus')!='1'){
+					if($settingsdetail && $settingsdetail['otp']=='1'){
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => $notificationid[$warninglevel-1], 'smsstatus' => '1']);
 			
 						if($smsdata){

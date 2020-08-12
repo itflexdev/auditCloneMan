@@ -99,7 +99,13 @@ class Index extends CC_Controller
 			$requestData 	= 	json_decode(stripslashes($result['custom_str1']), true);
 			$userid 		=	$requestData['userid'];
 
-			$requestData1['description'] 	= 	'Purchase of '.$requestData['quantity'].' PIRB Certificate of Compliance';
+			if ($requestData['coc_type'] == '1') {
+				$cocname = 'Electronic';
+			}elseif($requestData['coc_type'] == '2'){
+				$cocname = 'Paper-Based';
+			}
+			
+			$requestData1['description'] 	= 	'Purchase of '.$requestData['quantity'].' '.$cocname.' Certificate(s) of Compliance';
 			$requestData1['user_id']		= 	$userid;
 			$requestData1['vat']			= 	$requestData['vat'];
 			$requestData1['delivery_type'] 	= 	$requestData['delivery_type'];
@@ -114,7 +120,7 @@ class Index extends CC_Controller
 
 			$this->CC_Model->diaryactivity(['plumberid' => $userid, 'action' => '5', 'type' => '2']);
 				
-			$requestData2['description'] 	= 	'Purchase of '.$requestData['quantity'].' PIRB Certificate of Compliance';
+			$requestData2['description'] 	= 	'Purchase of '.$requestData['quantity'].' '.$cocname.' Certificate(s) of Compliance';
 			$requestData2['user_id']		= 	$userid;
 			$requestData2['created_by']		= 	$userid;
 			$requestData2['created_at']		= 	date('Y-m-d H:i:s');
@@ -196,7 +202,7 @@ class Index extends CC_Controller
 				if ($template['email_active'] == '1') {
 					$this->CC_Model->sentMail($userdata1['email'],$template['subject'],$body,$cocreport);
 
-					if($this->config->item('otpstatus')!='1'){
+					if($settings && $settings['otp']=='1'){
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '17', 'smsstatus' => '1']);
 						
 						if($smsdata){

@@ -11,12 +11,12 @@ $electronic_coc_log   	= $username["coc_electronic"];
 
 $coc_counts 			= $coc_count['count']=='' ? '0' : $coc_count['count'];
 
-$cocpaperwork 			= currencyconvertor($cocpaperwork["amount"]);
-$cocelectronic 			= currencyconvertor($cocelectronic["amount"]); 
+$cocpaperwork 			= $cocpaperwork["amount"];
+$cocelectronic 			= $cocelectronic["amount"]; 
 
-$postage 				= currencyconvertor($postage["amount"]);
-$couriour 				= currencyconvertor($couriour["amount"]);
-$collectedbypirb 		= currencyconvertor($collectedbypirb["amount"]);
+$postage 				= $postage["amount"];
+$couriour 				= $couriour["amount"];
+$collectedbypirb 		= $collectedbypirb["amount"];
 
 $admin_allot 			= isset($userorderstock) ? $userorderstock : '';
 
@@ -385,7 +385,13 @@ if (in_array($plumberstatus, $plumber_status)) {
 							permittedcoc: $('#number_of_purchase_coc').val(),
 							userid: '<?php echo $userid; ?>'
 						};
-
+						
+						if(getTotal()!=customdata.total_due){
+							alert('Try Again');
+							window.location.href = '<?php echo base_url()."plumber/purchasecoc/index"; ?>';
+							return false;
+						}
+							
 						$('#paymentcustomdata').val(JSON.stringify(customdata));
 						$('.form').prop('action','<?php echo $this->config->item('paymenturl'); ?>');
 						$('.form').submit();
@@ -441,14 +447,14 @@ if (in_array($plumberstatus, $plumber_status)) {
 
 	function calc(){
 		var coc_cost 		= parseFloat($('#coc_cost').val());
-		var costdelivery 	= parseFloat($('#cost_f_delivery').val());
+		var costdelivery 	= ($('.coc_type:checked').val()=='1') ? '0' : parseFloat($('#cost_f_delivery').val());
 		var vat 			= parseFloat($('#dbvat').val());
 
 
-		var vat1 = (((costdelivery + coc_cost ) * vat) / 100);
+		var vat1 = parseFloat(removelastchr(((costdelivery + coc_cost ) * vat) / 100));
 		var total = vat1 + coc_cost + costdelivery;
 
-		$('#vat').val(currencyconvertor(vat1));
+		$('#vat').val(vat1);
 		$('#totaldue').val(currencyconvertor(total));
 		$('#totaldue1').val(currencyconvertor(total));
 	}
@@ -458,12 +464,11 @@ if (in_array($plumberstatus, $plumber_status)) {
 		var quan = $("#coc_purchase").val();
 
 		var coc_types = $("input[name='coc_type']:checked").val();
-		if(coc_types == 1)
-			var cost = parseFloat($("#dbcocelectronic").val());
-		else
-		var cost = parseFloat($("#dbcocpaperwork").val());
+		if(coc_types == 1)	var cost = parseFloat($("#dbcocelectronic").val());
+		else var cost = parseFloat($("#dbcocpaperwork").val());
+
 		var total = cost * quan;
-		$("#coc_cost").val(currencyconvertor(total));
+		$("#coc_cost").val(removelastchr(total));
 
 		calc();
 	}
@@ -473,6 +478,34 @@ if (in_array($plumberstatus, $plumber_status)) {
 		$('.deliveryclass').val($('#deliveryclass'+value).val());
 		modifycost();
 
+	}
+	
+	function getTotal(){
+		var coctype = $('.coc_type:checked').val();
+		var deliverytype = $('.delivery_card').val();
+		var quantity = $('#coc_purchase').val();
+		
+		var coctypeval = 0;
+		if(coctype==1) coctypeval = parseFloat($("#dbcocelectronic").val()) * quantity;
+		else if(coctype==2) coctypeval = parseFloat($("#dbcocpaperwork").val()) * quantity;
+		coctypeval = parseFloat(removelastchr(coctypeval));
+		
+		var deliverytypeval = 0;
+		if(coctype==2){
+			if(deliverytype==1) deliverytypeval = parseFloat($("#deliveryclass1").val());
+			else if(deliverytype==2) deliverytypeval = parseFloat($("#deliveryclass2").val());
+			else if(deliverytype==3) deliverytypeval = parseFloat($("#deliveryclass3").val());
+		}
+		deliverytypeval = parseFloat(removelastchr(deliverytypeval));
+		
+		var vat 	= parseFloat($('#dbvat').val());
+		var vatval 	= 0;
+		if(coctypeval!=0){
+			vatval = parseFloat(((coctypeval + deliverytypeval) * vat)/100);
+		}
+		vatval = parseFloat(removelastchr(vatval));
+		
+		return currencyconvertor(coctypeval + deliverytypeval + vatval);
 	}
 </script>
 

@@ -1024,4 +1024,31 @@ class Import extends CC_Controller {
 		$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
 		$writer->save("assets/import/citysuburb.xlsx");
 	}
+	
+	public function plumberregnomodification(){
+		$plumbers = $this->db->select("SUBSTRING_INDEX(registration_no, '/', 1) as regno, designation, qualification_year, id")->where('registration_no !=', '')->get('users_plumber')->result_array();
+		
+		foreach($plumbers as $plumber){
+			$plumberid 			= $plumber['id'];
+			$plumberdesignation = $plumber['designation'];
+			$plumberyear 		= $plumber['qualification_year'];
+			$plumberregno 		= $plumber['regno'];
+			
+			if(strlen($plumberregno)!=4){
+				$regno = ($plumberregno[0]=='0') ? substr($plumberregno, 1) : $plumberregno;
+				
+				if($plumberdesignation=='1'){
+					$regno .= '/L';
+				}elseif($plumberdesignation=='2'){
+					$regno .= '/TA';
+				}elseif($plumberdesignation=='3'){
+					$regno .= '/TO';
+				}else{
+					$regno .= '/'.substr($plumberyear, 2, 2);
+				}
+				
+				$this->db->update('users_plumber', ['registration_no' => $regno], ['id' => $plumberid]);
+			}
+		}
+	}
 }

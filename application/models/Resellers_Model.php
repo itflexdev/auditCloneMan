@@ -182,15 +182,16 @@ class Resellers_Model extends CC_Model
 		}else{
 			$newcoc = isset($data['coc_purchase_limit']) ? $data['coc_purchase_limit'] : '0';
 
-			$arycoc = $this->db->select('count')->from('coc_count')->where('id', $coccountid)->get()->row_array();
-			$coc_count = isset($arycoc['count']) ? $arycoc['count'] : '0';						
+			$stockcount = $this->db->select('count(id) as stockcount')->from('stock_management')->where('user_id', $usersid)->get()->row_array();
+			$stockcount = isset($stockcount['stockcount']) ? $stockcount['stockcount'] : '0';
 
-			$arydefine = $this->db->select('coc_purchase_limit')->from('users_detail')->where('user_id', $usersid)->get()->row_array();
-			$define_coc = isset($arydefine['coc_purchase_limit']) ? $arydefine['coc_purchase_limit'] : '0';
-
-			$diff_coc = $newcoc - $define_coc;
-
-			$request10['count'] = $diff_coc + $coc_count;
+			$totalstock = $newcoc - $stockcount;
+			
+			if($totalstock < 0){
+				return 'outofstock';
+			}
+			
+			$request10['count'] = $totalstock;
 
 			$coccount = $this->db->update('coc_count', $request10, ['id' => $coccountid]);
 			$coccountinsertid = $coccountid;
