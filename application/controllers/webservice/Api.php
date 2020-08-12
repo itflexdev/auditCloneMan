@@ -169,6 +169,28 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
     }
 
+    public function forgotpassword_plumber(){
+    	if ($this->input->post()) {
+    		$requestData['email'] 	= $this->input->post('email');
+			$requestData['type'] 	= ['0' => '3'];
+			$data 					= $this->Users_Model->forgotPassword($requestData);
+			if($data=='1'){
+				$message 	= 'Please check your email inbox and follow the steps, as instructed, to reset your password.';
+				$status 	= '1';
+			}elseif($data=='3'){
+				$message 	= 'Incorrect Email ID.';
+				$status 	= '0';
+			}else{
+				$message 	= 'Try Later.';
+				$status 	= '0';
+			}
+			$jsonArray = array("status"=>$status, "message"=>$message, 'result' => $requestData);
+    	}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+    	}
+    	echo json_encode($jsonArray);
+    }
+
     public function plumberprofile_api(){
     	if ($this->input->post() && $this->input->post('user_id')) {
     		$id = $this->input->post('user_id');
