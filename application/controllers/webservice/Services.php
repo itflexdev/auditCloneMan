@@ -195,9 +195,12 @@ class Services extends CC_Controller
 				$settingsdetail = $this->Systemsettings_Model->getList('row');
 				if($settingsdetail && $settingsdetail['otp']=='1'){
 					$this->sms(['no' => $mobile, 'msg' => 'One Time Password is '.$otp]);
+					$otpstatus = '1';
+				}else{
+					$otpstatus = '0';
 				}
 				
-				$json = array("status" => "1", "message" => "OTP sent successfully.", "result" => $otp);
+				$json = array("status" => "1", "message" => "OTP sent successfully.", "result" => ['otp' => $otp, 'otpstatus' => $otpstatus]);
 			}
 		}else{
 			$json = array("status" => "0", "message" => "Invalid Request", "result" => []);
