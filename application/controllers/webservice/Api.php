@@ -61,68 +61,311 @@ class Api extends CC_Controller
 
 	public function login(){
 		if ($this->input->post()) {
-			$this->form_validation->set_rules('email', 'Email', 'trim|required');
-			$this->form_validation->set_rules('password', 'Password', 'trim|required');
+			if ($this->input->post('submit') == 'login') {
+				$this->form_validation->set_rules('email', 'Email', 'trim|required');
+				$this->form_validation->set_rules('password', 'Password', 'trim|required');
 
-			if ($this->form_validation->run()==FALSE) {
-				$errorMsg =  validation_errors();
-
-				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
-			}else{
-				$jsonData = [];
-				$email 		= trim($this->input->post('email'));
-				$password 	= md5($this->input->post('password'));
-				$type 		= $this->input->post('roletype');
-
-				$query = $this->db->where_in('type', $type)->get_where('users', ['email' => $email, 'password' => $password]);
-			
-				if($query->num_rows() > 0){
-					$result = $query->row_array();
-
-					$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']]
-					 ];
-					
-					$jsonArray = array('status' => '1', "message"=>'Login sucessfully', 'result' => $jsonData);
+				if ($this->form_validation->run()==FALSE) {
+					$errorMsg =  validation_errors();
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
 				}else{
-					$jsonArray = array('status' => '0', "message"=>'Invalid Credentials.', 'result' => []);
+					$jsonData = [];
+					$email 		= trim($this->input->post('email'));
+					$password 	= md5($this->input->post('password'));
+					//$type 		= $this->input->post('roletype');
+
+					$query = $this->db->get_where('users', ['email' => $email, 'password' => $password]);
+				
+					if($query->num_rows() > 0){
+						$result = $query->row_array();
+						if ($result['mailstatus'] =='1') {
+							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus']
+						 	];
+						 	$message = 'Login sucessfully';
+						 	$status = '1';
+						 	$jsonArray = array('status' => '1', "message"=>$message, 'result' => $jsonData);
+						}else{
+							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus']
+						 	];
+							$message = 'Please activate your account by verifying the link sent to your E-mail id.';
+							$status = '0';
+							$jsonArray = array('status' => '0', "message"=>$message, 'result' => $jsonData);
+						}
+						
+					}else{
+						$jsonArray = array('status' => '0', "message"=>'Invalid Credentials.', 'result' => []);
+					}
+				}
+			}elseif($this->input->post('submit') == 'register'){
+
+				$this->form_validation->set_rules('email', 'Email', 'trim|required');
+				$this->form_validation->set_rules('password', 'Password', 'trim|required');
+
+				$this->form_validation->set_rules('cnfm_email', 'Email', 'trim|required');
+				$this->form_validation->set_rules('cnfm_password', 'Password', 'trim|required');
+
+				if ($this->form_validation->run()==FALSE) {
+					$errorMsg =  validation_errors();
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+				}else{
+					$usertypename 	= $this->config->item('usertype2')[2];
+					$requestData['id'] 			= '';
+					$requestData['status'] 		= '0';
+					$requestData['email'] 		= trim($this->input->post('email'));
+					$requestData['password'] 	= trim($this->input->post('password'));
+					$requestData['type'] 		= '3';
+					$data 						= $this->Users_Model->actionUsers($requestData);
+
+					if($data){
+						$id 		= 	$data;
+						$subject 	= 	'Email Verification';
+						$message 	= 	'<div>Thank you for creating an account/profile on the PIRB\'s Audit-IT System.</div>
+										<br>
+										<div>Please click on the link below to verify your email address:</div>
+										<br>
+										<div><a href="'.base_url().'login/verification/'.$id.'/'.$usertypename.'">Click Here</a></div>
+										<br>
+										<div>Once verified, you will automatically be redirected to the Login Page, and may then log into your new account/profile to complete the required Application to Register forms.</div>
+										<br>
+										<div>Best Regards</div>
+										<br>
+										<div>The PIRB Team</div>
+										<div>Tel: 0861 747 275</div>
+										<div>Email: info@pirb.co.za</div>
+										<br>
+										<div>Please do not reply to this email, as it will not be responded to.</div>
+										';
+					
+						$this->CC_Model->sentMail($requestData['email'], $subject, $message);
+						$message 	= 'Successfully Registered. Kindly check your inbox for account activation details.';
+						$status 	= '1';
+						$jsonData['registration_details'] = $requestData;
+					}else{
+						$message 	= 'Try Later.';
+						$status 	= '0';
+					}
+					$jsonArray = array("status"=>$status, "message"=>$message, 'result' => $jsonData);
 				}
 			}
-
 		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
 		}
 		echo json_encode($jsonArray);
 	}
 
-	public function email_validation($email)
-    {
-        if(stristr($str,'@uni-email-1.com') !== false) return true;
-        if(stristr($str,'@uni-email-2.com') !== false) return true;
-        if(stristr($str,'@uni-email-3.com') !== false) return true;
-
-        $this->form_validation->set_message('email', 'Invalid Credentials.');
-        return FALSE;
+	public function email_validation(){
+		if ($this->input->post()) {
+			$post['email'] 	= $this->input->post('email');
+			$post['id'] 	= '';
+	        $result 		= $this->Users_Model->emailvalidation($post);
+	        if ($result == 'true') {
+	        	$jsonArray = array("status"=>'1', "message"=>'Email Verified.', 'result' => $post);
+	        }else{
+	        	$jsonArray = array("status"=>'0', "message"=>'Email already exists.', 'result' => $post);
+	        }
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
     }
 
     public function plumberprofile_api(){
     	if ($this->input->post() && $this->input->post('user_id')) {
+    		$id = $this->input->post('user_id');
     		$result = $this->Plumber_Model->getList('row', ['id' => $id, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
-    		$jsonArray = $result;
+    		
+    		// Physical address
+			$physicaladdress 		= isset($result['physicaladdress']) ? explode('@-@', $result['physicaladdress']) : [];
+			$jsonData['physical']['addressid1'] 	= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
+			$jsonData['physical']['address1']		= isset($physicaladdress[2]) ? $physicaladdress[2] : '';
+			$jsonData['physical']['suburb1'] 		= isset($physicaladdress[3]) ? $physicaladdress[3] : '';
+			$jsonData['physical']['city1'] 			= isset($physicaladdress[4]) ? $physicaladdress[4] : '';
+			$jsonData['physical']['province1'] 		= isset($physicaladdress[5]) ? $physicaladdress[5] : '';
+			$jsonData['physical']['postalcode1'] 	= isset($physicaladdress[6]) ? $physicaladdress[6] : '';
+
+			// Postal address
+			$postaladdress 			= isset($result['postaladdress']) ? explode('@-@', $result['postaladdress']) : [];
+			$jsonData['postal']['addressid2'] 		= isset($postaladdress[0]) ? $postaladdress[0] : '';
+			$jsonData['postal']['address2']			= isset($postaladdress[2]) ? $postaladdress[2] : '';
+			$jsonData['postal']['suburb2'] 			= isset($postaladdress[3]) ? $postaladdress[3] : '';
+			$jsonData['postal']['city2'] 			= isset($postaladdress[4]) ? $postaladdress[4] : '';
+			$jsonData['postal']['province2'] 		= isset($postaladdress[5]) ? $postaladdress[5] : '';
+			$jsonData['postal']['postalcode2'] 		= isset($postaladdress[6]) ? $postaladdress[6] : '';
+
+			// Billing address
+			$billingaddress 		= isset($result['billingaddress']) ? explode('@-@', $result['billingaddress']) : [];
+			$jsonData['billing']['addressid3'] 		= isset($billingaddress[0]) ? $billingaddress[0] : '';
+			$jsonData['billing']['address3']		= isset($billingaddress[2]) ? $billingaddress[2] : '';
+			$jsonData['billing']['suburb3'] 		= isset($billingaddress[3]) ? $billingaddress[3] : '';
+			$jsonData['billing']['city3'] 			= isset($billingaddress[4]) ? $billingaddress[4] : '';
+			$jsonData['billing']['province3'] 		= isset($billingaddress[5]) ? $billingaddress[5] : '';
+			$jsonData['billing']['postalcode3'] 	= isset($billingaddress[6]) ? $billingaddress[6] : '';
+			$jsonData['plumber_result'] 			= $result;
+
+			if ($result['file1'] !='') {
+				$jsonData['plumber_identity_doc'][] = base_url().'assets/plumber/'.$id.'/'.$result['file1'];
+			}else{
+				$jsonData['plumber_identity_doc'][] = '';
+			}
+			if ($result['file2'] !='') {
+				$jsonData['plumber_photoid'][] = base_url().'assets/plumber/'.$id.'/'.$result['file2'];
+			}else{
+				$jsonData['plumber_photoid'][] = '';
+			}
+
+			$jsonArray = array("status"=>'1', "message"=>'Plumber Registration Details', 'result' => $jsonData);
     	}else{
     		$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
     	}
     	echo json_encode($jsonArray);
     }
 
+    public function plumber_registration_index(){
+    	$jsonData = [];
+
+		$jsonData['page_lables'] = [ 'headertabs' => 'Welcome', 'Personal Details', 'Billing Details', 'Employement Details', 'Designation', 'Declaration', 'buttons' => 'Previous', 'Next', 'welcome' => 'Registered Plumber Details
+', 'Donec augue enim, volutpat at ligula et, dictum laoreet sapien. Sed maximus feugiat tincidunt. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla eu mollis leo, eu elementum nisl. Curabitur cursus turpis nibh, egestas efficitur diam tristique non. Proin faucibus erat ligula, nec interdum odio rhoncus vel. Nulla facilisi. Nulla vehicula felis lorem, sed molestie lacus maximus quis. Mauris dolor enim, fringilla ut porta sed, ullamcorper id quam. Integer in eleifend justo, quis cursus odio. Pellentesque fermentum sapien elit, aliquam rhoncus neque semper in. Duis id consequat nisl, vitae semper elit. Nulla tristique lorem sem, et pretium magna cursus sit amet. Maecenas malesuada fermentum mauris, at vestibulum arcu vulputate a.', 'personaldetails' => 'Registered Plumber Details', 'Title *', 'Date of Birth *', 'Name *', 'Surname *', 'Gender *', 'Racial Status *', 'South African National *', 'ID Number', 'Home Language *', 'Disability *', 'Citizen Residential Status *', 'Identity Document *', 'Photo ID *', 'Photos must be no more than 6 months old Photos must be high quality Photos must be in colour Photos must have clear preferably white background Photos must be in sharp focus and clear Photo must be only of your head and shoulders You must be looking directly at the camera No sunglasses or hats File name is your NAME and SURNAME.', '(Image/File Size Smaller than 5mb)', 'Registration Card', 'Due to the high number of card returns and cost incurred, the registration fees do not include a registration card. Registration cards are available but must be requested separately. If the registration card option is selected you will be billed accordingly.', 'Registration Card Required *', 'Method of Delivery of Card *', 'Physical Address', 'Postal Address', 'Note: All delivery services will be sent to this address.', 'Note: All postal services will be sent to this address.', 'Physical Address *', 'Postal Address *', 'Province *', 'City *', 'Suburb *', 'Add city', 'Add suburb', 'Postal Code *', 'Contact Details', 'Home Phone:', 'Mobile Phone *', 'Note: All SMS and OTP notifications will be sent to this mobile number above.', 'Work Phone:', 'Secondary Mobile Phone', 'Email Address *', 'Secondary Email Address', 'Note: This email will be used as your user profile name and all emails notifications will be sent to it.', 'billingdetails' => 'Billing Details', 'All invoices generated, will be used this billing information.', 'Billing Name *', 'Company Reg Number', 'Company VAT Number', 'Billing Email *', 'Billing Contact *', 'Billing Address *', 'Province *', 'City *', 'Suburb *', 'Add city', 'Add suburb', 'Postal Code *', 'employementdetails' => 'Employment Details', 'Company Details', 'Your Employment Status', 'Company *', 'If the Company does not appear on this list please ask the company to register with the PIRB. Once they have been approved and registered, return to the list and select the company', 'designation' => 'Designation', '', 'Applications for Master Plumber and/or specialisations can only be done once your registration has been verified and approved. Please select the relevant designation being applied for.'
+		];
+
+    	if ($this->input->post() && $this->input->post('user_id')) {
+    		$id = $this->input->post('user_id');
+    		$result		= 	$this->Plumber_Model->getList('row', ['id' => $userid, 'status' => ['0','1']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+    		// Physical address
+			$physicaladdress 		= isset($result['physicaladdress']) ? explode('@-@', $result['physicaladdress']) : [];
+			$jsonData['physical']['addressid1'] 	= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
+			$jsonData['physical']['address1']		= isset($physicaladdress[2]) ? $physicaladdress[2] : '';
+			$jsonData['physical']['suburb1'] 		= isset($physicaladdress[3]) ? $physicaladdress[3] : '';
+			$jsonData['physical']['city1'] 			= isset($physicaladdress[4]) ? $physicaladdress[4] : '';
+			$jsonData['physical']['province1'] 		= isset($physicaladdress[5]) ? $physicaladdress[5] : '';
+			$jsonData['physical']['postalcode1'] 	= isset($physicaladdress[6]) ? $physicaladdress[6] : '';
+
+			// Postal address
+			$postaladdress 			= isset($result['postaladdress']) ? explode('@-@', $result['postaladdress']) : [];
+			$jsonData['postal']['addressid2'] 		= isset($postaladdress[0]) ? $postaladdress[0] : '';
+			$jsonData['postal']['address2']			= isset($postaladdress[2]) ? $postaladdress[2] : '';
+			$jsonData['postal']['suburb2'] 			= isset($postaladdress[3]) ? $postaladdress[3] : '';
+			$jsonData['postal']['city2'] 			= isset($postaladdress[4]) ? $postaladdress[4] : '';
+			$jsonData['postal']['province2'] 		= isset($postaladdress[5]) ? $postaladdress[5] : '';
+			$jsonData['postal']['postalcode2'] 		= isset($postaladdress[6]) ? $postaladdress[6] : '';
+
+			// Billing address
+			$billingaddress 		= isset($result['billingaddress']) ? explode('@-@', $result['billingaddress']) : [];
+			$jsonData['billing']['addressid3'] 		= isset($billingaddress[0]) ? $billingaddress[0] : '';
+			$jsonData['billing']['address3']		= isset($billingaddress[2]) ? $billingaddress[2] : '';
+			$jsonData['billing']['suburb3'] 		= isset($billingaddress[3]) ? $billingaddress[3] : '';
+			$jsonData['billing']['city3'] 			= isset($billingaddress[4]) ? $billingaddress[4] : '';
+			$jsonData['billing']['province3'] 		= isset($billingaddress[5]) ? $billingaddress[5] : '';
+			$jsonData['billing']['postalcode3'] 	= isset($billingaddress[6]) ? $billingaddress[6] : '';
+			$jsonData['plumber_result'] 			= $result;
+
+			if ($result['file1'] !='') {
+				$jsonData['plumber_identity_doc'][] = base_url().'assets/plumber/'.$id.'/'.$result['file1'];
+			}else{
+				$jsonData['plumber_identity_doc'][] = '';
+			}
+			if ($result['file2'] !='') {
+				$jsonData['plumber_photoid'][] = base_url().'assets/plumber/'.$id.'/'.$result['file2'];
+			}else{
+				$jsonData['plumber_photoid'][] = '';
+			}
+
+    		$jsonArray = array("status"=>'1', "message"=>'Plumber Registration Details', 'result' => $jsonData);
+    	}else{
+    		$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+    	}
+    	echo json_encode($jsonArray);
+    }
+
+	// Plumber Registration save:
+    public function plumber_registration_save(){
+		$jsonData = [];
+
+		$jsonData['page_lables'] = [ 'headertabs' => 'Welcome', 'Personal Details', 'Billing Details', 'Employement Details', 'Designation', 'Declaration', 'buttons' => 'Previous', 'Next', 'welcome' => 'Registered Plumber Details
+', 'Donec augue enim, volutpat at ligula et, dictum laoreet sapien. Sed maximus feugiat tincidunt. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla eu mollis leo, eu elementum nisl. Curabitur cursus turpis nibh, egestas efficitur diam tristique non. Proin faucibus erat ligula, nec interdum odio rhoncus vel. Nulla facilisi. Nulla vehicula felis lorem, sed molestie lacus maximus quis. Mauris dolor enim, fringilla ut porta sed, ullamcorper id quam. Integer in eleifend justo, quis cursus odio. Pellentesque fermentum sapien elit, aliquam rhoncus neque semper in. Duis id consequat nisl, vitae semper elit. Nulla tristique lorem sem, et pretium magna cursus sit amet. Maecenas malesuada fermentum mauris, at vestibulum arcu vulputate a.', 'personaldetails' => 'Registered Plumber Details', 'Title *', 'Date of Birth *', 'Name *', 'Surname *', 'Gender *', 'Racial Status *', 'South African National *', 'ID Number', 'Home Language *', 'Disability *', 'Citizen Residential Status *', 'Identity Document *', 'Photo ID *', 'Photos must be no more than 6 months old Photos must be high quality Photos must be in colour Photos must have clear preferably white background Photos must be in sharp focus and clear Photo must be only of your head and shoulders You must be looking directly at the camera No sunglasses or hats File name is your NAME and SURNAME.', '(Image/File Size Smaller than 5mb)', 'Registration Card', 'Due to the high number of card returns and cost incurred, the registration fees do not include a registration card. Registration cards are available but must be requested separately. If the registration card option is selected you will be billed accordingly.', 'Registration Card Required *', 'Method of Delivery of Card *', 'Physical Address', 'Postal Address', 'Note: All delivery services will be sent to this address.', 'Note: All postal services will be sent to this address.', 'Physical Address *', 'Postal Address *', 'Province *', 'City *', 'Suburb *', 'Add city', 'Add suburb', 'Postal Code *', 'Contact Details', 'Home Phone:', 'Mobile Phone *', 'Note: All SMS and OTP notifications will be sent to this mobile number above.', 'Work Phone:', 'Secondary Mobile Phone', 'Email Address *', 'Secondary Email Address', 'Note: This email will be used as your user profile name and all emails notifications will be sent to it.', 'billingdetails' => 'Billing Details', 'All invoices generated, will be used this billing information.', 'Billing Name *', 'Company Reg Number', 'Company VAT Number', 'Billing Email *', 'Billing Contact *', 'Billing Address *', 'Province *', 'City *', 'Suburb *', 'Add city', 'Add suburb', 'Postal Code *', 'employementdetails' => 'Employment Details', 'Company Details', 'Your Employment Status', 'Company *', 'If the Company does not appear on this list please ask the company to register with the PIRB. Once they have been approved and registered, return to the list and select the company', 'designation' => 'Designation', '', 'Applications for Master Plumber and/or specialisations can only be done once your registration has been verified and approved. Please select the relevant designation being applied for.'
+		];
+
+		if ($this->input->post()) {
+				$post 				= $this->input->post();
+				$plumberID 			= $this->input->post('user_id');
+
+				$userdata			= $this->Plumber_Model->getList('row', ['id' => $plumberID, 'status' => ['0','1']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+
+		//print_r($userdata);die;
+				$post['user_id']	 	= 	$plumberID;
+				$post['usersdetailid'] 	= 	$userdata['usersdetailid'];
+				$post['usersplumberid'] = 	$userdata['usersplumberid'];
+
+				if ((isset($post['address'][1]['id']) && $post['address'][1]['id'] !='') && (isset($post['address'][1]['type']) && $post['address'][1]['type'] !='')) {
+					$post['address'][1]['id'] 	= $post['address'][1]['id'];
+					$post['address'][1]['type'] = $post['address'][2]['type'];
+				}else{
+					$post['address'][1]['id'] 	= '';
+					$post['address'][1]['type'] = '';
+				}
+
+				if ((isset($post['address'][2]['id']) && $post['address'][2]['id'] !='') && (isset($post['address'][2]['type']) && $post['address'][2]['type'] !='')) {
+					$post['address'][2]['id'] 	= $post['address'][2]['id'];
+					$post['address'][2]['type'] = $post['address'][2]['type'];
+				}else{
+					$post['address'][2]['id'] 	= '';
+					$post['address'][2]['type'] = '';
+				}
+
+				if ((isset($post['address'][3]['id']) && $post['address'][3]['id'] !='') && (isset($post['address'][3]['type']) && $post['address'][3]['type'] !='')) {
+					
+					$post['address'][3]['id'] 	= $post['address'][3]['id'];
+					$post['address'][3]['type'] = $post['address'][3]['type'];
+				}else{
+					$post['address'][3]['id'] 	= '';
+					$post['address'][3]['type'] = '';
+				}
+
+				// if (isset($post['skill_id'])) {
+				// 	$post['skill_id'] = $post['skill_id'];
+				// }else{
+				// 	$post['skill_id'] = '';
+				// }
+
+				if (isset($post['image1']) && $post['image1'] != '') {
+					$data = $this->fileupload(['files' => $post['image1'], 'file_name' => $post['image1_name'], 'user_id' => $plumberID, 'page' => 'plumber_reg']);
+					$post['image1'] = $data[0];
+				}
+				if (isset($post['image2']) && $post['image2'] != '') {
+					$data = $this->fileupload(['files' => $post['image2'], 'file_name' => $post['image2_name'], 'user_id' => $plumberID, 'page' => 'plumber_reg']);
+					$post['image2'] = $data[0];
+				}
+				$data 				=  	$this->Plumber_Model->action($post);
+
+				if ($data) {
+					$jsonData['userdata'] = $userdata;
+					$jsonArray = array("status"=>'1', "message"=>'Form Saved Successfully', "result"=>$post);
+				}else{
+					$jsonArray = array("status"=>'0', "message"=>'Something went wrong Please try again!!!', 'result' => []);
+				}
+
+		}else{
+
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
 	// Plumber Registration:
 
-	public function plumber_registration()
-	{
+	public function plumber_registration(){
+		$jsonData = [];
+
+		$jsonData['page_lables'] = [ 'headertabs' => 'Welcome', 'Personal Details', 'Billing Details', 'Employement Details', 'Designation', 'Declaration', 'buttons' => 'Previous', 'Next', 'welcome' => 'Registered Plumber Details
+', 'Donec augue enim, volutpat at ligula et, dictum laoreet sapien. Sed maximus feugiat tincidunt. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla eu mollis leo, eu elementum nisl. Curabitur cursus turpis nibh, egestas efficitur diam tristique non. Proin faucibus erat ligula, nec interdum odio rhoncus vel. Nulla facilisi. Nulla vehicula felis lorem, sed molestie lacus maximus quis. Mauris dolor enim, fringilla ut porta sed, ullamcorper id quam. Integer in eleifend justo, quis cursus odio. Pellentesque fermentum sapien elit, aliquam rhoncus neque semper in. Duis id consequat nisl, vitae semper elit. Nulla tristique lorem sem, et pretium magna cursus sit amet. Maecenas malesuada fermentum mauris, at vestibulum arcu vulputate a.', 'personaldetails' => 'Registered Plumber Details', 'Title *', 'Date of Birth *', 'Name *', 'Surname *', 'Gender *', 'Racial Status *', 'South African National *', 'ID Number', 'Home Language *', 'Disability *', 'Citizen Residential Status *', 'Identity Document *', 'Photo ID *', 'Photos must be no more than 6 months old Photos must be high quality Photos must be in colour Photos must have clear preferably white background Photos must be in sharp focus and clear Photo must be only of your head and shoulders You must be looking directly at the camera No sunglasses or hats File name is your NAME and SURNAME.', '(Image/File Size Smaller than 5mb)', 'Registration Card', 'Due to the high number of card returns and cost incurred, the registration fees do not include a registration card. Registration cards are available but must be requested separately. If the registration card option is selected you will be billed accordingly.', 'Registration Card Required *', 'Method of Delivery of Card *', 'Physical Address', 'Postal Address', 'Note: All delivery services will be sent to this address.', 'Note: All postal services will be sent to this address.', 'Physical Address *', 'Postal Address *', 'Province *', 'City *', 'Suburb *', 'Add city', 'Add suburb', 'Postal Code *', 'Contact Details', 'Home Phone:', 'Mobile Phone *', 'Note: All SMS and OTP notifications will be sent to this mobile number above.', 'Work Phone:', 'Secondary Mobile Phone', 'Email Address *', 'Secondary Email Address', 'Note: This email will be used as your user profile name and all emails notifications will be sent to it.', 'billingdetails' => 'Billing Details', 'All invoices generated, will be used this billing information.', 'Billing Name *', 'Company Reg Number', 'Company VAT Number', 'Billing Email *', 'Billing Contact *', 'Billing Address *', 'Province *', 'City *', 'Suburb *', 'Add city', 'Add suburb', 'Postal Code *', 'employementdetails' => 'Employment Details', 'Company Details', 'Your Employment Status', 'Company *', 'If the Company does not appear on this list please ask the company to register with the PIRB. Once they have been approved and registered, return to the list and select the company', 'designation' => 'Designation', '', 'Applications for Master Plumber and/or specialisations can only be done once your registration has been verified and approved. Please select the relevant designation being applied for.'
+		];
+
 		if ($this->input->post()) {
 			$this->form_validation->set_rules('name','First Name','trim|required');
 			$this->form_validation->set_rules('surname','Second Name','trim|required');
 			$this->form_validation->set_rules('citizen','Citizen Residential','trim|required');
 			$this->form_validation->set_rules('address[2][postal_code]','postal code','trim|required');
+			$this->form_validation->set_rules('homelanguage','home language','trim|required');
+			$this->form_validation->set_rules('racial','Racial Status','trim|required');
 			// Physical address
 			$this->form_validation->set_rules('address[1][address]','Physical Address ','trim|required');
 			$this->form_validation->set_rules('address[1][province]','Physical Province ','trim|required');
@@ -150,8 +393,9 @@ class Api extends CC_Controller
 			$this->form_validation->set_rules('address[3][suburb]','Billing Suburb','trim|required');
 
 			$this->form_validation->set_rules('address[3][postal_code]','Postal code','trim|required');	
-			// $this->form_validation->set_rules('image1','Identity Document','trim|required');
-			// $this->form_validation->set_rules('image2','Photo ID','trim|required');
+			$this->form_validation->set_rules('image1','Identity Document','trim|required');
+			$this->form_validation->set_rules('image2','Photo ID','trim|required');
+			$this->form_validation->set_rules('designation','designation','trim|required');
 
 			// Declaration:
 			$this->form_validation->set_rules('registerprocedure','The Registered Procedure','trim|required');
@@ -162,11 +406,6 @@ class Api extends CC_Controller
 				$errorMsg =  validation_errors();
 				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
 			}else{
-				$jsonData = [];
-
-				$jsonData['page_lables'] = [ 'headertabs' => 'Welcome', 'Personal Details', 'Billing Details', 'Employement Details', 'Designation', 'Declaration', 'buttons' => 'Previous', 'Next', 'welcome' => 'Registered Plumber Details
-', 'Donec augue enim, volutpat at ligula et, dictum laoreet sapien. Sed maximus feugiat tincidunt. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla eu mollis leo, eu elementum nisl. Curabitur cursus turpis nibh, egestas efficitur diam tristique non. Proin faucibus erat ligula, nec interdum odio rhoncus vel. Nulla facilisi. Nulla vehicula felis lorem, sed molestie lacus maximus quis. Mauris dolor enim, fringilla ut porta sed, ullamcorper id quam. Integer in eleifend justo, quis cursus odio. Pellentesque fermentum sapien elit, aliquam rhoncus neque semper in. Duis id consequat nisl, vitae semper elit. Nulla tristique lorem sem, et pretium magna cursus sit amet. Maecenas malesuada fermentum mauris, at vestibulum arcu vulputate a.', 'personaldetails' => 'Registered Plumber Details', 'Title *', 'Date of Birth *', 'Name *', 'Surname *', 'Gender *', 'Racial Status *', 'South African National *', 'ID Number', 'Home Language *', 'Disability *', 'Citizen Residential Status *', 'Identity Document *', 'Photo ID *', 'Photos must be no more than 6 months old Photos must be high quality Photos must be in colour Photos must have clear preferably white background Photos must be in sharp focus and clear Photo must be only of your head and shoulders You must be looking directly at the camera No sunglasses or hats File name is your NAME and SURNAME.', '(Image/File Size Smaller than 5mb)', 'Registration Card', 'Due to the high number of card returns and cost incurred, the registration fees do not include a registration card. Registration cards are available but must be requested separately. If the registration card option is selected you will be billed accordingly.', 'Registration Card Required *', 'Method of Delivery of Card *', 'Physical Address', 'Postal Address', 'Note: All delivery services will be sent to this address.', 'Note: All postal services will be sent to this address.', 'Physical Address *', 'Postal Address *', 'Province *', 'City *', 'Suburb *', 'Add city', 'Add suburb', 'Postal Code *', 'Contact Details', 'Home Phone:', 'Mobile Phone *', 'Note: All SMS and OTP notifications will be sent to this mobile number above.', 'Work Phone:', 'Secondary Mobile Phone', 'Email Address *', 'Secondary Email Address', 'Note: This email will be used as your user profile name and all emails notifications will be sent to it.', 'billingdetails' => 'Billing Details', 'All invoices generated, will be used this billing information.', 'Billing Name *', 'Company Reg Number', 'Company VAT Number', 'Billing Email *', 'Billing Contact *', 'Billing Address *', 'Province *', 'City *', 'Suburb *', 'Add city', 'Add suburb', 'Postal Code *', 'employementdetails' => 'Employment Details', 'Company Details', 'Your Employment Status', 'Company *', 'If the Company does not appear on this list please ask the company to register with the PIRB. Once they have been approved and registered, return to the list and select the company', 'designation' => 'Designation', '', 'Applications for Master Plumber and/or specialisations can only be done once your registration has been verified and approved. Please select the relevant designation being applied for.'
-			];
 
 				$post 				= $this->input->post();
 				$plumberID 			= $this->input->post('user_id');
@@ -205,21 +444,25 @@ class Api extends CC_Controller
 					$post['address'][3]['type'] = '';
 				}
 
-				if (isset($post['skill_id'])) {
-					$post['skill_id'] = $post['skill_id'];
-				}else{
-					$post['skill_id'] = '';
+				// if (isset($post['skill_id'])) {
+				// 	$post['skill_id'] = $post['skill_id'];
+				// }else{
+				// 	$post['skill_id'] = '';
+				// }
+
+				if (isset($post['image1']) && $post['image1'] != '') {
+					$data = $this->fileupload(['files' => $post['image1'], 'file_name' => $post['image1_name'], 'user_id' => $plumberID, 'page' => 'plumber_reg']);
+					$post['image1'] = $data[0];
 				}
-
-				
-
+				if (isset($post['image2']) && $post['image2'] != '') {
+					$data = $this->fileupload(['files' => $post['image2'], 'file_name' => $post['image2_name'], 'user_id' => $plumberID, 'page' => 'plumber_reg']);
+					$post['image2'] = $data[0];
+				}
 				$data 				=  	$this->Plumber_Model->action($post);
 
 				if ($data) {
-					
-
 					$jsonData['userdata'] = $userdata;
-					$jsonArray = array("status"=>'1', "message"=>'Profile Updated Successfully', "result"=>$jsonData);
+					$jsonArray = array("status"=>'1', "message"=>'Registration Successfully', "result"=>$post);
 				}else{
 					$jsonArray = array("status"=>'0', "message"=>'Something went wrong Please try again!!!', 'result' => []);
 				}
@@ -230,10 +473,139 @@ class Api extends CC_Controller
 
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
 		}
-		
-
 		echo json_encode($jsonArray);
+	}
+
+	public function skill_api(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+
+			if ($this->input->post('pagetype') =='insert') {
+				$this->form_validation->set_rules('skill_date','Skill date','trim|required');
+				$this->form_validation->set_rules('skill_certificate','Skill certificate','trim|required');
+				$this->form_validation->set_rules('skill_qualification_type','Skill qualification','trim|required');
+				$this->form_validation->set_rules('skill_route','Skill route','trim|required');
+				$this->form_validation->set_rules('skill_training','Skill training','trim|required');
+				$this->form_validation->set_rules('skill_attachment','Skill attachment','trim|required');
+
+				if ($this->form_validation->run()==FALSE) {
+					$errorMsg =  validation_errors();
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+				}else{
+					$post 			= $this->input->post();
+					$plumberID 		= $this->input->post('user_id');
+					if (isset($post['skill_attachment']) && $post['skill_attachment'] != '') {
+						$data = $this->fileupload(['files' => $post['skill_attachment'], 'file_name' => $post['skill_attachment_name'], 'user_id' => $plumberID, 'page' => 'plumber_skill']);
+						$post['skill_attachment'] = $data[0];
+					}
+					$result 			= $this->Plumber_Model->action($post);
+				}
+				$jsonArray = array("status"=>'1', "message"=>'Plumber Skill Inserted Successfully', 'result' => $post);
+
+			}elseif($this->input->post('pagetype') =='edit_view' && $this->input->post('skillid')){
+				$result = $this->Plumber_Model->getSkillList('row', ['id' => $this->input->post('skillid')]);
+				$jsonData['skill_result'][] = $result;
+				if ($result['attachment'] !='') {
+					$jsonData['skill_attachment'][] = base_url().'assets/plumber/'.$this->input->post('user_id').'/'.$result['attachment'];
+				}
+				$jsonArray = array("status"=>'1', "message"=>'Plumber Skill', 'result' => $jsonData);
+
+			}elseif($this->input->post('pagetype') =='edit' && $this->input->post('skillid')){
+
+				$this->form_validation->set_rules('skill_date','Skill date','trim|required');
+				$this->form_validation->set_rules('skill_certificate','Skill certificate','trim|required');
+				$this->form_validation->set_rules('skill_qualification_type','Skill qualification','trim|required');
+				$this->form_validation->set_rules('skill_route','Skill route','trim|required');
+				$this->form_validation->set_rules('skill_training','Skill training','trim|required');
+				$this->form_validation->set_rules('skill_attachment','Skill attachment','trim|required');
+
+				if ($this->form_validation->run()==FALSE) {
+					$errorMsg =  validation_errors();
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+				}else{
+					$post 			= $this->input->post();
+					$plumberID 		= $this->input->post('user_id');
+					if (isset($post['skill_attachment']) && $post['skill_attachment'] != '') {
+						$data = $this->fileupload(['files' => $post['skill_attachment'], 'file_name' => $post['skill_attachment_name'], 'user_id' => $plumberID, 'page' => 'plumber_skill']);
+						$post['skill_attachment'] = $data[0];
+					}
+					$post['user_id'] 	= $plumberID;
+					$post['skill_id'] 	= $this->input->post('skillid');
+					$result 			= $this->Plumber_Model->action($post);
+				}
+				$jsonArray = array("status"=>'1', "message"=>'Plumber Skill Updated Successfully', 'result' => $post);
+
+			}elseif($this->input->post('pagetype') =='delete' && $this->input->post('skillid')){
+				$result = $this->Plumber_Model->deleteSkillList($post['skillid']);
+				$jsonArray = array("status"=>'1', "message"=>'Skill Deleted Successfully', 'result' => $result);
+
+			}elseif($this->input->post('pagetype') =='list'){
+				$results			= $this->Plumber_Model->getList('row', ['id' => $this->input->post('user_id')], ['usersskills']);
+				$slillarrays = explode('@-@', $results['skills']);
+				if ($slillarrays) {
+					foreach ($slillarrays as $key => $value) {
+						$skillarray = explode('@@@', $value);
+						$jsonData['skills'][] = ['id' => $skillarray[0], 'userid' => $skillarray[1], 'date_qualification' => date('d-m-Y', strtotime($skillarray[2])), 'certificate_no' => $skillarray[3], 'qualification_type' => $skillarray[4], 'skill_route' => $skillarray[5], 'skill_route_name' => $skillarray[8], 'provider' => $skillarray[6], 'atachments' => base_url().'assets/uploads/plumber/'.$skillarray[1].'/'.$skillarray[7],
+						];
+					}
+				}
+				$jsonArray = array("status"=>'1', "message"=>'Skill list', 'result' => $jsonData);
+			}else{
+				$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+			}
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function qualificationtype_api(){
+		$jsonData['qualificationtype'][] = $this->config->item('qualificationtype');
+		$jsonArray = array("status"=>'1', "message"=>'Skill list', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
+	public function getQualificationRouteList_api(){
+		$data = $this->Qualificationroute_Model->getList('all', ['status' => ['1']]);
 		
+		if(count($data) > 0){
+			foreach ($data as $key => $value) {
+				$jsonData['qualificationroutes'][] = [ 'id' => $value['id'], 'name' => $value['name']
+				];
+			}
+			$jsonArray = array("status"=>'1', "message"=>'Qualification Route Lists', 'result' => $jsonData);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'No Qualification Route Found', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+	public function homelanguage_api(){
+		$jsonData['homelanguage'][] = $this->config->item('homelanguage');
+		$jsonArray = array("status"=>'1', "message"=>'Home Language list', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
+	public function racial_api(){
+		$jsonData['racial'][] = $this->config->item('racial');
+		$jsonArray = array("status"=>'1', "message"=>'Racial Status list', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
+	public function yes_no_api(){
+		$jsonData['racial'][] = $this->config->item('yesno');
+		$jsonArray = array("status"=>'1', "message"=>'yesno', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
+	public function deliverycard_api(){
+		$jsonData['deliverycard'][] = $this->config->item('deliverycard');
+		$jsonArray = array("status"=>'1', "message"=>'deliverycard', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
+	public function employmentdetail_api(){
+		$jsonData['employmentdetail'][] = $this->config->item('employmentdetail');
+		$jsonArray = array("status"=>'1', "message"=>'employmentdetail', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
+	public function company_list_api(){
+		$jsonData['company'][] = $this->getCompanyList();
+		$jsonArray = array("status"=>'1', "message"=>'company list', 'result' => $jsonData);
+		echo json_encode($jsonArray);
 	}
 
 	// Common Dashboard:
@@ -2257,7 +2629,14 @@ class Api extends CC_Controller
 			if(!is_dir($path)){
 				mkdir($directory.'/assets/uploads/chat/'.$userid.'/', 0755, true);
 			}
+		}elseif($page == 'plumber_skill' || $page == 'plumber_reg'){
+			$path = FCPATH.'assets/uploads/plumber/'.$userid.'/';
+
+			if(!is_dir($path)){
+				mkdir($directory.'/assets/uploads/plumber/'.$userid.'/', 0755, true);
+			}
 		}
+
 		
 		if ($countfiles > 1) {
 			$file_names = explode(',', $file_name);
