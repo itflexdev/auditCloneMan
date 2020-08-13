@@ -1438,11 +1438,20 @@ class Api extends CC_Controller
 				$specialisations 				= explode(',', $userdata['specialisations']);
 
 				$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '18', 'emailstatus' => '1']);
+				$settingsdetail 	= 	$this->Systemsettings_Model->getList('row');
 				
 				if($notificationdata){
 					$body 		= str_replace(['{Plumbers Name and Surname}', '{number}'], [$userdata['name'].' '.$userdata['surname'], $cocId], $notificationdata['email_body']);
 					$subject 	= str_replace(['{cocno}'], [$cocId], $notificationdata['subject']);
 					$this->CC_Model->sentMail($userdata['email'], $subject, $body);
+				}
+
+				if($settingsdetail && $settingsdetail['otp']=='1'){
+					$smsdata 	= $this->Communication_Model->getList('row', ['id' => '18', 'smsstatus' => '1']);
+					if($smsdata){
+						$sms = str_replace(['{number of COC}'], [$cocId], $smsdata['sms_body']);
+						$this->sms(['no' => $userdata['mobile_phone'], 'msg' => $sms]);
+					}
 				}
 
 				if(isset($post['ncemail']) && $post['ncemail']=='1'){
