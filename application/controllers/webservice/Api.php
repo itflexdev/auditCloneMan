@@ -2437,7 +2437,21 @@ class Api extends CC_Controller
 				$subtypeid 				= $this->input->post('subtypeid');
 				$data					= $this->getreportlisting_api(['installationtypeid' => $installationtypeid, 'subtypeid' => $subtypeid]);
 				$message 				= 'Statement';
-
+			}elseif ($this->input->post('request_type') !='' && $this->input->post('request_type') =='edit_view' && $this->input->post('id') !='') {
+				$result = $this->Auditor_Reportlisting_Model->getList('row', ['id' => $this->input->post('id')]);
+				$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $result['installationtype_id']]);
+				$get_subtype 			= $this->getSubTypeList_api(['id' => $result['subtype_id']]);
+				// $get_statement 			= $this->getreportlisting_api(['id' => $result['statement_id']]);
+				$data['report_list'][] = [
+					'id'					 => $result['id'],
+					'installationtype_id' 	=> $result['installationtype_id'],
+					'isntallation_type' 	=> $get_installationtype[0]['name'],
+					'subtype_id' 			=> $result['subtype_id'],
+					'subtype' 				=> $get_subtype[0]['name'],
+					'comments'				=> $result['comments'],
+					'status' 				=> $result['status']
+				];
+				$message = 'Report List Edit View';
 			}
 
 			$jsonData['page_lables'] = [];
