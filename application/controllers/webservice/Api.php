@@ -307,7 +307,7 @@ class Api extends CC_Controller
 				$post 				= $this->input->post();
 				$plumberID 			= $this->input->post('user_id');
 
-				$userdata			= $this->Plumber_Model->getList('row', ['id' => $id, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+				$userdata			= $this->Plumber_Model->getList('row', ['id' => $plumberID, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
 				$post['user_id']	 	= 	$plumberID;
 				$post['usersdetailid'] 	= 	$userdata['usersdetailid'];
 				$post['usersplumberid'] = 	$userdata['usersplumberid'];
