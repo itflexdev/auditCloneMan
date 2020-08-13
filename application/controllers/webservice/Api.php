@@ -314,7 +314,7 @@ class Api extends CC_Controller
 
 				if ((isset($post['address'][1]['id']) && $post['address'][1]['id'] !='') && (isset($post['address'][1]['type']) && $post['address'][1]['type'] !='')) {
 					$post['address'][1]['id'] 	= $post['address'][1]['id'];
-					$post['address'][1]['type'] = $post['address'][2]['type'];
+					$post['address'][1]['type'] = $post['address'][1]['type'];
 				}else{
 					$post['address'][1]['id'] 	= '';
 					$post['address'][1]['type'] = '';
