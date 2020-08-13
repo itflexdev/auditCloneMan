@@ -2571,6 +2571,96 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
+	public function auditor_accounts(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$userid = $this->input->post('user_id');
+			$jsonData = [];
+			if ($this->input->post('type') == 'list') {
+				$totalcount 				= $this->Auditor_Model->getInvoiceList('count',['user_id' => $userid]);
+				$results 					= $this->Auditor_Model->getInvoiceList('all', ['user_id' => $userid]);
+				$jsonData['totalcount']    	= 	$totalcount;
+				$jsonData['userid']    		= 	$userid;
+				if(count($results) > 0){
+					$message = 'Auditor My Accounts';
+					foreach($results as $result){
+						$internal_inv = "";
+						$originalDate = isset($result['invoice_date']) && $result['invoice_date']!='1970-01-01' && $result['invoice_date']!='0000-00-00' ? date('d-m-Y', strtotime($result['invoice_date'])) : '';
+						$internal_inv = $result['invoice_no'];
+						// $newDate = date("d-m-Y", strtotime($originalDate));
+						if($result['status'] == '0'){
+							$status = "Unpaid";
+							$action = '';
+						}elseif($result['status'] == '1'){
+							$status = "Paid";
+							$action = base_url().'assets/inv_pdf/'.$result['inv_id'].'.pdf';
+						}else{
+							$status = "Not Submitted";
+							if($result['status'] == '2'){
+								$action = '';
+							}
+						}
+						$jsonData['accounts_results'][] = 	[      
+							'inv_id' 		=> 	$internal_inv,
+							'created_at'    =>  $originalDate,
+							'description'   =>  $result['description'],
+							'total_cost'    => 	$this->config->item('currency').' '.$result['total_cost'],
+							'action'	    => 	$action,
+							'status'    	=> 	$status
+
+						];
+					}
+				}else{
+					$message = 'No Record Found';
+				}
+			
+			}elseif($this->input->post('type') == 'search' && $this->input->post('keywords') !=''){
+				$userid 			= $this->input->post('user_id');
+				$keywords 			= $this->input->post('keywords');
+				$post['search'] 	= ['value' => $keywords, 'regex' => false];
+				$totalcount 				= $this->Auditor_Model->getInvoiceList('count',['user_id' => $userid]+$post);
+				$results 					= $this->Auditor_Model->getInvoiceList('all', ['user_id' => $userid]+$post);
+				$jsonData['totalcount']    	= 	$totalcount;
+				$jsonData['userid']    		= 	$userid;
+				if(count($results) > 0){
+					$message = 'Auditor Accounts Search Results';
+					foreach($results as $result){
+						$internal_inv = "";
+						$originalDate = isset($result['invoice_date']) && $result['invoice_date']!='1970-01-01' && $result['invoice_date']!='0000-00-00' ? date('d-m-Y', strtotime($result['invoice_date'])) : '';
+						$internal_inv = $result['invoice_no'];
+						// $newDate = date("d-m-Y", strtotime($originalDate));
+						if($result['status'] == '0'){
+							$status = "Unpaid";
+							$action = '';
+						}elseif($result['status'] == '1'){
+							$status = "Paid";
+							$action = base_url().'assets/inv_pdf/'.$result['inv_id'].'.pdf';
+						}else{
+							$status = "Not Submitted";
+							if($result['status'] == '2'){
+								$action = '';
+							}
+						}
+						$jsonData['accounts_results'][] = 	[      
+							'inv_id' 		=> 	$internal_inv,
+							'created_at'    =>  $originalDate,
+							'description'   =>  $result['description'],
+							'total_cost'    => 	$this->config->item('currency').' '.$result['total_cost'],
+							'action'	    => 	$action,
+							'status'    	=> 	$status
+
+						];
+					}
+				}else{
+					$message = 'No Record Found';
+				}
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$jsonData);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
 	public function getInstallationTypeList_api($data = []){
 
 		if (!isset($data['id']) && !isset($data['type'])) {
