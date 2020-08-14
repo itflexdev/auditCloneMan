@@ -278,9 +278,8 @@ class Services extends CC_Controller
 			}
 		}else{
 			$json = array("status" => "0", "message" => "Invalid Request", "result" => []);
+			echo json_encode($json);
 		}
-		
-		echo json_encode($json);
 	}
 	
 	public function purchasecocreturn(){
