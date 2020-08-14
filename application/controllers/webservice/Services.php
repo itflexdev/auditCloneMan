@@ -274,7 +274,7 @@ class Services extends CC_Controller
 				$data['post']		= $post;			
 				$data['plumber']	= $this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
 				
-				$this->load->view('api/purchasecoc/index', $data)
+				$this->load->view('api/purchasecoc/index', $data);
 			}
 		}else{
 			$json = array("status" => "0", "message" => "Invalid Request", "result" => []);
