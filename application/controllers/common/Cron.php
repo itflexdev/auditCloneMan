@@ -275,8 +275,8 @@ class Cron extends CC_Controller {
 						$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}','{renewal_date}'];
 						$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes],$renewal_date];
 						$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
-						//$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
-						$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
+						$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+						//$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
 					}
 					
 					if($settings && $settings['otp']=='1'){

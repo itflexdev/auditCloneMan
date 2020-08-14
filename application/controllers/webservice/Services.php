@@ -263,35 +263,32 @@ class Services extends CC_Controller
 	public function purchasecoc(){
 		if($this->input->post()){
 			$this->form_validation->set_rules('id', 'ID', 'trim|required');
+			$this->form_validation->set_rules('amount', 'Amount', 'trim|required');
+			$this->form_validation->set_rules('customdata', 'Custom Data', 'trim|required');
 			
 			if ($this->form_validation->run()==FALSE) {
 				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
 			}else{
-				$post 	 = $this->input->post();
-				$plumber = $this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
+				$post				= $this->input->post();
 				
-				$result = [
-					'url' 				=> $this->config->item('paymenturl'),
-					'merchantid' 		=> $this->config->item('paymentid'),
-					'merchantkey' 		=> $this->config->item('paymentkey'),
-					'notify_url' 		=> base_url().'webservice/services/purchasecocnotify',
-					'name_first' 		=> $plumber['name'],
-					'name_last' 		=> $plumber['surname'],
-					'email_address' 	=> $plumber['email'],
-					'item_name' 		=> 'Coc Purchase',
-					'item_description' 	=> 'coc',
-					'payment_method' 	=> 'cc',
-					'amount' 			=> '',
-					'custom_str1' 		=> '',
-				];
+				$data['post']		= $post;			
+				$data['plumber']	= $this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
 				
-				$json = array("status" => "1", "message" => "Payment Details.", "result" => $result);
+				$this->load->view('api/purchasecoc/index', $data)
 			}
 		}else{
 			$json = array("status" => "0", "message" => "Invalid Request", "result" => []);
 		}
 		
 		echo json_encode($json);
+	}
+	
+	public function purchasecocreturn(){
+		echo 'Success';
+	}
+	
+	public function purchasecoccancel(){
+		echo 'Cancelled';
 	}
 	
 	public function purchasecocnotify(){
