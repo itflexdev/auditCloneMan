@@ -10,6 +10,7 @@ class Services extends CC_Controller
 		$this->load->model('Managearea_Model');
 		$this->load->model('Friends_Model');
 		$this->load->model('Systemsettings_Model');
+		$this->load->model('Coc_Model');
 	}
 	
 	public function national_ranking()
@@ -259,17 +260,30 @@ class Services extends CC_Controller
 	}
 	
 	
-	public function payment_details(){
+	public function purchasecoc(){
 		if($this->input->post()){
 			$this->form_validation->set_rules('id', 'ID', 'trim|required');
 			
 			if ($this->form_validation->run()==FALSE) {
 				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
 			}else{
+				$post 	 = $this->input->post();
+				$plumber = $this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
+				
 				$result = [
-					'url' 			=> $this->config->item('paymenturl'),
-					'merchantid' 	=> $this->config->item('paymentid'),
-					'merchantkey' 	=> $this->config->item('paymentkey')
+					'url' 				=> $this->config->item('paymenturl'),
+					'merchantid' 		=> $this->config->item('paymentid'),
+					'merchantkey' 		=> $this->config->item('paymentkey'),
+					'notify_url' 		=> base_url().'webservice/services/purchasecocnotify',
+					'name_first' 		=> $post['name'],
+					'name_last' 		=> $post['surname'],
+					'name_last' 		=> $post['surname'],
+					'email_address' 	=> $post['email'],
+					'item_name' 		=> 'Coc Purchase',
+					'item_description' 	=> 'coc',
+					'payment_method' 	=> 'cc',
+					'amount' 			=> '',
+					'custom_str1' 		=> '',
 				];
 				
 				$json = array("status" => "1", "message" => "Payment Details.", "result" => $result);
@@ -279,6 +293,14 @@ class Services extends CC_Controller
 		}
 		
 		echo json_encode($json);
+	}
+	
+	public function purchasecocnotify(){
+		header( 'HTTP/1.0 200 OK' );
+		flush();
+		
+		$result = $_POST;
+		$this->Coc_Model->purchasecoc($result);
 	}
 	
 }
