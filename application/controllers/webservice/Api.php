@@ -217,9 +217,10 @@ class Api extends CC_Controller
 
     public function plumberprofile_api(){
     	if ($this->input->post() && $this->input->post('user_id')) {
-    		$id = $this->input->post('user_id');
-    		$result = $this->Plumber_Model->getList('row', ['id' => $id, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
-    		
+    		$id 				= $this->input->post('user_id');
+    		$result 			= $this->Plumber_Model->getList('row', ['id' => $id, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+    		$specialisations 	= explode(',', $result['specialisations']);
+
     		// Physical address
 			$physicaladdress 		= isset($result['physicaladdress']) ? explode('@-@', $result['physicaladdress']) : [];
 			$jsonData['physical']['addressid1'] 	= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
@@ -254,6 +255,37 @@ class Api extends CC_Controller
 			$jsonData['billing']['id'] 				= isset($billingaddress[6]) ? $billingaddress[0] : '';
 
 			$jsonData['plumber_result'] 			= $result;
+			$jsonData['plumber_designation'] 		= $this->config->item('designation2')[$result['designation']];
+			$jsonData['plumber_gender'] 			= $this->config->item('gender')[$result['gender']];
+			$jsonData['plumber_racial'] 			= $this->config->item('racial')[$result['racial']];
+			$jsonData['plumber_homelanguage'] 		= $this->config->item('homelanguage')[$result['homelanguage']];
+			$jsonData['plumber_citizen'] 			= $this->config->item('citizen')[$result['citizen']];
+
+			if ($result['disability'] =='0' || $result['disability'] =='') {
+				$jsonData['plumber_disability'] 		= 'None';
+			}else{
+				$jsonData['plumber_disability'] 		= $this->config->item('disability')[$result['disability']];
+			}
+			if ($result['coc_electronic'] =='0' || $result['coc_electronic'] =='') {
+				$coc_electronic = '2';
+				$jsonData['plumber_coc_electronic'] 		= $this->config->item('yesno')[$coc_electronic];
+			}else{
+				$jsonData['plumber_coc_electronic'] 		= $this->config->item('yesno')[$result['coc_electronic']];
+			}
+			if ($result['nationality'] =='0' || $result['nationality'] =='2' || $result['nationality'] =='') {
+				$nationality = '2';
+				$jsonData['plumber_nationality'] 		= $this->config->item('yesno')[$nationality];
+			}else{
+				$jsonData['plumber_nationality'] 		= $this->config->item('yesno')[$result['nationality']];
+			}
+
+			if (count($specialisations) > 0) {
+				foreach ($specialisations as $key => $specialisationsvalue) {
+					$jsonData['plumber_specialisations'][] 		= $this->config->item('specialisations')[$specialisationsvalue];
+				}
+			}else{
+					$jsonData['plumber_specialisations'][] 		= '';
+				}
 
 			if ($result['file1'] !='') {
 				$jsonData['plumber_identity_doc'][] = base_url().'assets/plumber/'.$id.'/'.$result['file1'];
@@ -2670,6 +2702,88 @@ class Api extends CC_Controller
 			}
 			$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$jsonData);
 		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+	public function auditor_accounts_action(){
+		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('inv_id') && $this->input->post('request_type') =='edit_view') {
+			$userid 		= $this->input->post('user_id');
+			$inv_id 		= $this->input->post('inv_id');
+			$result 		= $this->Auditor_Model->getInvoiceList('row', $userid);
+			$auditordetail 	= $this->Auditor_Model->getAuditorList('row',$userid);
+			$settings		= 	$this->Systemsettings_Model->getList('row');
+			$dbVat 			= $settings['vat_percentage'];
+			// $vat 		= $this->Coc_Model->getPermissions('row');
+			$address2 		= $billingaddress[2];
+			$address3 		= $auditordetail['suburb'];
+			$address4 		= $auditordetail['city'];
+			$address5 		= $auditordetail['province'];
+			$work_phone 	= $auditordetail['work_phone'];
+			$email 			= $auditordetail['email'];
+
+			$bank_name 		= $auditordetail['bank_name'];
+			$branch_code 	= $auditordetail['branch_code'];
+			$account_name 	= $auditordetail['account_name'];
+			$account_no 	= $auditordetail['account_no'];
+			$account_type 	= $auditordetail['account_type'];
+			$currency 		= $this->config->item('currency');
+
+			$editid = isset($result['inv_id']) ? $result['inv_id'] : '';
+			$vat_vendor = isset($result['vat_vendor']) ? $result['vat_vendor'] : '';
+			$description = isset($result['description']) ? $result['description'] : '';	
+			$total_cost = isset($result['total_cost']) ? $result['total_cost'] : '';
+			$vatvalue = '0.00';
+			$total = '0.00';
+			if($editid > 0)	{
+				if($vat_vendor > 0){
+					$vatper = $vat['vat_percentage'];		
+					$vat_amount1 = $total_cost * $vatper / 100;
+					$vatvalue = currencyconvertor($vat_amount1);
+
+					$total = currencyconvertor($total_cost + $vatvalue);
+				}
+				else{
+					$total = currencyconvertor($total_cost);
+				}
+			}
+
+			$jsonData['auditor_details'][] = [
+				'userid' 		=> $userid,
+				'inv_id' 		=> $inv_id,
+				'vat_vendor' 	=> $result['vat_vendor'],
+				'description' 	=> $result['description'],
+				'total_cost' 	=> $result['total_cost'],
+				'address2' 		=> $address2,
+				'suburb' 		=> $address3,
+				'city' 			=> $address4,
+				'province' 		=> $address5,
+				'work_phone' 	=> $work_phone,
+				'email' 		=> $email,
+			];
+			$jsonData['auditor_details'][] = [
+				'userid' 		=> $dbVat,
+			];
+			$jsonData['table_content'][] = [
+				'description' 	=> $result['description'],
+				'sub_total' 	=> $currency.$total_cost,
+				'vat' 			=> $currency.$vatvalue,
+				'total' 		=> $currency.$total,
+			];
+
+			$jsonData['banking_details'][] = [
+				'bank_name' 	=> $bank_name,
+				'branch_code' 	=> $branch_code,
+				'account_name' 	=> $account_name,
+				'account_no' 	=> $account_no,
+				'account_type' 	=> $account_type
+			];
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Details', "result"=>$jsonData);
+		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('request_type') =='action') {
+			$jsonData = '';
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Details', "result"=>$jsonData);
+		}
+		else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
 		echo json_encode($jsonArray);
