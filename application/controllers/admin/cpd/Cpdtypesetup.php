@@ -311,8 +311,11 @@ class Cpdtypesetup extends CC_Controller
 				$cpd_Stream 	= $this->config->item('cpdstream')[$val["cpdstream"]];
 				$cpd_Stream_id 	= $val["cpdstream"];
 				$cpdPoints 		= $val["points"];
+				$activity1 		= str_replace("'", "\\'", $activity);
+				$activity1 		= str_replace('"', "&quot;", $activity1);
+				//$activity1 		= addcslashes($activity, "'");
 			?>
-			<li onClick="selectActivity('<?php echo $activity; ?>','<?php echo $val["id"]; ?>','<?php echo $startDate; ?>','<?php echo $cpd_Stream; ?>','<?php echo $cpdPoints; ?>','<?php echo $cpd_Stream_id; ?>');"><?php echo $activity; ?></li>
+			<li onClick="selectActivity('<?php echo $activity1; ?>','<?php echo $val["id"]; ?>','<?php echo $startDate; ?>','<?php echo $cpd_Stream; ?>','<?php echo $cpdPoints; ?>','<?php echo $cpd_Stream_id; ?>');"><?php echo $activity; ?></li>
 			<?php } ?>
 			</ul>
 <?php 	} 

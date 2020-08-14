@@ -491,7 +491,8 @@ class Coc_Model extends CC_Model
 				$this->db->where('user_id', $stockuserid); 
 				$this->db->update('coc_count'); 
 				
-				$this->db->update('stock_management', ['user_id' => '0', 'coc_status' => '1', 'coc_orders_status' => '6'], ['id' => $cocid]);
+				$this->db->update('stock_management', ['user_id' => '0', 'coc_status' => '1', 'coc_orders_status' => '6', 'allocatedby' => null], ['id' => $cocid]);
+				$this->db->delete('plumberallocate', ['stockid' => $cocid]);
 				$return = '1';
 			}elseif($recall=='2'){
 				$this->db->update('stock_management', ['coc_status' => '7', 'coc_orders_status' => '7'], ['id' => $cocid]);

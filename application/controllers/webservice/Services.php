@@ -151,7 +151,8 @@ class Services extends CC_Controller
 						$rank				= ($useridsearch !== false) ? $useridsearch+1 : 0;
 				
 						$result[] =  [
-							'id' 		=> $userid,
+							'id' 		=> $friend['id'],
+							'userid' 	=> $userid,
 							'name' 		=> $friend['name'],
 							'point' 	=> $point,
 							'rank' 		=> $rank,
@@ -170,6 +171,26 @@ class Services extends CC_Controller
 		}
 		
 		echo json_encode($json+$extras);
+	}
+	
+	public function my_friends_delete()
+	{
+		if($this->input->post()){
+			$this->form_validation->set_rules('id', 'ID', 'trim|required');
+			
+			if ($this->form_validation->run()==FALSE) {
+				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
+			}else{
+				$post			= $this->input->post();				
+				$this->Friends_Model->remove($post);
+				
+				$json = array("status" => "1", "message" => "Successfully Deleted", "result" => []);
+			}
+		}else{
+			$json = array("status" => "0", "message" => "Invalid Request", "result" => []);
+		}
+		
+		echo json_encode($json);
 	}
 	
 	public function otp(){
@@ -209,7 +230,55 @@ class Services extends CC_Controller
 		echo json_encode($json);
 	}
 	
+	public function otp_verification(){
+		if($this->input->post()){
+			$this->form_validation->set_rules('id', 'ID', 'trim|required');
+			$this->form_validation->set_rules('otp', 'OTP', 'trim|required');
+			
+			if ($this->form_validation->run()==FALSE) {
+				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
+			}else{
+				$post	= $this->input->post();
+				$result = $this->db->from('otp')->where(['otp' => $post['otp'], 'user_id' => $post['id']])->get()->row_array();
+				
+				if ($result) {
+					$json = array("status" => "1", "message" => "Successfully Verified.", "result" => []);
+				}else{
+					$json = array("status" => "0", "message" => "Invalid OTP.", "result" => []);
+				}
+			}
+		}else{
+			$json = array("status" => "0", "message" => "Invalid Request", "result" => []);
+		}
+		
+		echo json_encode($json);
+	}
+	
 	function errormessage($error){
 		return str_replace("\n", "", strip_tags($error));
 	}
+	
+	
+	public function payment_details(){
+		if($this->input->post()){
+			$this->form_validation->set_rules('id', 'ID', 'trim|required');
+			
+			if ($this->form_validation->run()==FALSE) {
+				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
+			}else{
+				$result = [
+					'url' 			=> $this->config->item('paymenturl'),
+					'merchantid' 	=> $this->config->item('paymentid'),
+					'merchantkey' 	=> $this->config->item('paymentkey')
+				];
+				
+				$json = array("status" => "1", "message" => "Payment Details.", "result" => $result);
+			}
+		}else{
+			$json = array("status" => "0", "message" => "Invalid Request", "result" => []);
+		}
+		
+		echo json_encode($json);
+	}
+	
 }

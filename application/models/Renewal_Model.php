@@ -4,7 +4,6 @@ class Renewal_Model extends CC_Model
 {
 	public function getList($type, $requestdata=[])
 	{
-		
         $this->db->select ('inv.*, ud.name, ud.surname, ud.status as userstatus, up.registration_no, us.expirydate');
         $this->db->from('invoice inv');    
         $this->db->join('users_detail ud', 'ud.user_id = inv.user_id', 'left');
@@ -75,6 +74,7 @@ class Renewal_Model extends CC_Model
 		$this->db->where('us.status', '1' );
 		$this->db->where("DATEDIFF(us.expirydate,now()) = 30");
 		$result = $this->db->get()->result_array();		
+		
 		return $result;
 	}
 
@@ -90,7 +90,8 @@ class Renewal_Model extends CC_Model
 		$this->db->where('us.type', '3' );
 		$this->db->where('us.status', '1' );
 		$this->db->where("DATEDIFF(us.expirydate,now()) = 7");		
-		$result = $this->db->get()->result_array();		
+		$result = $this->db->get()->result_array();			
+		
 		return $result;
 	}
 
@@ -114,8 +115,8 @@ class Renewal_Model extends CC_Model
 		$this->db->where('us.type', '3' );
 		$this->db->where('us.status', '1' );
 		$this->db->where("DATEDIFF(now(),us.expirydate) > ".$penalty);				
-		$result = $this->db->get()->result_array();
-
+		$result = $this->db->get()->result_array();	
+		
 		return $result;
 	}
 
@@ -131,7 +132,8 @@ class Renewal_Model extends CC_Model
 		$this->db->where('inv.status', '0' );
 		$this->db->where('us.type', '3' );
 		$this->db->where('us.status', '1' );		
-		$result = $this->db->get()->result_array();		 
+		$result = $this->db->get()->result_array();		 	
+		
 		return $result;
 	}
 
