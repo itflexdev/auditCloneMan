@@ -81,7 +81,7 @@ class Api extends CC_Controller
 					if($query->num_rows() > 0){
 						$result 	= $query->row_array();
 						$userdata	= $this->Plumber_Model->getList('row', ['id' => $result['id'], 'type' => '3', 'status' => ['0', '1', '2']], ['usersdetail']);
-						
+
 						if ($result['mailstatus'] =='1') {
 							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus'], 'mobilenumber' => $userdata['mobile_phone']
 						 	];
@@ -2749,7 +2749,6 @@ class Api extends CC_Controller
 					$total = currencyconvertor($total_cost);
 				}
 			}
-
 			$jsonData['auditor_details'][] = [
 				'userid' 		=> $userid,
 				'inv_id' 		=> $inv_id,
@@ -2781,11 +2780,38 @@ class Api extends CC_Controller
 				'account_type' 	=> $account_type
 			];
 			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Details', "result"=>$jsonData);
-		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('request_type') =='action') {
-			$jsonData = '';
-			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Details', "result"=>$jsonData);
-		}
-		else{
+		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('inv_id') && $this->input->post('request_type') =='action') {
+			$this->form_validation->set_rules('inv_id','Invoice id','trim|required');
+			$this->form_validation->set_rules('invoicedate','Invoice Date','trim|required');
+			$this->form_validation->set_rules('invoice_no','Invoice Number','trim|required');
+
+			if ($this->form_validation->run()==FALSE) {
+				$errorMsg = validation_errors();
+				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+			}else{
+				$id					= $this->input->post('inv_id');
+				$post 				= $this->input->post();
+				$request1['status'] = '0';
+
+				if(isset($post['invoicedate']) && $post['invoicedate']!='1970-01-01') $request1['invoice_date'] = date('Y-m-d', strtotime(str_replace('/','-',$post['invoicedate'])));
+				if(isset($post['invoice_no'])) $request1['invoice_no'] = $post['invoice_no'];
+				if(isset($post['total_cost'])) $request1['total_cost'] = $post['total_cost'];
+				if(isset($post['vat'])) $request1['vat'] = $post['vat'];
+				if(isset($post['internal_inv'])) $request1['internal_inv'] = $post['internal_inv'];
+				if(isset($request1)){	
+					$userdata = $this->db->update('invoice', $request1, ['inv_id' => $id]);	
+				}
+
+				if(isset($post['total_cost'])) $request2['cost_value'] = $post['total_cost'];
+				if(isset($post['vat'])) $request2['vat'] = $post['vat'];		
+				if(isset($post['total'])) $request2['total_due'] = $post['total'];
+				if(isset($request2)){	
+					$userdata = $this->db->update('coc_orders', $request2, ['inv_id' => $id]);	
+				}		
+				return $userdata;	
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Sucessfully', "result"=>$userdata);
+		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
 		echo json_encode($jsonArray);
