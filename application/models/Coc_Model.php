@@ -491,7 +491,8 @@ class Coc_Model extends CC_Model
 				$this->db->where('user_id', $stockuserid); 
 				$this->db->update('coc_count'); 
 				
-				$this->db->update('stock_management', ['user_id' => '0', 'coc_status' => '1', 'coc_orders_status' => '6'], ['id' => $cocid]);
+				$this->db->update('stock_management', ['user_id' => '0', 'coc_status' => '1', 'coc_orders_status' => '6', 'allocatedby' => null], ['id' => $cocid]);
+				$this->db->delete('plumberallocate', ['stockid' => $cocid]);
 				$return = '1';
 			}elseif($recall=='2'){
 				$this->db->update('stock_management', ['coc_status' => '7', 'coc_orders_status' => '7'], ['id' => $cocid]);
@@ -603,5 +604,132 @@ class Coc_Model extends CC_Model
 		$this->db->update('stock_management', ['auditorid' => '0'], ['id' => $cocid]);
 		
 		return true;
+	}
+	
+	public function purchasecoc($result)
+	{
+		if($result['payment_status']=='COMPLETE'){
+			$settings 		= 	$this->Systemsettings_Model->getList('row');
+			$requestData 	= 	json_decode(stripslashes($result['custom_str1']), true);
+			$userid 		=	$requestData['userid'];
+
+			if ($requestData['coc_type'] == '1') {
+				$cocname = 'Electronic';
+			}elseif($requestData['coc_type'] == '2'){
+				$cocname = 'Paper-Based';
+			}
+			
+			$requestData1['description'] 	= 	'Purchase of '.$requestData['quantity'].' '.$cocname.' Certificate(s) of Compliance';
+			$requestData1['user_id']		= 	$userid;
+			$requestData1['vat']			= 	$requestData['vat'];
+			$requestData1['delivery_type'] 	= 	$requestData['delivery_type'];
+			$requestData1['total_cost'] 	= 	$requestData['total_due'];
+			$requestData1['created_at']		= 	date('Y-m-d H:i:s');
+			$requestData1['inv_type']		= 	1;
+			$requestData1['coc_type']		= 	$requestData['coc_type'];
+			if($requestData['coc_type']=='1') $requestData1['order_status'] = '1';
+				
+			$this->db->insert('invoice',$requestData1);
+			$inv_id 		= $this->db->insert_id();
+
+			$this->CC_Model->diaryactivity(['plumberid' => $userid, 'action' => '5', 'type' => '2']);
+				
+			$requestData2['description'] 	= 	'Purchase of '.$requestData['quantity'].' '.$cocname.' Certificate(s) of Compliance';
+			$requestData2['user_id']		= 	$userid;
+			$requestData2['created_by']		= 	$userid;
+			$requestData2['created_at']		= 	date('Y-m-d H:i:s');
+			$requestData2['updated_at']		=	$requestData2['created_at'];
+			$requestData2['status']			= 	'0';
+			$requestData2['inv_id']			= 	$inv_id;
+			$requestData2['coc_type']		= 	$requestData['coc_type'];
+			$requestData2['delivery_type'] 	= 	$requestData['delivery_type'];
+			$requestData2['cost_value']		= 	$requestData['cost_value'];
+			$requestData2['quantity']		= 	$requestData['quantity'];
+			$requestData2['delivery_cost']	= 	$requestData['delivery_cost'];
+			$requestData2['delivery_cost']	= 	$requestData['delivery_cost'];
+			$requestData2['vat']			= 	$requestData['vat'];
+			$requestData2['total_due']		= 	$requestData['total_due'];
+
+			$this->db->insert('coc_orders',$requestData2);
+			$coc_order_id 	= $this->db->insert_id();
+
+			$requestData0['count'] 			= 	$requestData['permittedcoc'] - $requestData['quantity'];
+			$requestData0['user_id']		= 	$userid;
+			$requestData0['created_by']		= 	$userid;
+			$requestData0['created_at']		= 	date('Y-m-d H:i:s');
+
+			$this->db->update('coc_count', $requestData0, ['user_id' => $userid]);
+				
+			$insert_id 				= 	$this->db->select('id,inv_id')->from('coc_orders')->order_by('id','desc')->get()->row_array();
+			$userdata1				= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail']);
+			$request['status'] 		= 	'1';
+			
+			if ($insert_id) {
+
+				if($requestData['coc_type']=='1'){
+					for($m=1;$m<=$requestData['quantity'];$m++){
+						$stockmanagement = $this->db->get_where('stock_management', ['user_id' => '0', 'coc_status' => '1', 'coc_orders_status' => '6', 'type' => '1'])->row_array();
+						
+						$cocrequestdata = [
+							'coc_status' 				=> '4',
+							'type' 						=> $requestData['coc_type'],
+							'coc_orders_status' 		=> null,
+							'user_id' 					=> $userid,
+						];
+						
+						if($stockmanagement){
+							$this->db->update('stock_management', $cocrequestdata, ['id' => $stockmanagement['id']]);
+							$cocinsertid = $stockmanagement['id'];
+						}else{
+							$checklastid = $this->db->order_by('id', 'desc')->get_where('stock_management')->row_array();
+							if($checklastid && $checklastid['id'] < $this->config->item('customstockno')) $cocrequestdata['id'] = $this->config->item('customstockno');
+								
+							$this->db->insert('stock_management', $cocrequestdata);
+							$cocinsertid = $this->db->insert_id();
+						}
+						
+						$this->diaryactivity(['adminid' => '1', 'plumberid' => $userid, 'cocid' => $cocinsertid, 'action' => '6', 'type' => '1']);		
+					}	
+
+					$request['admin_status']	= '1';
+				}
+
+
+				$inid 			= $coc_order_id;				
+				$result_order 	= $this->db->update('coc_orders', $request, ['id' => $inid,'user_id' => $userid ]);
+
+				if(isset($request['admin_status'])) unset($request['admin_status']);
+
+				$result_invoice = $this->db->update('invoice', $request, ['inv_id' => $inv_id,'user_id' => $userid]);
+
+				$template 	= $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '17'])->get()->row_array();
+				$orders 	= $this->db->select('*')->from('coc_orders')->where(['user_id' => $userid])->order_by('id','desc')->get()->row_array();
+				$currency   = $this->config->item('currency');
+				$cocreport 	= $this->cocreport($inv_id, 'PDF Invoice Plumber COC');					
+				$cocTypes 	= $orders['coc_type'];
+				$mail_date 	= date("d-m-Y", strtotime($orders['created_at']));
+				
+				$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}'];		
+				$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype')[$cocTypes]];
+				$body 	= str_replace($array1, $array2, $template['email_body']);
+
+				if ($template['email_active'] == '1') {
+					$this->CC_Model->sentMail($userdata1['email'],$template['subject'],$body,$cocreport);
+
+					if($settings && $settings['otp']=='1'){
+						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '17', 'smsstatus' => '1']);
+						
+						if($smsdata){
+							$sms = str_replace(['{number of COC}'], [$orders['quantity']], $smsdata['sms_body']);
+							$this->sms(['no' => $userdata1['mobile_phone'], 'msg' => $sms]);
+						}
+					}
+				}
+			}
+		}
+		
+		$file = fopen("assets/payment/payment.txt","a");
+		fwrite($file,json_encode($result). PHP_EOL);
+		fclose($file);
 	}
 }
