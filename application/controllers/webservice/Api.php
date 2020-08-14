@@ -79,9 +79,11 @@ class Api extends CC_Controller
 					$query = $this->db->get_where('users', ['email' => $email, 'password' => $password]);
 				
 					if($query->num_rows() > 0){
-						$result = $query->row_array();
+						$result 	= $query->row_array();
+						$userdata	= $this->Plumber_Model->getList('row', ['id' => $result['id'], 'type' => '3', 'status' => ['0', '1', '2']], ['usersdetail']);
+						
 						if ($result['mailstatus'] =='1') {
-							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus']
+							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus'], 'mobilenumber' => $userdata['mobile_phone']
 						 	];
 						 	$message = 'Login sucessfully';
 						 	$status = '1';
