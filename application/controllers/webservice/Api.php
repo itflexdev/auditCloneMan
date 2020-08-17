@@ -1997,7 +1997,7 @@ class Api extends CC_Controller
 					$status = 'Reject';
 					$statusicons = '';
 				}
-				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id'], 
+				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $value['status'], 'status_words' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id'], 
 				];
 			}
 
@@ -2167,7 +2167,7 @@ class Api extends CC_Controller
 				];
 
 			if (count($result) > 0) {
-				$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$result);
+				$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$jsonData);
 			}else{
 				$jsonArray 	= array("status"=>'0', "message"=>'No Record Found', "result"=>[]);
 			}
@@ -2811,6 +2811,32 @@ class Api extends CC_Controller
 				return $userdata;	
 			}
 			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Sucessfully', "result"=>$userdata);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function audithistory(){
+		if ($this->input->post() && $this->input->post('coc_id')) {
+			if($this->input->post('user_id') !=''){$auditorid = $this->input->post('user_id');}else{$auditorid = '';}
+			$cocid 			= $this->input->post('coc_id');
+			$cocdetail 		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$auditorid);	
+
+			$post['plumberid'] 	= $cocdetail['user_id'];
+			$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
+			$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
+
+			$jsonData['coc_details'][] = [
+				'cocid' => '',
+				'plumberid' => '',
+				'auditorid' => '',
+			];
+
+
+			if ($this->input->post() && $this->input->post('user_id') && $this->input->post('plumber_id')) {
+				# code...
+			}
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
