@@ -2833,7 +2833,11 @@ class Api extends CC_Controller
 			$jsonData['coc_details'][] = [
 				'cocid' => '',
 				'plumberid' => '',
+				'plumbername' => '',
+				'plumberemail' => '',
 				'auditorid' => '',
+				'auditorname' => '',
+				'auditoremail' => '',
 			];
 
 
