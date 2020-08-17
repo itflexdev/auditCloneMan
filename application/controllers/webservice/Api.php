@@ -2142,40 +2142,43 @@ class Api extends CC_Controller
 
 	public function mycpd_edit_view(){
 
-		if ($this->input->post() && $this->input->post('cpdID') && $this->input->post('pagestatus')) {
+		if ($this->input->post() && $this->input->post('cpdID') && $this->input->post('pagestatus') !='') {
 			$jsonData 					= [];
 			$jsonData['page_lables'] 	= [];
 			$jsonData['result'] 		= [];
 			$base_url 					= base_url();
 
 			$cpdID 			= $this->input->post('cpdID');
-			$pagestatus 	= $this->input->post('pagestatus');
+			if ($this->input->post('pagestatus') =='2' || $this->input->post('pagestatus') =='0') {
+				$pagestatus 	= '0';
+			}else{
+				$pagestatus 	= $this->input->post('pagestatus');
+			}
 
 			$result 		= $this->Mycpd_Model->getQueueList('row', ['id' => $cpdID, 'pagestatus' => $pagestatus]);
 
 			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'Comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points', 'renewalcpd' => 'CPD points needed for renewal'
 			];
-			if ($result['status'] == '0') {
-					$status = 'Pending';
-					$statusicons = '';
-				}elseif($result['status'] == '1'){
-					$status = 'Approve';
-					$statusicons = '';
-				}elseif($result['status'] == '2'){
-					$status = 'Reject';
-					$statusicons = '';
-				}
 
-			$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file1'].'', 'plumberdocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file2'].'','cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => '', 'admin_comments' => $result['admin_comments']
-				];
+			if ($result) {
+				if ($result['status'] == '0') {
+						$status = 'Pending';
+						$statusicons = '';
+					}elseif($result['status'] == '1'){
+						$status = 'Approve';
+						$statusicons = '';
+					}elseif($result['status'] == '2'){
+						$status = 'Reject';
+						$statusicons = '';
+					}
 
-			if (count($result) > 0) {
-				$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$jsonData);
+				$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file1'].'', 'plumberdocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file2'].'','cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => '', 'admin_comments' => $result['admin_comments']
+					];
+
+					$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$jsonData);
 			}else{
 				$jsonArray 	= array("status"=>'0', "message"=>'No Record Found', "result"=>[]);
 			}
-
-			
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
@@ -2826,9 +2829,8 @@ class Api extends CC_Controller
 			$cocid 			= $this->input->post('coc_id');
 			$cocdetail 		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$auditorid);	
 
-			$post['plumberid'] 	= $cocdetail['user_id'];
-			$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
-			$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
+			$plumberid 		= $cocdetail['user_id'];
+			$reviewresults 		= $this->Auditor_Model->getReviewHistoryCount(['plumberid' => $plumberid]);
 
 			$count 				= $reviewresults['count'];
 			$total 				= $reviewresults['total'];
@@ -2855,20 +2857,58 @@ class Api extends CC_Controller
 				'auditormobile' => $cocdetail['auditormobile'],
 			];
 			$jsonData['history_details'][] = [
-				'cocid' 		=> $cocdetail['id'],
-				'plumberid' 	=> $cocdetail['user_id'],
-				'plumbername' 	=> $cocdetail['u_name'],
-				'plumberemail' 	=> $cocdetail['u_email'],
-				'auditorid' 	=> $cocdetail['auditorid'],
-				'auditorname' 	=> $cocdetail['auditorname'],
-				'auditoremail' 	=> $cocdetail['auditoremail'],
-				'auditormobile' => $cocdetail['auditormobile'],
+				'count' 					=> $count,
+				'total' 					=> $total,
+				'refixincomplete' 			=> $refixincomplete,
+				'refixcomplete' 			=> $refixcomplete,
+				'compliment' 				=> $compliment,
+				'cautionary' 				=> $cautionary,
+				'noaudit' 					=> $noaudit,
+				'refixincompletepercentage' => $refixincompletepercentage,
+				'refixcompletepercentage' 	=> $refixcompletepercentage,
+				'complimentpercentage' 		=> $complimentpercentage,
+				'cautionarypercentage' 		=> $cautionarypercentage,
+				'noauditpercentage' 		=> $noauditpercentage,
 			];
-
-
-			if ($this->input->post() && $this->input->post('user_id') && $this->input->post('plumber_id')) {
-				# code...
+			$jsonArray 		= array("status"=>'1', "message"=>'Plumber Audit History', "result"=>$jsonData);
+			if ($this->input->post() && $this->input->post('auditorid') && $this->input->post('plumber_id') && $this->input->post('type') =='list') {
+				$post['plumberid'] 	= $this->input->post('plumber_id');
+				$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
+				$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
+				if(count($results) > 0){
+					foreach($results as $result){
+						$jsonData['table_content'][] = 	[
+												'date' 				=> 	date('d-m-Y', strtotime($result['created_at'])),
+												'auditor' 			=> 	$result['auditorname'],
+												'installationtype' 	=> 	$result['installationtypename'],
+												'subtype' 			=> 	$result['subtypename'],
+												'statementname' 	=> 	$result['statementname'],
+												'finding' 			=> 	$this->config->item('reviewtype')[$result['reviewtype']]
+											];
+					}
+				}
+				$message = 'Plumber History Results';
+			}elseif ($this->input->post() && $this->input->post('auditorid') && $this->input->post('plumber_id') && $this->input->post('type') =='search' && $this->input->post('keywords')) {
+				$post['plumberid'] 	= $this->input->post('plumber_id');
+				$post['search'] 	= ['value' => $this->input->post('keywords'), 'regex' => 'false'];
+				$post['page'] 		= 'adminaudithistroy';
+				$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
+				$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
+				if(count($results) > 0){
+					foreach($results as $result){
+						$jsonData['table_content'][] = 	[
+												'date' 				=> 	date('d-m-Y', strtotime($result['created_at'])),
+												'auditor' 			=> 	$result['auditorname'],
+												'installationtype' 	=> 	$result['installationtypename'],
+												'subtype' 			=> 	$result['subtypename'],
+												'statementname' 	=> 	$result['statementname'],
+												'finding' 			=> 	$this->config->item('reviewtype')[$result['reviewtype']]
+											];
+					}
+				}
+				$message = 'Plumber History Search Results';
 			}
+			$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$jsonData);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
