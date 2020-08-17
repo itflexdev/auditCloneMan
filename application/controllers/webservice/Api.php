@@ -2825,7 +2825,7 @@ class Api extends CC_Controller
 
 	public function audithistory(){
 		if ($this->input->post() && $this->input->post('coc_id')) {
-			if($this->input->post('user_id') !=''){$auditorid = $this->input->post('user_id');}else{$auditorid = '';}
+			if($this->input->post('user_id') !=''){$auditorid = ['auditorid' =>$this->input->post('user_id')];}else{$auditorid = [];}
 			$cocid 			= $this->input->post('coc_id');
 			$cocdetail 		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$auditorid);	
 
@@ -2870,8 +2870,8 @@ class Api extends CC_Controller
 				'cautionarypercentage' 		=> $cautionarypercentage,
 				'noauditpercentage' 		=> $noauditpercentage,
 			];
-			$jsonArray 		= array("status"=>'1', "message"=>'Plumber Audit History', "result"=>$jsonData);
-			if ($this->input->post() && $this->input->post('auditorid') && $this->input->post('plumber_id') && $this->input->post('type') =='list') {
+			$message = 'Plumber Audit History';
+			if ($this->input->post() && $this->input->post('plumber_id') && $this->input->post('type') =='list') {
 				$post['plumberid'] 	= $this->input->post('plumber_id');
 				$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
 				$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
@@ -2888,7 +2888,7 @@ class Api extends CC_Controller
 					}
 				}
 				$message = 'Plumber History Results';
-			}elseif ($this->input->post() && $this->input->post('auditorid') && $this->input->post('plumber_id') && $this->input->post('type') =='search' && $this->input->post('keywords')) {
+			}elseif ($this->input->post() && $this->input->post('plumber_id') && $this->input->post('type') =='search' && $this->input->post('keywords')) {
 				$post['plumberid'] 	= $this->input->post('plumber_id');
 				$post['search'] 	= ['value' => $this->input->post('keywords'), 'regex' => 'false'];
 				$post['page'] 		= 'adminaudithistroy';
