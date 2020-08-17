@@ -1996,6 +1996,9 @@ class Api extends CC_Controller
 				}elseif($value['status'] == '2'){
 					$status = 'Reject';
 					$statusicons = '';
+				}elseif($value['status'] == '3'){
+					$status = 'Not Submitted';
+					$statusicons = '';
 				}
 				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $value['status'], 'status_words' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id'], 
 				];
