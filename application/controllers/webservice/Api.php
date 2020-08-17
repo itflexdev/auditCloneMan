@@ -2153,7 +2153,7 @@ class Api extends CC_Controller
 
 			$result 		= $this->Mycpd_Model->getQueueList('row', ['id' => $cpdID, 'pagestatus' => $pagestatus]);
 
-			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points', 'renewalcpd' => 'CPD points needed for renewal'
+			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'Comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points', 'renewalcpd' => 'CPD points needed for renewal'
 			];
 			if ($result['status'] == '0') {
 					$status = 'Pending';
@@ -2166,7 +2166,7 @@ class Api extends CC_Controller
 					$statusicons = '';
 				}
 
-			$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file1'].'', 'plumberdocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file2'].'','cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => ''
+			$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file1'].'', 'plumberdocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file2'].'','cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => '', 'admin_comments' => $result['admin_comments']
 				];
 
 			if (count($result) > 0) {
@@ -2830,14 +2830,39 @@ class Api extends CC_Controller
 			$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
 			$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
 
+			$count 				= $reviewresults['count'];
+			$total 				= $reviewresults['total'];
+			$refixincomplete 	= $reviewresults['refixincomplete'];
+			$refixcomplete 		= $reviewresults['refixcomplete'];
+			$compliment 		= $reviewresults['compliment'];
+			$cautionary 		= $reviewresults['cautionary'];
+			$noaudit 			= $reviewresults['noaudit'];
+
+			$refixincompletepercentage 	= ($refixincomplete!=0) ? round(($refixincomplete/$total)*100,2).'%' : '0%'; 
+			$refixcompletepercentage 	= ($refixcomplete!=0) ? round(($refixcomplete/$total)*100,2).'%' : '0%'; 
+			$complimentpercentage 		= ($compliment!=0) ? round(($compliment/$total)*100,2).'%' : '0%'; 
+			$cautionarypercentage 		= ($cautionary!=0) ? round(($cautionary/$total)*100,2).'%' : '0%'; 
+			$noauditpercentage 			= ($noaudit!=0) ? round(($noaudit/$total)*100,2).'%' : '0%'; 
+
 			$jsonData['coc_details'][] = [
-				'cocid' => '',
-				'plumberid' => '',
-				'plumbername' => '',
-				'plumberemail' => '',
-				'auditorid' => '',
-				'auditorname' => '',
-				'auditoremail' => '',
+				'cocid' 		=> $cocdetail['id'],
+				'plumberid' 	=> $cocdetail['user_id'],
+				'plumbername' 	=> $cocdetail['u_name'],
+				'plumberemail' 	=> $cocdetail['u_email'],
+				'auditorid' 	=> $cocdetail['auditorid'],
+				'auditorname' 	=> $cocdetail['auditorname'],
+				'auditoremail' 	=> $cocdetail['auditoremail'],
+				'auditormobile' => $cocdetail['auditormobile'],
+			];
+			$jsonData['history_details'][] = [
+				'cocid' 		=> $cocdetail['id'],
+				'plumberid' 	=> $cocdetail['user_id'],
+				'plumbername' 	=> $cocdetail['u_name'],
+				'plumberemail' 	=> $cocdetail['u_email'],
+				'auditorid' 	=> $cocdetail['auditorid'],
+				'auditorname' 	=> $cocdetail['auditorname'],
+				'auditoremail' 	=> $cocdetail['auditoremail'],
+				'auditormobile' => $cocdetail['auditormobile'],
 			];
 
 
