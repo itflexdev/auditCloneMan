@@ -1878,35 +1878,33 @@ class Api extends CC_Controller
 	}
 
 	public function get_reviewlist(){
-		if ($this->input->post() && $this->input->post('coc_id')) {
-			$id 			= $this->input->post('coc_id');
-			$reviewlists	= $this->Auditor_Model->getReviewList('all', ['coc_id' => $id]);
-			foreach ($reviewlists as $key => $value) {
-				if (isset($review_images)) unset($review_images);
-				if ($this->config->item('reviewtype')[$value['reviewtype']] == 'Cautionary') {
+		if ($this->input->post() && $this->input->post('review_id')) {
+			$id 			= $this->input->post('review_id');
+			$reviewlists	= $this->Auditor_Model->getReviewList('row', ['id' => $id]);
+			if (isset($review_images)) unset($review_images);
+			if ($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Cautionary') {
 				$colorcode = '#ffd700';
-				}elseif($this->config->item('reviewtype')[$value['reviewtype']] == 'Compliment'){
-					$colorcode = '#ade33d';
-				}elseif($this->config->item('reviewtype')[$value['reviewtype']] == 'Failure'){
-					$colorcode = '#f33333';
-				}elseif($this->config->item('reviewtype')[$value['reviewtype']] == 'No Audit Findings'){
-					$colorcode = '#50c6f2';
-				}
-				if ($value['file'] !='') {
-					$images =  explode(",",$value['file']);
-					if (count($images) > 0) {
-						foreach ($images as $images_key => $image) {
-							$review_images[] = base_url().'assets/uploads/auditor/statement/'.$image.'';
-						}
-					}else{
-						$review_images[] = base_url().'assets/uploads/auditor/statement/'.$value['file'].'';
+			}elseif($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Compliment'){
+				$colorcode = '#ade33d';
+			}elseif($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Failure'){
+				$colorcode = '#f33333';
+			}elseif($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'No Audit Findings'){
+				$colorcode = '#50c6f2';
+			}
+			if ($reviewlists['file'] !='') {
+				$images =  explode(",",$reviewlists['file']);
+				if (count($images) > 0) {
+					foreach ($images as $images_key => $image) {
+						$review_images[] = base_url().'assets/uploads/auditor/statement/'.$image.'';
 					}
 				}else{
-					$review_images[] = '';
+					$review_images[] = base_url().'assets/uploads/auditor/statement/'.$reviewlists['file'].'';
 				}
-				$jsonData['review_details'][] = [ 'reviewid' => $value['id'], 'reviewtype' => $this->config->item('reviewtype')[$value['reviewtype']], 'statementname' => $value['statementname'], 'colorcode' => $colorcode, 'cocid' => $value['coc_id'], 'reference' => $value['reference'], 'comments' => $value['comments'], 'performancepoint' => $value['point'], 'knowledgelink' => $value['link'], 'review_images' => $review_images, 'status' => $value['status']
-				];
+			}else{
+				$review_images[] = '';
 			}
+			$jsonData['review_details'][] = [ 'reviewid' => $reviewlists['id'], 'reviewtype' => $this->config->item('reviewtype')[$reviewlists['reviewtype']], 'statementname' => $reviewlists['statementname'], 'colorcode' => $colorcode, 'cocid' => $reviewlists['coc_id'], 'reference' => $reviewlists['reference'], 'comments' => $reviewlists['comments'], 'performancepoint' => $reviewlists['point'], 'knowledgelink' => $reviewlists['link'], 'review_images' => $review_images, 'status' => $reviewlists['status']
+			];
 			$jsonArray = array("status"=>'1', "message"=>'Review Deatils', "result"=>$jsonData);
 		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
