@@ -1388,7 +1388,9 @@ class Api extends CC_Controller
 			
 
 			if ($this->form_validation->run()==FALSE) {
-				$errorMsg = validation_errors();
+				$findtext 		= ['<div class="form_error">', "</div>"];
+				$replacetext 	= ['', ''];
+				$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
 				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
 			}else{
 
