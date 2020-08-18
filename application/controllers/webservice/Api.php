@@ -758,6 +758,11 @@ class Api extends CC_Controller
 		$jsonArray = array("status"=>'1', "message"=>'yesno', 'result' => $jsonData);
 		echo json_encode($jsonArray);
 	}
+	public function workmanship_api(){
+		$jsonData['workmanship'][] = $this->config->item('workmanship');
+		$jsonArray = array("status"=>'1', "message"=>'Workmanship', 'result' => $jsonData);
+		echo json_encode($jsonArray);
+	}
 	public function deliverycard_api(){
 		$jsonData['deliverycard'][] = $this->config->item('deliverycard');
 		$jsonArray = array("status"=>'1', "message"=>'deliverycard', 'result' => $jsonData);
@@ -1260,7 +1265,9 @@ class Api extends CC_Controller
 			$this->form_validation->set_rules('agreement','Agreement','trim|required');
 
 			if ($this->form_validation->run()==FALSE) {
-				$errorMsg = validation_errors();
+				$findtext 		= ['<div class="form_error">', "</div>"];
+				$replacetext 	= ['', ''];
+				$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
 				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
 			}else{
 
@@ -2855,6 +2862,85 @@ class Api extends CC_Controller
 			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Sucessfully', "result"=>$userdata);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+	// 3 Tabs
+	public function audit_review(){
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
+			$cocid 						= $this->input->post('coc_id');
+			$auditorid 					= $this->input->post('user_id');
+			$extraparam['auditorid'] 	= $auditorid;
+			$result	= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);
+
+			$jsonData['audit_review'][] = [
+				'cocid' => $result['id'],
+				'plumber' => $result['user_id'],
+				'plumbername' => $result['u_name'],
+				'plumberregno' => $result['plumberregno'],
+				'u_work' => $result['u_work'],
+				'u_mobile' => $result['u_mobile'],
+				'cl_completion_date' => $result['cl_completion_date'],
+				'cl_name' => $result['cl_name'],
+				'cl_address' => $result['cl_address'],
+				'cl_street' => $result['cl_street'],
+				'cl_number' => $result['cl_number'],
+				'cl_number' => $result['cl_number'],
+				'cl_province_name' => $result['cl_province_name'],
+				'cl_city_name' => $result['cl_city_name'],
+				'cl_suburb_name' => $result['cl_suburb_name'],
+				'cl_contact_no' => $result['cl_contact_no'],
+				'cl_alternate_no' => $result['cl_alternate_no'],
+				'dateodaudit' => $result['as_audit_date'],
+				'audit_allocation_date' => $result['audit_allocation_date'],
+				'as_workmanship' => $this->config->item('workmanship')[$result['as_workmanship']],
+				'as_plumber_verification' => $this->config->item('workmanship')[$result['as_plumber_verification']],
+				'as_coc_verification' => $this->config->item('workmanship')[$result['as_coc_verification']],
+				'as_auditcomplete' => $result['as_auditcomplete'],
+				'auditorid' => $result['auditorid'],
+			];
+			print_r($result);die;
+
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function getall_reviewlist(){
+		if ($this->input->post() && $this->input->post('coc_id')) {
+			$id 			= $this->input->post('coc_id');
+			$reviewlists	= $this->Auditor_Model->getReviewList('all', ['coc_id' => $id]);
+			
+			foreach ($reviewlists as $key => $reviewlist) {
+				if (isset($review_images)) unset($review_images);
+				if ($this->config->item('reviewtype')[$reviewlist['reviewtype']] == 'Cautionary') {
+					$colorcode = '#ffd700';
+				}elseif($this->config->item('reviewtype')[$reviewlist['reviewtype']] == 'Compliment'){
+					$colorcode = '#ade33d';
+				}elseif($this->config->item('reviewtype')[$reviewlist['reviewtype']] == 'Failure'){
+					$colorcode = '#f33333';
+				}elseif($this->config->item('reviewtype')[$reviewlist['reviewtype']] == 'No Audit Findings'){
+					$colorcode = '#50c6f2';
+				}
+				if ($reviewlist['file'] !='') {
+					$images =  explode(",",$reviewlist['file']);
+					if (count($images) > 0) {
+						foreach ($images as $images_key => $image) {
+							$review_images[] = base_url().'assets/uploads/auditor/statement/'.$image.'';
+						}
+					}else{
+						$review_images[] = base_url().'assets/uploads/auditor/statement/'.$reviewlist['file'].'';
+					}
+				}else{
+					$review_images[] = '';
+				}
+				$jsonData['review_details'][] = [ 'reviewid' => $reviewlist['id'], 'reviewtype' => $this->config->item('reviewtype')[$reviewlist['reviewtype']], 'statementname' => $reviewlist['statementname'], 'colorcode' => $colorcode, 'cocid' => $reviewlist['coc_id'], 'reference' => $reviewlist['reference'], 'comments' => $reviewlist['comments'], 'performancepoint' => $reviewlist['point'], 'knowledgelink' => $reviewlist['link'], 'review_images' => $review_images, 'status' => $reviewlist['status']
+				];
+			}
+			$jsonArray = array("status"=>'1', "message"=>'Review Deatils', "result"=>$jsonData);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
 		echo json_encode($jsonArray);
 	}
