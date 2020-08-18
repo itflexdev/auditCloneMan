@@ -79,9 +79,11 @@ class Api extends CC_Controller
 					$query = $this->db->get_where('users', ['email' => $email, 'password' => $password]);
 				
 					if($query->num_rows() > 0){
-						$result = $query->row_array();
+						$result 	= $query->row_array();
+						$userdata	= $this->Plumber_Model->getList('row', ['id' => $result['id'], 'type' => '3', 'status' => ['0', '1', '2']], ['usersdetail']);
+
 						if ($result['mailstatus'] =='1') {
-							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus']
+							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus'], 'mobilenumber' => $userdata['mobile_phone']
 						 	];
 						 	$message = 'Login sucessfully';
 						 	$status = '1';
@@ -1676,7 +1678,7 @@ class Api extends CC_Controller
 	// coc Details;
 	public function coc_details(){
 
-		if ($this->input->post() && $this->input->post('type') == 'coc_details') {
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('type') == 'coc_details') {
 			$extraparam = [];
 			$jsonData 	= [];
 			
@@ -1750,7 +1752,7 @@ class Api extends CC_Controller
 						$colorcode = '#50c6f2';
 					}
 
-					$jsonData['review_details'][] = [ 'reviewtype' => $this->config->item('reviewtype')[$value['reviewtype']], 'statementname' => $value['statementname'], 'colorcode' => $colorcode
+					$jsonData['review_details'][] = [ 'reviewid' => $value['id'], 'reviewtype' => $this->config->item('reviewtype')[$value['reviewtype']], 'statementname' => $value['statementname'], 'colorcode' => $colorcode
 					];
 				}
 				$message 	= 'CoC Details';
@@ -1869,12 +1871,46 @@ class Api extends CC_Controller
 			}else{
 				$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 			}
-		}
-
-		else{
+		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
 		echo json_encode($jsonArray);
+	}
+
+	public function get_reviewlist(){
+		if ($this->input->post() && $this->input->post('review_id')) {
+			$id 			= $this->input->post('review_id');
+			$reviewlists	= $this->Auditor_Model->getReviewList('row', ['id' => $id]);
+			if (isset($review_images)) unset($review_images);
+			if ($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Cautionary') {
+				$colorcode = '#ffd700';
+			}elseif($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Compliment'){
+				$colorcode = '#ade33d';
+			}elseif($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Failure'){
+				$colorcode = '#f33333';
+			}elseif($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'No Audit Findings'){
+				$colorcode = '#50c6f2';
+			}
+			if ($reviewlists['file'] !='') {
+				$images =  explode(",",$reviewlists['file']);
+				if (count($images) > 0) {
+					foreach ($images as $images_key => $image) {
+						$review_images[] = base_url().'assets/uploads/auditor/statement/'.$image.'';
+					}
+				}else{
+					$review_images[] = base_url().'assets/uploads/auditor/statement/'.$reviewlists['file'].'';
+				}
+			}else{
+				$review_images[] = '';
+			}
+			$jsonData['review_details'][] = [ 'reviewid' => $reviewlists['id'], 'reviewtype' => $this->config->item('reviewtype')[$reviewlists['reviewtype']], 'statementname' => $reviewlists['statementname'], 'colorcode' => $colorcode, 'cocid' => $reviewlists['coc_id'], 'reference' => $reviewlists['reference'], 'comments' => $reviewlists['comments'], 'performancepoint' => $reviewlists['point'], 'knowledgelink' => $reviewlists['link'], 'review_images' => $review_images, 'status' => $reviewlists['status']
+			];
+			$jsonArray = array("status"=>'1', "message"=>'Review Deatils', "result"=>$jsonData);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+
 	}
 
 	// Chat History:
@@ -1994,8 +2030,11 @@ class Api extends CC_Controller
 				}elseif($value['status'] == '2'){
 					$status = 'Reject';
 					$statusicons = '';
+				}elseif($value['status'] == '3'){
+					$status = 'Not Submitted';
+					$statusicons = '';
 				}
-				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id'], 
+				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $value['status'], 'status_words' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id'], 
 				];
 			}
 
@@ -2137,40 +2176,43 @@ class Api extends CC_Controller
 
 	public function mycpd_edit_view(){
 
-		if ($this->input->post() && $this->input->post('cpdID') && $this->input->post('pagestatus')) {
+		if ($this->input->post() && $this->input->post('cpdID') && $this->input->post('pagestatus') !='') {
 			$jsonData 					= [];
 			$jsonData['page_lables'] 	= [];
 			$jsonData['result'] 		= [];
 			$base_url 					= base_url();
 
 			$cpdID 			= $this->input->post('cpdID');
-			$pagestatus 	= $this->input->post('pagestatus');
+			if ($this->input->post('pagestatus') =='2' || $this->input->post('pagestatus') =='0') {
+				$pagestatus 	= '0';
+			}else{
+				$pagestatus 	= $this->input->post('pagestatus');
+			}
 
 			$result 		= $this->Mycpd_Model->getQueueList('row', ['id' => $cpdID, 'pagestatus' => $pagestatus]);
 
-			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points', 'renewalcpd' => 'CPD points needed for renewal'
+			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'Comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points', 'renewalcpd' => 'CPD points needed for renewal'
 			];
-			if ($result['status'] == '0') {
-					$status = 'Pending';
-					$statusicons = '';
-				}elseif($result['status'] == '1'){
-					$status = 'Approve';
-					$statusicons = '';
-				}elseif($result['status'] == '2'){
-					$status = 'Reject';
-					$statusicons = '';
-				}
 
-			$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file1'].'', 'plumberdocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file2'].'','cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => ''
-				];
+			if ($result) {
+				if ($result['status'] == '0') {
+						$status = 'Pending';
+						$statusicons = '';
+					}elseif($result['status'] == '1'){
+						$status = 'Approve';
+						$statusicons = '';
+					}elseif($result['status'] == '2'){
+						$status = 'Reject';
+						$statusicons = '';
+					}
 
-			if (count($result) > 0) {
-				$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$result);
+				$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file1'].'', 'plumberdocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file2'].'','cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => '', 'admin_comments' => $result['admin_comments']
+					];
+
+					$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$jsonData);
 			}else{
 				$jsonArray 	= array("status"=>'0', "message"=>'No Record Found', "result"=>[]);
 			}
-
-			
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
@@ -2747,7 +2789,6 @@ class Api extends CC_Controller
 					$total = currencyconvertor($total_cost);
 				}
 			}
-
 			$jsonData['auditor_details'][] = [
 				'userid' 		=> $userid,
 				'inv_id' 		=> $inv_id,
@@ -2779,11 +2820,130 @@ class Api extends CC_Controller
 				'account_type' 	=> $account_type
 			];
 			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Details', "result"=>$jsonData);
-		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('request_type') =='action') {
-			$jsonData = '';
-			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Details', "result"=>$jsonData);
+		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('inv_id') && $this->input->post('request_type') =='action') {
+			$this->form_validation->set_rules('inv_id','Invoice id','trim|required');
+			$this->form_validation->set_rules('invoicedate','Invoice Date','trim|required');
+			$this->form_validation->set_rules('invoice_no','Invoice Number','trim|required');
+
+			if ($this->form_validation->run()==FALSE) {
+				$errorMsg = validation_errors();
+				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+			}else{
+				$id					= $this->input->post('inv_id');
+				$post 				= $this->input->post();
+				$request1['status'] = '0';
+
+				if(isset($post['invoicedate']) && $post['invoicedate']!='1970-01-01') $request1['invoice_date'] = date('Y-m-d', strtotime(str_replace('/','-',$post['invoicedate'])));
+				if(isset($post['invoice_no'])) $request1['invoice_no'] = $post['invoice_no'];
+				if(isset($post['total_cost'])) $request1['total_cost'] = $post['total_cost'];
+				if(isset($post['vat'])) $request1['vat'] = $post['vat'];
+				if(isset($post['internal_inv'])) $request1['internal_inv'] = $post['internal_inv'];
+				if(isset($request1)){	
+					$userdata = $this->db->update('invoice', $request1, ['inv_id' => $id]);	
+				}
+
+				if(isset($post['total_cost'])) $request2['cost_value'] = $post['total_cost'];
+				if(isset($post['vat'])) $request2['vat'] = $post['vat'];		
+				if(isset($post['total'])) $request2['total_due'] = $post['total'];
+				if(isset($request2)){	
+					$userdata = $this->db->update('coc_orders', $request2, ['inv_id' => $id]);	
+				}		
+				return $userdata;	
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Sucessfully', "result"=>$userdata);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
-		else{
+		echo json_encode($jsonArray);
+	}
+
+	public function audithistory(){
+		if ($this->input->post() && $this->input->post('coc_id')) {
+			if($this->input->post('user_id') !=''){$auditorid = ['auditorid' =>$this->input->post('user_id')];}else{$auditorid = [];}
+			$cocid 			= $this->input->post('coc_id');
+			$cocdetail 		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$auditorid);	
+
+			$plumberid 		= $cocdetail['user_id'];
+			$reviewresults 		= $this->Auditor_Model->getReviewHistoryCount(['plumberid' => $plumberid]);
+
+			$count 				= $reviewresults['count'];
+			$total 				= $reviewresults['total'];
+			$refixincomplete 	= $reviewresults['refixincomplete'];
+			$refixcomplete 		= $reviewresults['refixcomplete'];
+			$compliment 		= $reviewresults['compliment'];
+			$cautionary 		= $reviewresults['cautionary'];
+			$noaudit 			= $reviewresults['noaudit'];
+
+			$refixincompletepercentage 	= ($refixincomplete!=0) ? round(($refixincomplete/$total)*100,2).'%' : '0%'; 
+			$refixcompletepercentage 	= ($refixcomplete!=0) ? round(($refixcomplete/$total)*100,2).'%' : '0%'; 
+			$complimentpercentage 		= ($compliment!=0) ? round(($compliment/$total)*100,2).'%' : '0%'; 
+			$cautionarypercentage 		= ($cautionary!=0) ? round(($cautionary/$total)*100,2).'%' : '0%'; 
+			$noauditpercentage 			= ($noaudit!=0) ? round(($noaudit/$total)*100,2).'%' : '0%'; 
+
+			$jsonData['coc_details'][] = [
+				'cocid' 		=> $cocdetail['id'],
+				'plumberid' 	=> $cocdetail['user_id'],
+				'plumbername' 	=> $cocdetail['u_name'],
+				'plumberemail' 	=> $cocdetail['u_email'],
+				'auditorid' 	=> $cocdetail['auditorid'],
+				'auditorname' 	=> $cocdetail['auditorname'],
+				'auditoremail' 	=> $cocdetail['auditoremail'],
+				'auditormobile' => $cocdetail['auditormobile'],
+			];
+			$jsonData['history_details'][] = [
+				'count' 					=> $count,
+				'total' 					=> $total,
+				'refixincomplete' 			=> $refixincomplete,
+				'refixcomplete' 			=> $refixcomplete,
+				'compliment' 				=> $compliment,
+				'cautionary' 				=> $cautionary,
+				'noaudit' 					=> $noaudit,
+				'refixincompletepercentage' => $refixincompletepercentage,
+				'refixcompletepercentage' 	=> $refixcompletepercentage,
+				'complimentpercentage' 		=> $complimentpercentage,
+				'cautionarypercentage' 		=> $cautionarypercentage,
+				'noauditpercentage' 		=> $noauditpercentage,
+			];
+			$message = 'Plumber Audit History';
+			if ($this->input->post() && $this->input->post('plumber_id') && $this->input->post('type') =='list') {
+				$post['plumberid'] 	= $this->input->post('plumber_id');
+				$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
+				$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
+				if(count($results) > 0){
+					foreach($results as $result){
+						$jsonData['table_content'][] = 	[
+												'date' 				=> 	date('d-m-Y', strtotime($result['created_at'])),
+												'auditor' 			=> 	$result['auditorname'],
+												'installationtype' 	=> 	$result['installationtypename'],
+												'subtype' 			=> 	$result['subtypename'],
+												'statementname' 	=> 	$result['statementname'],
+												'finding' 			=> 	$this->config->item('reviewtype')[$result['reviewtype']]
+											];
+					}
+				}
+				$message = 'Plumber History Results';
+			}elseif ($this->input->post() && $this->input->post('plumber_id') && $this->input->post('type') =='search' && $this->input->post('keywords')) {
+				$post['plumberid'] 	= $this->input->post('plumber_id');
+				$post['search'] 	= ['value' => $this->input->post('keywords'), 'regex' => 'false'];
+				$post['page'] 		= 'adminaudithistroy';
+				$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
+				$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
+				if(count($results) > 0){
+					foreach($results as $result){
+						$jsonData['table_content'][] = 	[
+												'date' 				=> 	date('d-m-Y', strtotime($result['created_at'])),
+												'auditor' 			=> 	$result['auditorname'],
+												'installationtype' 	=> 	$result['installationtypename'],
+												'subtype' 			=> 	$result['subtypename'],
+												'statementname' 	=> 	$result['statementname'],
+												'finding' 			=> 	$this->config->item('reviewtype')[$result['reviewtype']]
+											];
+					}
+				}
+				$message = 'Plumber History Search Results';
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$jsonData);
+		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
 		echo json_encode($jsonArray);
