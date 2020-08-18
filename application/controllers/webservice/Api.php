@@ -3340,4 +3340,8 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
+	public function cardhtml(){
+		$this->load->view('api/card');
+	}
+
 }
