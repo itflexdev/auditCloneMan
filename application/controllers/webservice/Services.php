@@ -6,6 +6,24 @@ class Services extends CC_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		
+		if (isset($_SERVER['HTTP_ORIGIN'])){
+			$http_origin = $_SERVER['HTTP_ORIGIN'];
+		} else if (isset($_SERVER['HTTP_REFERER'])){
+			$http_origin = $_SERVER['HTTP_REFERER'];
+		} else {
+			$http_origin = $_SERVER['SERVER_NAME'];
+		}
+
+		if ($http_origin == "http://testing.mrventer.co.za" || $http_origin == "https://fogi.co.za" || $http_origin == "https://katchmi.co.za" || $http_origin == "http://podcast.articulateit.co.za" || $http_origin == "http://diyesh.com" || $http_origin == "http://localhost")
+		{
+				header("Access-Control-Allow-Origin: $http_origin");
+		}
+		header("Access-Control-Allow-Credentials: true");
+		header("Access-Control-Max-Age: 1728000");
+		header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, Origin, Cache-Control, Pragma, Authorization, Accept, Accept-Encoding");
+		header("Access-Control-Allow-Methods: PUT, POST, GET, OPTIONS, DELETE");
+
 		$this->load->model('Plumber_Model');
 		$this->load->model('Managearea_Model');
 		$this->load->model('Friends_Model');
