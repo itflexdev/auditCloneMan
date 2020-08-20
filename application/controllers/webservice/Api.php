@@ -873,7 +873,7 @@ class Api extends CC_Controller
 			$auditorratio 						= ($auditorratio) ? $auditorratio['audit'].'%' : '0%';
 			// country rangking
 			$overallperformancestatus 			= $this->userperformancestatus(['overall' => '1']);
-			$myprovinceperformancestatus 		= $this->userperformancestatus(['province' => $userdata['province']], $id);
+			$myprovinceperformancestatus 		= $this->userperformancestatus(['province' => $physicaladdress[5]], $id);
 			$performancestatus 					= $this->userperformancestatus(['userid' => $id]);
 			$mycityperformancestatus 			= $this->userperformancestatus(['city' => $physicaladdress[4]], $id);
 			$provinceperformancestatus 			= $this->userperformancestatus(['province' => $physicaladdress[5], 'limit' => '3']);
