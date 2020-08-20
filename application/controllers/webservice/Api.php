@@ -840,7 +840,7 @@ class Api extends CC_Controller
 			$city1 					= isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '';
 			$province1 				= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';
 			$postalcode1 			= isset($physicaladdress[6]) ? $physicaladdress[6] : '';
-
+			
 			// Postal address
 			$postaladdress 			= isset($result['postaladdress']) ? explode('@-@', $result['postaladdress']) : [];
 			$addressid2 			= isset($postaladdress[0]) ? $postaladdress[0] : '';
@@ -875,8 +875,8 @@ class Api extends CC_Controller
 			$overallperformancestatus 			= $this->userperformancestatus(['overall' => '1']);
 			$myprovinceperformancestatus 		= $this->userperformancestatus(['province' => $userdata['province']], $id);
 			$performancestatus 					= $this->userperformancestatus(['userid' => $id]);
-			$mycityperformancestatus 			= $this->userperformancestatus(['city' => $userdata['city']], $id);
-			$provinceperformancestatus 			= $this->userperformancestatus(['province' => $userdata['province'], 'limit' => '3']);
+			$mycityperformancestatus 			= $this->userperformancestatus(['city' => $physicaladdress[4]], $id);
+			$provinceperformancestatus 			= $this->userperformancestatus(['province' => $physicaladdress[5], 'limit' => '3']);
 
 			$countryranking 	= $this->ranking(['id' => $id, 'type' => 'country']);
 			$regionalranking 	= $this->ranking(['id' => $id, 'type' => 'province']);
