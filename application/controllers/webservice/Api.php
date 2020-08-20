@@ -840,7 +840,7 @@ class Api extends CC_Controller
 			$city1 					= isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '';
 			$province1 				= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';
 			$postalcode1 			= isset($physicaladdress[6]) ? $physicaladdress[6] : '';
-			
+
 			// Postal address
 			$postaladdress 			= isset($result['postaladdress']) ? explode('@-@', $result['postaladdress']) : [];
 			$addressid2 			= isset($postaladdress[0]) ? $postaladdress[0] : '';
@@ -3533,7 +3533,11 @@ class Api extends CC_Controller
 
 		if ($data['type'] == 'province') {
 			$userdetail		= $this->getUserDetails($data['id']);
-			$province 		= $this->Managearea_Model->getListProvince('row', ['id' => $userdetail['province']]);
+			$userdetails 	= $this->Plumber_Model->getList('row', ['id' => $data['id']], ['users', 'physicaladdress', 'postaladdress', 'billingaddress']);
+			$physicaladdress 		= isset($userdetails['physicaladdress']) ? explode('@-@', $userdetails['physicaladdress']) : [];
+			$province1 				= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';
+
+			$province 		= $this->Managearea_Model->getListProvince('row', ['id' => $physicaladdress[5]]);
 			$rollingavg 	= $this->getRollingAverage();
 			$date			= date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
 			$ranking 		= $this->Plumber_Model->performancestatus('all', ['date' => $date, 'archive' => '0', 'province' => $userdetail['province']]);
