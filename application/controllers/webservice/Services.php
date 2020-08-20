@@ -14,8 +14,19 @@ class Services extends CC_Controller
 		} else {
 			$http_origin = $_SERVER['SERVER_NAME'];
 		}
-
-		if ($http_origin == "http://testing.mrventer.co.za" || $http_origin == "https://fogi.co.za" || $http_origin == "https://katchmi.co.za" || $http_origin == "http://podcast.articulateit.co.za" || $http_origin == "http://diyesh.com" || $http_origin == "http://localhost")
+		
+		$website = [
+			'http://testing.mrventer.co.za',
+			'https://fogi.co.za',
+			'https://katchmi.co.za',
+			'http://podcast.articulateit.co.za',
+			'http://diyesh.com',
+			'http://localhost',
+			'https://audit-it.co.za',
+			'https://staging.audit-it.co.za'
+		];
+		
+		if (in_array($http_origin, $website))
 		{
 				header("Access-Control-Allow-Origin: $http_origin");
 		}
