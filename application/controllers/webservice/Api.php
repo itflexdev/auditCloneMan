@@ -3540,7 +3540,7 @@ class Api extends CC_Controller
 			$province 		= $this->Managearea_Model->getListProvince('row', ['id' => $physicaladdress[5]]);
 			$rollingavg 	= $this->getRollingAverage();
 			$date			= date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
-			$ranking 		= $this->Plumber_Model->performancestatus('all', ['date' => $date, 'archive' => '0', 'province' => $userdetail['province']]);
+			$ranking 		= $this->Plumber_Model->performancestatus('all', ['date' => $date, 'archive' => '0', 'province' => $physicaladdress[5]]);
 		}else{
 			$rollingavg 	 = $this->getRollingAverage();
 			$date			 = date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
