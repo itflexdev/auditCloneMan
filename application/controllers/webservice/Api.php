@@ -2879,9 +2879,37 @@ class Api extends CC_Controller
 			$cocid 						= $this->input->post('coc_id');
 			$auditorid 					= $this->input->post('user_id');
 			$extraparam['auditorid'] 	= $auditorid;
+			$workmanshippt				= $this->getWorkmanshipPoint();
+			$plumberverificationpt		= $this->getPlumberVerificationPoint();
+			$cocverificationpt			= $this->getCocVerificationPoint();
+
 			$result	= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);
 
+			if ($result['as_workmanship'] !='') {
+				$as_workmanship 	= $this->config->item('workmanship')[$result['as_workmanship']];
+				$workmanship_pts 	= $this->getWorkmanshipPoint()[$result['as_workmanship']];
+			}else{
+				$as_workmanship 	= '';
+				$workmanship_pts 	= '';
+			}
+
+			if ($result['as_plumber_verification'] !='') {
+				$as_plumber_verification = $this->config->item('yesno')[$result['as_plumber_verification']];
+				$plumberverification_pts = $this->getPlumberVerificationPoint()[$result['as_plumber_verification']];
+			}else{
+				$as_plumber_verification = '';
+				$plumberverification_pts = '';
+			}
+			if ($result['as_coc_verification'] !='') {
+				$as_coc_verification = $this->config->item('yesno')[$result['as_coc_verification']];
+				$cocverification_pts = $this->getCocVerificationPoint();
+			}else{
+				$as_coc_verification = '';
+				$cocverification_pts = '';
+			}
+
 			$jsonData['audit_review'][] = [
+				'as_id' => $result['as_id'],
 				'cocid' => $result['id'],
 				'plumber' => $result['user_id'],
 				'plumbername' => $result['u_name'],
@@ -2901,13 +2929,18 @@ class Api extends CC_Controller
 				'cl_alternate_no' => $result['cl_alternate_no'],
 				'dateodaudit' => $result['as_audit_date'],
 				'audit_allocation_date' => $result['audit_allocation_date'],
-				'as_workmanship' => $this->config->item('workmanship')[$result['as_workmanship']],
-				'as_plumber_verification' => $this->config->item('workmanship')[$result['as_plumber_verification']],
-				'as_coc_verification' => $this->config->item('workmanship')[$result['as_coc_verification']],
+				'as_workmanship' => $as_workmanship,
+				'as_plumber_verification' => $as_plumber_verification,
+				'as_coc_verification' => $as_coc_verification,
 				'as_auditcomplete' => $result['as_auditcomplete'],
 				'auditorid' => $result['auditorid'],
 			];
-			print_r($result);die;
+			$jsonData['points'][] = [
+				'workmanship' => $workmanshippt,
+ 				'plumberverification' => $plumberverificationpt,
+				'cocverfication' => $cocverificationpt
+			];
+			$jsonArray 		= array("status"=>'1', "message"=>'Audit Review', "result"=>$jsonData);
 
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
