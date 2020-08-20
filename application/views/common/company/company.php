@@ -415,7 +415,7 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label>Email Address *</label>
-								<input type="text" class="form-control" value="<?php echo $email; ?>" readonly>
+								<input type="text" class="form-control" value="<?php echo $email; ?>" <?php if($roletype!='1'){ echo 'readonly'; } ?>>
 								<p>Note: this email will be used as your user profile name and all emails notifications will be sent to it</p>
 							</div>
 						</div>

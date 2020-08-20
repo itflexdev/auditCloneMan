@@ -89,7 +89,21 @@ class Renewal_Model extends CC_Model
 		$this->db->where('inv.status', '0' );
 		$this->db->where('us.type', '3' );
 		$this->db->where('us.status', '1' );
-		$this->db->where("DATEDIFF(us.expirydate,now()) = 7");		
+		//$this->db->where("DATEDIFF(us.expirydate,now()) = 7");		
+		$this->db->where("DATE(us.expirydate)", date('Y-m-d'));		
+		$result = $this->db->get()->result_array();			
+		
+		return $result;
+	}
+
+	public function getUserids_alert2_1()
+	{	
+		$this->db->select('us.id, us.expirydate, up.designation');		
+		$this->db->from('users us');
+		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'left');
+		$this->db->where('us.type', '3' );
+		$this->db->where('us.status', '1' );
+		$this->db->where("DATE(us.expirydate)", date('Y-m-d'));		
 		$result = $this->db->get()->result_array();			
 		
 		return $result;
@@ -114,7 +128,8 @@ class Renewal_Model extends CC_Model
 		$this->db->where('inv.status', '0' );
 		$this->db->where('us.type', '3' );
 		$this->db->where('us.status', '1' );
-		$this->db->where("DATEDIFF(now(),us.expirydate) > ".$penalty);				
+		//$this->db->where("DATEDIFF(now(),us.expirydate) > ".$penalty);	
+		$this->db->where("DATE(DATE_ADD(us.expirydate, INTERVAL 1 DAY))", date('Y-m-d'));	
 		$result = $this->db->get()->result_array();	
 		
 		return $result;

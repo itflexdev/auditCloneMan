@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require_once 'application/libraries/dompdf/autoload.inc.php';
+use Dompdf\Dompdf;
+		
 class CC_Controller extends CI_Controller 
 {
 	public function __construct()
@@ -87,18 +90,18 @@ class CC_Controller extends CI_Controller
 		if($type=='1'){
 			if($userDetails){				
 				if($userDetails['type']=='1' || $userDetails['type']=='2'){
-					redirect('admin/dashboard/index'); 
+					redirect('admin/administration/installationtype'); 
 				}elseif($userDetails['type']=='3'){
-					if($userDetails['formstatus']=='1' && $userDetails['approvalstatus']=='1') redirect('plumber/dashboard/index'); 
+					if($userDetails['formstatus']=='1' && $userDetails['approvalstatus']=='1') redirect('plumber/profile/index'); 
 					elseif($userDetails['formstatus']=='1' && $userDetails['approvalstatus']=='0') redirect('plumber/profile/index'); 
 					else redirect('plumber/registration/index'); 
 				}elseif($userDetails['type']=='4'){
-					if($userDetails['formstatus']=='1') redirect('company/dashboard/index'); 
+					if($userDetails['formstatus']=='1') redirect('company/profile/index'); 
 					else redirect('company/registration/index'); 
 				}elseif($userDetails['type']=='5'){
-					redirect('auditor/dashboard/index'); 
+					redirect('auditor/profile/index'); 
 				}elseif($userDetails['type']=='6'){
-					redirect('resellers/dashboard/index'); 
+					redirect('resellers/profile/index'); 
 				}
 			}
 		}else{
@@ -117,17 +120,17 @@ class CC_Controller extends CI_Controller
 				}
 			}else{			
 				if(($userDetails['type']=='1'  || $userDetails['type']=='2') && $segment1!='admin'){
-					redirect('admin/dashboard/index'); 
+					redirect('admin/administration/installationtype'); 
 				}elseif($userDetails['type']=='3' && $segment1!='plumber'){
-					if($userDetails['formstatus']=='1') redirect('plumber/dashboard/index'); 
+					if($userDetails['formstatus']=='1') redirect('plumber/profile/index'); 
 					else redirect('plumber/registration/index'); 
 				}elseif($userDetails['type']=='4' && $segment1!='company'){
-					if($userDetails['formstatus']=='1') redirect('company/dashboard/index'); 
+					if($userDetails['formstatus']=='1') redirect('company/profile/index'); 
 					else redirect('company/registration/index'); 
 				}elseif($userDetails['type']=='5' && $segment1!='auditor'){
-					redirect('auditor/dashboard/index'); 
+					redirect('auditor/profile/index'); 
 				}elseif($userDetails['type']=='6' && $segment1!='resellers'){
-					redirect('resellers/dashboard/index'); 
+					redirect('resellers/profile/index'); 
 				}
 			}
 		}
@@ -1142,11 +1145,12 @@ class CC_Controller extends CI_Controller
 		$filePath 		= FCPATH.'assets/inv_pdf/';
 		
 		if(file_exists($filePath.$pdfFilePath)) unlink($filePath.$pdfFilePath);  
-			
-		$this->pdf->loadHtml($html);
-		$this->pdf->setPaper('A4', 'portrait');
-		$this->pdf->render();
-		$output = $this->pdf->output();
+		
+		$dompdf = new Dompdf();
+		$dompdf->loadHtml($html);
+		$dompdf->setPaper('A4', 'portrait');
+		$dompdf->render();
+		$output = $dompdf->output();
 		file_put_contents($filePath.$pdfFilePath, $output);
 		
 		return $filePath.$pdfFilePath;

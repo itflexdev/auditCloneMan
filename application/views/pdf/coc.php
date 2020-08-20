@@ -1,26 +1,32 @@
 <?php
-	function base64conversion($path){
-		$type = pathinfo($path, PATHINFO_EXTENSION);
-		$data = file_get_contents($path);
-		return 'data:image/' . $type . ';base64,' . base64_encode($data);
-	}
-
-	function currencyconvertors($currency){
-		$amount 	= number_format(floor($currency*100)/100, 2,".","");
-		/*$lastchr	= $amount[strlen($amount)-1];
-		
-		if($lastchr < 5){
-			$amount[strlen($amount)-1] = '0';
-		}else{
-			$amount[strlen($amount)-1] = '5';
+	if (!function_exists('imageconversion')) {
+		function imageconversion($path){
+			$type = pathinfo($path, PATHINFO_EXTENSION);
+			$data = file_get_contents($path);
+			return 'data:image/' . $type . ';base64,' . base64_encode($data);
 		}
-		*/
-		return $amount;
 	}
 	
-	function url_exists($url){
-	   $headers = get_headers($url);
-	   return stripos($headers[0],"200 OK") ? true : false;
+	if (!function_exists('currencyconvertors')) {
+		function currencyconvertors($currency){
+			$amount 	= number_format(floor($currency*100)/100, 2,".","");
+			/*$lastchr	= $amount[strlen($amount)-1];
+			
+			if($lastchr < 5){
+				$amount[strlen($amount)-1] = '0';
+			}else{
+				$amount[strlen($amount)-1] = '5';
+			}
+			*/
+			return $amount;
+		}
+	}
+
+	if (!function_exists('url_exists')) {
+		function url_exists($url){
+		   $headers = get_headers($url);
+		   return stripos($headers[0],"200 OK") ? true : false;
+		}
 	}
 
 	$invoiceDate  = (date("d-m-Y", strtotime($rowData['invoice_date']))!='01-01-1970') ? date("d-m-Y", strtotime($rowData['invoice_date'])) : date("d-m-Y", strtotime($rowData['created_at']));
@@ -70,10 +76,10 @@
 	$base_url		= base_url();
 
 	if($rowData["status"]=='1'){
-		$paid = '<img class="paid" style="width: 250px;" src="'.base64conversion(base_url()."assets/images/paid.png").'">';
+		$paid = '<img class="paid" style="width: 250px;" src="'.imageconversion(base_url()."assets/images/paid.png").'">';
 		$paid_status = "PAID";
 	}else{
-		$paid ='<img class="paid" style="width: 250px;" src="'.base64conversion(base_url()."assets/images/unpaid.png").'">';
+		$paid ='<img class="paid" style="width: 250px;" src="'.imageconversion(base_url()."assets/images/unpaid.png").'">';
 		$paid_status = 'UNPAID';
 	}
 
@@ -81,9 +87,9 @@
 	$provincesettings 	= explode("@@@",$rowData2['provincesettings']);
 
 	if(isset($extras['logo']) && url_exists($extras['logo'])){
-		$logo = base64conversion($extras['logo']);
+		$logo = imageconversion($extras['logo']);
 	}else{
-		$logo = base64conversion(base_url()."assets/images/pitrb-logo.png");
+		$logo = imageconversion(base_url()."assets/images/pitrb-logo.png");
 	}
 	
 	$usertype = $rowData['usertype'];
@@ -225,7 +231,7 @@
 					
 					<?php if(isset($extras['sublogo'])){ ?>
 						<td>
-							<img class="paid" style="width: 250px;" src="<?php echo base64conversion($extras['sublogo']); ?>">
+							<img class="paid" style="width: 250px;" src="<?php echo imageconversion($extras['sublogo']); ?>">
 						</td>
 					<?php } ?>
 					

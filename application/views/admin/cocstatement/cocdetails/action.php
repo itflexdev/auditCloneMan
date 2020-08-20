@@ -257,7 +257,6 @@
 											<?php
 												foreach($cocrecall as $key => $value){
 													if($coctypeid=='1' && $key=='2') continue; 
-													if($cocstatusid=='4' && $cocallocatedby!='' && ($key=='2' || $key=='3')) continue; 
 											?>
 													<div class="col-md-2">
 														<div class="custom-control custom-radio">

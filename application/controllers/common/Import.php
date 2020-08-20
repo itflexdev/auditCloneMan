@@ -1051,4 +1051,8 @@ class Import extends CC_Controller {
 			}
 		}
 	}
+	
+	public function generatecocpdf($id){
+		$this->cocreport($id, 'PDF Invoice Plumber COC');
+	}
 }

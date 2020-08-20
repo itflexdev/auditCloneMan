@@ -596,6 +596,11 @@
 				vat : {
 					required	: true,
 				},
+				vat_no : {
+					required	: 	function() {
+										return $('#vatvendor').is(':checked');
+									}
+				},
 				billing_email : {
 					required	: true,
 					email		: true
@@ -670,6 +675,9 @@
 				},
 				vat : {
 					required	: "Please enter the VAT"
+				},
+				vat_no : {
+					required	: "Please enter the Company VAT"
 				},
 				billing_email : {
 					required	: "Billing email field is required.",
