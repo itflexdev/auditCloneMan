@@ -3018,8 +3018,109 @@ class Api extends CC_Controller
 				$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
 				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
 			}else{
+				$cocid 		= $this->input->post('coc_id');
+				$auditorid 	= $this->input->post('user_id');
+				$plumberid 	= $this->input->post('plumber_id');
+				$settings 	= $this->Systemsettings_Model->getList('row');
+				$extras['auditorid'] = $auditorid;
+				// $extras['plumberid'] = $plumberid;	
+				$result		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);	
+
+				if($this->input->post('id') !=''){$id = $this->input->post('id');}else{$id = '';} // audit revreview id (as_id)
+				$datetime 	=  date('Y-m-d H:i:s');
+				$post 		=  $this->input->post();
+
+				if(isset($post['cocid']))		 				$request['coc_id'] 						= $post['cocid'];
+				if(isset($post['auditorid']))		 			$request['auditor_id'] 					= $post['auditorid'];
+				if(isset($post['plumberid']))		 			$request['plumber_id'] 					= $post['plumberid'];
+				if(isset($post['auditdate']))		 			$request['audit_date'] 					= date('Y-m-d', strtotime($post['auditdate']));
+				if(isset($post['workmanship'])) 				$request['workmanship'] 				= $post['workmanship'];
+				if(isset($post['plumberverification'])) 		$request['plumber_verification'] 		= $post['plumberverification'];
+				if(isset($post['cocverification'])) 			$request['coc_verification'] 			= $post['cocverification'];
+				if(isset($post['workmanshippoint'])) 			$request['workmanship_point'] 			= $post['workmanshippoint'];
+				if(isset($post['plumberverificationpoint']))	$request['plumberverification_point'] 	= $post['plumberverificationpoint'];
+				if(isset($post['cocverificationpoint'])) 		$request['cocverification_point'] 		= $post['cocverificationpoint'];
+				if(isset($post['reviewpoint'])) 				$request['review_point'] 				= $post['reviewpoint'];
+				if(isset($post['point'])) 						$request['point'] 						= $post['point'];
+				if(isset($post['reason'])) 						$request['reason'] 						= $post['reason'];
+				if(isset($post['reportdate']))		 			$request['reportdate'] 					= date('Y-m-d H:i:s');
+				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport')	$request['auditcomplete'] 		= $post['auditcomplete'];
+				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['status'] 				= '1';
+				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['auditcompletedate'] 	= date('Y-m-d');
+
+				$request['refixcompletedate'] 	= (isset($post['refixcompletedate']) && $post['refixcompletedate']!='') ? date('Y-m-d', strtotime($post['refixcompletedate'])) : NULL;	
+				$request['hold'] 				= (isset($post['hold'])) ? $post['hold'] : '0';
+				if($id==''){
+					$request['created_at'] = $datetime;
+					$request['created_by'] = $userid;
+					$data = $this->db->insert('auditor_statement', $request);
+				}else{
+					$data = $this->db->update('auditor_statement', $request, ['id' => $id]);
+				}
+
+				if(isset($post['auditcomplete']) && $post['auditcomplete']=='1' && $post['submit']=='submitreport'){
+					
+					//Invoice and Order
+					$inspectionrate = $this->currencyconvertor($this->getRates($this->config->item('inspection')));
+					$invoicedata = [
+						'description' 	=> 'Audit undertaken for '.$pagedata['result']['u_name'].' on COC '.$pagedata['result']['id'].'. Date of Review Submission '.date('d-m-Y', strtotime($datetime)),
+						'user_id'		=> (isset($extras['auditorid'])) ? $extras['auditorid'] : '',
+						'total_cost'	=> $inspectionrate,
+						'status'		=> '2',
+						'created_at'	=> $datetime
+					];
+					$this->db->insert('invoice', $invoicedata);
+					$insertid = $this->db->insert_id();
+					unset($invoicedata['total_cost']);
+					$invoicedata = $invoicedata+['cost_value' => $inspectionrate, 'total_due' => $inspectionrate, 'inv_id' => $insertid];
+					$this->db->insert('coc_orders', $invoicedata);
+					
+					if($post['auditstatus']=='1'){						
+						// Email
+						$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '21', 'emailstatus' => '1']);
+						if($notificationdata){
+							$body 		= str_replace(['{Plumbers Name and Surname}', '{COC number}'], [$pagedata['result']['u_name'], $pagedata['result']['id']], $notificationdata['email_body']);
+							$subject 	= str_replace(['{cocno}'], [$id], $notificationdata['subject']);
+							$this->CC_Model->sentMail($pagedata['result']['u_email'], $subject, $body);
+						}
+						
+						// SMS
+						if($settingsdetail && $settingsdetail['otp']=='1'){
+							$smsdata 	= $this->Communication_Model->getList('row', ['id' => '21', 'smsstatus' => '1']);
+				
+							if($smsdata){
+								$sms = str_replace(['{number of COC}'], [$id], $smsdata['sms_body']);
+								$this->sms(['no' => $pagedata['result']['u_mobile'], 'msg' => $sms]);
+							}
+						}
+						
+						// Stock
+						$this->db->update('stock_management', ['audit_status' => '1', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
+						
+						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '9', 'type' => '4']);
+					}elseif($post['auditstatus']=='0'){
+						$this->db->update('stock_management', ['audit_status' => '4', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
+						
+						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '10', 'type' => '4']);
+					}
+					
+					$this->Auditor_Model->actionRatio($post['plumberid']);
+					/// check audit statements
+
+					$auditcomplete_count = $this->db->select('count(auditcomplete) as countaudit')->get_where('auditor_statement', ['plumber_id' => $post['plumberid'], 'auditcomplete' => '1'])->row_array();
+					$audit_list = $this->db->select('id, allocation')->get_where('compulsory_audit_listing', ['user_id' => $post['plumberid']])->row_array();
+					
+					if ($audit_list['allocation']<=$auditcomplete_count['countaudit']) {
+						//$this->db->delete('compulsory_audit_listing', array('id' => $audit_list['id']));
+						//$this->db->delete('compulsory_audit_listing')->where('id', $audit_list['id']);
+						$this->db->where('id', $audit_list['id']);
+   						$this->db->delete('compulsory_audit_listing'); 
+					}
+
+				}
 
 			}
+			$jsonArray 		= array("status"=>'1', "message"=>'Audit Review Sucessfully', "result"=>$post);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
