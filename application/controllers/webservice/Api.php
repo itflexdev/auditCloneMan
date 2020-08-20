@@ -3183,10 +3183,6 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
-	public function reviewlist_action(){
-		
-	}
-
 	public function getall_reviewlist(){
 		if ($this->input->post() && $this->input->post('coc_id')) {
 			$id 			= $this->input->post('coc_id');
@@ -3219,6 +3215,95 @@ class Api extends CC_Controller
 				];
 			}
 			$jsonArray = array("status"=>'1', "message"=>'Review Deatils', "result"=>$jsonData);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function reviewlist_action(){
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumberid')) {
+			if ($this->input->post('type') !='' && $this->input->post('type') == 'action') {
+				$this->form_validation->set_rules('reviewtype','Review Type','trim|required');
+				$this->form_validation->set_rules('favourites','Favourites','trim|required');
+				$this->form_validation->set_rules('installationtype','Installation Type','trim|required');
+				$this->form_validation->set_rules('subtype','Subtype','trim|required');
+				$this->form_validation->set_rules('statement','Statement','trim|required');
+				$this->form_validation->set_rules('reference','reference','trim|required');
+				$this->form_validation->set_rules('link','Link','trim|required');
+				$this->form_validation->set_rules('comments','Comments','trim|required');
+
+				if ($this->form_validation->run()==FALSE) {
+					$findtext 		= ['<div class="form_error">', "</div>"];
+					$replacetext 	= ['', ''];
+					$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+				}else{
+					$auditorid 	= $this->input->post('user_id');
+					$plumberid 	= $this->input->post('plumberid');
+					$cocid 		= $this->input->post('coc_id');
+					$post 		= $this->input->post();
+					if($this->input->post('id') !=''){$id = $this->input->post('id');}else{$id = '';}
+					$datetime	= 	date('Y-m-d H:i:s');
+					$request		=	[
+						'updated_at' 		=> $datetime,
+						'updated_by' 		=> $userid
+					];
+					
+					if (isset($post['file']) && $post['file'] != '') {
+						$data = $this->fileupload(['files' => $post['file'], 'file_name' => $post['file_name'], 'page' => 'auditorreview']);
+						$post['file'] = $data[0];
+					}
+
+					$request['coc_id'] 				= $cocid;
+					$request['auditor_id'] 			= $auditorid;
+					$request['plumber_id'] 			= $plumberid;
+					if(isset($post['reviewtype']))		 			$request['reviewtype'] 			= $post['reviewtype'];
+					if(isset($post['favourites'])) 					$request['favourites'] 			= $post['favourites'];
+					if(isset($post['installationtype'])) 			$request['installationtype'] 	= $post['installationtype'];
+					if(isset($post['subtype'])) 					$request['subtype'] 			= $post['subtype'];
+					if(isset($post['statement'])) 					$request['statement'] 			= $post['statement'];
+					if(isset($post['reference'])) 					$request['reference'] 			= $post['reference'];
+					if(isset($post['link'])) 						$request['link'] 				= $post['link'];
+					if(isset($post['comments'])) 					$request['comments'] 			= $post['comments'];
+					if(isset($post['file'])) 						$request['file'] 				= $post['file'];
+					if(isset($post['incompletepoint'])) 			$request['incomplete_point'] 	= $post['incompletepoint'];
+					if(isset($post['completepoint'])) 				$request['complete_point'] 		= $post['completepoint'];
+					if(isset($post['cautionarypoint'])) 			$request['cautionary_point'] 	= $post['cautionarypoint'];
+					if(isset($post['complimentpoint'])) 			$request['compliment_point'] 	= $post['complimentpoint'];
+					if(isset($post['noauditpoint'])) 				$request['noaudit_point'] 		= $post['noauditpoint'];
+					if(isset($post['point'])) 						$request['point'] 				= $post['point'];
+					if(isset($post['status'])) 						$request['status'] 				= $post['status'];
+					// if refix means status 0, for others status 1
+				}
+				if($id==''){
+				$request['created_at'] = $datetime;
+				$request['created_by'] = $userid;
+				$this->db->insert('auditor_review', $request);
+				$insertid = $this->db->insert_id();
+
+				if(isset($data['refixperiod']) && isset($data['status'])){
+					$list = $this->Auditor_Model->getReviewList('row', ['id' => $insertid]);
+					
+					if($list['reviewtype']=='1'){
+						$reviewstatus			= $data['status'];
+						$listrefixdate 			= $list['refix_date'];
+						
+						if($listrefixdate=='' && $reviewstatus=='0'){
+							$refixdate 			= date('Y-m-d', strtotime(date('d-m-Y').' +'.$data['refixperiod'].'days'));
+							$this->db->update('auditor_review', ['refix_date' => $refixdate], ['id' => $insertid]);
+						}
+					}
+				}
+
+			}else{
+				$this->db->update('auditor_review', $request, ['id' => $id]);
+				$insertid = $id;
+			}
+			}elseif($this->input->post('id') !='' && $this->input->post('type') !='' && $this->input->post('type') == 'delete'){
+
+			}
+			
 		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
@@ -3526,7 +3611,14 @@ class Api extends CC_Controller
 			$path = FCPATH.'assets/uploads/cpdqueue/';
 		}elseif($page == 'plumberlogcoc'){
 			$path = FCPATH.'assets/uploads/cpdqueue/';
-		}elseif($page == 'noncompliance_coc_image' || $page == 'plumber_logcoc'){
+		}elseif($page == 'auditorreview'){
+			$path = FCPATH.'assets/uploads/auditor/statement/';
+
+			if(!is_dir($path)){
+				mkdir($directory.'assets/uploads/auditor/statement', 0755, true);
+			}
+		}
+		elseif($page == 'noncompliance_coc_image' || $page == 'plumber_logcoc'){
 			$path = FCPATH.'assets/uploads/plumber/'.$userid.'/log/';
 			
 			if(!is_dir($path)){
