@@ -323,6 +323,10 @@ class Services extends CC_Controller
 		header( 'HTTP/1.0 200 OK' );
 		flush();
 		
+		$file = fopen("assets/payment/payment.txt","a");
+		fwrite($file,json_encode($_POST). PHP_EOL);
+		fclose($file);
+		
 		$result = $_POST;
 		$this->Coc_Model->purchasecoc($result);
 	}
