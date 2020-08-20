@@ -974,7 +974,9 @@ class Api extends CC_Controller
 				
 			}elseif($this->config->item('plumberstatus')[$userdetails['plumberstatus']] == 'Resigned'){
 				$jsonData = ['plumberstatus' => $this->config->item('plumberstatus')[$userdetails['plumberstatus']], 'pageresponse' => 'Plumber has Resigned'];
-				
+			}
+			elseif($this->config->item('plumberstatus')[$userdetails['plumberstatus']] == 'Suspended'){
+				$jsonData = ['plumberstatus' => $this->config->item('plumberstatus')[$userdetails['plumberstatus']], 'pageresponse' => 'Plumber has Suspended'];
 			}
 			//print_r($jsonData);die;
 			$jsonArray = array("status"=>'1', "message"=>'User details', "result"=>$jsonData);
@@ -3161,8 +3163,20 @@ class Api extends CC_Controller
 	}
 
 	public function reviewlist_pointsdetails(){
-		if ($this->input->post()) {
+		if ($this->input->post() && $this->input->post('installationtypeid') && $this->input->post('subtypeid')) {
+			$installationtypeid = $this->input->post('installationtypeid');
+			$subtypeid 			= $this->input->post('subtypeid');
 
+			$post = $this->input->post();
+			$result = $this->Reportlisting_Model->getList('all', ['status' => ['1']]+$post);
+			if(count($result)){
+				$jsonData = $result;
+				$message = 'audit review details';
+			}else{
+				$jsonData = [];
+				$message = 'no record found';
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$jsonData);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
