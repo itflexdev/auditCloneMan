@@ -2915,6 +2915,130 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
+	public function audit_review_save(){
+
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
+			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
+
+			if ($this->form_validation->run()==FALSE) {
+				$findtext 		= ['<div class="form_error">', "</div>"];
+				$replacetext 	= ['', ''];
+				$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
+				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+			}else{
+				$cocid 		= $this->input->post('coc_id');
+				$auditorid 	= $this->input->post('user_id');
+				$plumberid 	= $this->input->post('plumber_id');
+				$settings 	= $this->Systemsettings_Model->getList('row');
+
+				if($this->input->post('id') !=''){$id = $this->input->post('id');}else{$id = '';} // audit revreview id (as_id)
+				$datetime 	=  date('Y-m-d H:i:s');
+				$post 		=  $this->input->post();
+
+				if(isset($post['cocid']))		 				$request['coc_id'] 						= $post['cocid'];
+				if(isset($post['auditorid']))		 			$request['auditor_id'] 					= $post['auditorid'];
+				if(isset($post['plumberid']))		 			$request['plumber_id'] 					= $post['plumberid'];
+				if(isset($post['auditdate']))		 			$request['audit_date'] 					= date('Y-m-d', strtotime($post['auditdate']));
+				if(isset($post['workmanship'])) 				$request['workmanship'] 				= $post['workmanship'];
+				if(isset($post['plumberverification'])) 		$request['plumber_verification'] 		= $post['plumberverification'];
+				if(isset($post['cocverification'])) 			$request['coc_verification'] 			= $post['cocverification'];
+				if(isset($post['workmanshippoint'])) 			$request['workmanship_point'] 			= $post['workmanshippoint'];
+				if(isset($post['plumberverificationpoint']))	$request['plumberverification_point'] 	= $post['plumberverificationpoint'];
+				if(isset($post['cocverificationpoint'])) 		$request['cocverification_point'] 		= $post['cocverificationpoint'];
+				if(isset($post['reviewpoint'])) 				$request['review_point'] 				= $post['reviewpoint'];
+				if(isset($post['point'])) 						$request['point'] 						= $post['point'];
+				if(isset($post['reason'])) 						$request['reason'] 						= $post['reason'];
+				if(isset($post['reportdate']))		 			$request['reportdate'] 					= date('Y-m-d H:i:s');
+				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport')	$request['auditcomplete'] 		= $post['auditcomplete'];
+				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['status'] 				= '1';
+				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['auditcompletedate'] 	= date('Y-m-d');
+
+				$request['refixcompletedate'] 	= (isset($post['refixcompletedate']) && $post['refixcompletedate']!='') ? date('Y-m-d', strtotime($post['refixcompletedate'])) : NULL;	
+				$request['hold'] 				= (isset($post['hold'])) ? $post['hold'] : '0';
+				if($id==''){
+					$request['created_at'] = $datetime;
+					$request['created_by'] = $userid;
+					$data = $this->db->insert('auditor_statement', $request);
+				}else{
+					$data = $this->db->update('auditor_statement', $request, ['id' => $id]);
+				}
+				if ($data) {
+					if($post['submit']=='save' && isset($post['hold'])){
+					$this->db->update('stock_management', ['audit_status' => '5', 'notification' => '1'], ['id' => $cocid]);
+					}elseif($post['submit']=='save' && !isset($post['hold']) && $post['auditstatus']=='0'){
+						$this->db->update('stock_management', ['audit_status' => '3', 'notification' => '1'], ['id' => $cocid]);
+					}elseif($post['submit']=='save' && !isset($post['hold']) && $post['auditstatus']=='1'){
+						$this->db->update('stock_management', ['audit_status' => '2', 'notification' => '1'], ['id' => $cocid]);
+					}
+
+						if($requestData['auditstatus']=='0'){
+							$auditreviewrow = $this->Auditor_Model->getReviewList('row', ['coc_id' => $cocid, 'reviewtype' => '1', 'status' => '0']);
+						if($auditreviewrow){
+							$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '22', 'emailstatus' => '1']);
+							
+							if($notificationdata){
+								$pdf 		= FCPATH.'assets/uploads/temp/'.$cocid.'.pdf';
+								$this->pdfauditreport($cocid, $pdf);
+								
+								$duedate 		= ($auditreviewrow) ? date('d-m-Y', strtotime($auditreviewrow['created_at'].' +'.$pagedata['settings']['refix_period'].'days')) : '';
+								
+								$body 		= str_replace(['{Plumbers Name and Surname}', '{COC number}', '{refix number} ', '{due date}'], [$pagedata['result']['u_name'], $cocid, $settings['refix_period'], $duedate], $notificationdata['email_body']);
+								$subject 	= str_replace(['{cocno}'], [$cocid], $notificationdata['subject']);
+								$this->CC_Model->sentMail($pagedata['result']['u_email'], $subject, $body, $pdf);
+								if(file_exists($pdf)) unlink($pdf);  
+							}
+							
+							if($settingsdetail && $settingsdetail['otp']=='1'){
+								$smsdata 	= $this->Communication_Model->getList('row', ['id' => '22', 'smsstatus' => '1']);
+					
+								if($smsdata){
+									$sms = str_replace(['{number of COC}'], [$cocid], $smsdata['sms_body']);
+									$this->sms(['no' => $pagedata['result']['u_mobile'], 'msg' => $sms]);
+								}
+							}
+						}
+					}
+				}
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>'Review Added Sucessfully', "result"=>$request);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function audit_review_submit(){
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
+			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
+			$this->form_validation->set_rules('auditstatus','Audit Status','trim|required');
+
+			if ($this->form_validation->run()==FALSE) {
+				$findtext 		= ['<div class="form_error">', "</div>"];
+				$replacetext 	= ['', ''];
+				$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
+				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+			}else{
+
+			}
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function reviewlist_pointsdetails(){
+		if ($this->input->post()) {
+
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function reviewlist_action(){
+		
+	}
+
 	public function getall_reviewlist(){
 		if ($this->input->post() && $this->input->post('coc_id')) {
 			$id 			= $this->input->post('coc_id');
