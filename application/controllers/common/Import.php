@@ -1053,6 +1053,7 @@ class Import extends CC_Controller {
 	}
 	
 	public function generatecocpdf($id){
+		unlink('./assets/inv_pdf/'.$id.'.pdf'); 
 		$this->cocreport($id, 'PDF Invoice Plumber COC');
 	}
 }
