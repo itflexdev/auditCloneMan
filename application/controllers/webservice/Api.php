@@ -3275,35 +3275,41 @@ class Api extends CC_Controller
 					if(isset($post['point'])) 						$request['point'] 				= $post['point'];
 					if(isset($post['status'])) 						$request['status'] 				= $post['status'];
 					// if refix means status 0, for others status 1
-				}
-				if($id==''){
-				$request['created_at'] = $datetime;
-				$request['created_by'] = $userid;
-				$this->db->insert('auditor_review', $request);
-				$insertid = $this->db->insert_id();
-
-				if(isset($data['refixperiod']) && isset($data['status'])){
-					$list = $this->Auditor_Model->getReviewList('row', ['id' => $insertid]);
-					
-					if($list['reviewtype']=='1'){
-						$reviewstatus			= $data['status'];
-						$listrefixdate 			= $list['refix_date'];
+					if($id==''){
+					$request['created_at'] = $datetime;
+					$request['created_by'] = $userid;
+					$this->db->insert('auditor_review', $request);
+					$insertid = $this->db->insert_id();
+					}else{
+						$this->db->update('auditor_review', $request, ['id' => $id]);
+						$insertid = $id;
+					}
+					if(isset($data['refixperiod']) && isset($data['status'])){
+						$list = $this->getReviewList('row', ['id' => $insertid]);
 						
-						if($listrefixdate=='' && $reviewstatus=='0'){
-							$refixdate 			= date('Y-m-d', strtotime(date('d-m-Y').' +'.$data['refixperiod'].'days'));
-							$this->db->update('auditor_review', ['refix_date' => $refixdate], ['id' => $insertid]);
+						if($list['reviewtype']=='1'){
+							$reviewstatus			= $data['status'];
+							$listrefixdate 			= $list['refix_date'];
+							
+							if($listrefixdate=='' && $reviewstatus=='0'){
+								$refixdate 			= date('Y-m-d', strtotime(date('d-m-Y').' +'.$data['refixperiod'].'days'));
+								$this->db->update('auditor_review', ['refix_date' => $refixdate], ['id' => $insertid]);
+							}
 						}
 					}
+					$status  = '1';
+					$message = 'Review Added Sucessfully';
+					$jsonData = $post;
 				}
-
-			}else{
-				$this->db->update('auditor_review', $request, ['id' => $id]);
-				$insertid = $id;
-			}
+				
 			}elseif($this->input->post('id') !='' && $this->input->post('type') !='' && $this->input->post('type') == 'delete'){
-
+				$reviewid = $this->input->post('id');
+				$result = $this->Auditor_Model->deleteReview($reviewid);
+				$status  = '1';
+				$message = 'Review Deleted Sucessfully';
+				$jsonData = $result;
 			}
-			
+			$jsonArray = array("status"=>'1', "message"=>$message, "result"=>$jsonData);
 		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
