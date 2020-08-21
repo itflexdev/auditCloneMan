@@ -3162,6 +3162,21 @@ class Api extends CC_Controller
 		}
 		echo json_encode($jsonArray);
 	}
+	public function getauditor_reportlisting(){
+		if ($this->input->post() && $this->input->post('id')) {
+			$data = $this->Auditor_Reportlisting_Model->getList('row', ['id' => $post['id'], 'status' => ['1']]);
+		
+			if($data){
+				$jsonData[] = ['status' => '1', 'result' => $data];
+			}else{
+				$jsonData[] = ['status' => '0', 'result' => []];
+			}
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Report Listing', "result"=>$jsonData);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
 
 	public function reviewlist_pointsdetails(){ //(points for refix, cautionary, complement, noaudit findings)
 		if ($this->input->post() && $this->input->post('installationtypeid') && $this->input->post('subtypeid')) {
