@@ -290,6 +290,7 @@ class Cpdtypesetup_Model extends CC_Model
 		$this->db->where('cp1.user_id', $requestdata['plumberid']);
 		$query = $this->db->get();
 		$result1 = $query->result_array();
+		print_r($this->db->last_query());die;
 		return $result1; 
 
 	}
