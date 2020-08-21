@@ -51,7 +51,19 @@ class index extends CC_Controller
 	public function activityDetails()
 	{
 
-		$postData = $this->input->post();		  
+		$postData 			= $this->input->post();
+		$userid 			= $this->getUserID();
+		$postData['userid'] = $userid;
+
+		$cpdverify = $this->Mycpd_Model->cpdverification($postData);
+		if (count($cpdverify) > 0) {
+			foreach ($cpdverify as $cpdverifykey => $cpdverifyvalue) {
+				if ($cpdverifyvalue['cpdtype_id']!='0') {
+					$postData['cpdidarray'][] = $cpdverifyvalue['cpdtype_id'];
+				}
+			}
+		}
+
 		if($postData)
 		{
 			$data 	=   $this->Mycpd_Model->autosearchActivity($postData);
