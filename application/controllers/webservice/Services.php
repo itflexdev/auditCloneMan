@@ -293,15 +293,23 @@ class Services extends CC_Controller
 		if($this->input->post()){
 			$this->form_validation->set_rules('id', 'ID', 'trim|required');
 			$this->form_validation->set_rules('amount', 'Amount', 'trim|required');
-			$this->form_validation->set_rules('customdata', 'Custom Data', 'trim|required');
+			$this->form_validation->set_rules('coc_type', 'COC Type', 'trim|required');
+			$this->form_validation->set_rules('delivery_type', 'Delivery Type', 'trim');
+			$this->form_validation->set_rules('cost_value', 'Cost Value', 'trim|required');
+			$this->form_validation->set_rules('quantity', 'Quantity', 'trim|required');
+			$this->form_validation->set_rules('vat', 'Vat', 'trim|required');
+			$this->form_validation->set_rules('total_due', 'Total Due', 'trim|required');
+			$this->form_validation->set_rules('delivery_cost', 'Delivery Cost', 'trim|required');
+			$this->form_validation->set_rules('permittedcoc', 'Permitted Coc', 'trim|required');
+			$this->form_validation->set_rules('userid', 'Userid', 'trim|required');
 			
 			if ($this->form_validation->run()==FALSE) {
 				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
 			}else{
-				$post				= $this->input->post();
+				$post				= 	$this->input->post();
 				
-				$data['post']		= $post;			
-				$data['plumber']	= $this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
+				$data['post']		= 	$post;			
+				$data['plumber']	= 	$this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
 				
 				$this->load->view('api/purchasecoc/index', $data);
 			}
@@ -322,10 +330,6 @@ class Services extends CC_Controller
 	public function purchasecocnotify(){
 		header( 'HTTP/1.0 200 OK' );
 		flush();
-		
-		$file = fopen("assets/payment/payment.txt","a");
-		fwrite($file,json_encode($_POST). PHP_EOL);
-		fclose($file);
 		
 		$result = $_POST;
 		$this->Coc_Model->purchasecoc($result);
