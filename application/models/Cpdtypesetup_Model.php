@@ -89,7 +89,7 @@ class Cpdtypesetup_Model extends CC_Model
 	}
 
 	public function queue_action($requestdata){
-		print_r($requestdata);die;
+		// print_r($requestdata);die;
 		
 		$user_id 	= $this->getUserID();
 		$id 		= $requestdata['id'];
