@@ -289,8 +289,17 @@ class Cpdtypesetup extends CC_Controller
 		//CPD Activity search
 	public function activityDetails()
 	{
+		$postData = $this->input->post();	
 
-		$postData = $this->input->post();		  
+		$cpdverify = $this->Cpdtypesetup_Model->cpdverification($postData);
+		if (count($cpdverify) > 0) {
+			foreach ($cpdverify as $cpdverifykey => $cpdverifyvalue) {
+				if ($cpdverifyvalue['cpdtype_id']!='0') {
+					$postData['cpdidarray'][] = $cpdverifyvalue['cpdtype_id'];
+				}
+			}
+		}
+
 		if($postData)
 		{
 			$data 	=   $this->Cpdtypesetup_Model->autosearchActivity($postData);
