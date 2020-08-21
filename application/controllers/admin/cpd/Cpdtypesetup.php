@@ -299,7 +299,6 @@ class Cpdtypesetup extends CC_Controller
 				}
 			}
 		}
-print_r($cpdverify);die;
 		if($postData)
 		{
 			$data 	=   $this->Cpdtypesetup_Model->autosearchActivity($postData);
