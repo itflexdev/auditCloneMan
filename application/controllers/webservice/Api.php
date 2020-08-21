@@ -2950,7 +2950,7 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
-	public function audit_review_save(){
+	public function audit_review_save(){ //(refix = 1, cautionary = 2, complement =3 , noaudit findings =4)
 
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumber_id')) {
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
@@ -3043,7 +3043,7 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
-	public function audit_review_submit(){
+	public function audit_review_submit(){ //(refix = 1, cautionary = 2, complement =3 , noaudit findings =4)
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
 			$this->form_validation->set_rules('auditstatus','Audit Status','trim|required');
