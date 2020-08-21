@@ -15,6 +15,6 @@
 		<input name="item_description" value="coc" type="hidden">
 		<input name="payment_method" value="cc" type="hidden">
 		
-		<input type="hidden" name="custom_str1" value="<?php echo $post['customdata']; ?>">
+		<input type="hidden" name="custom_str1" value="<?php echo json_encode($post['customdata']); ?>">
 	</form>
 </body>
