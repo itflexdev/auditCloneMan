@@ -293,15 +293,34 @@ class Services extends CC_Controller
 		if($this->input->post()){
 			$this->form_validation->set_rules('id', 'ID', 'trim|required');
 			$this->form_validation->set_rules('amount', 'Amount', 'trim|required');
-			$this->form_validation->set_rules('customdata', 'Custom Data', 'trim|required');
+			$this->form_validation->set_rules('coc_type', 'COC Type', 'trim|required');
+			$this->form_validation->set_rules('delivery_type', 'Delivery Type', 'trim');
+			$this->form_validation->set_rules('cost_value', 'Cost Value', 'trim|required');
+			$this->form_validation->set_rules('quantity', 'Quantity', 'trim|required');
+			$this->form_validation->set_rules('vat', 'Vat', 'trim|required');
+			$this->form_validation->set_rules('total_due', 'Total Due', 'trim|required');
+			$this->form_validation->set_rules('delivery_cost', 'Delivery Cost', 'trim|required');
+			$this->form_validation->set_rules('permittedcoc', 'Permitted Coc', 'trim|required');
+			$this->form_validation->set_rules('userid', 'Userid', 'trim|required');
 			
 			if ($this->form_validation->run()==FALSE) {
 				$json = array("status" => "0", "message" => $this->errormessage(validation_errors()), 'result' => []);
 			}else{
-				$post				= $this->input->post();
+				$post				= 	$this->input->post();
 				
-				$data['post']		= $post;			
-				$data['plumber']	= $this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
+				$data['amount']		= 	$post['amount'];			
+				$data['customdata']	= 	[
+											'coc_type' 			=> $post['coc_type'],
+											'delivery_type' 	=> $post['delivery_type'],
+											'cost_value' 		=> $post['cost_value'],
+											'quantity' 			=> $post['quantity'],
+											'vat' 				=> $post['vat'],
+											'total_due' 		=> $post['total_due'],
+											'delivery_cost' 	=> $post['delivery_cost'],
+											'permittedcoc' 		=> $post['permittedcoc'],
+											'userid' 			=> $post['userid']
+										];			
+				$data['plumber']	= 	$this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
 				
 				$this->load->view('api/purchasecoc/index', $data);
 			}
