@@ -308,18 +308,7 @@ class Services extends CC_Controller
 			}else{
 				$post				= 	$this->input->post();
 				
-				$data['amount']		= 	$post['amount'];			
-				$data['customdata']	= 	[
-											'coc_type' 			=> $post['coc_type'],
-											'delivery_type' 	=> $post['delivery_type'],
-											'cost_value' 		=> $post['cost_value'],
-											'quantity' 			=> $post['quantity'],
-											'vat' 				=> $post['vat'],
-											'total_due' 		=> $post['total_due'],
-											'delivery_cost' 	=> $post['delivery_cost'],
-											'permittedcoc' 		=> $post['permittedcoc'],
-											'userid' 			=> $post['userid']
-										];			
+				$data['post']		= 	$post;			
 				$data['plumber']	= 	$this->Plumber_Model->getList('row', ['id' => $post['id']], ['users', 'usersdetail']);
 				
 				$this->load->view('api/purchasecoc/index', $data);

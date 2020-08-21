@@ -10,19 +10,29 @@
 	<input id="name_last" name="name_last" value="<?php echo $plumber['surname']; ?>" type="hidden">
 	<input id="email_address" name="email_address" value="<?php echo $plumber['email']; ?>" type="hidden">
 	
-	<input name="amount" value="<?php echo $amount; ?>" type="hidden">
+	<input name="amount" value="<?php echo $post['amount']; ?>" type="hidden">
 	<input name="item_name" value="Coc Purchase" type="hidden">
 	<input name="item_description" value="coc" type="hidden">
 	<input name="payment_method" value="cc" type="hidden">
 	
-	<input type="hidden" name="custom_str1" value="" id="paymentcustomdata">
+	<input type="hidden" name="custom_str1" value="" id="paymentdata">
 </form>
 
 <script>
 
 	$(function(){
-		var customdata = '<?php echo json_encode($customdata); ?>';
-		$('#paymentcustomdata').val(JSON.stringify(customdata));
+		var customdata = { 
+							coc_type: '<?php echo $post["coc_type"]; ?>', 
+							delivery_type: '<?php echo $post["delivery_type"]; ?>', 
+							cost_value: '<?php echo $post["cost_value"]; ?>', 
+							quantity: '<?php echo $post["quantity"]; ?>', 
+							vat: '<?php echo $post["vat"]; ?>', 
+							total_due: '<?php echo $post["total_due"]; ?>', 
+							delivery_cost: '<?php echo $post["delivery_cost"]; ?>', 
+							permittedcoc: '<?php echo $post["permittedcoc"]; ?>', 
+							userid: '<?php echo $post["userid"]; ?>'
+						};
+		$('#paymentdata').val(JSON.stringify(customdata));
 		$('form').submit();
 	})
 </script>
