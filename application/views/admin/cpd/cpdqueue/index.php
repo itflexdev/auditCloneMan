@@ -191,6 +191,7 @@ $heading 				= isset($result['id']) ? 'Update' : 'Add';
 	var pagestatus = '<?php echo $pagestatus; ?>';
 
 	$(function(){
+		$('#activity').prop('disabled',true);
 		$('#addupdate').prop('disabled',true);
 		$('#aprooved').prop('disabled', true);
 		approve_check();
@@ -321,6 +322,7 @@ $heading 				= isset($result['id']) ? 'Update' : 'Add';
 		$("#name_surname").val(nameSurname);
 		$("#user_id_hide").val(id);
 		$("#plumber_suggesstion").hide();
+		$('#activity').prop('disabled',false);
 	}
 
 	// Search activity
@@ -330,11 +332,12 @@ $heading 				= isset($result['id']) ? 'Update' : 'Add';
 	{
 	    if (req2 != null) req2.abort();
 	    var strlength2 = $.trim($('#activity').val()).length;
+	    var plumberid = $('#user_id_hide').val();
 	    if(strlength2 > 0)  { 
 		    req2 = $.ajax({
 		        type: "POST",
 		        url: '<?php echo base_url()."admin/cpd/Cpdtypesetup/activityDetails"; ?>',
-		        data: {'search_keyword' : value},        
+		        data: {'search_keyword' : value, 'plumberid' : plumberid},        
 		        beforeSend: function(){
 					// $("#search_reg_no").css("background","#FFF url(LoaderIcon.gif) no-repeat 165px");
 				},
