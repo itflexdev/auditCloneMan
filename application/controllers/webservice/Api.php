@@ -3163,7 +3163,7 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
-	public function reviewlist_pointsdetails(){
+	public function reviewlist_pointsdetails(){ //(points for refix, cautionary, complement, noaudit findings)
 		if ($this->input->post() && $this->input->post('installationtypeid') && $this->input->post('subtypeid')) {
 			$installationtypeid = $this->input->post('installationtypeid');
 			$subtypeid 			= $this->input->post('subtypeid');
