@@ -2954,6 +2954,7 @@ class Api extends CC_Controller
 
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
+			$this->form_validation->set_rules('reviewpoint','Review','trim|required');
 
 			if ($this->form_validation->run()==FALSE) {
 				$findtext 		= ['<div class="form_error">', "</div>"];
@@ -2970,9 +2971,9 @@ class Api extends CC_Controller
 				$datetime 	=  date('Y-m-d H:i:s');
 				$post 		=  $this->input->post();
 
-				if(isset($post['cocid']))		 				$request['coc_id'] 						= $post['cocid'];
-				if(isset($post['auditorid']))		 			$request['auditor_id'] 					= $post['auditorid'];
-				if(isset($post['plumberid']))		 			$request['plumber_id'] 					= $post['plumberid'];
+				$request['coc_id'] 						= $cocid;
+				$request['auditor_id'] 					= $auditorid;
+				$request['plumber_id'] 					= $plumberid;
 				if(isset($post['auditdate']))		 			$request['audit_date'] 					= date('Y-m-d', strtotime($post['auditdate']));
 				if(isset($post['workmanship'])) 				$request['workmanship'] 				= $post['workmanship'];
 				if(isset($post['plumberverification'])) 		$request['plumber_verification'] 		= $post['plumberverification'];
@@ -2984,9 +2985,9 @@ class Api extends CC_Controller
 				if(isset($post['point'])) 						$request['point'] 						= $post['point'];
 				if(isset($post['reason'])) 						$request['reason'] 						= $post['reason'];
 				if(isset($post['reportdate']))		 			$request['reportdate'] 					= date('Y-m-d H:i:s');
-				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport')	$request['auditcomplete'] 		= $post['auditcomplete'];
-				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['status'] 				= '1';
-				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['auditcompletedate'] 	= date('Y-m-d');
+				// if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport')	$request['auditcomplete'] 		= $post['auditcomplete'];
+				// if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['status'] 				= '1';
+				// if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['auditcompletedate'] 	= date('Y-m-d');
 
 				$request['refixcompletedate'] 	= (isset($post['refixcompletedate']) && $post['refixcompletedate']!='') ? date('Y-m-d', strtotime($post['refixcompletedate'])) : NULL;	
 				$request['hold'] 				= (isset($post['hold'])) ? $post['hold'] : '0';
