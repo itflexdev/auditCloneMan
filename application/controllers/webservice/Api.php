@@ -2952,7 +2952,7 @@ class Api extends CC_Controller
 
 	public function audit_review_save(){
 
-		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumber_id')) {
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
 			$this->form_validation->set_rules('reviewpoint','Review','trim|required');
 
