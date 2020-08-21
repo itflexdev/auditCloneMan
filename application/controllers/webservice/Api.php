@@ -3168,6 +3168,7 @@ class Api extends CC_Controller
 				$auditorreportlist	= $this->getAuditorReportingList($this->input->post('user_id'));
 				$status 	= '1';
 				$message 	= 'favourites';
+				$jsonData[] = $auditorreportlist;
 			}elseif($this->input->post('id') !='' && $this->input->post('type') =='reportlist'){
 				$data = $this->Auditor_Reportlisting_Model->getList('row', ['id' => $this->input->post('id'), 'status' => ['1']]);
 				if($data){
