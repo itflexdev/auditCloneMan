@@ -3222,7 +3222,7 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
-	public function reviewlist_action(){
+	public function reviewlist_action(){ //(points for refix, cautionary, complement, noaudit findings)
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumberid')) {
 			if ($this->input->post('type') !='' && $this->input->post('type') == 'action') {
 				$this->form_validation->set_rules('reviewtype','Review Type','trim|required');
