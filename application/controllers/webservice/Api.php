@@ -3163,15 +3163,25 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 	public function getauditor_reportlisting(){
-		if ($this->input->post() && $this->input->post('id')) {
-			$data = $this->Auditor_Reportlisting_Model->getList('row', ['id' => $post['id'], 'status' => ['1']]);
-		
-			if($data){
-				$jsonData[] = ['status' => '1', 'result' => $data];
-			}else{
-				$jsonData[] = ['status' => '0', 'result' => []];
+		if ($this->input->post() && $this->input->post('user_id')) { //user_id = auditor id
+			if ($this->input->post('type') !='' && $this->input->post('type') =='favourites') {
+				$auditorreportlist	= $this->getAuditorReportingList($this->input->post('user_id'));
+				$status 	= '1';
+				$message 	= 'favourites';
+			}elseif($this->input->post('id') !='' && $this->input->post('type') =='reportlist'){
+				$data = $this->Auditor_Reportlisting_Model->getList('row', ['id' => $this->input->post('id'), 'status' => ['1']]);
+				if($data){
+					$jsonData[] = ['status' => '1', 'result' => $data];
+					$status 	= '1';
+					$message 		= 'reportlist';
+				}else{
+					$jsonData[] = ['status' => '0', 'result' => []];
+					$status 	= '0';
+					$message 	= 'No recod found';
+				}
 			}
-			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Report Listing', "result"=>$jsonData);
+			
+			$jsonArray 		= array("status"=>$status, "message"=>$message, "result"=>$jsonData);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
