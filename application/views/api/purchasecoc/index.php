@@ -10,11 +10,11 @@
 		<input id="name_last" name="name_last" value="<?php echo $plumber['surname']; ?>" type="hidden">
 		<input id="email_address" name="email_address" value="<?php echo $plumber['email']; ?>" type="hidden">
 		
-		<input name="amount" value="<?php echo $post['amount']; ?>" type="hidden">
+		<input name="amount" value="<?php echo $amount; ?>" type="hidden">
 		<input name="item_name" value="Coc Purchase" type="hidden">
 		<input name="item_description" value="coc" type="hidden">
 		<input name="payment_method" value="cc" type="hidden">
 		
-		<input type="hidden" name="custom_str1" value="<?php echo json_encode($post['customdata']); ?>">
+		<input type="hidden" name="custom_str1" value="<?php echo json_encode($customdata); ?>">
 	</form>
 </body>
