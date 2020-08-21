@@ -110,7 +110,7 @@ class Mycpd_Model extends CC_Model
 	}
 
 	public function actionInsert($requestdata){
-		//echo "<pre>";print_r($requestdata);die;
+		// echo "<pre>";print_r($requestdata);die;
 		$user_id 	= $this->getUserID();
 		$id 		= $requestdata['id'];
 		$cpd_id 	= $requestdata['cpd_id'];
@@ -120,6 +120,7 @@ class Mycpd_Model extends CC_Model
 		if(isset($requestdata['user_id']))  		$requestData1['user_id'] 	    	= $requestdata['user_id'];
 		if(isset($requestdata['name_surname']))  	$requestData1['name_surname']  		= $requestdata['name_surname'];
 		if(isset($requestdata['activity'])) 		$requestData1['cpd_activity']  		= $requestdata['activity'];
+		if(isset($requestdata['activity_id_hide'])) $requestData1['cpdtype_id']  		= $requestdata['activity_id_hide'];
 		if(isset($requestdata['startdate'])) 	 	$requestData1['cpd_start_date'] 	= date("Y-m-d H:i:s", strtotime($requestdata['startdate']));
 		if(isset($requestdata['comments'])) 	 	$requestData1['comments'] 			= $requestdata['comments'];
 		if(isset($requestdata['image1'])) 		 	$requestData1['file1'] 				= $requestdata['image1'];
@@ -259,7 +260,6 @@ class Mycpd_Model extends CC_Model
 
 		//CPD Activity Search
 	public function autosearchActivity($postData){ 
-
 		$currentDate = date('Y-m-d H:i:s');
 
 		$this->db->select('cp1.id, cp1.activity, cp1.startdate, cp1.points, cp1.cpdstream');
@@ -270,12 +270,23 @@ class Mycpd_Model extends CC_Model
 		$this->db->where('cp1.status="1"');
 		$this->db->where('cp1.startdate<="'.$currentDate.'"');
 		$this->db->where('cp1.enddate>"'.$currentDate.'"');
+		if(isset($postData['cpdidarray'])) $this->db->where_not_in('cp1.id', $postData['cpdidarray']);
 		
 		$this->db->group_by("cp1.id");		
 		$query = $this->db->get();
 		$result1 = $query->result_array(); 
 
 		return $result1;
+	}
+
+	public function cpdverification($requestdata){
+		$this->db->select('cp1.*');
+		$this->db->from('cpd_activity_form cp1');
+		$this->db->where('cp1.user_id', $requestdata['userid']);
+		$query = $this->db->get();
+		$result1 = $query->result_array();
+		return $result1; 
+
 	}
 
 }

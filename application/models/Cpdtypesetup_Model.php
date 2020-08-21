@@ -273,12 +273,23 @@ class Cpdtypesetup_Model extends CC_Model
 		$this->db->where('cp1.status="1"');
 		$this->db->where('cp1.startdate<="'.$currentDate.'"');
 		$this->db->where('cp1.enddate>"'.$currentDate.'"');
+		if(isset($postData['cpdidarray'])) $this->db->where_not_in('cp1.id', $postData['cpdidarray']);
 		
 		$this->db->group_by("cp1.id");		
 		$query = $this->db->get();
 		$result1 = $query->result_array(); 
 
 		return $result1;
+
+	}
+
+	public function cpdverification($requestdata){
+		$this->db->select('cp1.*');
+		$this->db->from('cpd_activity_form cp1');
+		$this->db->where('cp1.user_id', $requestdata['plumberid']);
+		$query = $this->db->get();
+		$result1 = $query->result_array();
+		return $result1; 
 
 	}
 
