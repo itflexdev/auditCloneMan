@@ -88,21 +88,34 @@ class Api extends CC_Controller
 				
 					if($query->num_rows() > 0){
 						$result 	= $query->row_array();
-						$userdata	= $this->Plumber_Model->getList('row', ['id' => $result['id'], 'type' => '3', 'status' => ['0', '1', '2']], ['usersdetail']);
+						if ($result['type'] == '3') {
+							$userdata	= $this->Plumber_Model->getList('row', ['id' => $result['id'], 'type' => '3', 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
 
-						if ($result['mailstatus'] =='1') {
-							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus'], 'mobilenumber' => $userdata['mobile_phone']
-						 	];
-						 	$message = 'Login sucessfully';
-						 	$status = '1';
-						 	$jsonArray = array('status' => '1', "message"=>$message, 'result' => $jsonData);
+							if ($this->config->item('plumberstatus')[$userdata['plumberstatus']] == 'Expired') {
+								$jsonData = ['plumberstatus' => $this->config->item('plumberstatus')[$userdata['plumberstatus']], 'pageresponse' => 'Plumber has Expired'];
+
+								$jsonArray = array('status' => '1', "message"=>$message, 'result' => $jsonData);
+							}else{
+								if ($result['mailstatus'] =='1') {
+								$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus'], 'mobilenumber' => $userdata['mobile_phone']
+							 	];
+							 	$message = 'Login sucessfully';
+							 	$status = '1';
+							 	$jsonArray = array('status' => '1', "message"=>$message, 'result' => $jsonData);
+								}else{
+									$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus']
+								 	];
+									$message = 'Please activate your account by verifying the link sent to your E-mail id.';
+									$status = '0';
+									$jsonArray = array('status' => '0', "message"=>$message, 'result' => $jsonData);
+								}
+							}
+
 						}else{
-							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus']
-						 	];
-							$message = 'Please activate your account by verifying the link sent to your E-mail id.';
-							$status = '0';
-							$jsonArray = array('status' => '0', "message"=>$message, 'result' => $jsonData);
+							$userdata	= $this->Auditor_Model->getList('row', ['id' => $result['id'], 'status' => ['0','1']]);
+							$jsonArray = array('status' => '1', "message"=>'auditor details', 'result' => $userdata);
 						}
+						
 						
 					}else{
 						$jsonArray = array('status' => '0', "message"=>'Invalid Credentials.', 'result' => []);
@@ -3170,7 +3183,7 @@ class Api extends CC_Controller
 				$message 	= 'favourites';
 				$jsonData[] = $auditorreportlist;
 			}elseif($this->input->post('id') !='' && $this->input->post('type') =='reportlist'){
-				$data = $this->Auditor_Reportlisting_Model->getList('row', ['id' => $this->input->post('id'), 'status' => ['1']]);
+				$data = $this->Auditor_Reportlisting_Model->getList('all', ['id' => $this->input->post('id'), 'status' => ['1']]);
 				if($data){
 					$jsonData[] = ['status' => '1', 'result' => $data];
 					$status 	= '1';
