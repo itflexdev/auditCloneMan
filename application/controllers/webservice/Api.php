@@ -93,6 +93,7 @@ class Api extends CC_Controller
 
 							if ($this->config->item('plumberstatus')[$userdata['plumberstatus']] == 'Expired') {
 								$jsonData = ['plumberstatus' => $this->config->item('plumberstatus')[$userdata['plumberstatus']], 'pageresponse' => 'Plumber has Expired'];
+								$message = 'Plumber has Expired';
 
 								$jsonArray = array('status' => '1', "message"=>$message, 'result' => $jsonData);
 							}else{
