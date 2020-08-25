@@ -335,4 +335,8 @@ class Services extends CC_Controller
 		$this->Coc_Model->purchasecoc($result);
 	}
 	
+	public function googleapikey(){
+		echo $this->config->item('googleapikey');
+	}
+	
 }
