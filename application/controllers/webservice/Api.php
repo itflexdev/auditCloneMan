@@ -3288,7 +3288,7 @@ class Api extends CC_Controller
 					$datetime	= 	date('Y-m-d H:i:s');
 					$request		=	[
 						'updated_at' 		=> $datetime,
-						'updated_by' 		=> $userid
+						'updated_by' 		=> $auditorid
 					];
 					
 					if (isset($post['file']) && $post['file'] != '') {
@@ -3318,11 +3318,13 @@ class Api extends CC_Controller
 					// if refix means status 0, for others status 1
 					if($id==''){
 					$request['created_at'] = $datetime;
-					$request['created_by'] = $userid;
+					$request['created_by'] = $auditorid;
 					$this->db->insert('auditor_review', $request);
+					$message = 'Review Added Successfully';
 					$insertid = $this->db->insert_id();
 					}else{
 						$this->db->update('auditor_review', $request, ['id' => $id]);
+						$message = 'Review updated Successfully';
 						$insertid = $id;
 					}
 					if(isset($data['refixperiod']) && isset($data['status'])){
@@ -3339,7 +3341,8 @@ class Api extends CC_Controller
 						}
 					}
 					$status  = '1';
-					$message = 'Review Added Sucessfully';
+					//$message = 'Review Added Sucessfully';
+					$post['insertid'] = $insertid;
 					$jsonData = $post;
 				}
 				
@@ -3503,7 +3506,7 @@ class Api extends CC_Controller
 			$results = $this->Reportlisting_Model->getList('all', ['status' => ['1'], 'installationtypeid' => $data['installationtypeid'], 'subtypeid' => $data['subtypeid']]);
 			if(count($results) > 0){
 				foreach ($results as $key => $value) {
-					$arraydata[] = ['id' => $value['id'], 'installationtypeid' => $value['installation_id'], 'subtype_id' => $value['subtype_id'], 'statement' => $value['statement'], 'regulation' => $value['regulation'], 'regulation' => $value['regulation'], 'compliment' => $value['compliment'], 'cautionary' => $value['cautionary'], 'refix_complete' => $value['refix_complete'], 'refix_incomplete' => $value['refix_incomplete'], 'ncn_details' => 'Details', 'pub_remedial_ac' => 'Actions', 'pub_remedial_ac' => 'Actions', 'reference' => 'Reference'];
+					$arraydata[] = ['id' => $value['id'], 'installationtypeid' => $value['installation_id'], 'subtype_id' => $value['subtype_id'], 'statement' => $value['statement'], 'regulation' => $value['regulation'], 'regulation' => $value['regulation'], 'compliment' => $value['compliment'], 'cautionary' => $value['cautionary'], 'refix_complete' => $value['refix_complete'], 'refix_incomplete' => $value['refix_incomplete'], 'ncn_details' => 'Details', 'pub_remedial_ac' => 'Actions', 'comments' => $value['comments'], 'knowledge_link' => $value['knowledge_link'], 'reference' => 'Reference'];
 				}
 			}else{
 				$arraydata[] = [];
