@@ -3080,9 +3080,9 @@ class Api extends CC_Controller
 				$datetime 	=  date('Y-m-d H:i:s');
 				$post 		=  $this->input->post();
 
-				if(isset($post['cocid']))		 				$request['coc_id'] 						= $post['cocid'];
-				if(isset($post['auditorid']))		 			$request['auditor_id'] 					= $post['auditorid'];
-				if(isset($post['plumberid']))		 			$request['plumber_id'] 					= $post['plumberid'];
+				$request['coc_id'] 						= $post['cocid'];
+				$request['auditor_id'] 					= $post['auditorid'];
+				$request['plumber_id'] 					= $post['plumberid'];
 				if(isset($post['auditdate']))		 			$request['audit_date'] 					= date('Y-m-d', strtotime($post['auditdate']));
 				if(isset($post['workmanship'])) 				$request['workmanship'] 				= $post['workmanship'];
 				if(isset($post['plumberverification'])) 		$request['plumber_verification'] 		= $post['plumberverification'];
