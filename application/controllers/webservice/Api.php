@@ -2980,6 +2980,9 @@ class Api extends CC_Controller
 				$auditorid 	= $this->input->post('user_id');
 				$plumberid 	= $this->input->post('plumber_id');
 				$settings 	= $this->Systemsettings_Model->getList('row');
+				$extraparam['auditorid'] = $auditorid;
+				// $extras['plumberid'] = $plumberid;	
+				$result		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);	
 
 				if($this->input->post('id') !=''){$id = $this->input->post('id');}else{$id = '';} // audit revreview id (as_id)
 				$datetime 	=  date('Y-m-d H:i:s');
@@ -2998,7 +3001,7 @@ class Api extends CC_Controller
 				if(isset($post['reviewpoint'])) 				$request['review_point'] 				= $post['reviewpoint'];
 				if(isset($post['point'])) 						$request['point'] 						= $post['point'];
 				if(isset($post['reason'])) 						$request['reason'] 						= $post['reason'];
-				if(isset($post['reportdate']))		 			$request['reportdate'] 					= date('Y-m-d H:i:s');
+				$request['reportdate'] 					= date('Y-m-d H:i:s');
 				// if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport')	$request['auditcomplete'] 		= $post['auditcomplete'];
 				// if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['status'] 				= '1';
 				// if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['auditcompletedate'] 	= date('Y-m-d');
@@ -3007,10 +3010,12 @@ class Api extends CC_Controller
 				$request['hold'] 				= (isset($post['hold'])) ? $post['hold'] : '0';
 				if($id==''){
 					$request['created_at'] = $datetime;
-					$request['created_by'] = $userid;
+					$request['created_by'] = $auditorid;
 					$data = $this->db->insert('auditor_statement', $request);
+					$insertid = $this->db->insert_id();
 				}else{
 					$data = $this->db->update('auditor_statement', $request, ['id' => $id]);
+					$insertid = $id;
 				}
 				if ($data) {
 					if($post['submit']=='save' && isset($post['hold'])){
@@ -3030,11 +3035,11 @@ class Api extends CC_Controller
 								$pdf 		= FCPATH.'assets/uploads/temp/'.$cocid.'.pdf';
 								$this->pdfauditreport($cocid, $pdf);
 								
-								$duedate 		= ($auditreviewrow) ? date('d-m-Y', strtotime($auditreviewrow['created_at'].' +'.$pagedata['settings']['refix_period'].'days')) : '';
+								$duedate 		= ($auditreviewrow) ? date('d-m-Y', strtotime($auditreviewrow['created_at'].' +'.$settings['refix_period'].'days')) : '';
 								
-								$body 		= str_replace(['{Plumbers Name and Surname}', '{COC number}', '{refix number} ', '{due date}'], [$pagedata['result']['u_name'], $cocid, $settings['refix_period'], $duedate], $notificationdata['email_body']);
+								$body 		= str_replace(['{Plumbers Name and Surname}', '{COC number}', '{refix number} ', '{due date}'], [$result['u_name'], $cocid, $settings['refix_period'], $duedate], $notificationdata['email_body']);
 								$subject 	= str_replace(['{cocno}'], [$cocid], $notificationdata['subject']);
-								$this->CC_Model->sentMail($pagedata['result']['u_email'], $subject, $body, $pdf);
+								$this->CC_Model->sentMail($result['u_email'], $subject, $body, $pdf);
 								if(file_exists($pdf)) unlink($pdf);  
 							}
 							
@@ -3043,13 +3048,14 @@ class Api extends CC_Controller
 					
 								if($smsdata){
 									$sms = str_replace(['{number of COC}'], [$cocid], $smsdata['sms_body']);
-									$this->sms(['no' => $pagedata['result']['u_mobile'], 'msg' => $sms]);
+									$this->sms(['no' => $result['u_mobile'], 'msg' => $sms]);
 								}
 							}
 						}
 					}
 				}
 			}
+			$post['insertid'] = $insertid;
 			$jsonArray 		= array("status"=>'1', "message"=>'Review Added Sucessfully', "result"=>$request);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
@@ -3058,7 +3064,7 @@ class Api extends CC_Controller
 	}
 
 	public function audit_review_submit(){ //(refix = 1, cautionary = 2, complement =3 , noaudit findings =4)
-		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumber_id')) {
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
 			$this->form_validation->set_rules('auditstatus','Audit Status','trim|required');
 
@@ -3072,7 +3078,8 @@ class Api extends CC_Controller
 				$auditorid 	= $this->input->post('user_id');
 				$plumberid 	= $this->input->post('plumber_id');
 				$settings 	= $this->Systemsettings_Model->getList('row');
-				$extras['auditorid'] = $auditorid;
+				$settingsdetail =  $this->Systemsettings_Model->getList('row');
+				$extraparam['auditorid'] = $auditorid;
 				// $extras['plumberid'] = $plumberid;	
 				$result		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);	
 
@@ -3080,9 +3087,9 @@ class Api extends CC_Controller
 				$datetime 	=  date('Y-m-d H:i:s');
 				$post 		=  $this->input->post();
 
-				$request['coc_id'] 						= $post['cocid'];
-				$request['auditor_id'] 					= $post['auditorid'];
-				$request['plumber_id'] 					= $post['plumberid'];
+				$request['coc_id'] 						= $cocid;
+				$request['auditor_id'] 					= $auditorid;
+				$request['plumber_id'] 					= $post['plumber_id'];
 				if(isset($post['auditdate']))		 			$request['audit_date'] 					= date('Y-m-d', strtotime($post['auditdate']));
 				if(isset($post['workmanship'])) 				$request['workmanship'] 				= $post['workmanship'];
 				if(isset($post['plumberverification'])) 		$request['plumber_verification'] 		= $post['plumberverification'];
@@ -3093,7 +3100,7 @@ class Api extends CC_Controller
 				if(isset($post['reviewpoint'])) 				$request['review_point'] 				= $post['reviewpoint'];
 				if(isset($post['point'])) 						$request['point'] 						= $post['point'];
 				if(isset($post['reason'])) 						$request['reason'] 						= $post['reason'];
-				if(isset($post['reportdate']))		 			$request['reportdate'] 					= date('Y-m-d H:i:s');
+				$request['reportdate'] 					= date('Y-m-d H:i:s');
 				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport')	$request['auditcomplete'] 		= $post['auditcomplete'];
 				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['status'] 				= '1';
 				if(isset($post['auditcomplete']) && isset($post['submit']) && $post['submit']=='submitreport') 	$request['auditcompletedate'] 	= date('Y-m-d');
@@ -3102,10 +3109,12 @@ class Api extends CC_Controller
 				$request['hold'] 				= (isset($post['hold'])) ? $post['hold'] : '0';
 				if($id==''){
 					$request['created_at'] = $datetime;
-					$request['created_by'] = $userid;
+					$request['created_by'] = $auditorid;
 					$data = $this->db->insert('auditor_statement', $request);
+					$insertid = $this->db->insert_id();
 				}else{
 					$data = $this->db->update('auditor_statement', $request, ['id' => $id]);
+					$insertid = $id;
 				}
 
 				if(isset($post['auditcomplete']) && $post['auditcomplete']=='1' && $post['submit']=='submitreport'){
@@ -3113,7 +3122,7 @@ class Api extends CC_Controller
 					//Invoice and Order
 					$inspectionrate = $this->currencyconvertor($this->getRates($this->config->item('inspection')));
 					$invoicedata = [
-						'description' 	=> 'Audit undertaken for '.$pagedata['result']['u_name'].' on COC '.$pagedata['result']['id'].'. Date of Review Submission '.date('d-m-Y', strtotime($datetime)),
+						'description' 	=> 'Audit undertaken for '.$result['u_name'].' on COC '.$result['id'].'. Date of Review Submission '.date('d-m-Y', strtotime($datetime)),
 						'user_id'		=> (isset($extras['auditorid'])) ? $extras['auditorid'] : '',
 						'total_cost'	=> $inspectionrate,
 						'status'		=> '2',
@@ -3129,36 +3138,36 @@ class Api extends CC_Controller
 						// Email
 						$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '21', 'emailstatus' => '1']);
 						if($notificationdata){
-							$body 		= str_replace(['{Plumbers Name and Surname}', '{COC number}'], [$pagedata['result']['u_name'], $pagedata['result']['id']], $notificationdata['email_body']);
+							$body 		= str_replace(['{Plumbers Name and Surname}', '{COC number}'], [$result['u_name'], $result['id']], $notificationdata['email_body']);
 							$subject 	= str_replace(['{cocno}'], [$id], $notificationdata['subject']);
-							$this->CC_Model->sentMail($pagedata['result']['u_email'], $subject, $body);
+							$this->CC_Model->sentMail($result['u_email'], $subject, $body);
 						}
 						
 						// SMS
-						if($settingsdetail && $settingsdetail['otp']=='1'){
-							$smsdata 	= $this->Communication_Model->getList('row', ['id' => '21', 'smsstatus' => '1']);
+						// if($settingsdetail && $settingsdetail['otp']=='1'){
+						// 	$smsdata 	= $this->Communication_Model->getList('row', ['id' => '21', 'smsstatus' => '1']);
 				
-							if($smsdata){
-								$sms = str_replace(['{number of COC}'], [$id], $smsdata['sms_body']);
-								$this->sms(['no' => $pagedata['result']['u_mobile'], 'msg' => $sms]);
-							}
-						}
+						// 	if($smsdata){
+						// 		$sms = str_replace(['{number of COC}'], [$id], $smsdata['sms_body']);
+						// 		$this->sms(['no' => $result['u_mobile'], 'msg' => $sms]);
+						// 	}
+						// }
 						
 						// Stock
-						$this->db->update('stock_management', ['audit_status' => '1', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
+						$this->db->update('stock_management', ['audit_status' => '1', 'notification' => '1'], ['id' => $result['id']]);
 						
-						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '9', 'type' => '4']);
+						$this->CC_Model->diaryactivity(['plumberid' => $result['user_id'], 'auditorid' => $result['auditorid'], 'cocid' => $result['id'], 'action' => '9', 'type' => '4']);
 					}elseif($post['auditstatus']=='0'){
-						$this->db->update('stock_management', ['audit_status' => '4', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
+						$this->db->update('stock_management', ['audit_status' => '4', 'notification' => '1'], ['id' => $result['id']]);
 						
-						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '10', 'type' => '4']);
+						$this->CC_Model->diaryactivity(['plumberid' => $result['user_id'], 'auditorid' => $result['auditorid'], 'cocid' => $result['id'], 'action' => '10', 'type' => '4']);
 					}
 					
-					$this->Auditor_Model->actionRatio($post['plumberid']);
+					$this->Auditor_Model->actionRatio($post['plumber_id']);
 					/// check audit statements
 
-					$auditcomplete_count = $this->db->select('count(auditcomplete) as countaudit')->get_where('auditor_statement', ['plumber_id' => $post['plumberid'], 'auditcomplete' => '1'])->row_array();
-					$audit_list = $this->db->select('id, allocation')->get_where('compulsory_audit_listing', ['user_id' => $post['plumberid']])->row_array();
+					$auditcomplete_count = $this->db->select('count(auditcomplete) as countaudit')->get_where('auditor_statement', ['plumber_id' => $post['plumber_id'], 'auditcomplete' => '1'])->row_array();
+					$audit_list = $this->db->select('id, allocation')->get_where('compulsory_audit_listing', ['user_id' => $post['plumber_id']])->row_array();
 					
 					if ($audit_list['allocation']<=$auditcomplete_count['countaudit']) {
 						//$this->db->delete('compulsory_audit_listing', array('id' => $audit_list['id']));
@@ -3170,6 +3179,7 @@ class Api extends CC_Controller
 				}
 
 			}
+			$post['insertid'] = $insertid;
 			$jsonArray 		= array("status"=>'1', "message"=>'Audit Review Sucessfully', "result"=>$post);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
