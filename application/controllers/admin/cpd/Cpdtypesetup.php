@@ -1,13 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class Cpdtypesetup extends CC_Controller 
 {
 	public function __construct()
 	{
 		parent::__construct();
 		
+
+		
 		$this->load->model('Cpdtypesetup_Model');
+		$this->load->model('CC_Model');
+		$this->load->model('Plumber_Model');
 
 		$this->checkUserPermission('16', '1');
 		
@@ -381,5 +386,231 @@ class Cpdtypesetup extends CC_Controller
 		);
 
 		echo json_encode($json);
+	}
+
+	public function massimport(){
+
+		if (isset($_FILES) && !$this->input->post()) {
+			$directory 	 = dirname(__DIR__, 4);
+			$filename =  $_FILES["file"]["name"];
+			$upload_path = $directory.'/assets/uploads/temp/';
+			if (!file_exists($upload_path.$filename)) {
+		        $location = $upload_path.$filename;
+		        if (move_uploaded_file($_FILES["file"]["tmp_name"], $location)) {
+		        	echo json_encode($_FILES["file"]["name"]);
+		        }else{
+		        	echo json_encode('errors');
+		        }
+			}else{
+				unlink($upload_path.$filename);
+				$location = $upload_path.$filename;
+		        if (move_uploaded_file($_FILES["file"]["tmp_name"], $location)) {
+		        	echo json_encode($_FILES["file"]["name"]);
+		        }else{
+		        	echo json_encode('errors');
+		        }
+			}
+		}
+		if ($this->input->post()) {
+			$post = $this->input->post();
+			$directory 	 = dirname(__DIR__, 4);
+			$filename =  $_FILES["filename"]["name"];
+			$upload_path = $directory.'/assets/uploads/temp/';
+			$file 	= $upload_path.$filename;
+			$type 	= \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+			$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($type);
+			$spreadsheet = $reader->load($file);
+			$datas 	= $spreadsheet->getActiveSheet()->toArray();
+			$datas[0][2] = 'Errors';
+			$rawdata = $datas;
+			unset($datas[0]);
+			if (isset($exceldata)) {unset($exceldata);}
+			$i = 0;
+			foreach ($datas as $key => $value) {
+				$this->db->select('u.*, up.user_id, up.registration_no, concat(ud.name, " ", ud.surname) as name');
+				$this->db->from('users u');
+				$this->db->join('users_plumber up', 'up.user_id=u.id', 'left');
+				$this->db->join('users_detail ud', 'ud.user_id=u.id', 'left');
+				$this->db->where('up.registration_no', $value[0]);
+				$query = $this->db->get();
+				$result = $query->row_array();
+				if ($result) {
+					$exceldata[$i][0] = $value[0];
+					$exceldata[$i][1] = $value[1];
+					$exceldata[$i][2] = $result['user_id'];
+					$exceldata[$i][3] = $result['name'];
+					$exceldata[$i][4] = 'Plumber found';
+				}else{
+					$exceldata[$i][0] = $value[0];
+					$exceldata[$i][1] = $value[1];
+					$exceldata[$i][2] = $result['user_id'];
+					$exceldata[$i][3] = $result['name'];
+					$exceldata[$i][4] = 'Plumber Not found';
+				}
+				$i++;
+			}
+			$j = 0;
+			
+			if (isset($exceldata)) {
+				foreach ($exceldata as $exceldatakey => $exceldatavalue) {
+
+					$this->db->select('*');
+					$this->db->from('cpd_activity_form');
+					$this->db->where('reg_number', $exceldatavalue[0]);
+					$this->db->where('cpdtype_id', $post['cpdid']);
+					$query1 = $this->db->get();
+					$result2 = $query1->row_array();
+					if ($result2) {
+						if ($result2['status'] == '1' || $result2['status'] == '0') {
+							$cpddata[$j][0]	= $exceldatavalue[0];
+							$cpddata[$j][1] = $exceldatavalue[1];
+							$cpddata[$j][2] = $exceldatavalue[2];
+							$cpddata[$j][3] = $exceldatavalue[3];
+							$cpddata[$j][4] = $exceldatavalue[4];
+							$cpddata[$j][5] = '0';
+							$cpddata[$j][6] = 'cpd already apporoved';
+						}elseif($result2['status'] == '2'){
+							$cpddata[$j][0]	= $exceldatavalue[0];
+							$cpddata[$j][1] = $exceldatavalue[1];
+							$cpddata[$j][2] = $exceldatavalue[2];
+							$cpddata[$j][3] = $exceldatavalue[3];
+							$cpddata[$j][4] = $exceldatavalue[4];
+							$cpddata[$j][5] = '1';
+							$cpddata[$j][6] = 'insert';
+						}
+					}else{
+						if ($exceldatavalue[4] == 'Plumber Not found') {
+							$cpddata[$j][0] = $exceldatavalue[0];
+							$cpddata[$j][1] = $exceldatavalue[1];
+							$cpddata[$j][2] = $exceldatavalue[2];
+							$cpddata[$j][3] = $exceldatavalue[3];
+							$cpddata[$j][4] = $exceldatavalue[4];
+							$cpddata[$j][5] = '0';
+							$cpddata[$j][6] = '';
+						}else{
+							$cpddata[$j][0] = $exceldatavalue[0];
+							$cpddata[$j][1] = $exceldatavalue[1];
+							$cpddata[$j][2] = $exceldatavalue[2];
+							$cpddata[$j][3] = $exceldatavalue[3];
+							$cpddata[$j][4] = $exceldatavalue[4];
+							$cpddata[$j][5] = '1';
+							$cpddata[$j][6] = 'insert';
+						}
+					}
+					
+				$j++;
+				}
+			}
+			$phpExcel = new Spreadsheet();
+			$phpExcel->setActiveSheetIndex(0)
+					->setCellValue('A1','Reg No') // reg
+			        ->setCellValue('B1','Points') // point
+			        ->setCellValue('C1','User id') //user id 
+			        ->setCellValue('D1','Name Surname') // name
+			        ->setCellValue('E1','Errors') // error
+			        ->setCellValue('F1','Status') // status
+			        ->setCellValue('G1','Errors'); // status
+			if (isset($cpddata)) {
+				$k = 0;
+				foreach ($cpddata as $cpddatakey => $cpddatavalue) {
+					$counter = $k+1;
+					$row = $k+2;
+					$phpExcel->setActiveSheetIndex(0)
+					         ->setCellValue('A'.$row.'',$cpddatavalue[0]) // reg
+					         ->setCellValue('B'.$row.'',$cpddatavalue[1]) // point
+					         ->setCellValue('C'.$row.'',$cpddatavalue[2]) //user id 
+					         ->setCellValue('D'.$row.'',$cpddatavalue[3]) // name
+					         ->setCellValue('E'.$row.'',$cpddatavalue[4]) // error
+					         ->setCellValue('F'.$row.'',$cpddatavalue[5]) // status
+					         ->setCellValue('G'.$row.'',$cpddatavalue[4].' '.$cpddatavalue[6]); // status
+					$k++;
+				}
+				$writer = new Xlsx($phpExcel);
+				$writer->save($directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx');
+
+				$templatepath = $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
+				$type1 	= \PhpOffice\PhpSpreadsheet\IOFactory::identify($templatepath);
+				$reader1 = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($type1);
+				$spreadsheet1 = $reader1->load($templatepath);
+				$datas1 	= $spreadsheet1->getActiveSheet()->toArray();
+				$tabledata = '<table style = "border-collapse: collapse;width: 100%;">
+							<tr>
+							    <th>Reg No</th>
+							    <th>Error</th>
+							</tr>';
+				foreach ($datas1 as $datas1key => $datas1value) {
+					if ($datas1value[5] == "0") {
+						$tabledata .= '<tr>
+								    <td>'.$datas1value[0].'</td>
+								    <td>'.$datas1value[6].'</td>
+							  	</tr>';
+					}
+				}
+				$tabledata .= '</table>';
+				if (file_exists($directory.'/assets/uploads/temp/cpd_template.xlsx')) {
+					unlink($directory.'/assets/uploads/temp/cpd_template.xlsx');
+				}
+				echo $tabledata;
+			}
+		}
+	}
+
+	public function importdownload(){
+		$directory 	 = dirname(__DIR__, 4);
+		$templatepath = $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
+		if (file_exists($templatepath)) {
+			unlink($templatepath);
+		}
+		echo "file downloaded";
+
+	}
+	public function importproceed(){
+		$post 	= $this->input->post();
+		$userid = $this->getUserID();
+		$directory 	 = dirname(__DIR__, 4);
+		$templatepath = $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
+		$file 	= $templatepath;
+		$type 	= \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+		$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($type);
+		$spreadsheet = $reader->load($file);
+		$datas 	= $spreadsheet->getActiveSheet()->toArray();
+		unset($datas[0]);
+
+		foreach ($datas as $key => $value) {
+			if ($value[5] =='1') {
+				$formdata = [
+					'user_id_hide' 		=> $value[2],
+					'search_reg_no' 	=> $value[0],
+					'name_surname' 		=> $value[3],
+					'activity_id_hide' 	=> $post['cpdid'],
+					'activity' 			=> $post['activity'],
+					'hidden_stream_id' 	=> $post['cpdstream'],
+					'points' 			=> $value[1],
+					'status' 			=> '1',
+					// 'created_at'		=> date('Y-m-d H:i:s'),
+					'approved_date'		=> date('Y-m-d H:i:s'),
+					'startdate'			=> date('Y-m-d H:i:s'),
+					// 'created_by'		=> $userid,
+
+				];
+				//  echo "<pre>";print_r($formdata);die;
+				$data 	=  $this->Cpdtypesetup_Model->queue_action($formdata);
+			}
+		}
+		if (file_exists($templatepath)) {
+			unlink($templatepath);
+		}
+		echo "CPD Added Successfully.";
+	}
+
+	public function cancel(){
+		$filename =  $_FILES["filename"]["name"];
+		$directory 	 = dirname(__DIR__, 4);
+		$templatepath = $directory.'/assets/uploads/cpdmassimport/'.$filename.'';
+		if (file_exists($templatepath)) {
+			unlink($templatepath);
+		}
+		echo "Canceled..";
+
 	}
 }

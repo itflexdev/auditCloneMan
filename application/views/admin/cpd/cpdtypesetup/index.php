@@ -105,14 +105,56 @@ if(isset($result) && $result){
 								</div>
 							</div>
 						<?php } ?>
+						
+
 						<div class="col-md-6 text-right">
-							<input type="hidden" name="id" value="<?php echo $id; ?>">
+							<input type="hidden" id='codstream' name="cpdstream" value="<?php echo $cpdstream; ?>">
+							<input type="hidden" id='activity' name="activity" value="<?php echo $activity; ?>">
+							<input type="hidden" id='cpdid' name="id" value="<?php echo $id; ?>">
 							<input type="hidden" name="productcode" value="<?php echo $productcode; ?>">
 							<button type="submit" name="submit" value="submit" class="btn btn-primary"><?php echo $heading; ?> CPD Type</button>
 						</div>
 					</div>
 				</form>
 			<?php } ?>
+			<?php if($id!=''){ ?>
+				<!-- <form class="importform"> -->
+					<div class="col-md-6 massimport">
+						<input type="file" id="file" class="cpdimport">
+						<label for="file" class="choose_file massimport">CPD Template</label>
+						<button type="button" name="massimport" value="massimport" class="btn btn-primary massimport-btn" data-toggle="modal" data-target="#massimportmodal"> Mass Import</button>
+						
+					</div>
+					<div class="modal fade" id="massimportmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					  <div class="modal-dialog" role="document">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <h5 class="modal-title" id="exampleModalLabel">CPD Mass Import</h5>
+					        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					          <span aria-hidden="true">&times;</span>
+					        </button> -->
+					      </div>
+					      <div class="modalloader"></div>
+					      <div class="modalcontant">
+					      	<div class="modal-body">
+					        	<div class="appendtable"></div>
+					      	</div>
+						      <div class="modal-footer">
+						        <button type="button" class="btn btn-secondary closebtn" data-dismiss="modal">Close</button>
+						        <button type="button" class="btn btn-primary downloadxl" data-dismiss="modal">Download</button>
+						        <button type="button" class="btn btn-primary proceed" >Proceed</button>
+						        <button type="button" name="triggerbtn" class="triggerbtn" data-dismiss="modal" class="btn btn-primary">hidden</button>
+						      </div>
+					      </div>
+
+					    </div>
+					  </div>
+					</div>
+				<!-- </form> -->
+								
+				<?php }?>
+			
+
 				<div class="row">
 					<div class="col-md-6">
 						<a href="<?php echo base_url().'admin/cpd/cpdtypesetup/index/1'; ?>" class="active_link_btn">Active</a>  <a href="<?php echo base_url().'admin/cpd/cpdtypesetup/index/2'; ?>" class="archive_link_btn">Archive</a>
@@ -141,7 +183,30 @@ if(isset($result) && $result){
 
 <script>
 	$(function(){
-		
+		// <?php //echo base_url().'admin/cpd/cpdtypesetup/massimport'; ?>
+
+		// fileupload([".file1", "./assets/uploads/temp", ['xls', 'xlsx','csv']]);
+		$('.triggerbtn').hide();
+		$('.massimport-btn').hide();
+		$('.closebtn').click(function(){
+			var form_data = new FormData();
+	        form_data.append("filename", document.getElementById('file').files[0]);
+		      $.ajax({
+		      	data: form_data,
+		        type: 'POST',
+		        url: '<?php echo base_url().'admin/cpd/cpdtypesetup/cancel'; ?>',
+		        contentType: false,  
+	            cache: false,  
+	            processData:false,
+	            success:function(data)
+		        {
+		         $('.massimport-btn').hide();
+				 $("#file").val('');
+				 console.log(data);
+		        }
+		      });
+		});
+
 		var options = {
 			url 	: 	'<?php echo base_url()."admin/cpd/cpdtypesetup/DTCpdType"; ?>',
 			columns : 	[
@@ -203,6 +268,8 @@ if(isset($result) && $result){
 				}
 			}
 			);
+
+		
 		
 	});
 	$( document ).ready(function() {
@@ -210,6 +277,104 @@ if(isset($result) && $result){
 		datepicker('#startdate', ['currentdate']);
 		datepicker('#enddate', ['currentdate']);
 	});
+	 $(document).ready(function() {
+	 	
+	 	$('.cpdimport').on('change', function(){
+	 		if($('#file').val().split('.').pop() !=='xlsx'){
+	 			$("#file").val('');
+	 			alert('Only Excel file is allowed');
+	 			return false;
+	 		}
+	 		// if ($(this.files[0])) {}
+			var form_data = new FormData();
+	        var oFReader = new FileReader();
+	        // oFReader.readAsDataURL(document.getElementById("file").files[0])
+	        form_data.append("file", document.getElementById('file').files[0]);
+		      $.ajax({
+
+		      	data: form_data,
+		        type: 'POST',
+		        url: '<?php echo base_url().'admin/cpd/cpdtypesetup/massimport'; ?>',
+		        contentType: false,  
+	            cache: false,  
+	            processData:false,
+	            success:function(data)
+		        {
+		          $('.massimport-btn').show();
+		        }
+		      });
+		});
+		$('.massimport-btn').on('click', function(){
+			var form_data = new FormData();
+			var oFReader = new FileReader();
+			form_data.append("cpdid", $('#cpdid').val());
+			form_data.append("cpdstream", $('#cpdstream').val());
+			form_data.append("activity", $('#activity').val());
+			form_data.append("filename", document.getElementById("file").files[0]);
+	  		$('.modalcontant').hide();
+		      $.ajax({
+
+		      	data: form_data,
+		        type: 'POST',
+		        url: '<?php echo base_url().'admin/cpd/cpdtypesetup/massimport'; ?>',
+		        contentType: false,  
+	            cache: false,  
+	            processData:false,
+	            beforeSend:function(){
+		          $('.modalloader').html('<img src="<?php echo base_url().'assets/images/ajax-loader.gif'; ?>"/>');
+		        },
+	            success:function(data)
+		        {
+		         $('.modalcontant').show();
+		         $('.modalloader').hide()
+		         $('.appendtable').append().html(data);
+		         // $( ".triggerbtn" ).trigger( "click" );
+		        }
+		      });
+		});
+		$('.downloadxl').on('click', function(){
+			$('.massimport-btn').hide();
+			var url = '<?php echo base_url().'assets/uploads/cpdmassimport/cpd_template.xlsx' ?>';
+			window.location.href = url;
+		      $.ajax({
+		        type: 'POST',
+		        url: '<?php echo base_url().'admin/cpd/cpdtypesetup/importdownload'; ?>',
+		        contentType: false,  
+	            cache: false,  
+	            processData:false,
+	            success:function(data)
+		        {
+		         $("#file").val('');
+		         $('.massimport-btn').hide();
+		         console.log(data)
+		        }
+		      });
+		});
+		$('.proceed').on('click', function(){
+			$('.massimport-btn').hide();
+			var form_data = new FormData();
+			form_data.append("cpdid", $('#cpdid').val());
+			form_data.append("cpdstream", $('#cpdstream').val());
+			form_data.append("activity", $('#activity').val());
+		      $.ajax({
+		      	data: form_data,
+		        type: 'POST',
+		        url: '<?php echo base_url().'admin/cpd/cpdtypesetup/importproceed'; ?>',
+		        contentType: false,  
+	            cache: false,  
+	            processData:false,
+	            success:function(data)
+		        {
+		        $('.massimport-btn').hide();
+		         console.log(data);
+		         sweetalertautoclose(data);
+		         $("#file").val('');
+		         $( ".triggerbtn" ).trigger( "click" );
+		        }
+		      });
+		});
+		
+	 });
 	
 	// Delete
 	

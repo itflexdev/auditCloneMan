@@ -92,7 +92,7 @@ class Cpdtypesetup_Model extends CC_Model
 		// print_r($requestdata);die;
 		
 		$user_id 	= $this->getUserID();
-		$id 		= $requestdata['id'];
+		$id 		= isset($requestdata['id']) ? $requestdata['id'] : '';
 		$datetime	= 	date('Y-m-d H:i:s');
 		
 		if(isset($requestdata['search_reg_no'])) 	$requestData1['reg_number']    		= $requestdata['search_reg_no'];
@@ -108,6 +108,7 @@ class Cpdtypesetup_Model extends CC_Model
 		if(isset($requestdata['status'])) 		 	$requestData1['status'] 			= $requestdata['status'];
 		if(isset($requestdata['admin_comments'])) 	$requestData1['admin_comments'] 	= $requestdata['admin_comments'];
 		if(isset($requestdata['image_ad'])) 		$requestData1['file2'] 				= $requestdata['image_ad'];
+		if(isset($requestdata['approved_date'])) 	$requestData1['approved_date'] 		= $requestdata['approved_date'];
 		// echo "<pre>";
 		// print_r($requestData1);die;
 		
