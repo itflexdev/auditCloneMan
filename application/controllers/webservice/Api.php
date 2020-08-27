@@ -3043,14 +3043,14 @@ class Api extends CC_Controller
 								if(file_exists($pdf)) unlink($pdf);  
 							}
 							
-							if($settingsdetail && $settingsdetail['otp']=='1'){
-								$smsdata 	= $this->Communication_Model->getList('row', ['id' => '22', 'smsstatus' => '1']);
+							// if($settingsdetail && $settingsdetail['otp']=='1'){
+							// 	$smsdata 	= $this->Communication_Model->getList('row', ['id' => '22', 'smsstatus' => '1']);
 					
-								if($smsdata){
-									$sms = str_replace(['{number of COC}'], [$cocid], $smsdata['sms_body']);
-									$this->sms(['no' => $result['u_mobile'], 'msg' => $sms]);
-								}
-							}
+							// 	if($smsdata){
+							// 		$sms = str_replace(['{number of COC}'], [$cocid], $smsdata['sms_body']);
+							// 		$this->sms(['no' => $result['u_mobile'], 'msg' => $sms]);
+							// 	}
+							// }
 						}
 					}
 				}
