@@ -302,14 +302,14 @@ class Api extends CC_Controller
 			}else{
 				$jsonData['plumber_nationality'] 		= $this->config->item('yesno')[$result['nationality']];
 			}
-
-			if (count($specialisations) > 0) {
-				foreach ($specialisations as $key => $specialisationsvalue) {
+			
+			foreach ($specialisations as $key => $specialisationsvalue) {
+				if (empty($specialisationsvalue)) {
 					$jsonData['plumber_specialisations'][] 		= $this->config->item('specialisations')[$specialisationsvalue];
-				}
-			}else{
+				}else{
 					$jsonData['plumber_specialisations'][] 		= '';
 				}
+			}
 
 			if ($result['file1'] !='') {
 				$jsonData['plumber_identity_doc'][] = base_url().'assets/plumber/'.$id.'/'.$result['file1'];
@@ -3456,6 +3456,18 @@ class Api extends CC_Controller
 				$message = 'Plumber History Search Results';
 			}
 			$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$jsonData);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function auditor_diarycomments(){
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
+			$auditorid['auditorid']	= $this->input->post('user_id');
+			$result					= $this->Coc_Model->getCOCList('row', ['id' => $this->input->post('coc_id'), 'coc_status' => ['2']]+$auditorid);
+			$comments				= $this->Auditor_Comment_Model->getList('all', ['coc_id' => $this->input->post('coc_id')]);	
+			$diary					= $this->diaryactivity(['cocid' => $this->input->post('coc_id')]+$auditorid);	
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
