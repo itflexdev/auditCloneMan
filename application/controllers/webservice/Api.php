@@ -3422,8 +3422,8 @@ class Api extends CC_Controller
 				$post['plumberid'] 	= $this->input->post('plumber_id');
 				$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
 				$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
-				if(count($results) > 0){
-					foreach($results as $result){
+				if(count($reviewresults) > 0){
+					foreach($reviewresults as $result){
 						$jsonData['table_content'][] = 	[
 												'date' 				=> 	date('d-m-Y', strtotime($result['created_at'])),
 												'auditor' 			=> 	$result['auditorname'],
