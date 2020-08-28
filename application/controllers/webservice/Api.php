@@ -304,7 +304,7 @@ class Api extends CC_Controller
 			}
 			
 			foreach ($specialisations as $key => $specialisationsvalue) {
-				if (empty($specialisationsvalue)) {
+				if (!empty($specialisationsvalue)) {
 					$jsonData['plumber_specialisations'][] 		= $this->config->item('specialisations')[$specialisationsvalue];
 				}else{
 					$jsonData['plumber_specialisations'][] 		= '';
