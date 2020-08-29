@@ -2898,9 +2898,11 @@ class Api extends CC_Controller
 			$workmanshippt				= $this->getWorkmanshipPoint();
 			$plumberverificationpt		= $this->getPlumberVerificationPoint();
 			$cocverificationpt			= $this->getCocVerificationPoint();
+			$settings 					= $this->Systemsettings_Model->getList('row');
+			$datetime 					= date('Y-m-d H:i:s');
 
 			$result	= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);
-
+			
 			if ($result['as_workmanship'] !='') {
 				$as_workmanship 	= $this->config->item('workmanship')[$result['as_workmanship']];
 				$workmanship_pts 	= $this->getWorkmanshipPoint()[$result['as_workmanship']];
@@ -2922,6 +2924,11 @@ class Api extends CC_Controller
 			}else{
 				$as_coc_verification = '';
 				$cocverification_pts = '';
+			}
+			if ($result['u_file'] !='') {
+				$plumberprofile = base_url().'assets/uploads/plumber/'.$result['user_id'].'/'.$result['u_file'].'';
+			}else{
+				$plumberprofile = '';
 			}
 
 			$jsonData['audit_review'][] = [
@@ -2950,6 +2957,9 @@ class Api extends CC_Controller
 				'as_coc_verification' => $as_coc_verification,
 				'as_auditcomplete' => $result['as_auditcomplete'],
 				'auditorid' => $result['auditorid'],
+				'refix_period' => $settings['refix_period'],
+				'currentdatetime' => $datetime,
+				'plumberprofile' => $plumberprofile,
 			];
 			$jsonData['points'][] = [
 				'workmanship' => $workmanshippt,
