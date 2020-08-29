@@ -2900,9 +2900,10 @@ class Api extends CC_Controller
 			$cocverificationpt			= $this->getCocVerificationPoint();
 			$settings 					= $this->Systemsettings_Model->getList('row');
 			$datetime 					= date('Y-m-d H:i:s');
+			$date 						= date('Y-m-d');
 
 			$result	= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);
-			
+
 			if ($result['as_workmanship'] !='') {
 				$as_workmanship 	= $this->config->item('workmanship')[$result['as_workmanship']];
 				$workmanship_pts 	= $this->getWorkmanshipPoint()[$result['as_workmanship']];
@@ -2959,6 +2960,7 @@ class Api extends CC_Controller
 				'auditorid' => $result['auditorid'],
 				'refix_period' => $settings['refix_period'],
 				'currentdatetime' => $datetime,
+				'currentdate' => $date,
 				'plumberprofile' => $plumberprofile,
 			];
 			$jsonData['points'][] = [
