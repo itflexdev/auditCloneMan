@@ -3490,7 +3490,37 @@ class Api extends CC_Controller
 			$auditorid['auditorid']	= $this->input->post('user_id');
 			$result					= $this->Coc_Model->getCOCList('row', ['id' => $this->input->post('coc_id'), 'coc_status' => ['2']]+$auditorid);
 			$comments				= $this->Auditor_Comment_Model->getList('all', ['coc_id' => $this->input->post('coc_id')]);	
-			$diary					= $this->diaryactivity(['cocid' => $this->input->post('coc_id')]+$auditorid);	
+			$diary					= $this->diaryactivity(['cocid' => $this->input->post('coc_id')]+$auditorid);
+
+			if (isset($diary) || $diary !='') {
+				$findtext 			= ['<p>Diary of Activities</p>', '<div class="row">', '<div class="col-12 diarybar">', '<div>', '</div>'];
+				$replacetext 		= ['', ''];
+				$diaryodactvites 	= str_replace($findtext, $replacetext, $diary);
+			}
+
+			if (count($comments) > 0) {
+				foreach ($comments as $commentskey => $commentsvalue) {
+					$date 			= date('d-m-Y', strtotime($commentsvalue['created_at']));
+					$auditorname 	= $commentsvalue['username'];
+				}
+			}
+
+			$jsonData['review_details'][] = [
+				'auditorid' 		=> $result['auditorid'],
+				'plumberid' 		=> $result['user_id'],
+				'cocid' 			=> $result['id'],
+				'as_id' 			=> $result['as_id'],
+				'as_audit_date' 	=> $result['as_audit_date'],
+				'as_auditcomplete' 	=> $result['as_auditcomplete'],
+			];
+			$jsonData['diaryodactvites'][] = [
+				'activites' 		=> (isset($diaryodactvites) ? $diaryodactvites : '')
+			];
+			$jsonData['comments'][] = [
+				'date' 			=> (isset($date) ? $date : ''),
+				'auditorname' 	=> (isset($auditorname) ? $auditorname : '')
+			];
+			$jsonArray 		= array("status"=>'0', "message"=>'Diary And Comments', "result"=>$jsonData);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
