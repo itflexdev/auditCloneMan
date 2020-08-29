@@ -3295,6 +3295,43 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
+	public function refix_action(){
+		if ($this->input->post() && $this->input->post('id')) { // id = review id
+			$this->form_validation->set_rules('id','Review Id','trim|required');
+			$this->form_validation->set_rules('point','Point','trim|required');
+			$this->form_validation->set_rules('refixperiod','Refix Period','trim|required');
+			$this->form_validation->set_rules('status','Status','trim|required');
+			if ($this->form_validation->run()==FALSE) {
+				$findtext 		= ['<div class="form_error">', "</div>"];
+				$replacetext 	= ['', ''];
+				$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
+				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+			}else{
+				$post 	= $this->input->post();
+				$id 	= $this->input->post('id');
+				if(isset($post['point'])) 			$request['point'] 				= $post['point'];
+				if(isset($post['status'])) 			$request['status'] 				= $post['status'];
+				$this->db->update('auditor_review', $request, ['id' => $id]);
+				if(isset($post['refixperiod']) && isset($post['status'])){
+					$list = $this->Auditor_Model->getReviewList('row', ['id' => $id]);
+					if($list['reviewtype']=='1'){
+						$reviewstatus			= $post['status'];
+						$listrefixdate 			= $list['refix_date'];
+						
+						if($listrefixdate=='' && $reviewstatus=='0'){
+							$refixdate 			= date('Y-m-d', strtotime(date('d-m-Y').' +'.$post['refixperiod'].'days'));
+							$this->db->update('auditor_review', ['refix_date' => $refixdate], ['id' => $id]);
+						}
+					}
+				}
+			}
+			$jsonArray = array("status"=>'1', "message"=>'Refix update', "result"=>$post);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
+
 	public function reviewlist_action(){ //(points for refix, cautionary, complement, noaudit findings)
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumberid')) {
 			if ($this->input->post('type') !='' && $this->input->post('type') == 'action') {
@@ -3361,7 +3398,7 @@ class Api extends CC_Controller
 						$insertid = $id;
 					}
 					if(isset($data['refixperiod']) && isset($data['status'])){
-						$list = $this->getReviewList('row', ['id' => $insertid]);
+						$list = $this->Auditor_Model->getReviewList('row', ['id' => $insertid]);
 						
 						if($list['reviewtype']=='1'){
 							$reviewstatus			= $data['status'];
