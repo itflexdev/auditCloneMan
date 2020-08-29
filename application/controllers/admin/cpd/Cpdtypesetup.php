@@ -450,7 +450,7 @@ class Cpdtypesetup extends CC_Controller
 					$exceldata[$i][1] = $cpdpoints;
 					$exceldata[$i][2] = $result['user_id'];
 					$exceldata[$i][3] = $result['name'];
-					$exceldata[$i][4] = 'Plumber Not found';
+					$exceldata[$i][4] = 'Plumber not found';
 				}
 				$i++;
 			}
@@ -473,7 +473,7 @@ class Cpdtypesetup extends CC_Controller
 							$cpddata[$j][3] = $exceldatavalue[3];
 							$cpddata[$j][4] = $exceldatavalue[4];
 							$cpddata[$j][5] = '0';
-							$cpddata[$j][6] = 'cpd already apporoved';
+							$cpddata[$j][6] = 'Activity already approved';
 						}elseif($result2['status'] == '2'){
 							$cpddata[$j][0]	= $exceldatavalue[0];
 							$cpddata[$j][1] = $exceldatavalue[1];
@@ -481,17 +481,17 @@ class Cpdtypesetup extends CC_Controller
 							$cpddata[$j][3] = $exceldatavalue[3];
 							$cpddata[$j][4] = $exceldatavalue[4];
 							$cpddata[$j][5] = '1';
-							$cpddata[$j][6] = 'insert';
+							$cpddata[$j][6] = 'Activity should insert';
 						}
 					}else{
-						if ($exceldatavalue[4] == 'Plumber Not found') {
+						if ($exceldatavalue[4] == 'Plumber not found') {
 							$cpddata[$j][0] = $exceldatavalue[0];
 							$cpddata[$j][1] = $exceldatavalue[1];
 							$cpddata[$j][2] = $exceldatavalue[2];
 							$cpddata[$j][3] = $exceldatavalue[3];
 							$cpddata[$j][4] = $exceldatavalue[4];
 							$cpddata[$j][5] = '0';
-							$cpddata[$j][6] = '';
+							$cpddata[$j][6] = 'Plumber not found';
 						}else{
 							$cpddata[$j][0] = $exceldatavalue[0];
 							$cpddata[$j][1] = $exceldatavalue[1];
@@ -499,7 +499,7 @@ class Cpdtypesetup extends CC_Controller
 							$cpddata[$j][3] = $exceldatavalue[3];
 							$cpddata[$j][4] = $exceldatavalue[4];
 							$cpddata[$j][5] = '1';
-							$cpddata[$j][6] = 'insert';
+							$cpddata[$j][6] = 'Activity should insert';
 						}
 					}
 					
@@ -527,7 +527,8 @@ class Cpdtypesetup extends CC_Controller
 					         ->setCellValue('D'.$row.'',$cpddatavalue[3]) // name
 					         ->setCellValue('E'.$row.'',$cpddatavalue[4]) // error
 					         ->setCellValue('F'.$row.'',$cpddatavalue[5]) // status
-					         ->setCellValue('G'.$row.'',$cpddatavalue[4].' '.$cpddatavalue[6]); // status
+					         // ->setCellValue('G'.$row.'',$cpddatavalue[4].' '.$cpddatavalue[6]); // status
+					         ->setCellValue('G'.$row.'',$cpddatavalue[6]); // status
 					$k++;
 				}
 				$writer = new Xlsx($phpExcel);
