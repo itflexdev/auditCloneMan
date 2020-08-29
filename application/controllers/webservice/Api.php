@@ -303,8 +303,8 @@ class Api extends CC_Controller
 				$jsonData['plumber_nationality'] 		= $this->config->item('yesno')[$result['nationality']];
 			}
 
-			if ($result['status'] !='') {
-				$jsonData['plumber_status'] 	= $this->config->item('plumberstatus')[$result['status']];
+			if ($result['plumberstatus'] !='') {
+				$jsonData['plumber_status'] 	= $this->config->item('plumberstatus')[$result['plumberstatus']];
 			}else{
 				$jsonData['plumber_status'] 	= '';
 			}
