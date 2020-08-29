@@ -183,6 +183,7 @@ if(isset($result) && $result){
 
 <script>
 	$(function(){
+
 		// <?php //echo base_url().'admin/cpd/cpdtypesetup/massimport'; ?>
 
 		// fileupload([".file1", "./assets/uploads/temp", ['xls', 'xlsx','csv']]);
@@ -305,10 +306,12 @@ if(isset($result) && $result){
 		      });
 		});
 		$('.massimport-btn').on('click', function(){
+			var cpdpoints = '<?php echo $points; ?>';
 			var form_data = new FormData();
 			var oFReader = new FileReader();
 			form_data.append("cpdid", $('#cpdid').val());
 			form_data.append("cpdstream", $('#cpdstream').val());
+			form_data.append("cpdpoints", cpdpoints);
 			form_data.append("activity", $('#activity').val());
 			form_data.append("filename", document.getElementById("file").files[0]);
 	  		$('.modalcontant').hide();
