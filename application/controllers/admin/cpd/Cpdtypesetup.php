@@ -435,14 +435,19 @@ class Cpdtypesetup extends CC_Controller
 				$query = $this->db->get();
 				$result = $query->row_array();
 				if ($result) {
+					if ($value[1] !='') {
+						$cpdpoints = $value[1];
+					}else{
+						$cpdpoints = $post['cpdpoints'];
+					}
 					$exceldata[$i][0] = $value[0];
-					$exceldata[$i][1] = $value[1];
+					$exceldata[$i][1] = $cpdpoints;
 					$exceldata[$i][2] = $result['user_id'];
 					$exceldata[$i][3] = $result['name'];
 					$exceldata[$i][4] = 'Plumber found';
 				}else{
 					$exceldata[$i][0] = $value[0];
-					$exceldata[$i][1] = $value[1];
+					$exceldata[$i][1] = $cpdpoints;
 					$exceldata[$i][2] = $result['user_id'];
 					$exceldata[$i][3] = $result['name'];
 					$exceldata[$i][4] = 'Plumber Not found';
@@ -567,6 +572,7 @@ class Cpdtypesetup extends CC_Controller
 	public function importproceed(){
 		$post 	= $this->input->post();
 		$userid = $this->getUserID();
+		$userdetails = $this->getUserDetails();
 		$directory 	 = dirname(__DIR__, 4);
 		$templatepath = $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
 		$file 	= $templatepath;
@@ -590,6 +596,7 @@ class Cpdtypesetup extends CC_Controller
 					// 'created_at'		=> date('Y-m-d H:i:s'),
 					'approved_date'		=> date('Y-m-d H:i:s'),
 					'startdate'			=> date('Y-m-d H:i:s'),
+					'admin_comments' 	=> 'Approved by '.$this->config->item('roletype')[$userdetails['roletype']].'',
 					// 'created_by'		=> $userid,
 
 				];
