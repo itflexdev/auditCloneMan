@@ -302,6 +302,12 @@ class Api extends CC_Controller
 			}else{
 				$jsonData['plumber_nationality'] 		= $this->config->item('yesno')[$result['nationality']];
 			}
+
+			if ($result['status'] !='') {
+				$jsonData['plumber_status'][] 		= $this->config->item('plumberstatus')[$result['status']];
+			}else{
+				$jsonData['plumber_status'][] 		= '';
+			}
 			
 			foreach ($specialisations as $key => $specialisationsvalue) {
 				if (!empty($specialisationsvalue)) {
