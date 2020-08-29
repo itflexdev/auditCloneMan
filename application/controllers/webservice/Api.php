@@ -3513,7 +3513,7 @@ class Api extends CC_Controller
 				'as_audit_date' 	=> $result['as_audit_date'],
 				'as_auditcomplete' 	=> $result['as_auditcomplete'],
 			];
-			$jsonData['diaryodactvites'][] = [
+			$jsonData['diaryactvites'][] = [
 				'activites' 		=> (isset($diaryodactvites) ? $diaryodactvites : '')
 			];
 			$jsonData['comments'][] = [
