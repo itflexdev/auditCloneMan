@@ -3324,8 +3324,8 @@ class Api extends CC_Controller
 						}
 					}
 				}
+				$jsonArray = array("status"=>'1', "message"=>'Refix update', "result"=>$post);
 			}
-			$jsonArray = array("status"=>'1', "message"=>'Refix update', "result"=>$post);
 		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
