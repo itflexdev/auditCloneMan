@@ -1937,6 +1937,7 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('review_id')) {
 			$id 			= $this->input->post('review_id');
 			$reviewlists	= $this->Auditor_Model->getReviewList('row', ['id' => $id]);
+
 			if (isset($review_images)) unset($review_images);
 			if ($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Cautionary') {
 				$colorcode = '#ffd700';
@@ -1959,7 +1960,12 @@ class Api extends CC_Controller
 			}else{
 				$review_images[] = '';
 			}
-			$jsonData['review_details'][] = [ 'reviewid' => $reviewlists['id'], 'reviewtype' => $this->config->item('reviewtype')[$reviewlists['reviewtype']], 'statementname' => $reviewlists['statementname'], 'colorcode' => $colorcode, 'cocid' => $reviewlists['coc_id'], 'reference' => $reviewlists['reference'], 'comments' => $reviewlists['comments'], 'performancepoint' => $reviewlists['point'], 'knowledgelink' => $reviewlists['link'], 'review_images' => $review_images, 'status' => $reviewlists['status']
+			if ($reviewlists['auditor_id'] !='' && $reviewlists['favourites'] !='') {
+				$favourites = $this->getfavourites(['auditorid' => $reviewlists['auditor_id'], 'favid' => $reviewlists['favourites']]);
+				$favouritesname = $favourites['favour_name'];
+			}
+			
+			$jsonData['review_details'][] = [ 'reviewid' => $reviewlists['id'], 'reviewtype' => $this->config->item('reviewtype')[$reviewlists['reviewtype']], 'statementname' => $reviewlists['statementname'], 'favouritesname' => (isset($favouritesname) ? $favouritesname : ''), 'colorcode' => $colorcode, 'cocid' => $reviewlists['coc_id'], 'reference' => $reviewlists['reference'], 'comments' => $reviewlists['comments'], 'performancepoint' => $reviewlists['point'], 'knowledgelink' => $reviewlists['link'], 'review_images' => $review_images, 'status' => $reviewlists['status']
 			];
 			$jsonArray = array("status"=>'1', "message"=>'Review Deatils', "result"=>$jsonData);
 		}else{
@@ -3273,7 +3279,7 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('coc_id')) {
 			$id 			= $this->input->post('coc_id');
 			$reviewlists	= $this->Auditor_Model->getReviewList('all', ['coc_id' => $id]);
-			
+
 			foreach ($reviewlists as $key => $reviewlist) {
 				if (isset($review_images)) unset($review_images);
 				if ($this->config->item('reviewtype')[$reviewlist['reviewtype']] == 'Cautionary') {
@@ -3934,6 +3940,17 @@ class Api extends CC_Controller
 			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> []);
 		}
 		echo json_encode($jsonArray);
+	}
+
+	public function getfavourites($data = []){
+		$this->db->select('*');
+		$this->db->from('auditor_report_listing');
+		if(isset($data['favid'])) $this->db->where('id', $data['favid']);
+		if(isset($data['auditorid'])) $this->db->where('user_id', $data['auditorid']);
+
+		$query = $this->db->get();
+		$result = $query->row_array();
+		return $result;
 	}
 
 	public function featchprovince($data = []){
