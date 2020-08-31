@@ -3774,7 +3774,7 @@ class Api extends CC_Controller
 
 	public function fileupload($data = []){
 
-		$userid 	 = $data['user_id'];
+		$userid 	 = isset($data['user_id']) ? $data['user_id'] : '';
 		$base64files = $data['files'];
 		$base_url 	 = base_url();
 		$page 		 = $data['page'];
