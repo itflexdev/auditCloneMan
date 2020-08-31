@@ -1153,7 +1153,7 @@ class Api extends CC_Controller
 
 				}
 
-				$vatcalculation = number_format((($typecost+$deliveryamt)*$settings['vat_percentage'])/100, 2, '.', '');
+				$vatcalculation = number_format(((($typecost+$deliveryamt)*$settings['vat_percentage'])/100), 2, '.', '');
 				$totaldue 		= ($typecost+$deliveryamt+$vatcalculation);
 				print_r($typecost);echo "<br>";
 				print_r($deliveryamt);echo "<br>";
