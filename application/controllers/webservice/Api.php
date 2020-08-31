@@ -323,12 +323,12 @@ class Api extends CC_Controller
 			}
 
 			if ($result['file1'] !='') {
-				$jsonData['plumber_identity_doc'][] = base_url().'assets/plumber/'.$id.'/'.$result['file1'];
+				$jsonData['plumber_identity_doc'][] = base_url().'assets/uploads/plumber/'.$id.'/'.$result['file1'];
 			}else{
 				$jsonData['plumber_identity_doc'][] = '';
 			}
 			if ($result['file2'] !='') {
-				$jsonData['plumber_photoid'][] = base_url().'assets/plumber/'.$id.'/'.$result['file2'];
+				$jsonData['plumber_photoid'][] = base_url().'assets/uploads/plumber/'.$id.'/'.$result['file2'];
 			}else{
 				$jsonData['plumber_photoid'][] = '';
 			}
@@ -458,12 +458,12 @@ class Api extends CC_Controller
 			$jsonData['plumber_result'] 			= $result;
 
 			if ($result['file1'] !='') {
-				$jsonData['plumber_identity_doc'][] = base_url().'assets/plumber/'.$id.'/'.$result['file1'];
+				$jsonData['plumber_identity_doc'][] = base_url().'assets/uploads/plumber/'.$id.'/'.$result['file1'];
 			}else{
 				$jsonData['plumber_identity_doc'][] = '';
 			}
 			if ($result['file2'] !='') {
-				$jsonData['plumber_photoid'][] = base_url().'assets/plumber/'.$id.'/'.$result['file2'];
+				$jsonData['plumber_photoid'][] = base_url().'assets/uploads/plumber/'.$id.'/'.$result['file2'];
 			}else{
 				$jsonData['plumber_photoid'][] = '';
 			}
@@ -704,7 +704,7 @@ class Api extends CC_Controller
 				$result = $this->Plumber_Model->getSkillList('row', ['id' => $this->input->post('skillid')]);
 				$jsonData['skill_result'][] = $result;
 				if ($result['attachment'] !='') {
-					$jsonData['skill_attachment'][] = base_url().'assets/plumber/'.$this->input->post('user_id').'/'.$result['attachment'];
+					$jsonData['skill_attachment'][] = base_url().'assets/uploads/plumber/'.$this->input->post('user_id').'/'.$result['attachment'];
 				}
 				$jsonArray = array("status"=>'1', "message"=>'Plumber Skill', 'result' => $jsonData);
 
