@@ -119,7 +119,7 @@ class Renewal_Model extends CC_Model
 		$penalty_result = $this->db->get()->row_array();
 		$penalty = $penalty_result['penalty'];
 
-		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid');		
+		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid, DATE_ADD(us.expirydate, INTERVAL 1 DAY) as intervaldate');		
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->join('invoice inv', 'inv.user_id=us.id', 'inner');
@@ -128,8 +128,9 @@ class Renewal_Model extends CC_Model
 		$this->db->where('inv.status', '0' );
 		$this->db->where('us.type', '3' );
 		$this->db->where('us.status', '1' );
+		$this->db->group_by('us.id');
 		//$this->db->where("DATEDIFF(now(),us.expirydate) > ".$penalty);	
-		$this->db->where("DATE(DATE_ADD(us.expirydate, INTERVAL 1 DAY))", date('Y-m-d'));	
+		$this->db->having("DATE(intervaldate)", date('Y-m-d'));	
 		$result = $this->db->get()->result_array();	
 		
 		return $result;
@@ -157,7 +158,7 @@ class Renewal_Model extends CC_Model
 	{
 			$this->db->select('*');		
 			$this->db->from('invoice');			
-			$this->db->where_in('user_id', $userid );		
+			$this->db->where('user_id', $userid );		
 			$result = $this->db->get()->result_array();
 			return $result;
 	}
