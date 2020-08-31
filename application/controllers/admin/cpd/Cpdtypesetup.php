@@ -434,12 +434,14 @@ class Cpdtypesetup extends CC_Controller
 				$this->db->where('up.registration_no', $value[0]);
 				$query = $this->db->get();
 				$result = $query->row_array();
+				if ($value[1] !='') {
+					$cpdpoints = $value[1];
+				}else{
+					$cpdpoints = $post['cpdpoints'];
+				}
+				
 				if ($result) {
-					if ($value[1] !='') {
-						$cpdpoints = $value[1];
-					}else{
-						$cpdpoints = $post['cpdpoints'];
-					}
+					
 					$exceldata[$i][0] = $value[0];
 					$exceldata[$i][1] = $cpdpoints;
 					$exceldata[$i][2] = $result['user_id'];
