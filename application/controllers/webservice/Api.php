@@ -1154,7 +1154,8 @@ class Api extends CC_Controller
 				}
 
 				$vatcalculation = number_format(((($typecost+$deliveryamt)*$settings['vat_percentage'])/100), 2, '.', '');
-				$totaldue 		= ($typecost+$deliveryamt+$vatcalculation);
+				//$totaldue 		= ($typecost+$deliveryamt+$vatcalculation);
+				$totaldue 		= $this->currencyconvertor($typecost+$deliveryamt+$vatcalculation);
 
 				$jsonData['plumber_purchase_details'] = ['plumberid' => $userdata1['id'], 'costtypeofcoc' => number_format($typecost, 2, '.', ''), 'deliverycost' => number_format($deliveryamt, 2, '.', ''), 'totalvat' => number_format($vatcalculation, 2, '.', ''), 'totaldue' => number_format($totaldue, 2, '.', '')
 					];
@@ -1165,6 +1166,17 @@ class Api extends CC_Controller
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
 		}
 		echo json_encode($jsonArray);
+	}
+	public function currencyconvertor($amount){
+		$lastchar = substr($amount, -1);
+		if ($lastchar < 5) {
+			$appendvalue = '0';
+		}else{
+			$appendvalue = '5';
+		}
+		$slice = substr($amount, 0, -1);
+		$currency = $slice.$appendvalue;
+		return $currency;
 	}
 
 	// CoC Statement:
