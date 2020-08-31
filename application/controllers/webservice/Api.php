@@ -1937,7 +1937,7 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('review_id')) {
 			$id 			= $this->input->post('review_id');
 			$reviewlists	= $this->Auditor_Model->getReviewList('row', ['id' => $id]);
-			
+
 			if (isset($review_images)) unset($review_images);
 			if ($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Cautionary') {
 				$colorcode = '#ffd700';
