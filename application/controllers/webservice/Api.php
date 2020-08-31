@@ -1937,7 +1937,7 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('review_id')) {
 			$id 			= $this->input->post('review_id');
 			$reviewlists	= $this->Auditor_Model->getReviewList('row', ['id' => $id]);
-
+			
 			if (isset($review_images)) unset($review_images);
 			if ($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Cautionary') {
 				$colorcode = '#ffd700';
@@ -1965,7 +1965,7 @@ class Api extends CC_Controller
 				$favouritesname = $favourites['favour_name'];
 			}
 			
-			$jsonData['review_details'][] = [ 'reviewid' => $reviewlists['id'], 'reviewtype' => $this->config->item('reviewtype')[$reviewlists['reviewtype']], 'statementname' => $reviewlists['statementname'], 'favouritesname' => (isset($favouritesname) ? $favouritesname : ''), 'colorcode' => $colorcode, 'cocid' => $reviewlists['coc_id'], 'reference' => $reviewlists['reference'], 'comments' => $reviewlists['comments'], 'performancepoint' => $reviewlists['point'], 'knowledgelink' => $reviewlists['link'], 'review_images' => $review_images, 'status' => $reviewlists['status']
+			$jsonData['review_details'][] = [ 'reviewid' => $reviewlists['id'], 'reviewtype' => $this->config->item('reviewtype')[$reviewlists['reviewtype']], 'installationtypename' => $reviewlists['installationtypename'], 'subtypename' => $reviewlists['subtypename'], 'statementname' => $reviewlists['statementname'], 'favouritesname' => (isset($favouritesname) ? $favouritesname : ''), 'colorcode' => $colorcode, 'cocid' => $reviewlists['coc_id'], 'reference' => $reviewlists['reference'], 'comments' => $reviewlists['comments'], 'performancepoint' => $reviewlists['point'], 'knowledgelink' => $reviewlists['link'], 'review_images' => $review_images, 'status' => $reviewlists['status']
 			];
 			$jsonArray = array("status"=>'1', "message"=>'Review Deatils', "result"=>$jsonData);
 		}else{
