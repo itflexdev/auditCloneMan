@@ -3577,7 +3577,8 @@ class Api extends CC_Controller
 	}
 
 	public function auditor_diarycomments_action(){
-		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('comments')) {
+			$data 		= $this->input->post();
 			$userid 	= $this->input->post('user_id');
 			$datetime 	= date('Y-m-d H:i:s');
 			$request		=	[
