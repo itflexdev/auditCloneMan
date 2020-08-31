@@ -6,7 +6,7 @@ class Accounts_Model extends CC_Model
 	{		
         $query=$this->db->select('
 			t1.*,
-        	t2.inv_id as inv_id2, t2.total_due, t2.quantity, t2.cost_value, t2.delivery_cost,
+        	t2.inv_id as inv_id2, sum(t2.total_due) as total_due, sum(t2.quantity) as quantity, sum(t2.cost_value) as cost_value, sum(t2.delivery_cost) as delivery_cost,
 			t3.reg_no, t3.id, t3.name name, t3.surname surname, t3.company_name company_name, t3.vat_no vat_no, t3.email2, t3.home_phone,
 			t4.type,t4.address,t4.province, t4.suburb, t4.city,t5.registration_no,
 			c1.name as orderstatusname
@@ -22,7 +22,7 @@ class Accounts_Model extends CC_Model
 		
 		if(isset($requestdata['id'])) 		$this->db->where('t1.inv_id', $requestdata['id']);
 		if(isset($requestdata['user_id'])) 	$this->db->where('t1.user_id', $requestdata['user_id']);
-
+		
 		if($type!=='count' && isset($requestdata['start']) && isset($requestdata['length'])){
 			$this->db->limit($requestdata['length'], $requestdata['start']);
 		}
@@ -62,7 +62,9 @@ class Accounts_Model extends CC_Model
 				}
 			$this->db->group_end();
 		}
-
+		
+		$this->db->group_by('t1.inv_id');
+		
 		if($type=='count'){
 			$result = $this->db->count_all_results();
 		}else{
