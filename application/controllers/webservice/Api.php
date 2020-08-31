@@ -1155,6 +1155,9 @@ class Api extends CC_Controller
 
 				$vatcalculation = number_format(((($typecost+$deliveryamt)*$settings['vat_percentage'])/100), 2, '.', '');
 				$totaldue 		= ($typecost+$deliveryamt+$vatcalculation);
+				print_r($typecost);echo "<br>";
+				print_r($deliveryamt);echo "<br>";
+				print_r($vatcalculation);die;
 
 				$jsonData['plumber_purchase_details'] = ['plumberid' => $userdata1['id'], 'costtypeofcoc' => number_format($typecost, 2, '.', ''), 'deliverycost' => number_format($deliveryamt, 2, '.', ''), 'totalvat' => number_format($vatcalculation, 2, '.', ''), 'totaldue' => number_format($totaldue, 2, '.', '')
 					];
