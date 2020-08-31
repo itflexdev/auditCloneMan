@@ -3374,7 +3374,7 @@ class Api extends CC_Controller
 					];
 					
 					if (isset($post['file']) && $post['file'] != '') {
-						$data = $this->fileupload(['files' => $post['file'], 'file_name' => $post['file_name'], 'page' => 'auditorreview']);
+						$data = $this->fileupload(['files' => $post['file'], 'file_name' => $post['file_name'], 'user_id' => '', 'page' => 'auditorreview']);
 						$post['file'] = $data[0];
 					}
 
@@ -3797,7 +3797,7 @@ class Api extends CC_Controller
 
 	public function fileupload($data = []){
 
-		$userid 	 = isset($data['user_id']) ? $data['user_id'] : '';
+		$userid 	 = $data['user_id'];
 		$base64files = $data['files'];
 		$base_url 	 = base_url();
 		$page 		 = $data['page'];
