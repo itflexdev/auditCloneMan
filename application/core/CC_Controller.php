@@ -90,7 +90,7 @@ class CC_Controller extends CI_Controller
 		if($type=='1'){
 			if($userDetails){				
 				if($userDetails['type']=='1' || $userDetails['type']=='2'){
-					redirect('admin/administration/plumber'); 
+					redirect('admin/plumber/index'); 
 				}elseif($userDetails['type']=='3'){
 					if($userDetails['formstatus']=='1' && $userDetails['approvalstatus']=='1') redirect('plumber/profile/index'); 
 					elseif($userDetails['formstatus']=='1' && $userDetails['approvalstatus']=='0') redirect('plumber/profile/index'); 
@@ -120,7 +120,7 @@ class CC_Controller extends CI_Controller
 				}
 			}else{			
 				if(($userDetails['type']=='1'  || $userDetails['type']=='2') && $segment1!='admin'){
-					redirect('admin/administration/plumber'); 
+					redirect('admin/plumber/index'); 
 				}elseif($userDetails['type']=='3' && $segment1!='plumber'){
 					if($userDetails['formstatus']=='1') redirect('plumber/profile/index'); 
 					else redirect('plumber/registration/index'); 
