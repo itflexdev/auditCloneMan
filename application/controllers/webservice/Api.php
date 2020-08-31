@@ -3576,6 +3576,28 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
+	public function auditor_diarycomments_action(){
+		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
+			$userid 	= $this->input->post('user_id');
+			$datetime 	= date('Y-m-d H:i:s');
+			$request		=	[
+				'comments' 			=> $data['comments'],
+				'user_id' 			=> $data['user_id'],
+				'coc_id' 			=> $data['coc_id'],
+				'created_at' 		=> $datetime,
+				'created_by' 		=> $userid,
+				'updated_at' 		=> $datetime,
+				'updated_by' 		=> $userid
+			];
+			$this->db->insert('auditor_comment', $request);
+			$jsonArray 		= array("status"=>'0', "message"=>'Comments inserted', "result"=>$request);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+		
+	}
+
 	public function getInstallationTypeList_api($data = []){
 
 		if (!isset($data['id']) && !isset($data['type'])) {
@@ -3792,9 +3814,9 @@ class Api extends CC_Controller
 		}elseif($page == 'auditorreview'){
 			$path = FCPATH.'assets/uploads/auditor/statement/';
 
-			// if(!is_dir($path)){
-			// 	mkdir($directory.'assets/uploads/auditor/statement', 0755, true);
-			// }
+			if(!is_dir($path)){
+				mkdir($directory.'assets/uploads/auditor/statement', 0755, true);
+			}
 		}
 		elseif($page == 'noncompliance_coc_image' || $page == 'plumber_logcoc'){
 			$path = FCPATH.'assets/uploads/plumber/'.$userid.'/log/';
