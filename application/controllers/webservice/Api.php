@@ -3822,7 +3822,7 @@ class Api extends CC_Controller
 			$path = FCPATH.'assets/uploads/auditor/statement/';
 
 			if(!is_dir($path)){
-				mkdir($directory.'assets/uploads/auditor/statement', 0755, true);
+				mkdir($directory.'/assets/uploads/auditor/statement', 0755, true);
 			}
 		}
 		elseif($page == 'noncompliance_coc_image' || $page == 'plumber_logcoc'){
