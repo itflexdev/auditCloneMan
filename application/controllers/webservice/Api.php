@@ -2728,14 +2728,15 @@ class Api extends CC_Controller
 			if ($this->input->post('type') == 'list') {
 				$totalcount 				= $this->Auditor_Model->getInvoiceList('count',['user_id' => $userid]);
 				$results 					= $this->Auditor_Model->getInvoiceList('all', ['user_id' => $userid]);
+				
 				$jsonData['totalcount']    	= 	$totalcount;
 				$jsonData['userid']    		= 	$userid;
 				if(count($results) > 0){
 					$message = 'Auditor My Accounts';
 					foreach($results as $result){
-						$internal_inv = "";
+						//$internal_inv = "";
 						$originalDate = isset($result['invoice_date']) && $result['invoice_date']!='1970-01-01' && $result['invoice_date']!='0000-00-00' ? date('d-m-Y', strtotime($result['invoice_date'])) : '';
-						$internal_inv = $result['invoice_no'];
+						//$internal_inv = $result['invoice_no'];
 						// $newDate = date("d-m-Y", strtotime($originalDate));
 						if($result['status'] == '0'){
 							$status = "Unpaid";
@@ -2750,7 +2751,8 @@ class Api extends CC_Controller
 							}
 						}
 						$jsonData['accounts_results'][] = 	[      
-							'inv_id' 		=> 	$internal_inv,
+							'inv_id' 		=> 	$result['inv_id'],
+							'invoicenumber' => 	$result['invoice_no'],
 							'created_at'    =>  $originalDate,
 							'description'   =>  $result['description'],
 							'total_cost'    => 	$this->config->item('currency').' '.$result['total_cost'],
