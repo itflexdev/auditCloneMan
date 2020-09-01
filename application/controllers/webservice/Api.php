@@ -1995,6 +1995,7 @@ class Api extends CC_Controller
 	public function chat_action(){
 		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('action') == "insert") {
 
+			$requestdata = $this->input->post();
 			if ($this->input->post('file') !='') {
 				$data = $this->fileupload(['files' => $this->input->post('file'), 'file_name' => $this->input->post('file_name'), 'user_id' => $this->input->post('coc_id'), 'page' => 'chat']);
 					// $image = $data[0];
@@ -2003,9 +2004,9 @@ class Api extends CC_Controller
 
 			$post['cocid'] 		= $this->input->post('coc_id');
 			$post['fromid'] 	= $this->input->post('user_id');
-			if ($this->input->post('auditorid') !='' || $this->input->post('auditorid') !='0') {
+			if (isset($requestdata['auditorid'])) {
 				$post['toid'] 	= $this->input->post('auditorid');
-			}elseif($this->input->post('plumberid') !='' || $this->input->post('plumberid')!='0'){
+			}elseif(isset($requestdata['plumberid'])){
 				$post['toid'] 	= $this->input->post('plumberid');
 			}
 			
@@ -2018,7 +2019,7 @@ class Api extends CC_Controller
 			}else{
 				$post['type'] 		= '1'; //[type] => 1
 			}
-			
+
 			$result = $this->Chat_Model->action($post);
 			if ($result) {
 				$data = $this->chat_sync(['cocid' => $post['cocid'], 'fromto' => $post['fromid']]);
