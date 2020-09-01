@@ -2003,7 +2003,12 @@ class Api extends CC_Controller
 
 			$post['cocid'] 		= $this->input->post('coc_id');
 			$post['fromid'] 	= $this->input->post('user_id');
-			$post['toid'] 		= $this->input->post('auditorid');
+			if ($this->input->post('auditorid') !='' || $this->input->post('auditorid') !='0') {
+				$post['toid'] 	= $this->input->post('auditorid');
+			}elseif($this->input->post('plumberid') !='' || $this->input->post('plumberid')!='0'){
+				$post['toid'] 	= $this->input->post('plumberid');
+			}
+			
 			if ($this->input->post('message') !='') {
 				$post['message'] 	= $this->input->post('message');
 			}
@@ -2728,7 +2733,7 @@ class Api extends CC_Controller
 			if ($this->input->post('type') == 'list') {
 				$totalcount 				= $this->Auditor_Model->getInvoiceList('count',['user_id' => $userid]);
 				$results 					= $this->Auditor_Model->getInvoiceList('all', ['user_id' => $userid]);
-				
+
 				$jsonData['totalcount']    	= 	$totalcount;
 				$jsonData['userid']    		= 	$userid;
 				if(count($results) > 0){
