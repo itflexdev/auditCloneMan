@@ -3074,7 +3074,7 @@ class Api extends CC_Controller
 						$this->db->update('stock_management', ['audit_status' => '2', 'notification' => '1'], ['id' => $cocid]);
 					}
 
-						if($requestData['auditstatus']=='0'){
+						if($post['auditstatus']=='0'){
 							$auditreviewrow = $this->Auditor_Model->getReviewList('row', ['coc_id' => $cocid, 'reviewtype' => '1', 'status' => '0']);
 						if($auditreviewrow){
 							$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '22', 'emailstatus' => '1']);
