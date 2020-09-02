@@ -802,13 +802,13 @@ class Cpdtypesetup extends CC_Controller
 				$query = $this->db->get();
 				$result = $query->row_array();
 				if ($result && $result!='') {
-					$formdata = [
+					$updatedata = [
 						'status' => '1',
 						'points' => $value[1],
 						'admin_comments' => 'Approved by '.$this->config->item('roletype')[$userdetails['roletype']].'',
 						'updated_by' => $userid,
 					];
-					$this->db->update('cpd_activity_form', $formdata, ['id' => $result['id']]);
+					$this->db->update('cpd_activity_form', $updatedata, ['id' => $result['id']]);
 				}
 			}
 
