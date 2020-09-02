@@ -1167,16 +1167,28 @@ class Api extends CC_Controller
 		}
 		echo json_encode($jsonArray);
 	}
-	public function currencyconvertor($amount){
-		$lastchar = substr($amount, -1);
-		if ($lastchar < 5) {
-			$appendvalue = '0';
+	// public function currencyconvertor($amount){
+	// 	$lastchar = substr($amount, -1);
+	// 	if ($lastchar < 5) {
+	// 		$appendvalue = '0';
+	// 	}else{
+	// 		$appendvalue = '5';
+	// 	}
+	// 	$slice = substr($amount, 0, -1);
+	// 	$currency = $slice.$appendvalue;
+	// 	return $currency;
+	// }
+	function currencyconvertor($currency){
+		$amount 	= number_format(floor($currency*100)/100, 2,".","");
+		$lastchr	= $amount[strlen($amount)-1];
+		
+		if($lastchr < 5){
+			$amount[strlen($amount)-1] = '0';
 		}else{
-			$appendvalue = '5';
+			$amount[strlen($amount)-1] = '5';
 		}
-		$slice = substr($amount, 0, -1);
-		$currency = $slice.$appendvalue;
-		return $currency;
+		
+		return $amount;
 	}
 
 	// CoC Statement:
@@ -2824,9 +2836,11 @@ class Api extends CC_Controller
 			$inv_id 		= $this->input->post('inv_id');
 			$result 		= $this->Auditor_Model->getInvoiceList('row', $userid);
 			$auditordetail 	= $this->Auditor_Model->getAuditorList('row',$userid);
-			$settings		= 	$this->Systemsettings_Model->getList('row');
+			$settings		= $this->Systemsettings_Model->getList('row');
 			$dbVat 			= $settings['vat_percentage'];
-			// $vat 		= $this->Coc_Model->getPermissions('row');
+			$auditordetail 	= $this->Auditor_Model->getAuditorList('row',['id' => $userid]);
+			$billingaddress = explode("@-@",$auditordetail['billingaddress']);
+			$vat 		= $this->Coc_Model->getPermissions('row');
 			$address2 		= $billingaddress[2];
 			$address3 		= $auditordetail['suburb'];
 			$address4 		= $auditordetail['city'];
@@ -2851,12 +2865,12 @@ class Api extends CC_Controller
 				if($vat_vendor > 0){
 					$vatper = $vat['vat_percentage'];		
 					$vat_amount1 = $total_cost * $vatper / 100;
-					$vatvalue = currencyconvertor($vat_amount1);
+					$vatvalue = $this->currencyconvertor($vat_amount1);
 
-					$total = currencyconvertor($total_cost + $vatvalue);
+					$total = $this->currencyconvertor($total_cost + $vatvalue);
 				}
 				else{
-					$total = currencyconvertor($total_cost);
+					$total = $this->currencyconvertor($total_cost);
 				}
 			}
 			$jsonData['auditor_details'][] = [
