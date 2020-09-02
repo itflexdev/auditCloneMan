@@ -109,6 +109,7 @@ class Cpdtypesetup_Model extends CC_Model
 		if(isset($requestdata['admin_comments'])) 	$requestData1['admin_comments'] 	= $requestdata['admin_comments'];
 		if(isset($requestdata['image_ad'])) 		$requestData1['file2'] 				= $requestdata['image_ad'];
 		if(isset($requestdata['approved_date'])) 	$requestData1['approved_date'] 		= $requestdata['approved_date'];
+		if(isset($requestdata['flag'])) 			$requestData1['flag'] 				= $requestdata['flag'];
 		// echo "<pre>";
 		// print_r($requestData1);die;
 		
