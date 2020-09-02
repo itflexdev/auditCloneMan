@@ -2908,6 +2908,9 @@ class Api extends CC_Controller
 			$this->form_validation->set_rules('inv_id','Invoice id','trim|required');
 			$this->form_validation->set_rules('invoicedate','Invoice Date','trim|required');
 			$this->form_validation->set_rules('invoice_no','Invoice Number','trim|required');
+			$this->form_validation->set_rules('total_cost','Total cost','trim|required');
+			$this->form_validation->set_rules('total','Total','trim|required');
+			$this->form_validation->set_rules('vat','VAT','trim|required');
 
 			if ($this->form_validation->run()==FALSE) {
 				$errorMsg = validation_errors();
