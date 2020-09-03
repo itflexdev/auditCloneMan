@@ -2886,8 +2886,8 @@ class Api extends CC_Controller
 				'work_phone' 	=> $work_phone,
 				'email' 		=> $email,
 			];
-			$jsonData['auditor_details'][] = [
-				'userid' 		=> $dbVat,
+			$jsonData['vat_details'][] = [
+				'dbvat' 		=> $dbVat,
 			];
 			$jsonData['table_content'][] = [
 				'description' 	=> $result['description'],
