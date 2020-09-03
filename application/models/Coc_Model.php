@@ -609,7 +609,9 @@ class Coc_Model extends CC_Model
 	
 	public function purchasecoc($result)
 	{
-		if($result['payment_status']=='COMPLETE'){
+		$invoicecheck = $this->db->get_where('invoice', ['payment_id' => $result['pf_payment_id']])->row_array();
+		
+		if(!$invoicecheck && $result['payment_status']=='COMPLETE'){
 			$settings 		= 	$this->Systemsettings_Model->getList('row');
 			$requestData 	= 	json_decode(stripslashes($result['custom_str1']), true);
 			$userid 		=	$requestData['userid'];
@@ -628,6 +630,7 @@ class Coc_Model extends CC_Model
 			$requestData1['created_at']		= 	date('Y-m-d H:i:s');
 			$requestData1['inv_type']		= 	1;
 			$requestData1['coc_type']		= 	$requestData['coc_type'];
+			$requestData1['payment_id']		= 	$result['pf_payment_id'];
 			if($requestData['coc_type']=='1') $requestData1['order_status'] = '1';
 				
 			$this->db->insert('invoice',$requestData1);
@@ -682,7 +685,7 @@ class Coc_Model extends CC_Model
 							$this->db->update('stock_management', $cocrequestdata, ['id' => $stockmanagement['id']]);
 							$cocinsertid = $stockmanagement['id'];
 						}else{
-							$checklastid = $this->db->order_by('id', 'desc')->get_where('stock_management')->row_array();
+							$checklastid = $this->db->order_by('id', 'desc')->get('stock_management')->row_array();
 							if($checklastid && $checklastid['id'] < $this->config->item('customstockno')) $cocrequestdata['id'] = $this->config->item('customstockno');
 								
 							$this->db->insert('stock_management', $cocrequestdata);

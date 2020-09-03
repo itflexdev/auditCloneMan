@@ -1056,4 +1056,108 @@ class Import extends CC_Controller {
 		unlink('./assets/inv_pdf/'.$id.'.pdf'); 
 		$this->cocreport($id, 'PDF Invoice Plumber COC');
 	}
+	
+	public function cocaccountview(){  		
+		$paymentdata = [];
+		
+		$fh = fopen('assets/payment/payment.txt','r');
+		while($line = fgets($fh)){
+			$decode 	= json_decode($line);
+			$cocdata 	= json_decode($decode->custom_str1);
+			
+			$quantity = isset($paymentdata[$cocdata->userid]['quantity']) ? $paymentdata[$cocdata->userid]['quantity'] : 0;
+			$paymentdata[$cocdata->userid]['quantity'] = $cocdata->quantity + $quantity;
+		}
+		fclose($fh);
+		
+		$cocorders = $this->db->select('sum(co.quantity) as quantity, co.user_id, up.registration_no as regno')->from('coc_orders co')->join('users_plumber up', 'up.user_id=co.user_id', 'left')->where('co.created_by !=', NULL)->group_by('co.user_id')->get()->result_array();
+		
+		$userdata = [];
+		foreach($cocorders as $cocorder){
+			$paymentquantity 	= isset($paymentdata[$cocorder['user_id']]['quantity']) ? $paymentdata[$cocorder['user_id']]['quantity'] : 0;
+			$cocquantity 		= $cocorder['quantity']!='' ? $cocorder['quantity'] : 0;
+			$quantitydiff		= $paymentquantity - $cocquantity;
+			
+			if($quantitydiff < 0 && $cocorder['regno']!='')	$userdata[$cocorder['regno'].'-'.$cocorder['user_id']] = $quantitydiff;
+		}
+		
+		echo '<pre>';print_r($userdata);
+		echo array_sum($userdata);
+	}
+	
+	public function cocaccountdelete(){
+		$paymentdata = [];
+		
+		$cocorders 		= $this->db->select('group_concat(quantity) as quantity, group_concat(distinct(inv_id)) as inv_id, user_id')->from('coc_orders')->where('created_by !=', NULL)->group_by('user_id')->get()->result_array();
+		$useridcolumn 	= array_column($cocorders, 'user_id');
+		
+		$fh = fopen('assets/payment/payment.txt','r');
+		while($line = fgets($fh)){
+			$decode 	= json_decode($line);
+			$cocdata 	= json_decode($decode->custom_str1);
+			
+			$usersearch 	= array_search($cocdata->userid, $useridcolumn);
+			if($usersearch !== false){
+				$explodequantity 	= explode(',', $cocorders[$usersearch]['quantity']);
+				$explodeinvoice 	= explode(',', $cocorders[$usersearch]['inv_id']);
+				
+				if(in_array($cocdata->quantity, $explodequantity)){
+					$key = array_search($cocdata->quantity, $explodequantity);
+					unset($explodequantity[$key]);
+					unset($explodeinvoice[$key]);
+					
+					$cocorders[$usersearch]['quantity'] = implode(',', $explodequantity);
+					$cocorders[$usersearch]['inv_id'] 	= implode(',', $explodeinvoice);
+				}
+			}
+		}
+		fclose($fh);
+		
+		foreach($cocorders as $cocorder){
+			if($cocorder['quantity']!=''){
+				$log 			= 'Invoice ID :';
+				$userid 		= $cocorder['user_id'];
+				$explodeinvid 	= explode(',', $cocorder['inv_id']);
+				$explodeqty 	= explode(',', $cocorder['quantity']);
+				
+				
+				foreach($explodeinvid as $k => $invid){
+					$this->db->where('inv_id', $invid)->delete('invoice');
+					$this->db->where('inv_id', $invid)->delete('coc_orders');
+					if(file_exists('assets/inv_pdf/'.$invid.'.pdf')) unlink('assets/inv_pdf/'.$invid.'.pdf');
+					
+					$log .= ' '.$invid;
+					if(count($explodeinvid)== $k+1){
+						$log .= PHP_EOL;
+						$log .= PHP_EOL;
+					}
+				}
+				
+				foreach($explodeqty as $qty){
+					$totaldelete = 0;
+					$log 		.= 'Quantity : '.$qty.PHP_EOL;
+					$log 		.= 'COC ID'.PHP_EOL;
+					
+					for($i=0; $i<$qty; $i++){
+						$stock = $this->db->where('user_id', $userid)->where('coc_status', '4')->order_by('id', 'desc')->get('stock_management')->row_array();
+						if($stock){
+							$log .= $stock['id'].PHP_EOL;
+							$this->db->where('id', $stock['id'])->delete('stock_management');
+							++$totaldelete;
+						}
+					}
+					
+					$log .= 'Deleted : '.$totaldelete.PHP_EOL;
+					$log .= PHP_EOL;
+				}
+				
+				$file = fopen("assets/payment/cocdelete.txt","a");
+				fwrite($file, $log.PHP_EOL);
+				fwrite($file, PHP_EOL);
+				fwrite($file, PHP_EOL);
+				fwrite($file, PHP_EOL);
+				fclose($file);
+			}
+		}
+	}
 }
