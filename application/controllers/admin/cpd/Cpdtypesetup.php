@@ -742,9 +742,9 @@ class Cpdtypesetup extends CC_Controller
 	public function importdownload(){
 		$directory 	 	= dirname(__DIR__, 4);
 		$templatepath 	= $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
-		if (file_exists($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx')) {
-			unlink($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx');
-		}
+		// if (file_exists($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx')) {
+		// 	unlink($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx');
+		// }
 		$file 			= $templatepath;
 		$type 			= \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
 		$reader 		= \PhpOffice\PhpSpreadsheet\IOFactory::createReader($type);
@@ -773,9 +773,9 @@ class Cpdtypesetup extends CC_Controller
 		}
 		$writer = new Xlsx($phpExcel);
 		$writer->save($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx');
-		if (file_exists($templatepath)) {
-			unlink($templatepath);
-		}
+		// if (file_exists($templatepath)) {
+		// 	unlink($templatepath);
+		// }
 		echo "file downloaded";
 
 	}
@@ -837,6 +837,9 @@ class Cpdtypesetup extends CC_Controller
 		if (file_exists($templatepath)) {
 			unlink($templatepath);
 		}
+		if (file_exists($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx')) {
+			unlink($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx');
+		}
 		echo "CPD Added Successfully.";
 	}
 
@@ -871,8 +874,12 @@ class Cpdtypesetup extends CC_Controller
 		$filename =  $_FILES["filename"]["name"];
 		$directory 	 = dirname(__DIR__, 4);
 		$templatepath = $directory.'/assets/uploads/cpdmassimport/'.$filename.'';
+		$errortemplate 	 = $directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx';
 		if (file_exists($templatepath)) {
 			unlink($templatepath);
+		}
+		if (file_exists($errortemplate)) {
+			unlink($errortemplate);
 		}
 		echo "Canceled..";
 
