@@ -3578,8 +3578,6 @@ class Api extends CC_Controller
 
 			if (count($comments) > 0) {
 				foreach ($comments as $commentskey => $commentsvalue) {
-					$date 			= date('d-m-Y', strtotime($commentsvalue['created_at']));
-					$auditorname 	= $commentsvalue['username'];
 					$jsonData['comments'][] = [
 						'date' 			=> date('d-m-Y', strtotime($commentsvalue['created_at'])),
 						'auditorname' 	=> $commentsvalue['username'],
