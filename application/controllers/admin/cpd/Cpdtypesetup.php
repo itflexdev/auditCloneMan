@@ -765,7 +765,7 @@ class Cpdtypesetup extends CC_Controller
 			        ->setCellValue('E1','Errors'); // status
 		$k = 0;
 		foreach ($datas as $dataskey => $datasvalue) {
-			if ($datasvalue[5] == '0') {
+			if (($datasvalue[5] == '0' && $datasvalue[6] =='Plumber not found') || ($datasvalue[5] == '0' && $datasvalue[6] =='Activity already approved')) {
 				$row = $k+2;
 					$phpExcel->setActiveSheetIndex(0)
 					         ->setCellValue('A'.$row.'',$datasvalue[0]) // reg
