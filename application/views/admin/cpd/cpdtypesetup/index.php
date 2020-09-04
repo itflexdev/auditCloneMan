@@ -160,7 +160,7 @@ if(isset($result) && $result){
 					      	</div>
 						      <div class="modal-footer">
 						        <button type="button" class="btn btn-secondary closebtn" data-dismiss="modal">Close</button>
-						        <button type="button" class="btn btn-primary downloadxl" data-dismiss="modal">Download</button>
+						        <button type="button" class="btn btn-primary downloadxl">Download</button>
 						        <button type="button" class="btn btn-primary proceed" >Proceed(2/2)</button>
 						        <button type="button" name="triggerbtn" class="triggerbtn" data-dismiss="modal" class="btn btn-primary">hidden</button>
 						      </div>
@@ -433,7 +433,7 @@ if(isset($result) && $result){
 		         	// $( ".triggerbtn-downloadxl" ).trigger( "click" );
 		         	window.location.href = url;
 		         	console.log(data)
-		         	fileunlinkfunc();
+		         	//fileunlinkfunc();
 		        }
 		      });
 		});
