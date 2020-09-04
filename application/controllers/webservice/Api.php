@@ -2874,7 +2874,7 @@ class Api extends CC_Controller
 				}
 			}
 			$jsonData['auditor_details'][] = [
-				'userid' 		=> $userid,
+				'userid' 		=> $auditordetail['id'],
 				'inv_id' 		=> $inv_id,
 				'vat_vendor' 	=> $result['vat_vendor'],
 				'description' 	=> $result['description'],
@@ -2885,6 +2885,8 @@ class Api extends CC_Controller
 				'province' 		=> $address5,
 				'work_phone' 	=> $work_phone,
 				'email' 		=> $email,
+				'companyname'	=> $auditordetail['company_name'],
+				'namesurname'	=> $auditordetail['name'].' '.$auditordetail['surname'],
 			];
 			$jsonData['vat_details'][] = [
 				'dbvat' 		=> $dbVat,
