@@ -106,7 +106,7 @@ if(isset($result) && $result){
 							</div>
 						<?php } ?>
 						<div class="col-md-6 text-right" style="display: flex;justify-content: flex-end; align-items: end;">
-							<?php if($id!=''){ ?>
+							<?php if($id!='' && $pagestatus =='1'){ ?>
 				<!-- <form class="importform"> -->
 					<div class="tempp" style="margin-right: 20px;">
 						<div class="massimport">
