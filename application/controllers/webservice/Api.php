@@ -3586,6 +3586,8 @@ class Api extends CC_Controller
 						'comments' 	=> $commentsvalue['comments'],
 					];
 				}
+			}else{
+				$jsonData['comments'][] = [];
 			}
 
 			$jsonData['review_details'][] = [
