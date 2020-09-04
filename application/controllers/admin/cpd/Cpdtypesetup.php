@@ -468,14 +468,19 @@ class Cpdtypesetup extends CC_Controller
 					$query1 = $this->db->get();
 					$result2 = $query1->row_array();
 					if ($result2) {
-						if ($result2['status'] == '1' || $result2['status'] == '0') {
+						if ($result2['status'] == '1' || $result2['status'] == '0' || $result2['status'] == '1') {
+							if ($result2['status'] == '1') {
+								$cellstatus = 'approved';
+							}elseif($result2['status'] == '0'){
+								$cellstatus = 'pending';
+							}
 							$cpddata[$j][0]	= $exceldatavalue[0];
 							$cpddata[$j][1] = $exceldatavalue[1];
 							$cpddata[$j][2] = $exceldatavalue[2];
 							$cpddata[$j][3] = $exceldatavalue[3];
 							$cpddata[$j][4] = $exceldatavalue[4];
 							$cpddata[$j][5] = '0';
-							$cpddata[$j][6] = 'Activity already approved';
+							$cpddata[$j][6] = 'Activity already '.$cellstatus.'';
 						}elseif($result2['status'] == '2'){
 							$cpddata[$j][0]	= $exceldatavalue[0];
 							$cpddata[$j][1] = $exceldatavalue[1];
@@ -547,7 +552,7 @@ class Cpdtypesetup extends CC_Controller
 							    <th>Error</th>
 							</tr>';
 				foreach ($datas1 as $datas1key => $datas1value) {
-					if ($datas1value[5] == "0") {
+					if (($datas1value[5] == "0" && $datas1value[6] == "Activity already approved") || ($datas1value[5] == "0" && $datas1value[6] == "Plumber not found")) {
 						$tabledata .= '<tr>
 								    <td>'.$datas1value[0].'</td>
 								    <td>'.$datas1value[6].'</td>
@@ -793,7 +798,7 @@ class Cpdtypesetup extends CC_Controller
 		unset($datas[0]);
 
 		foreach ($datas as $key => $value) {
-			if ($value[6] == 'Activity already approved') {
+			if ($value[6] == 'Activity already approved' || $value[6] == 'Activity already pending') {
 				$this->db->select('*');
 				$this->db->from('cpd_activity_form');
 				$this->db->where('reg_number', $value[0]);
