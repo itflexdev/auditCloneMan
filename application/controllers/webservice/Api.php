@@ -3570,7 +3570,6 @@ class Api extends CC_Controller
 			$result					= $this->Coc_Model->getCOCList('row', ['id' => $this->input->post('coc_id'), 'coc_status' => ['2']]+$auditorid);
 			$comments				= $this->Auditor_Comment_Model->getList('all', ['coc_id' => $this->input->post('coc_id')]);	
 			$diary					= $this->diaryactivity(['cocid' => $this->input->post('coc_id')]+$auditorid);
-
 			if (isset($diary) || $diary !='') {
 				$findtext 			= ['<p>Diary of Activities</p>', '<div class="row">', '<div class="col-12 diarybar">', '<div>', '</div>'];
 				$replacetext 		= ['', ''];
@@ -3581,6 +3580,11 @@ class Api extends CC_Controller
 				foreach ($comments as $commentskey => $commentsvalue) {
 					$date 			= date('d-m-Y', strtotime($commentsvalue['created_at']));
 					$auditorname 	= $commentsvalue['username'];
+					$jsonData['comments'][] = [
+						'date' 			=> date('d-m-Y', strtotime($commentsvalue['created_at'])),
+						'auditorname' 	=> $commentsvalue['username'],
+						'comments' 	=> $commentsvalue['comments'],
+					];
 				}
 			}
 
@@ -3594,10 +3598,6 @@ class Api extends CC_Controller
 			];
 			$jsonData['diaryactvites'][] = [
 				'activites' 		=> (isset($diaryodactvites) ? $diaryodactvites : '')
-			];
-			$jsonData['comments'][] = [
-				'date' 			=> (isset($date) ? $date : ''),
-				'auditorname' 	=> (isset($auditorname) ? $auditorname : '')
 			];
 			$jsonArray 		= array("status"=>'0', "message"=>'Diary And Comments', "result"=>$jsonData);
 		}else{
