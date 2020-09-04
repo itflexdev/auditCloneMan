@@ -747,9 +747,9 @@ class Cpdtypesetup extends CC_Controller
 	public function importdownload(){
 		$directory 	 	= dirname(__DIR__, 4);
 		$templatepath 	= $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
-		// if (file_exists($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx')) {
-		// 	unlink($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx');
-		// }
+		if (file_exists($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx')) {
+			unlink($directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx');
+		}
 		$file 			= $templatepath;
 		$type 			= \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
 		$reader 		= \PhpOffice\PhpSpreadsheet\IOFactory::createReader($type);
