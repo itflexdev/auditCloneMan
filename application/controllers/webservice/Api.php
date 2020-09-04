@@ -2934,10 +2934,9 @@ class Api extends CC_Controller
 				if(isset($post['total'])) $request2['total_due'] = $post['total'];
 				if(isset($request2)){	
 					$userdata = $this->db->update('coc_orders', $request2, ['inv_id' => $id]);	
-				}		
-				return $userdata;	
+				}
 			}
-			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Sucessfully', "result"=>$userdata);
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Added Sucessfully', "result"=>$post);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
