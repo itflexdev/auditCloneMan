@@ -74,6 +74,7 @@ class Api extends CC_Controller
 			if ($this->input->post('submit') == 'login') {
 				$this->form_validation->set_rules('email', 'Email', 'trim|required');
 				$this->form_validation->set_rules('password', 'Password', 'trim|required');
+				$this->form_validation->set_rules('roletype', 'User Type', 'trim|required');
 
 				if ($this->form_validation->run()==FALSE) {
 					$errorMsg =  validation_errors();
@@ -82,9 +83,14 @@ class Api extends CC_Controller
 					$jsonData = [];
 					$email 		= trim($this->input->post('email'));
 					$password 	= md5($this->input->post('password'));
-					//$type 		= $this->input->post('roletype');
-
-					$query = $this->db->get_where('users', ['email' => $email, 'password' => $password]);
+					$roletype 	= $this->input->post('roletype');
+					if ($roletype == '1') { // 1 - plumber 2- auditor
+						$type = '3';
+					}elseif($roletype == '2'){
+						$type = '5';
+					}
+					// $query = $this->db->get_where('users', ['email' => $email, 'password' => $password]);
+					$query = $this->db->where_in('type', $type)->get_where('users', ['email' => $email, 'password' => $password]);
 				
 					if($query->num_rows() > 0){
 						$result 	= $query->row_array();
@@ -114,7 +120,9 @@ class Api extends CC_Controller
 
 						}else{
 							$userdata	= $this->Auditor_Model->getList('row', ['id' => $result['id'], 'status' => ['0','1']]);
-							$jsonArray = array('status' => '1', "message"=>'auditor details', 'result' => $userdata);
+							$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus'], 'mobilenumber' => $userdata['mobile_phone']
+							 	];
+							$jsonArray = array('status' => '1', "message"=>'auditor details', 'result' => $jsonData);
 						}
 						
 						
