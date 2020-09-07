@@ -3392,8 +3392,9 @@ class Api extends CC_Controller
 				$this->form_validation->set_rules('installationtype','Installation Type','trim|required');
 				$this->form_validation->set_rules('subtype','Subtype','trim|required');
 				$this->form_validation->set_rules('statement','Statement','trim|required');
-				$this->form_validation->set_rules('reference','reference','trim|required');
-				$this->form_validation->set_rules('link','Link','trim|required');
+				// $this->form_validation->set_rules('reference','reference','trim|required');
+				// $this->form_validation->set_rules('link','Link','trim|required');
+				//
 				$this->form_validation->set_rules('comments','Comments','trim|required');
 
 				if ($this->form_validation->run()==FALSE) {
