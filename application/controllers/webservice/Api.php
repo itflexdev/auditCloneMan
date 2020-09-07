@@ -2752,9 +2752,9 @@ class Api extends CC_Controller
 			$userid = $this->input->post('user_id');
 			$jsonData = [];
 			if ($this->input->post('type') == 'list') {
-				$totalcount 				= $this->Auditor_Model->getInvoiceList('count',['user_id' => $userid]);
-				$results 					= $this->Auditor_Model->getInvoiceList('all', ['user_id' => $userid]);
-
+				$totalcount 				= $this->Api_Model->getInvoiceList('count',['user_id' => $userid, 'api_data' => 'auditor_accounts']);
+				$results 					= $this->Api_Model->getInvoiceList('all', ['user_id' => $userid, 'api_data' => 'auditor_accounts']);
+				
 				$jsonData['totalcount']    	= 	$totalcount;
 				$jsonData['userid']    		= 	$userid;
 				if(count($results) > 0){
@@ -2795,8 +2795,8 @@ class Api extends CC_Controller
 				$userid 			= $this->input->post('user_id');
 				$keywords 			= $this->input->post('keywords');
 				$post['search'] 	= ['value' => $keywords, 'regex' => false];
-				$totalcount 				= $this->Auditor_Model->getInvoiceList('count',['user_id' => $userid]+$post);
-				$results 					= $this->Auditor_Model->getInvoiceList('all', ['user_id' => $userid]+$post);
+				$totalcount 				= $this->Api_Model->getInvoiceList('count',['user_id' => $userid]+$post);
+				$results 					= $this->Api_Model->getInvoiceList('all', ['user_id' => $userid]+$post);
 				$jsonData['totalcount']    	= 	$totalcount;
 				$jsonData['userid']    		= 	$userid;
 				if(count($results) > 0){

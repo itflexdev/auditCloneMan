@@ -226,6 +226,74 @@ class Api_Model extends CC_Model
 		
 		return $result;		
 	}
+
+	public function getInvoiceList($type, $requestdata=[]){
+		
+		$this->db->select('inv.*, ud.name, ud.surname, ud.vat_vendor');
+		$this->db->from('invoice inv');	
+		$this->db->join('users_detail ud', 'ud.user_id=inv.user_id', 'left');
+		$this->db->join('users u', 'u.id=inv.user_id', 'inner');
+		$this->db->where('u.type', '5');
+
+		if(isset($requestdata['status'])) $this->db->where('inv.status', $requestdata['status']);
+		if(isset($requestdata['statuslist'])) $this->db->where_in('inv.status', $requestdata['statuslist']);
+		if(isset($requestdata['id'])) $this->db->where('inv.inv_id', $requestdata['id']);
+		if(isset($requestdata['user_id'])) $this->db->where('inv.user_id', $requestdata['user_id']);
+
+		if($type!=='count' && isset($requestdata['start']) && isset($requestdata['length'])){
+			$this->db->limit($requestdata['length'], $requestdata['start']);
+		}
+		if(isset($requestdata['order']['0']['column']) && isset($requestdata['order']['0']['dir'])){
+			$column = ['inv.invoice_no', 'inv.created_at', 'ud.name', 'inv.description', 'inv.total_cost', 'inv.status', 'inv.internal_inv'];
+			//$column = ['inv.inv_id', 'inv.description', 'inv.invoice_no', 'inv.invoice_date', 'inv.total_cost', 'inv.total_cost', 'inv.internal_inv', 'ud.name'];
+			$this->db->order_by($column[$requestdata['order']['0']['column']], $requestdata['order']['0']['dir']);
+		}
+		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){
+			$searchvalue = trim($requestdata['search']['value']);
+			if(strtolower($searchvalue) == 'paid'){
+				$this->db->where('inv.status', '1');
+			}
+			elseif(strtolower($searchvalue) == 'unpaid'){
+				$this->db->where('inv.status', '0');
+			}
+			elseif(strtolower($searchvalue) == 'not submitted'){
+				$this->db->where('inv.status', '2');
+			}
+			
+			else{
+				$this->db->group_start();
+				$this->db->like('inv.inv_id', $searchvalue);
+				$this->db->or_like('inv.description', $searchvalue);
+				$this->db->or_like('inv.invoice_no', $searchvalue);					
+				$this->db->or_like('inv.invoice_date', $searchvalue);
+				// $this->db->or_like('inv.created_at', $searchvalue);
+				$this->db->or_like('inv.total_cost', $searchvalue);
+				$this->db->or_like('inv.internal_inv', $searchvalue);
+				$this->db->or_like('ud.name', $searchvalue);
+				$this->db->group_end();
+			}
+
+		}
+
+		// $this->db->group_by('u.id');
+		if (isset($requestdata['api_data']) && $requestdata['api_data'] =='auditor_accounts') {
+			$this->db->order_by("inv.status", "DESC");
+		}
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		
+		// print_r($this->db->last_query());die;
+		
+		return $result;
+
+	}
 	
 	public function COCcount($requestdata=[]){
 		$query = $this->db->select('*')->from('coc_count')->where('user_id', $requestdata['user_id'])->get()->row_array();
