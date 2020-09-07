@@ -2719,8 +2719,8 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('type') == 'list') {
 			$userid = $this->input->post('user_id');
 
-			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid]);
-			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid]);
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor']);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor']);
 			if ($results) {
 				foreach ($results as $key => $value) {
 					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => ''];
@@ -2733,8 +2733,8 @@ class Api extends CC_Controller
 			$post['page'] 	= 'auditorstatement';
 			$post['search'] = ['value' => $keywords, 'regex' => false];
 
-			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid]+$post);
-			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid]+$post);
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid]+$post);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid]+$post);
 			if ($results) {
 				foreach ($results as $key => $value) {
 					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => ''];
@@ -3463,7 +3463,7 @@ class Api extends CC_Controller
 						}
 					}
 					$status  = '1';
-					//$message = 'Review Added Sucessfully';
+					$message = 'Review Added Sucessfully';
 					$post['insertid'] = $insertid;
 					$jsonData = $post;
 				}

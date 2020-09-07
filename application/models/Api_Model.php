@@ -211,6 +211,9 @@ class Api_Model extends CC_Model
 		}
 		
 		$this->db->group_by('sm.id');
+		if (isset($requestdata['api_data']) && $requestdata['api_data'] =='auditstatement_auditor') {
+			$this->db->order_by("sm.id", "DESC");
+		}
 		
 		if($type=='count'){
 			$result = $this->db->count_all_results();
