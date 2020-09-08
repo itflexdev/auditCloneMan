@@ -66,6 +66,7 @@ class index extends CC_Controller
 
 		if($postData)
 		{
+			$postData['pagetype'] = 'plumbercpd';
 			$data 	=   $this->Mycpd_Model->autosearchActivity($postData);
 		}
 	  	// echo json_encode($data); exit;
