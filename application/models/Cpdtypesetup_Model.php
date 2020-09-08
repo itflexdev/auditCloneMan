@@ -59,14 +59,16 @@ class Cpdtypesetup_Model extends CC_Model
 		];
 							//print_r($data);die;
 		
-		if(isset($data['activity'])) 		$request['activity'] 		= $data['activity'];
+		if(isset($data['activityname'])) 	$request['activity'] 		= $data['activityname'];
 		if(isset($data['points'])) 			$request['points'] 			= $data['points'];
 		if(isset($data['productcode'])) 	$request['productcode'] 	= $data['productcode'];
-		if(isset($data['cpdstream'])) 		$request['cpdstream'] 		= $data['cpdstream'];
+		if(isset($data['cpdstream1'])) 		$request['cpdstream'] 		= $data['cpdstream1'];
 		if(isset($data['qrcode'])) 			$request['qrcode'] 			= $data['qrcode'];
-		$request['status'] 												= (isset($data['status'])) ? $data['status'] : '0';
 		if(isset($data['startdate'])) 		$request['startdate'] 		= date('Y-m-d',strtotime($data['startdate'])); 
 		if(isset($data['enddate'])) 		$request['enddate'] 		= date('Y-m-d',strtotime($data['enddate']));
+
+		$request['status'] 					= (isset($data['status'])) ? $data['status'] : '0';
+		$request['hidden'] 					= (isset($data['hidden_option'])) ? $data['hidden_option'] : '0';
 		
 		if($id==''){
 			$request['created_at'] = $datetime;
