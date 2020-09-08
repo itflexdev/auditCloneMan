@@ -27,6 +27,7 @@ class Cpdtypesetup extends CC_Controller
 
 
 			$result = $this->Cpdtypesetup_Model->getList('row', ['id' => $id, 'status' => ['0','1']]);
+			//
 			if($result){
 				$pagedata['result'] = $result;
 			}else{
