@@ -1,7 +1,7 @@
 <?php
 if(isset($result) && $result){
 	$id 				= $result['id'];
-	$activity 			= (set_value('activity')) ? set_value('activity') : $result['activity'];
+	$activityname 		= (set_value('activity')) ? set_value('activity') : $result['activity'];
 	$startdate 			= (set_value('startdate')) ? set_value('startdate') : $result['startdate'];
 	$points 			= (set_value('points')) ? set_value('points') : $result['points'];
 	$cpdstream 			= (set_value('cpdstream')) ? set_value('cpdstream') : $result['cpdstream'];
@@ -9,11 +9,12 @@ if(isset($result) && $result){
 	$productcode 		= (set_value('productcode')) ? set_value('productcode') : $result['productcode'];
 	$qrcode 			= (set_value('qrcode')) ? set_value('qrcode') : $result['qrcode'];
 	$status 			= (set_value('status')) ? set_value('status') : $result['status'];
+	$hide 				= (set_value('hidden')) ? set_value('hidden') : $result['hidden'];
 	
 	$heading			= 'Update';
 }else{
 	$id 				= '';
-	$activity			= set_value('activity');
+	$activityname		= set_value('activity');
 	$startdate			= set_value('startdate');
 	$points				= set_value('points');
 	$enddate			= set_value('enddate');
@@ -21,6 +22,7 @@ if(isset($result) && $result){
 	$qrcode				= set_value('qrcode');
 	$cpdstream			= set_value('cpdstream');
 	$status				= set_value('status');
+	$hide 				= set_value('hidden');
 
 	$heading			= 'Add';
 }
@@ -49,7 +51,7 @@ if(isset($result) && $result){
 					<div class="row">
 						<div class="form-group col-md-6">
 							<label for="activity">Activity *</label>
-							<input type="text" class="form-control" id="activity" name="activity" placeholder="Enter Activity *" value="<?php echo $activity; ?>">						
+							<input type="text" class="form-control" id="activity" name="activityname" placeholder="Enter Activity *" value="<?php echo $activityname; ?>">						
 						</div>
 						<div class="form-group col-md-6">
 							<label for="startdate">CPD Start Date</label>
@@ -73,7 +75,7 @@ if(isset($result) && $result){
 						</div>
 						<div class="form-group col-md-6">
 							<label for="cpdstream">CPD Stream</label>
-							<?php echo form_dropdown('cpdstream', $cpdstreamID, $cpdstream, ['id' => 'cpdstream', 'class' => 'form-control']); ?>					
+							<?php echo form_dropdown('cpdstream1', $cpdstreamID, $cpdstream, ['id' => 'cpdstream', 'class' => 'form-control']); ?>					
 						</div>
 					</div>
 					<?php
@@ -86,6 +88,12 @@ if(isset($result) && $result){
 								<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
 									<input type="checkbox" class="custom-control-input" name="status" id="status" <?php if($status=='1') echo 'checked'; ?> value="1">
 									<label class="custom-control-label" for="status">Active</label>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
+									<input type="checkbox" class="custom-control-input" name="hide" id="hide" <?php if($hide=='1') echo 'checked'; ?> value="1">
+									<label class="custom-control-label" for="hide">Hidden</label>
 								</div>
 							</div>
 						</div>
@@ -102,6 +110,10 @@ if(isset($result) && $result){
 								<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
 									<input type="checkbox" class="custom-control-input" name="status" id="status" <?php if($status=='1') echo 'checked'; ?> value="1">
 									<label class="custom-control-label" for="status">Active</label>
+								</div>
+								<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
+									<input type="checkbox" class="custom-control-input" name="hide" id="hide" <?php if($hide=='1') echo 'checked'; ?> value="1">
+									<label class="custom-control-label" for="hide">Hidden</label>
 								</div>
 							</div>
 						<?php } ?>
@@ -173,7 +185,7 @@ if(isset($result) && $result){
 								
 				<?php }?>
 							<input type="hidden" id='codstream' name="cpdstream" value="<?php echo $cpdstream; ?>">
-							<input type="hidden" id='activity' name="activity" value="<?php echo $activity; ?>">
+							<input type="hidden" id='activity' name="activity" value="<?php echo $activityname; ?>">
 							<input type="hidden" id='cpdid' name="id" value="<?php echo $id; ?>">
 							<input type="hidden" name="productcode" value="<?php echo $productcode; ?>">
 							<button type="submit" name="submit" value="submit" class="btn btn-primary"><?php echo $heading; ?> CPD Type</button>
