@@ -109,25 +109,27 @@ class Cpdtypesetup extends CC_Controller
 		$totalrecord 	= [];
 		if(count($results) > 0){
 			foreach($results as $result){
-
-				if ($checkpermission) {
-					$action = '<div class="table-action">
+				if ($result['cpdstream'] !='0') {
+					if ($checkpermission) {
+						$action = '<div class="table-action">
 								<a href="'.base_url().'admin/cpd/cpdtypesetup/index/'.$post['pagestatus'].'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
 								</div>';
-				}else{
-					$action = '';
-				}
+					}else{
+						$action = '';
+					}
 
-				$totalrecord[] = 	[
-					'productcode' 		=> 	$result['productcode'],
-					'activity' 			=> 	$result['activity'],
-					'startdate' 		=> 	date('m-d-Y',strtotime($result['startdate'])),
-					'enddate' 			=> 	date('m-d-Y',strtotime($result['enddate'])),
-					'cpdstream' 		=> 	$this->config->item('cpdstream')[$result['cpdstream']],
-					'points' 			=> 	$result['points'],
-										//'status' 	=> 	$this->config->item('statusicon')[$result['status']],
-					'action'			=> 	$action
-				];
+					$totalrecord[] = 	[
+						'productcode' 		=> 	$result['productcode'],
+						'activity' 			=> 	$result['activity'],
+						'startdate' 		=> 	date('m-d-Y',strtotime($result['startdate'])),
+						'enddate' 			=> 	date('m-d-Y',strtotime($result['enddate'])),
+						'cpdstream' 		=> 	$this->config->item('cpdstream')[$result['cpdstream']],
+						'points' 			=> 	$result['points'],
+											//'status' 	=> 	$this->config->item('statusicon')[$result['status']],
+						'action'			=> 	$action
+					];
+				}
+				
 			}
 		}
 		
