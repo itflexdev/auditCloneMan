@@ -81,7 +81,7 @@ class index extends CC_Controller
 				}
 				$activity 		= $val["activity"];
 				$startDate 		= $startDate1;
-				$cpd_Stream 	= $this->config->item('cpdstream')[$val["cpdstream"]];
+				$cpd_Stream 	= (isset($this->config->item('cpdstream')[$val["cpdstream"]])) ? $this->config->item('cpdstream')[$val["cpdstream"]] : '';
 				$cpd_Stream_id 	= $val["cpdstream"];
 				$cpdPoints 		= $val["points"];
 			?>
