@@ -140,7 +140,7 @@
 							{ "data": "action" }
 						],
 
-						target	:	[4],
+						target	:	[4,3],
 						sort	:	'0'
 		};
 		
@@ -154,7 +154,7 @@
                             { "data"	: 	"status" },	
 							{ "data"	: 	"action" }
 						],
-			target	:	[3],
+			target	:	[2,3],
 			sort	:	'0'
 		};
 		
