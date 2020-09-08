@@ -1174,16 +1174,16 @@ class CC_Controller extends CI_Controller
 			if($requestData['submit']=='submit'){
 
 				$data 	=  $this->Mycpd_Model->actionInsert($requestData);
-				if($data) $message = 'CPD Type '.(($id=='') ? 'created' : 'updated').' successfully.';
+				if($data) $message = 'CPD activity '.(($id=='') ? 'submitted.' : 'updated.');
 			}elseif($requestData['submit']=='save'){
 				//print_r($requestData);die;
 
 				$data 	=  $this->Mycpd_Model->actionSave($requestData);
-				if($data) $message = 'My CPD '.(($id=='') ? 'save' : 'updated').' successfully.';
+				if($data) $message = 'CPD activity '.(($id=='') ? 'save' : 'updated').' successfully.';
 			}
 			else{
 				$data 			= 	$this->Mycpd_Model->changestatus($requestData);
-				$message		= 	'CPD Type deleted successfully.';
+				$message		= 	'CPD activity deleted successfully.';
 			}
 
 			if(isset($data)) $this->session->set_flashdata('success', $message);
