@@ -232,10 +232,10 @@ class Cpdtypesetup extends CC_Controller
 				// print_r($requestData);die;
 
 				$data 	=  $this->Cpdtypesetup_Model->queue_action($requestData);
-				if($data) $message = 'CPD Queue '.(($id=='') ? 'created' : 'updated').' successfully.';
+				if($data) $message = 'CPD activity '.(($id=='') ? 'submitted.' : 'updated');
 			}else{
 				$data 			= 	$this->Installationtype_Model->changestatus($requestData);
-				$message		= 	'Installation Type deleted successfully.';
+				$message		= 	'CPD activity deleted.';
 			}
 
 			if(isset($data)) $this->session->set_flashdata('success', $message);
