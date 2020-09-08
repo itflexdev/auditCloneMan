@@ -271,6 +271,9 @@ class Mycpd_Model extends CC_Model
 		$this->db->where('cp1.startdate<="'.$currentDate.'"');
 		$this->db->where('cp1.enddate>"'.$currentDate.'"');
 		if(isset($postData['cpdidarray'])) $this->db->where_not_in('cp1.id', $postData['cpdidarray']);
+		if(isset($postData['pagetype']) && $postData['pagetype'] =='plumbercpd'){
+			$this->db->where('cp1.hidden', '0');
+		}
 		
 		$this->db->group_by("cp1.id");		
 		$query = $this->db->get();
