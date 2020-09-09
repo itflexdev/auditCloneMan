@@ -89,11 +89,9 @@ if(isset($result) && $result){
 									<input type="checkbox" class="custom-control-input" name="status" id="status" <?php if($status=='1') echo 'checked'; ?> value="1">
 									<label class="custom-control-label" for="status">Active</label>
 								</div>
-							</div>
-							<div class="col-md-6">
 								<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
-									<input type="checkbox" class="custom-control-input" name="hide" id="hide" <?php if($hide=='1') echo 'checked'; ?> value="1">
-									<label class="custom-control-label" for="hide">Hidden</label>
+									<input type="checkbox" class="custom-control-input" name="hidden_option" id="hidden_option" <?php if($hide=='1') echo 'checked'; ?> value="1">
+									<label class="custom-control-label" for="hidden_option">Hidden</label>
 								</div>
 							</div>
 						</div>
@@ -112,8 +110,8 @@ if(isset($result) && $result){
 									<label class="custom-control-label" for="status">Active</label>
 								</div>
 								<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
-									<input type="checkbox" class="custom-control-input" name="hide" id="hide" <?php if($hide=='1') echo 'checked'; ?> value="1">
-									<label class="custom-control-label" for="hide">Hidden</label>
+									<input type="checkbox" class="custom-control-input" name="hidden_option" id="hidden_option" <?php if($hide=='1') echo 'checked'; ?> value="1">
+									<label class="custom-control-label" for="hidden_option">Hidden</label>
 								</div>
 							</div>
 						<?php } ?>
