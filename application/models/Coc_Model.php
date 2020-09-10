@@ -632,7 +632,8 @@ class Coc_Model extends CC_Model
 			$requestData1['coc_type']		= 	$requestData['coc_type'];
 			$requestData1['payment_id']		= 	$result['pf_payment_id'];
 			if($requestData['coc_type']=='1') $requestData1['order_status'] = '1';
-				
+			
+			$log = 'Invoice - '.json_encode($requestData1).PHP_EOL;
 			$this->db->insert('invoice',$requestData1);
 			$inv_id 		= $this->db->insert_id();
 
@@ -653,7 +654,8 @@ class Coc_Model extends CC_Model
 			$requestData2['delivery_cost']	= 	$requestData['delivery_cost'];
 			$requestData2['vat']			= 	$requestData['vat'];
 			$requestData2['total_due']		= 	$requestData['total_due'];
-
+			
+			$log .= 'Order - '.json_encode($requestData2).PHP_EOL;
 			$this->db->insert('coc_orders',$requestData2);
 			$coc_order_id 	= $this->db->insert_id();
 
@@ -661,7 +663,8 @@ class Coc_Model extends CC_Model
 			$requestData0['user_id']		= 	$userid;
 			$requestData0['created_by']		= 	$userid;
 			$requestData0['created_at']		= 	date('Y-m-d H:i:s');
-
+			
+			$log .= 'Coc Count - '.json_encode($requestData0).PHP_EOL;
 			$this->db->update('coc_count', $requestData0, ['user_id' => $userid]);
 				
 			$insert_id 				= 	$this->db->select('id,inv_id')->from('coc_orders')->order_by('id','desc')->get()->row_array();
@@ -671,6 +674,7 @@ class Coc_Model extends CC_Model
 			if ($insert_id) {
 
 				if($requestData['coc_type']=='1'){
+					$log .= 'Electronic COC'.PHP_EOL;
 					for($m=1;$m<=$requestData['quantity'];$m++){
 						$stockmanagement = $this->db->get_where('stock_management', ['user_id' => '0', 'coc_status' => '1', 'coc_orders_status' => '6', 'type' => '1'])->row_array();
 						
@@ -692,6 +696,7 @@ class Coc_Model extends CC_Model
 							$cocinsertid = $this->db->insert_id();
 						}
 						
+						$log .= $cocinsertid.PHP_EOL;
 						$this->diaryactivity(['adminid' => '1', 'plumberid' => $userid, 'cocid' => $cocinsertid, 'action' => '6', 'type' => '1']);		
 					}	
 
@@ -730,6 +735,17 @@ class Coc_Model extends CC_Model
 					}
 				}
 			}
+			
+			$successfile = fopen("assets/payment/paymentsuccess.txt","a");
+			fwrite($successfile,$log);
+			fwrite($successfile,'Payment - '.json_encode($result).PHP_EOL);
+			fwrite($successfile,PHP_EOL);
+			fwrite($successfile,PHP_EOL);
+			fclose($successfile);
+		}else{
+			$failurefile = fopen("assets/payment/paymentfailure.txt","a");
+			fwrite($failurefile,json_encode($result). PHP_EOL);
+			fclose($failurefile);
 		}
 		
 		$file = fopen("assets/payment/payment.txt","a");

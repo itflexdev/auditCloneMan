@@ -545,9 +545,10 @@ class Cron extends CC_Controller {
 			
 			$request1['status'] = '2';
 			$this->db->update('users', $request1, ['id' => $userid]);
-
+			
+			/*	
 			$template = $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '3'])->get()->row_array();
-			 
+			
 			$mail_date = date("d-m-Y");
 			$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '3', 'emailstatus' => '1']);
 				
@@ -567,7 +568,7 @@ class Cron extends CC_Controller {
 					$this->sms(['no' => $data['mobile_phone'], 'msg' => $sms]);
 				}
 			}
-			
+			*/
 		}
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {

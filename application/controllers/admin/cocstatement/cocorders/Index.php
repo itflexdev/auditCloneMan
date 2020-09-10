@@ -78,61 +78,61 @@ class Index extends CC_Controller
 					if ($inv_id) {
 						$this->db->update('invoice', ['order_status' => '1'], ['inv_id' => $inv_id['inv_id']]);
 						
-						$invoicedata = $this->db->select('*')->from('invoice')->where(['inv_id' => $inv_id['inv_id']])->get()->row_array();
-						if($invoicedata['email_track']!='0'){
-							$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '8', 'emailstatus' => '1']);
-					
-							if($notificationdata){
-								$body 	= str_replace(['{Plumbers Name and Surname}', '{order type}', '{method of delivery}', '{tracking number}'], [$userdata1['name'].' '.$userdata1['surname'], $coctype[$invoicedata['coc_type']],  $deliverycard[$invoicedata['delivery_type']], $invoicedata['tracking_no']], $notificationdata['email_body']);
-								$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body);
-							}
-						}	
+						if($requestData['type']=='3'){
+							$invoicedata = $this->db->select('*')->from('invoice')->where(['inv_id' => $inv_id['inv_id']])->get()->row_array();
+							if($invoicedata['email_track']!='0'){
+								$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '8', 'emailstatus' => '1']);
 						
-						if($invoicedata['sms_track']!='0'){
-							if($settingsdetail && $settingsdetail['otp']=='1'){
-								$smsdata 	= $this->Communication_Model->getList('row', ['id' => '8', 'smsstatus' => '1']);
-					
-								if($smsdata){
-									$sms = str_replace(['{order type}', '{method of delivery}', '{tracking number}'], [$coctype[$invoicedata['coc_type']], $deliverycard[$invoicedata['delivery_type']], $invoicedata['tracking_no']], $smsdata['sms_body']);
-									$this->sms(['no' => $userdata1['mobile_phone'], 'msg' => $sms]);
+								if($notificationdata){
+									$body 	= str_replace(['{Plumbers Name and Surname}', '{order type}', '{method of delivery}', '{tracking number}'], [$userdata1['name'].' '.$userdata1['surname'], $coctype[$invoicedata['coc_type']],  $deliverycard[$invoicedata['delivery_type']], $invoicedata['tracking_no']], $notificationdata['email_body']);
+									$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body);
+								}
+							}	
+							
+							if($invoicedata['sms_track']!='0'){
+								if($settingsdetail && $settingsdetail['otp']=='1'){
+									$smsdata 	= $this->Communication_Model->getList('row', ['id' => '8', 'smsstatus' => '1']);
+						
+									if($smsdata){
+										$sms = str_replace(['{order type}', '{method of delivery}', '{tracking number}'], [$coctype[$invoicedata['coc_type']], $deliverycard[$invoicedata['delivery_type']], $invoicedata['tracking_no']], $smsdata['sms_body']);
+										$this->sms(['no' => $userdata1['mobile_phone'], 'msg' => $sms]);
+									}
 								}
 							}
-						}
-						
-						$template = $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '17'])->get()->row_array();
-						$orders = $this->db->select('*')->from('coc_orders')->where(['user_id' => $requestData['user_id']])->order_by('id','desc')->get()->row_array();
-
-						if(isset($requestData['email_coc_track'])){
 							
-							$cocreport = $this->cocreport($inv_id['inv_id'], 'PDF Invoice Plumber COC');
-							
-							$cocTypes = $orders['coc_type'];
-							$mail_date = date("d-m-Y", strtotime($orders['created_at']));
-							 
-							
-							$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}'];
-							$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype')[$cocTypes]];
+							$template = $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '17'])->get()->row_array();
+							$orders = $this->db->select('*')->from('coc_orders')->where(['user_id' => $requestData['user_id']])->order_by('id','desc')->get()->row_array();
 
-							$body = str_replace($array1, $array2, $template['email_body']);
-
-							if ($template['email_active'] == '1') {
-
-								$this->CC_Model->sentMail($userdata1['email'],$template['subject'],$body,$cocreport);
-							}
-						}
-						
-						if(isset($requestData['sms_coc_track'])){
-							if($settingsdetail && $settingsdetail['otp']=='1'){
-								$smsdata 	= $this->Communication_Model->getList('row', ['id' => '17', 'smsstatus' => '1']);
+							if(isset($requestData['email_coc_track'])){
 								
-								if($smsdata){
-									$sms = str_replace(['{number of COC}'], [$orders['quantity']], $smsdata['sms_body']);
-									$this->sms(['no' => $userdata1['mobile_phone'], 'msg' => $sms]);
+								$cocreport = $this->cocreport($inv_id['inv_id'], 'PDF Invoice Plumber COC');
+								
+								$cocTypes = $orders['coc_type'];
+								$mail_date = date("d-m-Y", strtotime($orders['created_at']));
+								 
+								
+								$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}'];
+								$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype')[$cocTypes]];
+
+								$body = str_replace($array1, $array2, $template['email_body']);
+
+								if ($template['email_active'] == '1') {
+
+									$this->CC_Model->sentMail($userdata1['email'],$template['subject'],$body,$cocreport);
+								}
+							}
+							
+							if(isset($requestData['sms_coc_track'])){
+								if($settingsdetail && $settingsdetail['otp']=='1'){
+									$smsdata 	= $this->Communication_Model->getList('row', ['id' => '17', 'smsstatus' => '1']);
+									
+									if($smsdata){
+										$sms = str_replace(['{number of COC}'], [$orders['quantity']], $smsdata['sms_body']);
+										$this->sms(['no' => $userdata1['mobile_phone'], 'msg' => $sms]);
+									}
 								}
 							}
 						}
-						
-
 					}
 					$this->session->set_flashdata('success', 'Order allocated successfully.');
 				} 
