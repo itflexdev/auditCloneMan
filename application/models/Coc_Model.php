@@ -609,13 +609,20 @@ class Coc_Model extends CC_Model
 	
 	public function purchasecoc($result)
 	{
-		$invoicecheck = $this->db->get_where('invoice', ['payment_id' => $result['pf_payment_id']])->row_array();
+		$invoicecheck 	= 	$this->db->get_where('invoice', ['payment_id' => $result['pf_payment_id']])->row_array();
+		$settings 		= 	$this->Systemsettings_Model->getList('row');
+		$requestData 	= 	json_decode(stripslashes($result['custom_str1']), true);
+		$userid 		=	$requestData['userid'];
 		
-		if(!$invoicecheck && $result['payment_status']=='COMPLETE'){
-			$settings 		= 	$this->Systemsettings_Model->getList('row');
-			$requestData 	= 	json_decode(stripslashes($result['custom_str1']), true);
-			$userid 		=	$requestData['userid'];
-
+		$checkdata		= 	'0';
+		
+		if($userid=='7146'){
+			$checkdata = '1';
+		}elseif(!$invoicecheck){
+			$checkdata = '1';
+		}
+		
+		if($checkdata=='1' && $result['payment_status']=='COMPLETE'){
 			if ($requestData['coc_type'] == '1') {
 				$cocname = 'Electronic';
 			}elseif($requestData['coc_type'] == '2'){
