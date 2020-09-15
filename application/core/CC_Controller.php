@@ -1343,6 +1343,13 @@ class CC_Controller extends CI_Controller
 			'numto' 	=> '+'.$no,
 			'data1' 	=> $data['msg']
 		];
+
+		if (isset($data['userid']) && isset($data['email'])) {
+			$body 	= 'Your mobile number : '.$data['no'].'<br>
+						'.$data['msg'].'<br>
+					';
+			$this->CC_Model->sentMail($data['email'], 'OTP Verification', $body);
+		}
 		
 		$url = 'http://www.mymobileapi.com/api5/http5.aspx';
 		
