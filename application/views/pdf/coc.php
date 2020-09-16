@@ -68,10 +68,19 @@
 	$latesubtotalamount 	= (isset($extras['latesubtotalamount'])) ? $extras['latesubtotalamount'] : '0';
 	$latevatamount 			= (isset($extras['latevatamount'])) ? $extras['latevatamount'] : '0';
 	$latetotalamount 		= (isset($extras['latetotalamount'])) ? $extras['latetotalamount'] : '0';
+	$cardfee 				= (isset($extras['cardfee'])) ? $extras['cardfee'] : '0';
+	$cardvatfee 			= (isset($extras['cardfee'])) ? round(($extras['cardfee']*$VAT)/100, 2) : '0';
+	$cardtotal 				= $cardfee + $cardvatfee;
+	$deliveryfee 			= (isset($extras['deliveryfee'])) ? $extras['deliveryfee'] : '0';
+	$deliveryvatfee 		= (isset($extras['deliveryfee'])) ? round(($extras['deliveryfee']*$VAT)/100, 2) : '0';
+	$deliverytotal 			= $deliveryfee + $deliveryvatfee;
+	$specialisationsfee 	= (isset($extras['specialisationsfee'])) ? $extras['specialisationsfee']*$extras['specialisationsqty'] : '0';
+	$specialisationsvatfee 	= (isset($extras['specialisationsfee'])) ? round(($extras['specialisationsfee']*$extras['specialisationsqty']*$VAT)/100, 2) : '0';
+	$specialisationstotal 	= $specialisationsfee+$specialisationsvatfee;
 	
-	$subtotalrate 	= currencyconvertors($delivery_rate['amount']+$rowData['cost_value']+$latesubtotalamount);
-	$vattotalrate 	= currencyconvertors($rowData['vat']+$latevatamount);
-	$totalrate 		= currencyconvertors($rowData['total_due']+$latetotalamount);
+	$subtotalrate 	= currencyconvertors($delivery_rate['amount']+$rowData['cost_value']+$latesubtotalamount+$cardfee+$deliveryfee+$specialisationsfee);
+	$vattotalrate 	= currencyconvertors($rowData['vat']+$latevatamount+$cardvatfee+$deliveryvatfee+$specialisationsvatfee);
+	$totalrate 		= currencyconvertors($rowData['total_due']+$latetotalamount+$cardtotal+$deliverytotal+$specialisationstotal);
 	
 	$base_url		= base_url();
 
@@ -346,6 +355,30 @@
 									<td style="width: 18%;  margin: 0; padding: 10px 0 10px 0;    text-align: center;"><?php echo $currency.$rowData['cost_value']; ?></td>
 								</tr>
 								<?php echo $courierdetails; ?>
+								<?php if(isset($extras['cardfee'])){ ?>
+									<tr>
+										<td style="width: 50%;  margin: 0; padding: 10px 0 10px 5px;">Plumber ID Card</td>				
+										<td style="width: 10%;  margin: 0; padding: 10px 0 10px 0;text-align: center;">1</td>
+										<td style="width: 19%; margin: 0; padding: 10px 0 10px 0;    text-align: center;"><?php echo $currency.$extras['cardfee']; ?></td>
+										<td style="width: 18%;  margin: 0; padding: 10px 0 10px 0;    text-align: center;"><?php echo $currency.$extras['cardfee']; ?></td>
+									</tr>
+								<?php } ?>
+								<?php if(isset($extras['deliverycard'])){ ?>
+									<tr>
+										<td style="width: 50%;  margin: 0; padding: 10px 0 10px 5px;"><?php echo ($extras['deliverycard']=='1') ? 'Delivery By Registered Post' : 'Delivery by Courier'; ?></td>				
+										<td style="width: 10%;  margin: 0; padding: 10px 0 10px 0;text-align: center;"></td>
+										<td style="width: 19%; margin: 0; padding: 10px 0 10px 0;    text-align: center;"><?php echo $currency.$extras['deliveryfee']; ?></td>
+										<td style="width: 18%;  margin: 0; padding: 10px 0 10px 0;    text-align: center;"><?php echo $currency.$extras['deliveryfee']; ?></td>
+									</tr>
+								<?php } ?>
+								<?php if(isset($extras['specialisationsfee'])){ ?>
+									<tr>
+										<td style="width: 50%;  margin: 0; padding: 10px 0 10px 5px;">Specialization Rate</td>				
+										<td style="width: 10%;  margin: 0; padding: 10px 0 10px 0;text-align: center;"><?php echo $extras['specialisationsqty']; ?></td>
+										<td style="width: 19%; margin: 0; padding: 10px 0 10px 0;    text-align: center;"><?php echo $currency.$extras['specialisationsfee']; ?></td>
+										<td style="width: 18%;  margin: 0; padding: 10px 0 10px 0;    text-align: center;"><?php echo $currency.($extras['specialisationsqty']*$extras['specialisationsfee']); ?></td>
+									</tr>
+								<?php } ?>
 								<?php if(isset($extras['latesubtotalamount'])){ ?>
 									<tr>
 										<td style="width: 50%;  margin: 0; padding: 10px 0 10px 5px;">Late Penalty Fee</td>				

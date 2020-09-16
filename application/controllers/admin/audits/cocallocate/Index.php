@@ -71,7 +71,7 @@ class Index extends CC_Controller
 	}
 	
 	
-	public function DTAllocateAudit()
+	public function DTAllocateAudit($pagination=0)
 	{
 		$post 				= $this->input->post();
 		$results 			= $this->Auditor_allocatecoc_Model->getList('all', $post);
@@ -147,8 +147,38 @@ class Index extends CC_Controller
 			}
 		}
 		
+		$this->load->library('pagination');
+		$config['base_url'] 			= base_url().'admin/audits/cocallocate/index/DTAllocateAudit/';
+		$config['total_rows'] 			= count($totalrecord);
+		$config['per_page'] 			= 10;
+		$config['num_tag_open'] 		= '<span class="paginate_button">';
+		$config['num_tag_close'] 		= '</span>';
+		$config['cur_tag_open'] 		= '<span class="paginate_button current">';
+		$config['cur_tag_close'] 		= '</span>';
+		$config['first_link'] 			= FALSE;
+		$config['last_link'] 			= FALSE;
+		$config['next_link'] 			= '>>';
+		$config['next_tag_open'] 		= '<span class="paginate_button next">';
+		$config['next_tag_close'] 		= '</span>';
+		$config['prev_link'] 			= '<<';
+		$config['prev_tag_open'] 		= '<span class="paginate_button previous">';
+		$config['prev_tag_close'] 		= '</span>';
+        $config['page_query_string'] 	= FALSE;
+        $config['use_page_numbers'] 	= TRUE;
+		
+		$this->pagination->initialize($config);
+		
+		$perpage = $config['per_page'];
+		if($pagination!= 0){
+          $pagination = ($pagination-1) * $perpage;
+        }
+		
+		$entries1 = $pagination+1;
+		$entries2 = (($pagination+$perpage) >= count($totalrecord)) ? count($totalrecord) : $pagination+$perpage;
 		$json = array(
-			"data"   => $totalrecord
+			"data"   		=> array_slice($totalrecord, $pagination, $perpage),
+			"pagination"   	=> $this->pagination->create_links(),
+			"info"   		=> 'Showing '.$entries1.' to '.$entries2.' of '.count($totalrecord).' entries'
 		);
 
 		echo json_encode($json);

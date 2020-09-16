@@ -185,6 +185,7 @@ class Plumber_Model extends CC_Model
 		if(isset($data['email2'])) 				$request1['email2'] 			= $data['email2'];
 		if(isset($data['coc_purchase_limit'])) 	$request1['coc_purchase_limit']	= $data['coc_purchase_limit'];
 		if(isset($data['specialisations'])) 	$request1['specialisations'] 	= implode(',', $data['specialisations']);	
+		if(isset($data['commonaction']) && !isset($data['specialisations'])) 		$request1['specialisations'] 	= '';	
 		if(isset($data['plumberstatus'])) 		$request1['status'] 			= $data['plumberstatus'];
 		
 		if(isset($data['approval_status']) && $data['approval_status']=='1' && !isset($data['plumberstatus'])){
