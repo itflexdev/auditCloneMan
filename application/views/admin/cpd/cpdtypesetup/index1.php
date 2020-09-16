@@ -134,7 +134,6 @@ if(isset($result) && $result){
 							<a id="excel-generate" href="javascript:void(0);">CSV Template</a>
 						</div>
 					</div>
-					<button type="button" id="triggerproceed1" class="btn btn-primary displaynone" data-toggle="modal" data-target="#massimportmodal2">Trigger Proceed(1/2)</button>
 					<!-- popu (1/2) -->
 					<div class="modal fade" id="massimportmodal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 					  <div class="modal-dialog" role="document">
@@ -149,7 +148,7 @@ if(isset($result) && $result){
 					      	</div>
 						      <div class="modal-footer">
 						        <button type="button" class="btn btn-secondary closebtn" data-dismiss="modal">Close</button>
-						        <button type="button" id="proceed1" class="btn btn-primary" data-toggle="modal" data-dismiss="modal">Proceed(1/2)</button>
+						        <button type="button" id="proceed1" class="btn btn-primary" data-toggle="modal" data-dismiss="modal" data-target="#massimportmodal2">Proceed(1/2)</button>
 						        <button type="button" name="triggerbtn" class="triggerbtn" data-dismiss="modal" class="btn btn-primary">hidden</button>
 						      </div>
 					      </div>
@@ -236,6 +235,7 @@ if(isset($result) && $result){
 }
 	
 	$(function(){
+
 		// <?php //echo base_url().'admin/cpd/cpdtypesetup/massimport'; ?>
 
 		// fileupload([".file1", "./assets/uploads/temp", ['xls', 'xlsx','csv']]);
@@ -244,7 +244,7 @@ if(isset($result) && $result){
 		$('.massimport_btn_div').hide();
 		$('.closebtn').click(function(){
 			var form_data = new FormData();
-	        form_data.append("filename", '');
+	        form_data.append("filename", document.getElementById('file').files[0]);
 		      $.ajax({
 		      	data: form_data,
 		        type: 'POST',
@@ -393,7 +393,6 @@ if(isset($result) && $result){
 		      });
 		});
 		$('#proceed1').on('click', function(){
-
 			var cpdpoints = '<?php echo $points; ?>';
 			var form_data = new FormData();
 			var oFReader = new FileReader();
@@ -412,19 +411,15 @@ if(isset($result) && $result){
 	            cache: false,  
 	            processData:false,
 	            beforeSend:function(){
-	            	$('.modalloader').show();
+	              $('.modalloader').show()
 		          $('.modalloader').html('<img src="<?php echo base_url().'assets/images/ajax-loader.gif'; ?>"/>');
-	            	setTimeout(function(){ $( "#triggerproceed1" ).trigger( "click" ); 
-	            }, 800);
-	              
 		        },
 	            success:function(data)
 		        {
-		         // $( "#triggerproceed1" ).trigger( "click" );
 		         $('.modalcontant').show();
 		         $('.modalloader').hide()
 		         $('.appendtable1').append().html(data);
-		         // $( "#triggerproceed1" ).trigger( "click" );
+		         // $( ".triggerbtn" ).trigger( "click" );
 		        }
 		      });
 		});
