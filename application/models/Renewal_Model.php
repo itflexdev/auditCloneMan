@@ -172,7 +172,7 @@ class Renewal_Model extends CC_Model
 		return $lateamount_result;
 	}
 
-	public function updatedata($userid,$designation,$inv_type,$invoice_id='',$cocid='')
+	public function updatedata($userid,$designation,$inv_type,$invoice_id='',$cocid='',$otherfee=[])
 	{
 		$this->db->select('amount');
 		$this->db->from('rates');
@@ -266,7 +266,55 @@ class Renewal_Model extends CC_Model
 			$this->db->insert('coc_orders', ['user_id' => $userid, 'description' => "Late Penalty Fee",'quantity' => '1', 'status' => '0',  'cost_value' => $lateamount, 'coc_type' => '0',  'delivery_type' => '2', 'total_due' => $total_lateamount, 'vat'=>$vat_lateamount, 'inv_id' => $result['invoice_id'], 'created_at' => $currentdate, 'created_by' => $userid]);
 			$result['cocorder_id2']  = $this->db->insert_id();
 		}
-
+		
+		$invoice_id = $result['invoice_id'];
+		if(count($otherfee) > 0){
+			$this->db->delete('coc_orders', array('inv_id' => $invoice_id, 'otherfee' => '1'));
+			
+			for($i=0; $i<3; $i++){
+				if($i==0 && isset($otherfee['cardfee'])){
+					$description 	= 'Plumber ID Card';
+					$otherrate		= $otherfee['cardfee'];
+					$otherqty 		= '1';
+				}elseif($i==1 && isset($otherfee['deliveryfee'])){
+					$description 	= ($otherfee['deliverycard']=='1') ? 'Delivery By Registered Post' : 'Delivery by Courier';
+					$otherrate		= $otherfee['deliveryfee'];
+					$otherqty 		= '0';
+				}elseif($i==2 && isset($otherfee['specialisationsfee'])){
+					$description 	= 'Specialization Rate';
+					$otherrate		= $otherfee['specialisationsqty']*$otherfee['specialisationsfee'];
+					$otherqty		= $otherfee['specialisationsqty'];
+				}else{
+					continue;
+				}
+				
+				$vatotherrate 	= ($otherrate * $vat) / 100;
+				$otherratevat 	= round($vatotherrate,2);
+				
+				$othertotal		= $otherrate + $otherratevat;
+				
+				$otherfeedata['description'] = $description;
+				$otherfeedata['user_id'] = $userid;
+				$otherfeedata['quantity'] = $otherqty;
+				$otherfeedata['status'] = '0';
+				$otherfeedata['cost_value'] = $otherrate;
+				$otherfeedata['coc_type'] = '0';
+				$otherfeedata['delivery_type'] = '0';
+				$otherfeedata['total_due'] = $othertotal;	
+				$otherfeedata['vat'] = $otherratevat;
+				$otherfeedata['inv_id'] = $invoice_id;			
+				$otherfeedata['created_at'] = $currentdate;
+				$otherfeedata['created_by'] = $userid;
+				$otherfeedata['otherfee'] = '1';
+				
+				$this->db->insert('coc_orders', $otherfeedata);
+			}			
+		}
+		$sumotherfee = $this->db->select('sum(cost_value) as cost, sum(vat) as vat, sum(total_due) as total')->from('coc_orders')->where(['inv_id' => $invoice_id, 'otherfee' => '1'])->get()->row_array();
+		$originalfee = $this->db->select('total_cost, vat')->from('invoice')->where(['inv_id' => $invoice_id])->get()->row_array();
+		$this->db->update('invoice', ['total_cost' => $originalfee['total_cost']+$sumotherfee['cost'], 'vat' => $originalfee['vat']+$sumotherfee['vat']], ['inv_id' => $invoice_id]);
+		
+		
 		return $result;
 
 	}

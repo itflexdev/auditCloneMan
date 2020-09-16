@@ -183,6 +183,10 @@
 							<tr class="norecordfound displaynone"><td colspan="11">No Record Found</td></tr>
 						</tbody>
 					</table>
+					<div class="dataTables_wrapper">
+						<div class="dataTables_info"></div>
+						<div id="pagination" class="dataTables_paginate"></div>
+					</div>
 				</div>
 				
 				<div class="audit_summary displaynone m-t-40">
@@ -273,7 +277,7 @@
 		$('.audit_summary').addClass('displaynone');
 	});
 	
-	function datatable(){
+	function datatable(pagination=0){
 		var max_allocate_plumber = $('#max_allocate_plumber').val() ;
 		
 		$('.norecordfound').addClass('displaynone');
@@ -282,7 +286,7 @@
 		$(document).find('.auditorallocate').remove();
 		$('.audit_summary').addClass('displaynone');
 		
-		var url 	= 	'<?php echo base_url()."admin/audits/cocallocate/index/DTAllocateAudit"; ?>';
+		var url 	= 	'<?php echo base_url()."admin/audits/cocallocate/index/DTAllocateAudit/"; ?>'+pagination;
 		var data	= 	{ 
 							start_date_range		: $('#start_date_range').val(), 
 							end_date_range			: $('#end_date_range').val(), 
@@ -346,6 +350,9 @@
 					table.push(row);
 				})
 				
+				$('#pagination').html(result.pagination);
+				$('.dataTables_info').html(result.info);
+				
 				if(table.length > 0){
 					$('.parenttable tbody').append(table.join(""));
 					
@@ -361,6 +368,11 @@
 		})
 	}
 	
+	$(document).on('click', '#pagination span', function(e){
+		e.preventDefault(); 
+		datatable($(this).find('a').attr('data-ci-pagination-page'));
+	});
+	 
 	$(document).on('click', '.cocaccordion', function(){
 		var _this					= $(this);
 		var rowindex				= $(this).parent().parent().attr('data-index');

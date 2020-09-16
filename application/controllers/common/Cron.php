@@ -249,8 +249,10 @@ class Cron extends CC_Controller {
 			$new_date = strtotime('+ 1 year', $rdate);
 			$renewal_date =  date('d/m/Y', $new_date);
 
-
-			$result = $this->Renewal_Model->updatedata($userid,$designation,'2');			
+			$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
+			$otherfee 	= 	$this->invoiceotherfee($userdata1);
+			
+			$result = $this->Renewal_Model->updatedata($userid,$designation,'2','','',$otherfee);			
 			$invoice_id = $result['invoice_id'];
 			$cocorder_id = $result['cocorder_id'];
 			
@@ -258,15 +260,13 @@ class Cron extends CC_Controller {
 				$inid 				= $cocorder_id;
 				$inv_id 			= $invoice_id;
 
-				$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail']);
-
 				$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
 
 				// invoice PDF
 				
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
-				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]);
+				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]+$otherfee);
 					
 					$cocTypes = $orders['coc_type'];
 					$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -320,23 +320,25 @@ class Cron extends CC_Controller {
 			$designation = $data['designation'];
 			$invoice_id = $data['inv_id'];
 			$cocid = $data['cocid'];
-
 			$designation = $data['designation'];
-			$insert_result = $this->Renewal_Model->updatedata($userid,$designation,'3',$invoice_id,$cocid);
+			
+			$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
+			$otherfee 	= 	$this->invoiceotherfee($userdata1);
+			
+			$insert_result = $this->Renewal_Model->updatedata($userid,$designation,'3',$invoice_id,$cocid,$otherfee);
 			$invoice_id = $insert_result['invoice_id'];
 			$cocorder_id = $insert_result['cocorder_id'];
 			
 			if ($invoice_id) {
 				$inv_id 			= $invoice_id;
 
-				$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail']);
 
 				$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
 
 				// invoice PDF
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
-				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']);
+				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
 				
 				$cocTypes = $orders['coc_type'];
 				$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -407,23 +409,23 @@ class Cron extends CC_Controller {
 				$new_date = strtotime('+ 1 year', $rdate);
 				$renewal_date =  date('d/m/Y', $new_date);
 
+				$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
+				$otherfee 	= 	$this->invoiceotherfee($userdata1);
 
-				$result = $this->Renewal_Model->updatedata($userid,$designation,'2');	
-				$insert_result = $this->Renewal_Model->updatedata($userid,$designation,'3',$result['invoice_id'],$result['cocorder_id']);
+				$result = $this->Renewal_Model->updatedata($userid,$designation,'2','','',$otherfee);	
+				$insert_result = $this->Renewal_Model->updatedata($userid,$designation,'3',$result['invoice_id'],$result['cocorder_id'],$otherfee);
 				$invoice_id = $insert_result['invoice_id'];
 				$cocorder_id = $insert_result['cocorder_id'];
 			
 				if ($invoice_id) {
 					$inv_id 			= $invoice_id;
 
-					$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail']);
-
 					$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
 
 					// invoice PDF
 					$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 					$designation =	$this->config->item('designation2')[$rowData['designation']];					
-					$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']);
+					$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
 					
 					$cocTypes = $orders['coc_type'];
 					$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -472,9 +474,12 @@ class Cron extends CC_Controller {
 			$designation = $data['designation'];
 			$invoice_id = $data['inv_id'];
 			$cocid = $data['cocid'];
-
 			$designation = $data['designation'];
-			$insert_result = $this->Renewal_Model->updatedata($userid,$designation,'4',$invoice_id,$cocid);
+			
+			$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
+			$otherfee 	= 	$this->invoiceotherfee($userdata1);
+
+			$insert_result = $this->Renewal_Model->updatedata($userid,$designation,'4',$invoice_id,$cocid,$otherfee);
 			
 			$invoice_id = $insert_result['invoice_id'];
 			$cocorder_id = $insert_result['cocorder_id'];
@@ -482,8 +487,6 @@ class Cron extends CC_Controller {
 			
 			if ($invoice_id) {
 				$inv_id 			= $invoice_id;
-
-				$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail']);
 
 				$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
 
@@ -495,7 +498,7 @@ class Cron extends CC_Controller {
 				// invoice PDF
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
-				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2', 'latesubtotalamount' => $lateamount, 'latevatamount' => $vat_lateamount, 'latetotalamount' => $total_lateamount]);
+				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2', 'latesubtotalamount' => $lateamount, 'latevatamount' => $vat_lateamount, 'latetotalamount' => $total_lateamount]+$otherfee);
 			
 				$cocTypes = $orders['coc_type'];
 				$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -641,6 +644,27 @@ class Cron extends CC_Controller {
 				}
 			}
 		}
+	}
+	
+	public function invoiceotherfee($userdata1){
+		$otherfee = [];
+		if($userdata1['registration_card']=='1'){
+			$otherfee['cardfee'] = $this->getRates($this->config->item('cardfee'));
+			if($userdata1['delivery_card']=='1'){
+				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('postage'));
+				$otherfee['deliverycard'] 	= '1';
+			}elseif($userdata1['delivery_card']=='2'){
+				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('couriour'));
+				$otherfee['deliverycard'] 	= '2';
+			}
+		}
+		$specialisations = array_filter(explode(',', $userdata1['specialisations']));
+		if(count($specialisations) > 0){
+			$otherfee['specialisationsfee'] = $this->getRates($this->config->item('specializationfee'));
+			$otherfee['specialisationsqty'] = count($specialisations);
+		}
+		
+		return $otherfee;
 	}
 
 }

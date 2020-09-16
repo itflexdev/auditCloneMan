@@ -370,18 +370,18 @@ class CC_Controller extends CI_Controller
 		}
 		
 		if($this->input->post()){
-			$requestData 			= 	$this->input->post();
-			$requestData['user_id'] = 	$id;
+			$requestData 					= 	$this->input->post();
+			$requestData['user_id'] 		= 	$id;
+			$requestData['commonaction'] 	= 	'1';
 			
 			if(isset($requestData['coc_purchase_limit'])){
 				$currentcoclimit	= $result['coc_purchase_limit'];
-				$coclimit 			= $requestData['coc_purchase_limit'];
-				
-				
+				$coclimit 			= $requestData['coc_purchase_limit'];						
 				$userpaperstock 	= $this->Paper_Model->getList('count', ['nococstatus' => '2', 'userid' => $id]); 				
 				$orderquantity 		= $this->Coc_Ordermodel->getCocorderList('all', ['admin_status' => '0', 'userid' => $id]);
 				$userorderstock 	= array_sum(array_column($orderquantity, 'quantity'));
 				$plumberstock		= ($userpaperstock + $userorderstock);
+				
 				if($coclimit < $plumberstock){
 					$this->session->set_flashdata('error', 'Plumber already has '.$userpaperstock.' coc without logged and '.$userorderstock.' coc waiting for approval.');
 					
