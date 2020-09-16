@@ -1352,8 +1352,9 @@ class CC_Controller extends CI_Controller
 		}
 		
 		$url = 'http://www.mymobileapi.com/api5/http5.aspx';
-		
-		$this->curlRequest($url, 'GET', $param);
+		if (isset($data['smsenable']) && $data['smsenable'] =='1') {
+			$this->curlRequest($url, 'GET', $param);
+		}
 	}
 	
 	public function curlRequest($url, $method, $param=[])
