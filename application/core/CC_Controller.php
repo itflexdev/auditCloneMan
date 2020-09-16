@@ -1344,10 +1344,21 @@ class CC_Controller extends CI_Controller
 			'data1' 	=> $data['msg']
 		];
 
-		if (isset($data['userid']) && isset($data['email'])) {
-			$body 	= 'Your mobile number : '.$data['no'].'<br>
-						'.$data['msg'].'<br>
-					';
+		if (isset($data['userid']) && isset($data['email']) && isset($data['otpcode'])) {
+			$body 	= '
+			Hi,<br>
+
+				Please use the following OTP code for the Audit-IT website.<br>
+				OTP code: '.$data['otpcode'].'<br>
+
+				Best Regards<br>
+
+				The PIRB Team<br>
+				Tel: 0861 747 275<br>
+				Email: info@pirb.co.za<br>
+
+				Please do not reply to this email, as it will not be responded to.
+				';
 			$this->CC_Model->sentMail($data['email'], 'OTP Verification', $body);
 		}
 		
