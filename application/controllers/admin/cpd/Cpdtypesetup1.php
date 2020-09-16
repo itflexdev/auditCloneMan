@@ -879,23 +879,16 @@ class Cpdtypesetup extends CC_Controller
 	}
 
 	public function cancel(){
-
-		// $filename =  $_FILES["filename"]["name"];
+		$filename =  $_FILES["filename"]["name"];
 		$directory 	 = dirname(__DIR__, 4);
-		$templatepath = $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
+		$templatepath = $directory.'/assets/uploads/cpdmassimport/'.$filename.'';
 		$errortemplate 	 = $directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx';
-		$temp 	 			= $directory.'/assets/uploads/temp/cpd template.xlsx';
-		
-		if (file_exists($temp)) {
-			unlink($temp);
-		}
 		if (file_exists($templatepath)) {
 			unlink($templatepath);
 		}
 		if (file_exists($errortemplate)) {
 			unlink($errortemplate);
 		}
-
 		echo "Canceled..";
 
 	}
