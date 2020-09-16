@@ -243,11 +243,21 @@ class Services extends CC_Controller
 					$this->db->insert('otp', ['otp' => $otp, 'mobile' => $mobile, 'user_id' => $userid]);
 				}		
 				
+				// $settingsdetail = $this->Systemsettings_Model->getList('row');
+				// if($settingsdetail && $settingsdetail['otp']=='1'){
+				// 	$this->sms(['no' => $mobile, 'msg' => 'One Time Password is '.$otp]);
+				// 	$otpstatus = '1';
+				// }else{
+				// 	$otpstatus = '0';
+				// }
+				$userdetails = $this->Users_Model->getUserDetails('row', ['id' => $userid, 'status' => ['0','1']]);
+				
 				$settingsdetail = $this->Systemsettings_Model->getList('row');
 				if($settingsdetail && $settingsdetail['otp']=='1'){
-					$this->sms(['no' => $mobile, 'msg' => 'One Time Password is '.$otp]);
+					$this->sms(['no' => $mobile, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdetails['id'], 'email' => $userdetails['email'], 'smsenable' => '1']);
 					$otpstatus = '1';
 				}else{
+					$this->sms(['no' => $mobile, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdetails['id'], 'email' => $userdetails['email'], 'smsenable' => '0']);
 					$otpstatus = '0';
 				}
 				
