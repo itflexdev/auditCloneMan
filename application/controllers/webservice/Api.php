@@ -1406,12 +1406,13 @@ class Api extends CC_Controller
 					$request['created_at'] = $datetime;
 					$request['created_by'] = $plumberID;
 					$this->db->insert('coc_log', $request);
-					$insertid = $this->db->insert_id();
+					// $insertid = $this->db->insert_id();
+					$jsonData['insertid'] 			= $this->db->insert_id();
 				}else{
 					$request['updated_at'] = $datetime;
 					$request['updated_by'] = $plumberID;
 					$this->db->update('coc_log', $request, ['id' => $id]);
-					$insertid = $id;
+					$jsonData['insertid'] 			= $id;
 				}
 				
 				$cocstatus = '5';
@@ -1424,7 +1425,6 @@ class Api extends CC_Controller
 
 
 				$jsonData['userdata'] 			= $userdata;
-				$jsonData['insertid'] 			= $insertid;
 				$jsonData['cocid'] 				= $cocId;
 				$jsonData['log_coc_id'] 		= $id;
 				$jsonData['result'] 			= $result;
