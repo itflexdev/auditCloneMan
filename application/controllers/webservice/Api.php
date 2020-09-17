@@ -1539,12 +1539,12 @@ class Api extends CC_Controller
 					$request['created_at'] = $datetime;
 					$request['created_by'] = $plumberID;
 					$actiondata = $this->db->insert('coc_log', $request);
-					$insertid = $this->db->insert_id();
+					$jsonData['insertid'] 			= $this->db->insert_id();
 				}else{
 					$request['updated_at'] = $datetime;
 					$request['updated_by'] = $plumberID;
 					$actiondata = $this->db->update('coc_log', $request, ['id' => $id]);
-					$insertid = $id;
+					$jsonData['insertid'] 			= $id;
 				}
 				
 				$cocstatus = '2';
