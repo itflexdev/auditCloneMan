@@ -1302,6 +1302,17 @@ class Api extends CC_Controller
 				];
 			}
 
+			if ($result['cl_file1'] !='') {
+				$jsonData['paper_image'] = base_url().'assets/uploads/plumber/'.$plumberID.'/log/'.$result['cl_file1'];
+			}
+			if ($result['cl_file2'] !='') {
+				$imgarray = explode(',', $result['cl_file2']);
+				foreach ($imgarray as $imgarraykey => $imgarrayvalue) {
+					$jsonData['installation_images'][] = base_url().'assets/uploads/plumber/'.$plumberID.'/log/'.$imgarrayvalue;
+				}
+				
+			}
+
 			$jsonData['agreement'] = [ 'header' => ["I ".$userdata['name'].' '.$userdata['surname'].", Licensed registration number ".$userdata['registration_no'].", certify that, the above compliance certifcate details are true and correct and will be logged in accordance with the prescribed requirements as defned by the PIRB. Select either A or B as appropriate"],'agreement1' => ['description' => 'A: The above plumbing work was carried out by me or under my supervision, and that it complies in all respects to the plumbing regulations, laws, National Compulsory Standards and Local bylaws.', 'agreementid' => '1'], 'agreement2' => ['description' => 'B: I have fully inspected and tested the work started but not completed by another Licensed plumber. I further certify that the inspected and tested work and the necessary completion work was carried out by me or under my supervision- complies in all respects to the plumbing regulations, laws, National Compulsory Standards and Local bylaws.', 'agreementid' => '2'], 
 			];
 
