@@ -1382,25 +1382,25 @@ class Api extends CC_Controller
 				if(isset($post['installation_detail'])) $request['installation_detail'] 	= $post['installation_detail'];
 				if(isset($post['file1'])) 				$request['file1'] 					= $post['file1'];
 				if(isset($post['agreement'])) 			$request['agreement'] 				= $post['agreement'];
-				if(isset($post['file1'])) 				$request['file1'] 					= $post['file1'];	
+				if(isset($post['file2'])) 				$request['file2'] 					= $post['file2'];	
 				if(isset($post['company_details'])) 	$request['company_details'] 		= $post['company_details'];
 				if(isset($post['ncnotice'])) 			$request['ncnotice'] 				= $post['ncnotice'];
 				if(isset($post['ncemail'])) 			$request['ncemail'] 				= $post['ncemail'];
 				if(isset($post['ncreason'])) 			$request['ncreason'] 				= $post['ncreason'];
 				
 				
-				$request['file2'] 					= (isset($post['file2'])) ? $post['file2'] : '';
-
+				// $request['file2'] 					= (isset($post['file2'])) ? $post['file2'] : '';
+				
 				if($id==''){
 					$request['created_at'] = $datetime;
 					$request['created_by'] = $plumberID;
 					$this->db->insert('coc_log', $request);
+					$insertid = $this->db->insert_id();
 				}else{
-					$request		=	[
-						'updated_at' 		=> $datetime,
-						'updated_by' 		=> $plumberID
-					];
+					$request['updated_at'] = $datetime;
+					$request['updated_by'] = $plumberID;
 					$this->db->update('coc_log', $request, ['id' => $id]);
+					$insertid = $id;
 				}
 				
 				$cocstatus = '5';
@@ -1413,6 +1413,7 @@ class Api extends CC_Controller
 
 
 				$jsonData['userdata'] 			= $userdata;
+				$jsonData['insertid'] 			= $insertid;
 				$jsonData['cocid'] 				= $cocId;
 				$jsonData['log_coc_id'] 		= $id;
 				$jsonData['result'] 			= $result;
@@ -1479,11 +1480,11 @@ class Api extends CC_Controller
 
 				// // Save
 
-				// if ($this->input->post('id') != '') { // id = log coc autoincrement id
-				// 	$id 			= 	$this->input->post('id');
-				// }else{
-				// 	$id 			= 	'';
-				// }
+				if ($this->input->post('cl_id') != '') { // cl_id = log coc autoincrement id
+					$id 			= 	$this->input->post('cl_id');
+				}else{
+					$id 			= 	'';
+				}
 
 				if (isset($post['file1']) && $post['file1'] != '') {
 					$data = $this->fileupload(['files' => $post['file1'], 'file_name' => $post['file1_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
@@ -1513,7 +1514,7 @@ class Api extends CC_Controller
 				if(isset($post['installation_detail'])) $request['installation_detail'] 	= $post['installation_detail'];
 				if(isset($post['file1'])) 				$request['file1'] 					= $post['file1'];
 				if(isset($post['agreement'])) 			$request['agreement'] 				= $post['agreement'];
-				if(isset($post['file1'])) 				$request['file1'] 					= $post['file1'];	
+				if(isset($post['file2'])) 				$request['file2'] 					= $post['file2'];	
 				if(isset($post['company_details'])) 	$request['company_details'] 		= $post['company_details'];
 				if(isset($post['ncnotice'])) 			$request['ncnotice'] 				= $post['ncnotice'];
 				if(isset($post['ncemail'])) 			$request['ncemail'] 				= $post['ncemail'];
@@ -1521,19 +1522,19 @@ class Api extends CC_Controller
 				$request['log_date'] = date('Y-m-d H:i:s');
 				
 				
-				$request['file2'] 					= (isset($post['file2'])) ? $post['file2'] : '';
+				// $request['file2'] 					= (isset($post['file2'])) ? $post['file2'] : '';
 
-				// if($id==''){
+				if($id==''){
 					$request['created_at'] = $datetime;
 					$request['created_by'] = $plumberID;
 					$actiondata = $this->db->insert('coc_log', $request);
-				// }else{
-				// 	$request		=	[
-				// 		'updated_at' 		=> $datetime,
-				// 		'updated_by' 		=> $plumberID
-				// 	];
-				// 	$actiondata = $this->db->update('coc_log', $request, ['id' => $id]);
-				// }
+					$insertid = $this->db->insert_id();
+				}else{
+					$request['updated_at'] = $datetime;
+					$request['updated_by'] = $plumberID;
+					$actiondata = $this->db->update('coc_log', $request, ['id' => $id]);
+					$insertid = $id;
+				}
 				
 				$cocstatus = '2';
 				$this->db->set('count', 'count + 1',FALSE); 
