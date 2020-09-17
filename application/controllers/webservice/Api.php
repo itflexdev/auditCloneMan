@@ -119,7 +119,7 @@ class Api extends CC_Controller
 									}
 								}
 							}else{
-								$jsonArray = array('status' => '1', "message"=>'Please login using your Email Verification link to complete your Plumber Registration process.', 'result' => []);
+								$jsonArray = array('status' => '1', "message"=>'Please submit your application by login into the website URL.', 'result' => []);
 							}
 							
 
