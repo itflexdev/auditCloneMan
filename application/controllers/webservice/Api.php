@@ -2620,7 +2620,13 @@ class Api extends CC_Controller
 				$result = $this->Auditor_Reportlisting_Model->getList('row', ['id' => $this->input->post('id')]);
 				$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $result['installationtype_id']]);
 				$get_subtype 			= $this->getSubTypeList_api(['id' => $result['subtype_id']]);
-				// $get_statement 			= $this->getreportlisting_api(['id' => $result['statement_id']]);
+				$get_statement 			= $this->getreportlisting_api(['id' => $result['statement_id']]);
+
+				if ($result['status'] =='1') {
+							$colorcode = "#A2D831";
+						}else{
+							$colorcode = "#EB3120";
+						}
 				$data['report_list'][] = [
 					'id'					 => $result['id'],
 					'installationtype_id' 	=> $result['installationtype_id'],
@@ -2628,7 +2634,11 @@ class Api extends CC_Controller
 					'subtype_id' 			=> $result['subtype_id'],
 					'subtype' 				=> $get_subtype[0]['name'],
 					'comments'				=> $result['comments'],
-					'status' 				=> $result['status']
+					'favourname'			=> $result['favour_name'],
+					'status' 				=> $result['status'],
+					'statement_id' 			=> $result['statement_id'],
+					'statementname' 		=> $get_statement[0]['statement'],
+					'colorcode' 			=> $colorcode
 				];
 				$message = 'Report List Edit View';
 			}
@@ -2641,10 +2651,15 @@ class Api extends CC_Controller
 
 				if (count($results) > 0) {
 					foreach ($results as $key => $value) {
+						if ($value['status'] =='1') {
+							$colorcode = "#A2D831";
+						}else{
+							$colorcode = "#EB3120";
+						}
 					$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $value['installationtype_id']]);
 					$get_subtype 			= $this->getSubTypeList_api(['id' => $value['subtype_id']]);
-					// $get_statement 			= $this->getreportlisting_api(['id' => $value['statement_id']]);
-					$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' => $get_installationtype[0]['name'], 'subtype_id' => $value['subtype_id'], 'subtype' => $get_subtype[0]['name'], 'comments' => $value['comments'], 'status' => $this->config->item('statusicon')[$value['status']]];
+					$get_statement 			= $this->getreportlisting_api(['id' => $value['statement_id']]);
+					$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' => $get_installationtype[0]['name'], 'subtype_id' => $value['subtype_id'], 'subtype' => $get_subtype[0]['name'], 'comments' => $value['comments'], 'status' => $this->config->item('statusicon')[$value['status']], 'favourname' => $value['favour_name'], 'statement_id' => $value['statement_id'], 'statementname' => $get_statement, 'colorcode' => $colorcode];
 					}
 				}
 				$message = 'My Report Listing';
