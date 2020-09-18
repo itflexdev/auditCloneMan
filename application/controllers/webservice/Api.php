@@ -2671,8 +2671,8 @@ class Api extends CC_Controller
 				$keywords 		= $this->input->post('keywords');
 				$userid 		= $this->input->post('user_id');
 				$post 			= $this->input->post();
-				$totalcount 	= $this->Auditor_Reportlisting_Model->getList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords]]);
-				$results 		= $this->Auditor_Reportlisting_Model->getList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords]]);
+				$totalcount 	= $this->Auditor_Reportlisting_Model->getList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'status' => ['0','1']]);
+				$results 		= $this->Auditor_Reportlisting_Model->getList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'status' => ['0','1']]);
 				if ($results) {
 					foreach ($results as $key => $value) {
 						$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $value['installationtype_id']]);
