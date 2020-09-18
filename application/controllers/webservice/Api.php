@@ -2659,7 +2659,7 @@ class Api extends CC_Controller
 					$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $value['installationtype_id']]);
 					$get_subtype 			= $this->getSubTypeList_api(['id' => $value['subtype_id']]);
 					$get_statement 			= $this->getreportlisting_api(['id' => $value['statement_id']]);
-					$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' => $get_installationtype[0]['name'], 'subtype_id' => $value['subtype_id'], 'subtype' => $get_subtype[0]['name'], 'comments' => $value['comments'], 'status' => $this->config->item('statusicon')[$value['status']], 'favourname' => $value['favour_name'], 'statement_id' => $value['statement_id'], 'statementname' => $get_statement, 'colorcode' => $colorcode];
+					$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' => $get_installationtype[0]['name'], 'subtype_id' => $value['subtype_id'], 'subtype' => $get_subtype[0]['name'], 'comments' => $value['comments'], 'statusicon' => $this->config->item('statusicon')[$value['status']], 'favourname' => $value['favour_name'], 'statement_id' => $value['statement_id'], 'statementname' => $get_statement, 'colorcode' => $colorcode, 'status' => $value['status']];
 					}
 				}
 				$message = 'My Report Listing';
@@ -2677,8 +2677,13 @@ class Api extends CC_Controller
 					foreach ($results as $key => $value) {
 						$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $value['installationtype_id']]);
 						$get_subtype 			= $this->getSubTypeList_api(['id' => $value['subtype_id']]);
-						// $get_statement 			= $this->getreportlisting_api(['id' => $value['statement_id']]);
-						$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' => $get_installationtype[0]['name'], 'subtype_id' => $value['subtype_id'], 'subtype' => $get_subtype[0]['name'], 'comments' => $value['comments'], 'status' => $this->config->item('statusicon')[$value['status']]];
+						$get_statement 			= $this->getreportlisting_api(['id' => $value['statement_id']]);
+						if ($value['status'] =='1') {
+							$colorcode = "#A2D831";
+						}else{
+							$colorcode = "#EB3120";
+						}
+						$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' => $get_installationtype[0]['name'], 'subtype_id' => $value['subtype_id'], 'subtype' => $get_subtype[0]['name'], 'comments' => $value['comments'], 'statusicon' => $this->config->item('statusicon')[$value['status']], 'favourname' => $value['favour_name'], 'statement_id' => $value['statement_id'], 'statementname' => $get_statement, 'colorcode' => $colorcode, 'status' => $value['status']];
 					}
 				}
 				$message = 'My Report Listing Search Result';
