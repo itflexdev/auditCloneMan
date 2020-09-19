@@ -797,6 +797,126 @@ class Auditor_Model extends CC_Model
 		
 		return $result;
 	}
+	public function getcpdpoints($type, $requestdata=[]){
+
+		$plumberid = $requestdata['plumberid'];
+		$this->db->select('t1.*, SUM(t1.points) as count, t2.renewal_date, t2.expirydate');
+		$this->db->from('cpd_activity_form t1');
+		$this->db->join('users t2', 't2.id = t1.user_id', 'left');
+		$this->db->where('t1.user_id', $plumberid);
+		$this->db->where('t2.id', $plumberid);
+		$this->db->where_in('t1.status', $requestdata['status']);
+
+		if ($requestdata['cpd_stream'] =='developmental') {
+			$this->db->where('t1.cpd_stream', '1');
+		}elseif($requestdata['cpd_stream'] =='workbased'){
+			$this->db->where('t1.cpd_stream', '2');
+		}elseif($requestdata['cpd_stream'] =='individual'){
+			$this->db->where('t1.cpd_stream', '3');
+		}
+
+		if ($requestdata['pagestatus'] == '1') {
+			$this->db->where('t2.expirydate>=','t1.created_at', false);
+		}elseif($requestdata['pagestatus'] == '0'){
+			$this->db->where('t2.expirydate<=','t1.created_at', false);
+		}
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		return $result;
+	}
+
+	/*public function developmental($type, $requestdata=[]){
+
+		$plumberid = $requestdata['plumberid'];
+
+		$this->db->select('t1.*, SUM(t1.points) as count, t2.renewal_date, t2.expirydate');
+		$this->db->from('cpd_activity_form t1');
+		$this->db->join('users t2', 't2.id = t1.user_id', 'left');
+		$this->db->where('t1.user_id', $plumberid);
+		$this->db->where('t2.id', $plumberid);
+		$this->db->where('t1.cpd_stream', '1');
+		$this->db->where_in('t1.status', $requestdata['status']);
+
+		if ($requestdata['pagestatus'] == '1') {
+			$this->db->where('t2.expirydate>=','t1.created_at', false);
+		}elseif($requestdata['pagestatus'] == '0'){
+			$this->db->where('t2.expirydate<=','t1.created_at', false);
+		}
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		return $result;
+	}
+
+	public function workbased($type, $requestdata=[]){
+
+		$plumberid = $requestdata['plumberid'];
+
+		$this->db->select('t1.*, SUM(t1.points) as count, t2.renewal_date, t2.expirydate');
+		$this->db->from('cpd_activity_form t1');
+		$this->db->join('users t2', 't2.id = t1.user_id', 'left');
+		$this->db->where('t1.user_id', $plumberid);
+		$this->db->where('t2.id', $plumberid);
+		$this->db->where('t1.cpd_stream', '2');
+		$this->db->where_in('t1.status', $requestdata['status']);
+
+		if ($requestdata['pagestatus'] == '1') {
+			$this->db->where('t2.expirydate>=','t1.created_at', false);
+		}elseif($requestdata['pagestatus'] == '0'){
+			$this->db->where('t2.expirydate<=','t1.created_at', false);
+		}
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		return $result;
+	}
+	public function individual($type, $requestdata=[]){
+
+		$plumberid = $requestdata['plumberid'];
+
+		$this->db->select('t1.*, SUM(t1.points) as count, t2.renewal_date, t2.expirydate');
+		$this->db->from('cpd_activity_form t1');
+		$this->db->join('users t2', 't2.id = t1.user_id', 'left');
+		$this->db->where('t1.user_id', $plumberid);
+		$this->db->where('t2.id', $plumberid);
+		$this->db->where('t1.cpd_stream', '3');
+		$this->db->where_in('t1.status', $requestdata['status']);
+
+		if ($requestdata['pagestatus'] == '1') {
+			$this->db->where('t2.expirydate>=','t1.created_at', false);
+		}elseif($requestdata['pagestatus'] == '0'){
+			$this->db->where('t2.expirydate<=','t1.created_at', false);
+		}
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		return $result;
+	}*/
 	
 	
 	public function actionStatement($data)
