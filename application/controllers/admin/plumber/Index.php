@@ -172,6 +172,12 @@ class Index extends CC_Controller
 		$pagedata['notification'] 	= $this->getNotification();
 		
 		$pagedata['history']		= $this->Auditor_Model->getReviewHistory2Count(['plumberid' => $id]);
+		$developmental 				= $this->Auditor_Model->getcpdpoints('row', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'developmental']);
+		$individual 				= $this->Auditor_Model->getcpdpoints('row', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'individual']);
+		$workbased 				= $this->Auditor_Model->getcpdpoints('row', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'workbased']);
+		$pagedata['developmental'] 	= $developmental['count'];
+		$pagedata['individual']		= $individual['count'];
+		$pagedata['workbased']		= $workbased['count'];
 		$pagedata['settings_cpd']	= $this->Systemsettings_Model->getList('all');
 		
 		$data['plugins']			= ['datatables', 'datatablesresponsive', 'sweetalert', 'validation', 'echarts'];
