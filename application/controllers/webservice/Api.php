@@ -2576,7 +2576,7 @@ class Api extends CC_Controller
 					$this->db->insert('noncompliance', $request);
 					$insertid = $this->db->insert_id();
 					$request['id'] = $insertid;
-					$message = 'non compliance inserted sucessfully';
+					$message = 'Non-Compliance inserted successfully';
 					$jsonArray 		= array("status"=>'0', "message"=>$message, "result"=>$request);
 				}else{
 					$this->db->update('noncompliance', $request, ['id' => $id]);
