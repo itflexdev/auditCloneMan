@@ -43,9 +43,9 @@ elseif($user_details['designation'] == '6'){
 	$individual1 = isset($indarray[2]) ? $indarray[2] : '';
 }
 
-$developmental = isset($history['developmental']) ? $history['developmental'] : '';
-$workbased 	   = isset($history['workbased']) ? $history['workbased'] : '';
-$individual    = isset($history['individual']) ? $history['individual'] : '';
+$developmental = isset($developmental) ? $developmental : '';
+$workbased 	   = isset($workbased) ? $workbased : '';
+$individual    = isset($individual) ? $individual : '';
 
 if($developmental == '')
 	$developmental = 0;
