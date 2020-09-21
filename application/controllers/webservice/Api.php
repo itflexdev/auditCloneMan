@@ -4094,4 +4094,179 @@ class Api extends CC_Controller
 		$this->load->view('api/card');
 	}
 
+
+											/* PIRB co.za */
+	/*public function provincelists(){
+		echo json_encode($this->getProvinceList());
+	}
+
+	public function citylists(){
+		if ($this->input->post() && $this->input->post('provinceid')) {
+				$this->form_validation->set_rules('provinceid', 'Province', 'trim|required');
+				
+				if ($this->form_validation->run()==FALSE) {
+					$errorMsg =  validation_errors();
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+				}else{
+					$post = $this->input->post();
+					$data = $this->Managearea_Model->getListCity('all', ['status' => ['1'], 'province_id' => $post['provinceid']]);
+					if(count($data) > 0) $city =  ['' => 'Select City']+array_column($data, 'name', 'id');
+
+					$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> $city);
+				}
+
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> null);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function suburublists(){
+		if ($this->input->post() && $this->input->post('provinceid') && $this->input->post('cityid')) {
+				$this->form_validation->set_rules('provinceid', 'Province', 'trim|required');
+				$this->form_validation->set_rules('cityid', 'City', 'trim|required');
+				
+				if ($this->form_validation->run()==FALSE) {
+					$errorMsg =  validation_errors();
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+				}else{
+					$post = $this->input->post();
+					$data = $this->Managearea_Model->getListSuburb('all', ['status' => ['1'], 'province_id' => $post['provinceid'], 'city_id' => $post['cityid']]);
+					if(count($data) > 0) $suburub =  ['' => 'Select Suburb']+array_column($data, 'name', 'id');
+
+					$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> $suburub);
+				}
+
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> null);
+		}
+		echo json_encode($jsonArray);
+		
+		
+		
+		// echo json_encode($this->getProvinceList());
+	}*/
+
+	public function searchplumber_suburb(){
+		if ($this->input->post() && $this->input->post('suburb')) {
+				//$this->form_validation->set_rules('province', 'Province', 'trim|required');
+				$this->form_validation->set_rules('suburb', 'Suburb', 'trim|required');
+				
+				if ($this->form_validation->run()==FALSE) {
+					$errorMsg =  validation_errors();
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+				}else{
+					$post = $this->input->post();
+					$suburubId = $post['suburb'];
+					$this->db->select('*');
+					$this->db->from('suburb');
+					$this->db->where('name', $post['suburb']);
+					$validatesuburb = $this->db->get()->result_array();
+					if ($validatesuburb) {
+						if(isset($idarray)) unset($idarray);
+						if(isset($namearray)) unset($namearray);
+						foreach ($validatesuburb as $key => $value) {
+							$idarray[] 		= $value['id'];
+							$namearray[] 	= $value['name'];
+						}
+						$data = $this->getplumbersData('suburbplumber', ['suburubid' => $idarray]);
+					}
+				}
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> null);
+		}
+		echo json_encode($jsonArray);
+	}
+	public function verifiedplumber(){
+
+		if ($this->input->post() && $this->input->post('plumberregno')) {
+				$this->form_validation->set_rules('plumberregno', 'Plumber Registration Number', 'trim|required');
+				if ($this->form_validation->run()==FALSE) {
+					$errorMsg =  validation_errors();
+					$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
+				}else{
+					$post = $this->input->post();
+					$data = $this->getplumbersData('regplumber', ['regno' => $post['plumberregno']]);
+
+					$jsonArray = array("status"=>'1', "message"=>'Plumber Data', "result"=> $data);
+				}
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> null);
+		}
+		echo json_encode($jsonArray);
+	}
+
+
+
+	public function getplumbersData($type, $data = []){
+
+		if ($type == 'regplumber') {
+
+			$totalcount 	= $this->Api_Model->getplumbersLists('count', ['type' => '3', 'approvalstatus' => ['1'], 'status' => ['1'], 'search_plumberstatus' => '1', 'search_reg_no' => $data['regno'], 'customsearch' => 'listsearch1', 'page' => 'adminplumberlist'], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress']);
+
+			$results 		= $this->Api_Model->getplumbersLists('all', ['type' => '3', 'approvalstatus' => ['1'], 'status' => ['1'], 'search_plumberstatus' => '1', 'search_reg_no' => $data['regno'], 'customsearch' => 'listsearch1', 'page' => 'adminplumberlist'], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+
+				$getcity = $this->Managearea_Model->getListCity('all', ['status' => ['0', '1']]);
+				if(count($getcity) > 0) {
+					$citydata=  ['' => 'Select City']+array_column($getcity, 'name', 'id');
+				}else{
+					$citydata = [];
+				}
+				$getsuburb = $this->Managearea_Model->getListSuburb('all', ['status' => ['0', '1']]);
+				if(count($getsuburb) > 0) {
+					$suburbdata=  ['' => 'Select suburb']+array_column($getsuburb, 'name', 'id');
+				}
+				else {
+					$suburbdata = [];
+				}
+
+			foreach ($results as $key => $value) {
+				if (isset($value['specialisations']) && $value['specialisations'] !='') {
+					if(isset($plumberspecialisations)) unset($plumberspecialisations);
+					$specialisationsarray = explode(',', $value['specialisations']);
+					foreach ($specialisationsarray as $specialisationsarraykey => $specialisationsarrayvalue) {
+						$plumberspecialisations[] = $this->config->item('specialisations')[$specialisationsarrayvalue];
+					}
+				}
+				if(isset($physicaladdress[3]) && (1 === preg_match('/^[0-9]+$/', $physicaladdress[3]))){
+				    $suburb1 	= isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '';
+				}else{
+					$suburb1 	= isset($physicaladdress[3]) ? $physicaladdress[3] : '';
+				}
+				if(isset($physicaladdress[4]) && (1 === preg_match('/^[0-9]+$/', $physicaladdress[4]))){
+				    $city1 	= isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '';
+				}else{
+					$city1 	= isset($physicaladdress[4]) ? $physicaladdress[4] : '';
+				}
+				if(isset($physicaladdress[5]) && (1 === preg_match('/^[0-9]+$/', $physicaladdress[5]))){
+				    $province1 	= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';
+				}else{
+					$province1 	= isset($physicaladdress[5]) ? $physicaladdress[5] : '';
+				}
+
+				$physicaladdress 		= isset($value['physicaladdress']) ? explode('@-@', $value['physicaladdress']) : [];
+				$addressid1 			= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
+				/*$suburb1 				= isset($physicaladdress[3]) ? $physicaladdress[3] : '';
+				$city1 					= isset($physicaladdress[4]) ? $physicaladdress[4] : '';
+				$province1 				= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';*/
+
+				$plumberData[] = [
+					'id' 				=> $value['id'],
+					'plumbername' 		=> $value['name'],
+					'plumbersurname' 	=> $value['surname'],
+					'mobile' 			=> $value['mobile_phone'],
+					'province' 			=> $province1,
+					'suburb' 			=> $suburb1,
+					'city' 				=> $city1,
+					'designation' 		=> $this->config->item('designation2')[$value['designation']],
+					'specialisations' 	=> isset($plumberspecialisations) ? implode(',', $plumberspecialisations) : '',
+					'totalcount'		=> $totalcount
+				];
+			}
+		}elseif($type == 'suburbplumber'){
+			$plumberData[] = [];
+		}
+		return $plumberData;
+	}
+
 }
