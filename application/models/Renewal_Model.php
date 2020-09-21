@@ -216,7 +216,7 @@ class Renewal_Model extends CC_Model
 		$total = $vat_amount + $rate;
 
 		$currentdate = date('Y-m-d h:i:s');		
-		$request['description'] = 'Registration Fee';
+		$request['description'] = 'Renewal Fee';
 		$request['user_id'] = $userid;
 		$request['status'] = '0';
 		$request['inv_type'] = $inv_type;
@@ -225,7 +225,7 @@ class Renewal_Model extends CC_Model
 		$request['created_at'] = $currentdate;
 
 		if($inv_type == '2'){
-			$this->db->insert('invoice', ['description' => "Registration Fee", 'user_id' => $userid, 'status' => '0', 'inv_type' => $inv_type,  'coc_type' => '0',  'delivery_type' => '2', 'total_cost' => $rate, 'vat'=>$vat_amount, 'created_at' => $currentdate]) ;
+			$this->db->insert('invoice', ['description' => "Renewal Fee", 'user_id' => $userid, 'status' => '0', 'inv_type' => $inv_type,  'coc_type' => '0',  'delivery_type' => '2', 'total_cost' => $rate, 'vat'=>$vat_amount, 'created_at' => $currentdate]) ;
 			$result['invoice_id'] = $this->db->insert_id();
 		}
 		elseif($inv_type == '4'){			
@@ -242,11 +242,11 @@ class Renewal_Model extends CC_Model
 		$this->db->update('invoice', $request, ['inv_id' => $invoice_id]);
 		
 		if($inv_type == '2'){
-			$this->db->insert('coc_orders', ['user_id' => $userid, 'description' => "Registration Fee",'quantity' => '1', 'status' => '0',  'cost_value' => $rate, 'coc_type' => '0',  'delivery_type' => '2', 'total_due' => $total, 'vat'=>$vat_amount, 'inv_id' => $result['invoice_id'], 'created_at' => $currentdate, 'created_by' => $userid]);
+			$this->db->insert('coc_orders', ['user_id' => $userid, 'description' => "Renewal Fee",'quantity' => '1', 'status' => '0',  'cost_value' => $rate, 'coc_type' => '0',  'delivery_type' => '2', 'total_due' => $total, 'vat'=>$vat_amount, 'inv_id' => $result['invoice_id'], 'created_at' => $currentdate, 'created_by' => $userid]);
 			$result['cocorder_id']  = $this->db->insert_id();
 		}
 		else{
-			$request1['description'] = 'Registration Fee';
+			$request1['description'] = 'Renewal Fee';
 			$request1['user_id'] = $userid;
 			$request1['quantity'] = '1';
 			$request1['status'] = '0';

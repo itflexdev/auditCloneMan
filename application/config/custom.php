@@ -42,6 +42,8 @@ $config['inspection'] 				= 	'20';
 $config['latefee'] 					= 	'10';
 $config['cardfee'] 					= 	'11';
 
+$config['specializationfee']		= 	'8';
+
 // Global Performance Table
 
 $config['verypoor']	 				= 	'2';

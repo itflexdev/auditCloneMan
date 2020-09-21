@@ -17,6 +17,7 @@ class Import extends CC_Controller {
 		$this->load->model('Noncompliancelisting_Model');
 		$this->load->model('CC_Model');
 		$this->load->model('Auditor_Model');
+		$this->load->model('Renewal_Model');
 	}
 
     public function timezone()
@@ -1055,6 +1056,28 @@ class Import extends CC_Controller {
 	public function generatecocpdf($id){
 		unlink('./assets/inv_pdf/'.$id.'.pdf'); 
 		$this->cocreport($id, 'PDF Invoice Plumber COC');
+	}
+	
+	public function generaterenewalcocpdf($inv_id){
+		$invoice 		= 	$this->db->get_where('invoice', ['inv_id' => $inv_id])->row_array();
+		$orders 		= 	$this->db->get_where('coc_orders', ['inv_id' => $inv_id])->row_array();
+		$userdata1		= 	$this->Plumber_Model->getList('row', ['id' => $invoice['user_id']], ['users', 'usersdetail', 'usersplumber']);
+		$designation	= 	$userdata1['designation'];	
+		$otherfee = [];
+		if($userdata1['registration_card']=='1'){
+			$otherfee['cardfee'] = $this->getRates($this->config->item('cardfee'));
+		}
+		$specialisations = array_filter(explode(',', $userdata1['specialisations']));
+		if(count($specialisations) > 0){
+			$otherfee['specialisationsfee'] = $this->getRates($this->config->item('specializationfee'));
+			$otherfee['specialisationsqty'] = count($specialisations);
+		}
+		$this->Renewal_Model->updatedata($invoice['user_id'],$designation,'3',$invoice['inv_id'],$orders['id'],$otherfee);
+		$designation 	=	$this->config->item('designation2')[$designation];
+		unlink('./assets/inv_pdf/'.$inv_id.'.pdf'); 
+		$rowData 		= 	$this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
+		
+		$this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
 	}
 	
 	public function cocaccountview(){  		

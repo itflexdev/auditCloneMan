@@ -266,7 +266,7 @@ class Cron extends CC_Controller {
 				
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
-				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]+$otherfee);
+				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]+$otherfee);
 					
 					$cocTypes = $orders['coc_type'];
 					$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -338,7 +338,7 @@ class Cron extends CC_Controller {
 				// invoice PDF
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
-				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
+				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
 				
 				$cocTypes = $orders['coc_type'];
 				$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -425,7 +425,7 @@ class Cron extends CC_Controller {
 					// invoice PDF
 					$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 					$designation =	$this->config->item('designation2')[$rowData['designation']];					
-					$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
+					$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
 					
 					$cocTypes = $orders['coc_type'];
 					$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -498,7 +498,7 @@ class Cron extends CC_Controller {
 				// invoice PDF
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
-				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year registration fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2', 'latesubtotalamount' => $lateamount, 'latevatamount' => $vat_lateamount, 'latetotalamount' => $total_lateamount]+$otherfee);
+				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2', 'latesubtotalamount' => $lateamount, 'latevatamount' => $vat_lateamount, 'latetotalamount' => $total_lateamount]+$otherfee);
 			
 				$cocTypes = $orders['coc_type'];
 				$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -650,13 +650,13 @@ class Cron extends CC_Controller {
 		$otherfee = [];
 		if($userdata1['registration_card']=='1'){
 			$otherfee['cardfee'] = $this->getRates($this->config->item('cardfee'));
-			if($userdata1['delivery_card']=='1'){
+			/*if($userdata1['delivery_card']=='1'){
 				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('postage'));
 				$otherfee['deliverycard'] 	= '1';
 			}elseif($userdata1['delivery_card']=='2'){
 				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('couriour'));
 				$otherfee['deliverycard'] 	= '2';
-			}
+			}*/
 		}
 		$specialisations = array_filter(explode(',', $userdata1['specialisations']));
 		if(count($specialisations) > 0){
