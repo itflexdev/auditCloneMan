@@ -3519,4 +3519,11 @@ tr.dynmci---icns {
 
 
 .list_icon a{width: 70px;}
-.list_icon a img{width: 100%;}.admin_dash_icon{	    width: 25px;    margin: -4px 10px 0 0;}
+.list_icon a img{width: 100%;}
+.admin_dash_icon{width: 25px;    margin: -4px 10px 0 0;}
+
+@media only screen and (max-width: 1200px) {
+	.table-responsive.m-t-40 {
+		height: auto !important;
+	}
+}
