@@ -1093,7 +1093,7 @@ class Import extends CC_Controller {
 		}
 		fclose($fh);
 		
-		$cocorders = $this->db->select('sum(co.quantity) as quantity, co.user_id, up.registration_no as regno')->from('coc_orders co')->join('users_plumber up', 'up.user_id=co.user_id', 'left')->where('co.created_by !=', NULL)->group_by('co.user_id')->get()->result_array();
+		$cocorders = $this->db->select('sum(co.quantity) as quantity, co.user_id, up.registration_no as regno')->from('coc_orders co')->join('users_plumber up', 'up.user_id=co.user_id and up.registration_no != ""', 'left')->where('co.created_by !=', NULL)->where('co.coc_type !=', '0')->group_by('co.user_id')->get()->result_array();
 		
 		$userdata = [];
 		foreach($cocorders as $cocorder){
@@ -1101,7 +1101,7 @@ class Import extends CC_Controller {
 			$cocquantity 		= $cocorder['quantity']!='' ? $cocorder['quantity'] : 0;
 			$quantitydiff		= $paymentquantity - $cocquantity;
 			
-			if($quantitydiff < 0 && $cocorder['regno']!='')	$userdata[$cocorder['regno'].'-'.$cocorder['user_id']] = $quantitydiff;
+			if($quantitydiff < 0 && $cocorder['regno']!='')	$userdata[$cocorder['regno'].'-'.$cocorder['user_id']] = $quantitydiff.'('.$paymentquantity.','.$cocquantity.')'; 
 		}
 		
 		echo '<pre>';print_r($userdata);
@@ -1111,7 +1111,7 @@ class Import extends CC_Controller {
 	public function cocaccountdelete(){
 		$paymentdata = [];
 		
-		$cocorders 		= $this->db->select('group_concat(quantity) as quantity, group_concat(distinct(inv_id)) as inv_id, user_id')->from('coc_orders')->where('created_by !=', NULL)->group_by('user_id')->get()->result_array();
+		$cocorders 		= $this->db->select('group_concat(quantity) as quantity, group_concat(distinct(inv_id)) as inv_id, user_id')->from('coc_orders')->where('created_by !=', NULL)->where('coc_type !=', '0')->group_by('user_id')->get()->result_array();
 		$useridcolumn 	= array_column($cocorders, 'user_id');
 		
 		$fh = fopen('assets/payment/payment.txt','r');

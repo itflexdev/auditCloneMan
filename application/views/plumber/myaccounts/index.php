@@ -60,7 +60,7 @@ if(isset($result) && $result){
 					<input type="hidden" id="totaldue1" class="form-control" readonly name="amount">
 					<input id="item_name" name="item_name" value="registration" type="hidden">
 					<input id="item_description" name="item_description" value="registration" type="hidden">
-					<input id="payment_method" name="payment_method" value="cc" type="hidden">
+					<!--- <input id="payment_method" name="payment_method" value="cc" type="hidden"> --->
 					<input type="submit" name="submit" id="paymentsubmit" value="submit" style="display: none;">
 				</form>
 

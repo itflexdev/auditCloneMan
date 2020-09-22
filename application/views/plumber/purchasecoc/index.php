@@ -228,7 +228,7 @@ if (in_array($plumberstatus, $plumber_status)) {
 					<input type="hidden" id="totaldue1" class="form-control" readonly name="amount">
 					<input id="item_name" name="item_name" value="Coc Purchase" type="hidden">
 					<input id="item_description" name="item_description" value="coc" type="hidden">
-					<input id="payment_method" name="payment_method" value="cc" type="hidden">
+					<!--- <input id="payment_method" name="payment_method" value="cc" type="hidden"> --->
 					
 					<input type="hidden" name="custom_str1" id="paymentcustomdata">
 					<?php } ?>

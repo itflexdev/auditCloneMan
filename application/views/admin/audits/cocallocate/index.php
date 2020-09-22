@@ -402,7 +402,9 @@
 			start_coc_range			: $('#start_coc_range').val(), 
 			end_coc_range			: $('#end_coc_range').val(), 
 			no_coc_allocation		: $('#no_coc_allocation').val(), 
-			max_allocate_plumber	: $('#max_allocate_plumber').val() 
+			max_allocate_plumber	: $('#max_allocate_plumber').val(),
+			province				: $('#province1').val(), 
+			city					: $('#city1').val(), 
 		}
 		
 		ajax('<?php echo base_url()."admin/audits/cocallocate/index/coc"; ?>', data, '', {
