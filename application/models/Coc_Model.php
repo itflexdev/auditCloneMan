@@ -495,7 +495,21 @@ class Coc_Model extends CC_Model
 				$this->db->delete('plumberallocate', ['stockid' => $cocid]);
 				$return = '1';
 			}elseif($recall=='2'){
-				$this->db->update('stock_management', ['coc_status' => '7', 'coc_orders_status' => '7'], ['id' => $cocid]);
+				$getstock	= $this->db->get_where('stock_management', ['id' => $cocid])->row_array();
+				$auditorid 	= $getstock['auditorid'];
+				if($auditorid!='0'){
+					$auditor = $this->db->get_where('users', ['id' => $auditorid])->row_array();
+					$this->db->delete('auditor_statement', ['coc_id' => $cocid]);
+					$this->db->delete('auditor_review', ['coc_id' => $cocid]);
+					$this->db->delete('auditor_comment', ['coc_id' => $cocid]);
+					$this->db->delete('diary', ['coc_id' => $cocid, 'auditor_id' => $auditorid]);
+					
+					$subject 	= 'Audit it coc cancellation';
+					$body 		= 'Hi,<br>your coc number '.$cocid.' has been cancelled by admin';
+					$this->sentMail($auditor['email'], $body, $subject);
+				}
+				
+				$this->db->update('stock_management', ['coc_status' => '7', 'coc_orders_status' => '7', 'auditorid' => '0', 'audit_status' => null, 'audit_allocation_date' => null], ['id' => $cocid]);
 				$return = '2';
 			}elseif($recall=='3'){
 				$cocstatus = (isset($data['user_type']) && $data['user_type']=='3') ? '4' : '3';

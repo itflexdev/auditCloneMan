@@ -232,7 +232,7 @@
 					</form>
 				</div>
 				
-				<?php if(($cocstatusid=='3' && $allocationdate=='') || ($cocstatusid=='4' && $allocationdate=='') || ($cocstatusid=='4' && $cocallocatedby!='') || ($cocstatusid=='2' && $coctypeid=='2') || ($cocstatusid=='7')){ ?>
+				<?php if(($cocstatusid=='3' && $allocationdate=='') || ($cocstatusid=='4' && $allocationdate=='') || ($cocstatusid=='4' && $cocallocatedby!='') || (($cocstatusid=='2' || $cocstatusid=='5') && $coctypeid=='2') || ($cocstatusid=='7')){ ?>
 					<h4 class="card-title">Recalled/Reallocate/Cancel a COC</h4>
 					<form action="" method="post" class="form2">
 						<?php if($cocstatusid=='7'){ ?>
@@ -257,6 +257,7 @@
 											<?php
 												foreach($cocrecall as $key => $value){
 													if($coctypeid=='1' && $key=='2') continue; 
+													if(($cocstatusid=='2' || $cocstatusid=='5') && $coctypeid=='2' && in_array($key, ['1','3'])) continue; 
 											?>
 													<div class="col-md-2">
 														<div class="custom-control custom-radio">
