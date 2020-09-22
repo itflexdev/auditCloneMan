@@ -244,7 +244,7 @@ if(isset($result) && $result){
 		$('.massimport_btn_div').hide();
 		$('.closebtn').click(function(){
 			var form_data = new FormData();
-	        form_data.append("filename", '');
+	        form_data.append("file", document.getElementById('file').files[0]);
 		      $.ajax({
 		      	data: form_data,
 		        type: 'POST',
@@ -342,11 +342,11 @@ if(isset($result) && $result){
 	 			alert('Only Excel file is allowed');
 	 			return false;
 	 		}
-	 		if($('#file').val().split('\\').pop() !== 'cpd template.xlsx'){
-	 			$("#file").val('');
-	 			alert('Valid Template file is allowed');
-	 			return false;
-	 		}
+	 		// if($('#file').val().split('\\').pop() !== 'cpd template.xlsx'){
+	 		// 	$("#file").val('');
+	 		// 	alert('Valid Template file is allowed');
+	 		// 	return false;
+	 		// }
 	 		// if ($(this.files[0])) {}
 			var form_data = new FormData();
 	        var oFReader = new FileReader();
@@ -441,6 +441,7 @@ if(isset($result) && $result){
 			//window.location.href = url;
 		      $.ajax({
 		        type: 'POST',
+		        data: form_data,
 		        url: '<?php echo base_url().'admin/cpd/cpdtypesetup/importdownload'; ?>',
 		        contentType: false,  
 	            cache: false,  
@@ -466,6 +467,7 @@ if(isset($result) && $result){
 			form_data.append("cpdid", $('#cpdid').val());
 			form_data.append("cpdstream", $('#cpdstream').val());
 			form_data.append("activity", $('#activity').val());
+			form_data.append("filename", document.getElementById("file").files[0]);
 		      $.ajax({
 		      	data: form_data,
 		        type: 'POST',
