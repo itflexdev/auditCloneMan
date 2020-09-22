@@ -849,6 +849,12 @@ class Cpdtypesetup extends CC_Controller
 				$data 	=  $this->Cpdtypesetup_Model->queue_action($formdata);
 			}
 		}
+		
+		$temp 	 			= $directory.'/assets/uploads/temp/cpd template.xlsx';
+		
+		if (file_exists($temp)) {
+			unlink($temp);
+		}
 		if (file_exists($templatepath)) {
 			unlink($templatepath);
 		}
