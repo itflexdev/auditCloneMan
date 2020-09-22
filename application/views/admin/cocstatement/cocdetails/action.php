@@ -232,7 +232,7 @@
 					</form>
 				</div>
 				
-				<?php if(($cocstatusid=='3' && $allocationdate=='') || ($cocstatusid=='4' && $allocationdate=='') || ($cocstatusid=='4' && $cocallocatedby!='') || ($cocstatusid=='7')){ ?>
+				<?php if(($cocstatusid=='3' && $allocationdate=='') || ($cocstatusid=='4' && $allocationdate=='') || ($cocstatusid=='4' && $cocallocatedby!='') || ($cocstatusid=='2' && $coctypeid=='2') || ($cocstatusid=='7')){ ?>
 					<h4 class="card-title">Recalled/Reallocate/Cancel a COC</h4>
 					<form action="" method="post" class="form2">
 						<?php if($cocstatusid=='7'){ ?>
