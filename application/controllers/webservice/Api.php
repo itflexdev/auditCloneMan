@@ -4163,13 +4163,15 @@ class Api extends CC_Controller
 					$this->db->where('name', $post['suburb']);
 					$validatesuburb = $this->db->get()->result_array();
 					if ($validatesuburb) {
+						$namearray	 	= $post['suburb'];
 						if(isset($idarray)) unset($idarray);
-						if(isset($namearray)) unset($namearray);
+						// if(isset($namearray)) unset($namearray);
 						foreach ($validatesuburb as $key => $value) {
 							$idarray[] 		= $value['id'];
-							$namearray[] 	= $value['name'];
+							
 						}
-						$data = $this->getplumbersData('suburbplumber', ['suburubid' => $idarray]);
+						$data = $this->getplumbersData('suburbplumber', ['suburubid' => $idarray, 'suburubname' => $namearray]);
+						$jsonArray = array("status"=>'1', "message"=>'Plumber Data', "result"=> $data);
 					}
 				}
 		}else{
@@ -4264,7 +4266,70 @@ class Api extends CC_Controller
 				];
 			}
 		}elseif($type == 'suburbplumber'){
-			$plumberData[] = [];
+
+			$totalcount 	= $this->Api_Model->getplumbersLists_suburb('count', ['type' => '3', 'approvalstatus' => ['1'], 'status' => ['1'], 'suburubid' => $data['suburubid'], 'suburuname' => $data['suburubname']], ['users', 'usersdetail', 'usersplumber', 'physicaladdress']);
+
+			$results 		= $this->Api_Model->getplumbersLists_suburb('all', ['type' => '3', 'approvalstatus' => ['1'], 'status' => ['1'], 'suburubid' => $data['suburubid'], 'suburuname' => $data['suburubname']], ['users', 'usersdetail', 'usersplumber', 'physicaladdress']);
+
+			$getcity = $this->Managearea_Model->getListCity('all', ['status' => ['0', '1']]);
+				if(count($getcity) > 0) {
+					$citydata=  ['' => 'Select City']+array_column($getcity, 'name', 'id');
+				}else{
+					$citydata = [];
+				}
+				$getsuburb = $this->Managearea_Model->getListSuburb('all', ['status' => ['0', '1']]);
+				if(count($getsuburb) > 0) {
+					$suburbdata=  ['' => 'Select suburb']+array_column($getsuburb, 'name', 'id');
+				}
+				else {
+					$suburbdata = [];
+				}
+
+				foreach ($results as $key => $value) {
+				if (isset($value['specialisations']) && $value['specialisations'] !='') {
+					if(isset($plumberspecialisations)) unset($plumberspecialisations);
+					$specialisationsarray = explode(',', $value['specialisations']);
+					foreach ($specialisationsarray as $specialisationsarraykey => $specialisationsarrayvalue) {
+						$plumberspecialisations[] = $this->config->item('specialisations')[$specialisationsarrayvalue];
+					}
+				}
+
+				$physicaladdress 		= isset($value['physicaladdress']) ? explode('@-@', $value['physicaladdress']) : [];
+				if(isset($physicaladdress[3]) && (1 === preg_match('/^[0-9]+$/', $physicaladdress[3]))){
+				    $suburb1 	= isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '';
+				}else{
+					$suburb1 	= isset($physicaladdress[3]) ? $physicaladdress[3] : '';
+				}
+				if(isset($physicaladdress[4]) && (1 === preg_match('/^[0-9]+$/', $physicaladdress[4]))){
+				    $city1 	= isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '';
+				}else{
+					$city1 	= isset($physicaladdress[4]) ? $physicaladdress[4] : '';
+				}
+				if(isset($physicaladdress[5]) && (1 === preg_match('/^[0-9]+$/', $physicaladdress[5]))){
+				    $province1 	= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';
+				}else{
+					$province1 	= isset($physicaladdress[5]) ? $physicaladdress[5] : '';
+				}
+
+				$physicaladdress 		= isset($value['physicaladdress']) ? explode('@-@', $value['physicaladdress']) : [];
+				$addressid1 			= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
+				/*$suburb1 				= isset($physicaladdress[3]) ? $physicaladdress[3] : '';
+				$city1 					= isset($physicaladdress[4]) ? $physicaladdress[4] : '';
+				$province1 				= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';*/
+
+				$plumberData[] = [
+					'id' 				=> $value['id'],
+					'plumbername' 		=> $value['name'],
+					'plumbersurname' 	=> $value['surname'],
+					'mobile' 			=> $value['mobile_phone'],
+					'province' 			=> $province1,
+					'suburb' 			=> $suburb1,
+					'city' 				=> $city1,
+					'designation' 		=> $this->config->item('designation2')[$value['designation']],
+					'specialisations' 	=> isset($plumberspecialisations) ? implode(',', $plumberspecialisations) : '',
+					'totalcount'		=> $totalcount
+				];
+			}
 		}
 		return $plumberData;
 	}
