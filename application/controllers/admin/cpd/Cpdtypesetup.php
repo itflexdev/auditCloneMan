@@ -795,6 +795,7 @@ class Cpdtypesetup extends CC_Controller
 
 	}
 	public function importproceed(){
+		$tempfile = $_FILES["filename"]["name"];
 		$post 	= $this->input->post();
 		$userid = $this->getUserID();
 		$userdetails = $this->getUserDetails();
@@ -850,7 +851,7 @@ class Cpdtypesetup extends CC_Controller
 			}
 		}
 		
-		$temp 	 			= $directory.'/assets/uploads/temp/cpd template.xlsx';
+		$temp 	 			= $directory.'/assets/uploads/temp/'.$tempfile.'';
 		
 		if (file_exists($temp)) {
 			unlink($temp);
@@ -893,11 +894,11 @@ class Cpdtypesetup extends CC_Controller
 
 	public function cancel(){
 
-		// $filename =  $_FILES["filename"]["name"];
+		$filename =  $_FILES["file"]["name"];
 		$directory 	 = dirname(__DIR__, 4);
 		$templatepath = $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
 		$errortemplate 	 = $directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx';
-		$temp 	 			= $directory.'/assets/uploads/temp/cpd template.xlsx';
+		$temp 	 			= $directory.'/assets/uploads/temp/'.$filename.'';
 		
 		if (file_exists($temp)) {
 			unlink($temp);
