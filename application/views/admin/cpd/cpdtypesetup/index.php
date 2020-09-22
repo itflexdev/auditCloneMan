@@ -336,9 +336,15 @@ if(isset($result) && $result){
 	 $(document).ready(function() {
 	 	
 	 	$('.cpdimport').on('change', function(){
+	 		
 	 		if($('#file').val().split('.').pop() !=='xlsx'){
 	 			$("#file").val('');
 	 			alert('Only Excel file is allowed');
+	 			return false;
+	 		}
+	 		if($('#file').val().split('\\').pop() !== 'cpd template.xlsx'){
+	 			$("#file").val('');
+	 			alert('Valid Template file is allowed');
 	 			return false;
 	 		}
 	 		// if ($(this.files[0])) {}
