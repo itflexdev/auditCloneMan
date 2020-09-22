@@ -336,7 +336,7 @@ if(isset($result) && $result){
 	 $(document).ready(function() {
 	 	
 	 	$('.cpdimport').on('change', function(){
-	 		
+
 	 		if($('#file').val().split('.').pop() !=='xlsx'){
 	 			$("#file").val('');
 	 			alert('Only Excel file is allowed');
@@ -461,6 +461,7 @@ if(isset($result) && $result){
 		$('.proceed').on('click', function(){
 			$('.massimport-btn').hide();
 			$('.massimport_btn_div').hide();
+			$('.downloadxl, .proceed, .closebtn').prop('disabled', true);
 			var form_data = new FormData();
 			form_data.append("cpdid", $('#cpdid').val());
 			form_data.append("cpdstream", $('#cpdstream').val());
@@ -481,6 +482,7 @@ if(isset($result) && $result){
 		        $('.massimport_btn_div').hide();
 		         console.log(data);
 		         sweetalertautoclose(data);
+		         $('.downloadxl, .proceed, .closebtn').prop('disabled', false);
 		         $('.massimport').show();
 		         $("#file").val('');
 		         $( ".triggerbtn" ).trigger( "click" );
