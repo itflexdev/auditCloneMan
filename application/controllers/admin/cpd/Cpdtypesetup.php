@@ -442,9 +442,9 @@ class Cpdtypesetup extends CC_Controller
 				// }else{
 				// 	$cpdpoints = $post['cpdpoints'];
 				// }
-				if ($value[1] !='' || $value[1] !='0') {
+				if ($value[1] !='' && $value[1] !='0') {
 					$cpdpoints = $value[1];
-				}elseif($value[1] =='' || $value[1] =='0'){
+				}elseif($value[1] !='' && $value[1] =='0'){
 					$cpdpoints = $post['cpdpoints'];
 				}else{
 					$cpdpoints = $post['cpdpoints'];
