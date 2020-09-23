@@ -2879,8 +2879,10 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('inv_id') && $this->input->post('request_type') =='edit_view') {
 			$userid 		= $this->input->post('user_id');
 			$inv_id 		= $this->input->post('inv_id');
-			$result 		= $this->Auditor_Model->getInvoiceList('row', $userid);
-			$auditordetail 	= $this->Auditor_Model->getAuditorList('row',$userid);
+			// $result 		= $this->Auditor_Model->getInvoiceList('row', $userid);
+			// $auditordetail 	= $this->Auditor_Model->getAuditorList('row',$userid);
+			$result 		= $this->Auditor_Model->getInvoiceList('row', ['user_id' => $userid]);
+			$auditordetail 	= $this->Auditor_Model->getAuditorList('row',['id' => $userid]);
 			$settings		= $this->Systemsettings_Model->getList('row');
 			$dbVat 			= $settings['vat_percentage'];
 			$auditordetail 	= $this->Auditor_Model->getAuditorList('row',['id' => $userid]);
