@@ -4067,8 +4067,46 @@ class Api extends CC_Controller
 			$userdata = $this->Coc_Model->getCOCList('row', ['id' => $id]);
 			if(!empty($userdata)){
 				if($userdata['coc_status'] == '2'){
-					$jsonData['pName']  = $userdata['u_name'];
-					$jsonData['pRegNo'] = $userdata['plumberregno'];
+
+					if (isset($plumberspecialisation)) 	unset($plumberspecialisation);
+					if (isset($installation)) 			unset($installation);
+
+					$plumberdetail = $this->Plumber_Model->getList('row', ['id' => $userdata['user_id'], 'type' => '3', 'status' => ['1']], ['users', 'usersdetail', 'usersplumber', 'company', 'physicaladdress']);
+
+					if (isset($userdata['cl_installationtype']) && $userdata['cl_installationtype'] !='') {
+						$installationarray = explode(',', $userdata['cl_installationtype']);
+						$installation 		= $this->Installationtype_Model->getList('all', ['designation' => $plumberdetail['designation'], 'specialisations' => [], 'ids' => $installationarray]);
+					}
+
+					if (isset($plumberdetail['specialisations']) && $plumberdetail['specialisations'] !='') {
+						$plumberspecialisationarray = explode(',', $plumberdetail['specialisations']);
+						foreach ($plumberspecialisationarray as $plumberspecialisationarraykey => $plumberspecialisationarrayvalue) {
+							$plumberspecialisation[] = $this->config->item('specialisations')[$plumberspecialisationarrayvalue];
+						}
+					}
+
+					// $jsonData['pName']  = $userdata['u_name'];
+					// $jsonData['pRegNo'] = $userdata['plumberregno'];
+
+					$jsonData['cocdetail'] = [
+						'cocid' 		=> $userdata['id'],
+
+						'coc_status' 	=> $this->config->item('auditstatus')[$userdata['coc_status']].' '.isset($this->config->item('auditstatus')[$userdata['audit_status']]) ? $this->config->item('auditstatus')[$userdata['audit_status']] : '',
+
+						'allocation_date' => date('d-m-Y', strtotime($userdata['allocation_date'])),
+
+						'cl_completion_date' => isset($userdata['cl_completion_date']) ? date('d-m-Y', strtotime($userdata['cl_completion_date'])) : '',
+
+						'cl_installationtype' => isset($installation) ? $installation : '',
+					];
+
+					$jsonData['plumberdetail'] = [
+						'name' => $plumberdetail['name'],
+						'surname' => $plumberdetail['surname'],
+						'designation' => $this->config->item('designation2')[$plumberdetail['designation']],
+						'designation' => isset($plumberspecialisation) ? $plumberspecialisation : '',
+					];
+
 					$jsonArray = array("status"=>'1', "message"=>'Plumber Detail', "result"=> $jsonData);
 				}elseif($userdata['coc_status'] == '4' || $userdata['coc_status'] == '5'){
 					$jsonArray = array("status"=>'1', "message"=>'Error: COC has not been logged', "result"=> (object) null);
