@@ -1214,7 +1214,6 @@ class Api extends CC_Controller
 
 			$totalcount 			 = $this->Api_Model->getCOCList('count', ['user_id' => $userid, 'coc_status' => ['2','4','5','7']]);
 			$results	 			= $this->Api_Model->getCOCList('all', ['user_id' => $userid, 'coc_status' => ['2','4','5','7'], 'api_data' => 'plumber_coc_statement_api']);
-			print_r($results);die;
 			
 			foreach ($results as $key => $value) {
 				
