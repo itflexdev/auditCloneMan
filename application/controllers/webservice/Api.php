@@ -1217,21 +1217,15 @@ class Api extends CC_Controller
 			print_r($results);die;
 			
 			foreach ($results as $key => $value) {
-
-				if($value['coc_status']=='2' && $value['auditorid']!='0'){
-					$cocstatus = '7'+$value['audit_status'];					
-				}else{
-					$cocstatus = $value['coc_status'];
-				}
 				
 				if ($value['coc_status'] == '2') {
-					$colorcode 	= '#ade33d';
+					$colorcode = '#7f694f';
 					$coc_status = 'Logged';
 				}else{
-					$colorcode = '#7f694f';
+					$colorcode 	= '#ade33d';
 					$coc_status = 'Un Logged';
 				}
-				$jsonData['coc_statement'][] = [ 'coc_number' => $value['id'], 'plumberid' => $value['user_id'],  'coc_type' => $this->config->item('coctype')[$value['type']], 'cl_name' => $value['cl_name'], 'colorcode' => $colorcode, 'totalcount' => $totalcount
+				$jsonData['coc_statement'][] = [ 'coc_number' => $value['id'], 'plumberid' => $value['user_id'], 'coc_type' => $this->config->item('coctype')[$value['type']], 'cl_name' => $value['cl_name'], 'colorcode' => $colorcode, 'totalcount' => $totalcount
 				];
 			}
 			
@@ -1246,18 +1240,12 @@ class Api extends CC_Controller
 			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement']);
 
 			foreach ($results as $key => $value) {
-
-				if($value['coc_status']=='2' && $value['auditorid']!='0'){
-					$cocstatus = '7'+$value['audit_status'];					
-				}else{
-					$cocstatus = $value['coc_status'];
-				}
 				
 				if ($value['coc_status'] == '2') {
-					$colorcode 	= '#ade33d';
+					$colorcode = '#7f694f';
 					$coc_status = 'Logged';
 				}else{
-					$colorcode = '#7f694f';
+					$colorcode 	= '#ade33d';
 					$coc_status = 'Un Logged';
 				}
 				$jsonData['coc_statement'][] = [ 'coc_number' => $value['id'], 'plumberid' => $value['user_id'],  'coc_type' => $this->config->item('coctype')[$value['type']], 'cl_name' => $value['cl_name'], 'colorcode' => $colorcode, 'totalcount' => $totalcount
