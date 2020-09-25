@@ -745,7 +745,7 @@ class CC_Controller extends CI_Controller
 	{
 		$userid							= $extras['userid'];
 		$auditorid						= isset($extras['auditorid']) ? ['auditorid' => $extras['auditorid']] : [];
-		$result							= $this->Coc_Model->getCOCList('row', ['id' => $id, 'user_id' => $userid]+$auditorid);
+		$result							= $this->Coc_Model->getCOCList('row', ['id' => $id, 'user_id' => $userid]+$auditorid, ['coclog']);
 		if(!$result){
 			$this->session->set_flashdata('error', 'No Record Found.');
 			redirect($extras['redirect']); 
@@ -873,7 +873,7 @@ class CC_Controller extends CI_Controller
 		if(isset($extras['plumberid'])) $extraparam['user_id'] 		= $extras['plumberid'];	
 		$extraparam['page'] = 'review';	
 		
-		$result	= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$extraparam);	
+		$result	= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$extraparam, ['coclog', 'users', 'usersdetail', 'usersplumber', 'auditordetails', 'auditorstatement']);	
 		if(!$result){
 			$this->session->set_flashdata('error', 'No Record Found.');
 			redirect($extras['redirect']); 
@@ -1043,7 +1043,7 @@ class CC_Controller extends CI_Controller
 	public function getauditdiary($id, $pagedata=[], $extras=[])
 	{
 		$auditorid					= isset($extras['auditorid']) ? ['auditorid' => $extras['auditorid']] : [];
-		$result	= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$auditorid);	
+		$result	= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$auditorid, ['auditorstatement']);	
 		if(!$result){
 			$this->session->set_flashdata('error', 'No Record Found.');
 			redirect($extras['redirect']); 
@@ -1063,7 +1063,7 @@ class CC_Controller extends CI_Controller
 	public function getchat($id, $data=[], $extras=[])
 	{
 		$auditorid	= isset($extras['auditorid']) ? ['auditorid' => $extras['auditorid']] : [];
-		$result		= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$auditorid);	
+		$result		= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$auditorid, ['users', 'auditorstatement']);	
 		if(!$result){
 			$this->session->set_flashdata('error', 'No Record Found.');
 			redirect($extras['redirect']); 
@@ -1075,7 +1075,7 @@ class CC_Controller extends CI_Controller
 	
 	public function pdfauditreport($id, $save='')
 	{
-		$pagedata['result']			= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]);
+		$pagedata['result']			= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'auditor', 'auditordetails']);
 		$pagedata['reviewlist']		= $this->Auditor_Model->getReviewList('all', ['coc_id' => $id]);
 		$html = $this->load->view('pdf/auditreport', (isset($pagedata) ? $pagedata : ''), true);
 		$this->pdf->loadHtml($html);
@@ -1096,7 +1096,7 @@ class CC_Controller extends CI_Controller
 		$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
 		$pagedata['userdata']	 		= $userdata;
 		$pagedata['specialisations']	= explode(',', $pagedata['userdata']['specialisations']);
-		$pagedata['result']		    	= $this->Coc_Model->getCOCList('row', ['id' => $id]);
+		$pagedata['result']		    	= $this->Coc_Model->getCOCList('row', ['id' => $id], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb']);
 		$pagedata['designation2'] 		= $this->config->item('designation2');
 		$specialisations 				= explode(',', $userdata['specialisations']);
 		$pagedata['installationtype']	= $this->getInstallationTypeList();
@@ -1113,7 +1113,7 @@ class CC_Controller extends CI_Controller
 	
 	public function pdfnoncompliancereport($id, $userid, $save='')
 	{		
-		$pagedata['result']			= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]);
+		$pagedata['result']			= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'coclogcompany', 'users', 'usersdetail']);
 		$pagedata['noncompliance'] 	= $this->Noncompliance_Model->getList('all', ['coc_id' => $id, 'user_id' => $userid]);	
 
 		$html = $this->load->view('pdf/noncompliancereport', (isset($pagedata) ? $pagedata : ''), true);

@@ -550,8 +550,8 @@ class Index extends CC_Controller
 		
 		$post 			= $this->input->post();
 		$userid 		= $post['user_id'];
-		$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => '']+$post);
-		$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => '']+$post);	
+		$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => '']+$post, ['coclog', 'auditordetails', 'auditorstatement']);
+		$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => '']+$post, ['coclog', 'auditordetails', 'auditorstatement']);	
 		
 		$totalrecord 	= [];
 		if(count($results) > 0){
