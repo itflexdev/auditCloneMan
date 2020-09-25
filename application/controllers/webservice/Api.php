@@ -1247,7 +1247,7 @@ class Api extends CC_Controller
 					$colorcode 	= '#ade33d';
 					$coc_status = 'Un Logged';
 				}
-				$jsonData['coc_statement'][] = [ 'coc_number' => $value['id'], 'plumberid' => $value['user_id'],  'coc_type' => $this->config->item('coctype')[$value['type']], 'cl_name' => $value['cl_name'], 'colorcode' => $colorcode, 'totalcount' => $totalcount
+				$jsonData['coc_statement'][] = [ 'coc_number' => $value['id'], 'plumberid' => $value['user_id'],  'coc_type' => $this->config->item('coctype')[$value['type']], 'cl_name' => $value['cl_name'], 'colorcode' => $colorcode, 'keywords' => $keywords, 'totalcount' => $totalcount
 				];
 			}
 			
