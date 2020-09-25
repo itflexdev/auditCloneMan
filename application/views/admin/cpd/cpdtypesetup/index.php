@@ -136,7 +136,7 @@ if(isset($result) && $result){
 					</div>
 					<button type="button" id="triggerproceed1" class="btn btn-primary displaynone" data-toggle="modal" data-target="#massimportmodal2">Trigger Proceed(1/2)</button>
 					<!-- popu (1/2) -->
-					<div class="modal fade" id="massimportmodal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal fade" id="massimportmodal1" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 					  <div class="modal-dialog" role="document">
 					    <div class="modal-content">
 					      <div class="modal-header">
@@ -158,7 +158,7 @@ if(isset($result) && $result){
 					  </div>
 					</div>
 					<!-- popu (2/2) -->
-					<div class="modal fade" id="massimportmodal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+					<div class="modal fade" id="massimportmodal2" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
 					  <div class="modal-dialog" role="document">
 					    <div class="modal-content">
 					      <div class="modal-header">
@@ -441,7 +441,7 @@ if(isset($result) && $result){
 			//window.location.href = url;
 		      $.ajax({
 		        type: 'POST',
-		        data: form_data,
+		        // data: form_data,
 		        url: '<?php echo base_url().'admin/cpd/cpdtypesetup/importdownload'; ?>',
 		        contentType: false,  
 	            cache: false,  
