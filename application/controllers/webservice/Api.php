@@ -2760,8 +2760,8 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('type') == 'list') {
 			$userid = $this->input->post('user_id');
 
-			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor'], ['coclog']);
-			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor'], ['coclog']);
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor'], ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor'], ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']);
 			if ($results) {
 				foreach ($results as $key => $value) {
 					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => ''];
@@ -3008,7 +3008,7 @@ class Api extends CC_Controller
 			$datetime 					= date('Y-m-d H:i:s');
 			$date 						= date('Y-m-d');
 
-			$result	= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);
+			$result	= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']], ['auditorstatement', 'usersdetail', 'usersplumber', 'coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb']+$extraparam);
 
 			if ($result['as_workmanship'] !='') {
 				$as_workmanship 	= $this->config->item('workmanship')[$result['as_workmanship']];
@@ -3530,7 +3530,7 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('coc_id')) {
 			if($this->input->post('user_id') !=''){$auditorid = ['auditorid' =>$this->input->post('user_id')];}else{$auditorid = [];}
 			$cocid 			= $this->input->post('coc_id');
-			$cocdetail 		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$auditorid);	
+			$cocdetail 		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']], ['usersdetail', 'users', 'auditordetails', 'auditor']+$auditorid);	
 
 			$plumberid 		= $cocdetail['user_id'];
 			$reviewresults 		= $this->Auditor_Model->getReviewHistoryCount(['plumberid' => $plumberid]);
@@ -3621,7 +3621,7 @@ class Api extends CC_Controller
 	public function auditor_diarycomments(){
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
 			$auditorid['auditorid']	= $this->input->post('user_id');
-			$result					= $this->Coc_Model->getCOCList('row', ['id' => $this->input->post('coc_id'), 'coc_status' => ['2']]+$auditorid);
+			$result					= $this->Coc_Model->getCOCList('row', ['id' => $this->input->post('coc_id'), 'coc_status' => ['2']], ['auditorstatement']+$auditorid);
 			$comments				= $this->Auditor_Comment_Model->getList('all', ['coc_id' => $this->input->post('coc_id')]);	
 			$diary					= $this->diaryactivity(['cocid' => $this->input->post('coc_id')]+$auditorid);
 			if (isset($diary) || $diary !='') {
@@ -4066,7 +4066,7 @@ class Api extends CC_Controller
 
 
 // Selvamani
-	public function get_cocplumber(){
+	/*public function get_cocplumber(){
 		if ($this->input->post('COCno')) {
 			$jsonData = [];
 			$id = $this->input->post('COCno');
@@ -4113,6 +4113,35 @@ class Api extends CC_Controller
 						'designation' => isset($plumberspecialisation) ? $plumberspecialisation : '',
 					];
 
+					$jsonArray = array("status"=>'1', "message"=>'Plumber Detail', "result"=> $jsonData);
+				}elseif($userdata['coc_status'] == '4' || $userdata['coc_status'] == '5'){
+					$jsonArray = array("status"=>'1', "message"=>'Error: COC has not been logged', "result"=> (object) null);
+				}elseif($userdata['coc_status'] == '3'){
+					$jsonArray = array("status"=>'1', "message"=>'There is no plumber assigned to this COC.', "result"=> (object) null);
+				}else{
+					if($userdata['user_id'] == '0'){
+							$jsonArray = array("status"=>'1', "message"=>'There is no plumber assigned to this COC.', "result"=> (object) null);
+					}else{
+							$jsonArray = array("status"=>'1', "message"=>'Error: plumber cannot be found', "result"=> (object) null);
+					}
+				}
+			}else{
+				$jsonArray = array("status"=>'1', "message"=>'There is no COC with the number '.$id, "result"=> (object) null);
+			}
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> (object) null);
+		}
+		echo json_encode($jsonArray);
+	}*/
+	public function get_cocplumber(){
+		if ($this->input->post('COCno')) {
+			$jsonData = [];
+			$id = $this->input->post('COCno');
+			$userdata = $this->Coc_Model->getCOCList('row', ['id' => $id]);
+			if(!empty($userdata)){
+				if($userdata['coc_status'] == '2'){
+					$jsonData['pName']  = $userdata['u_name'];
+					$jsonData['pRegNo'] = $userdata['plumberregno'];
 					$jsonArray = array("status"=>'1', "message"=>'Plumber Detail', "result"=> $jsonData);
 				}elseif($userdata['coc_status'] == '4' || $userdata['coc_status'] == '5'){
 					$jsonArray = array("status"=>'1', "message"=>'Error: COC has not been logged', "result"=> (object) null);
