@@ -2,7 +2,7 @@
 
 class Api_Model extends CC_Model
 {
-	public function getCOCList($type, $requestdata=[])
+	/*public function getCOCList($type, $requestdata=[])
 	{ 
 		$coclog 			= 	[ 
 									'cl.id cl_id','cl.log_date cl_log_date','cl.completion_date cl_completion_date','cl.order_no cl_order_no','cl.name cl_name','cl.address cl_address','cl.street cl_street','cl.number cl_number',
@@ -183,6 +183,268 @@ class Api_Model extends CC_Model
 				$this->db->group_end();
 			}
 		}
+		if(isset($requestdata['order']['0']['column']) && $requestdata['order']['0']['column']!='' && isset($requestdata['order']['0']['dir']) && $requestdata['order']['0']['dir']!=''){
+			if(isset($requestdata['page'])){
+				$page = $requestdata['page'];				
+				if($page=='plumbercocstatement'){
+					$column = ['sm.id', 'c1.name', 'sm.allocation_date', 'cl.log_date', 'c3.name', 'cl.name', 'cl.address', 'cd1.company', 'rd.name'];
+				}elseif($page=='admincocdetails'){
+					$column = ['sm.id', 'c3.name', 'c1.name', 'ud.name', 'rd.name', 'ad.name'];
+				}elseif($page=='auditorstatement'){
+					$column = ['sm.id', 'sm.audit_status', 'ud.name', 'ud.mobile_phone', 'sm.audit_allocation_date', 'ar1.refix_date', 'aas.refixcompletedate', 's.name', 'cl.name', 'cl.contact_no'];
+				}elseif($page=='plumberauditorstatement'){
+					$column = ['sm.id', 'c2.name', 'cl.name', 'cl.address', 'ar1.refix_date', 'aas.refixcompletedate', 'sm.audit_allocation_date', 'ad.name'];
+				}elseif($page=='adminauditorstatement'){
+					$column = ['sm.id', 'c1.name', 'ad.name', 'ad.mobile_phone', 'sm.audit_allocation_date', 'ar1.refix_date', 'aas.refixcompletedate'];
+				}elseif($page=='auditorprofile'){
+					$column = ['sm.id', 'aas.audit_date', 'ud.name', 's.name', 'c.name', 'p.name', 'ar.incomplete_point', 'ar.complete_point', 'ar.cautionary_point', 'ar.noaudit_point'];
+				}
+				
+				$this->db->order_by($column[$requestdata['order']['0']['column']], $requestdata['order']['0']['dir']);
+			}
+		}
+		if($type!=='count' && isset($requestdata['start']) && isset($requestdata['length'])){
+			$this->db->limit($requestdata['length'], $requestdata['start']);
+		}
+		if (isset($requestdata['api_data']) && $requestdata['api_data'] =='plumber_coc_statement_api') {
+			$this->db->order_by('sm.coc_status', 'DESC');
+		}
+		
+		$this->db->group_by('sm.id');
+		if (isset($requestdata['api_data']) && $requestdata['api_data'] =='auditstatement_auditor') {
+			$this->db->order_by("sm.id", "DESC");
+		}
+		
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		
+		return $result;		
+	}*/
+
+	public function getCOCList($type, $requestdata=[], $querydata=[])
+	{ 
+		$select 	= [];
+		$select[] 	= 'sm.*';
+		
+		if(in_array('users', $querydata)){
+			$users 				= 	['u.id as u_id, u.type as u_type, u.email as u_email'];								
+			$select[] 			= 	implode(',', $users);
+		}
+		
+		if(in_array('usersdetail', $querydata)){
+			$usersdetail 		= 	['concat(ud.name, " ", ud.surname) as u_name,  ud.mobile_phone as u_mobile, ud.work_phone as u_work, ud.file2 as u_file, ud.status as u_status'];								
+			$select[] 			= 	implode(',', $usersdetail);
+		}
+		
+		if(in_array('usersplumber', $querydata)){
+			$usersplumber 		= 	['up.registration_no as plumberregno'];								
+			$select[] 			= 	implode(',', $usersplumber);
+		}
+		
+		if(in_array('coclog', $querydata)){
+			$coclog 			= 	[ 
+										'cl.id cl_id','cl.log_date cl_log_date','cl.completion_date cl_completion_date','cl.order_no cl_order_no','cl.name cl_name','cl.address cl_address','cl.street cl_street','cl.number cl_number',
+										'cl.province cl_province','cl.city cl_city','cl.suburb cl_suburb','cl.contact_no cl_contact_no','cl.alternate_no cl_alternate_no','cl.email cl_email','cl.installationtype cl_installationtype',
+										'cl.specialisations cl_specialisations','cl.installation_detail cl_installation_detail','cl.file1 cl_file1','cl.file2 cl_file2','cl.agreement cl_agreement','cl.ncnotice cl_ncnotice','cl.ncemail cl_ncemail','cl.ncreason cl_ncreason','cl.status cl_status'
+									];								
+			$select[] 		= 		implode(',', $coclog);
+		}
+		
+		if(in_array('coclogprovince', $querydata)){
+			$coclogprovince 	= 	['p.name as cl_province_name'];								
+			$select[] 			= 	implode(',', $coclogprovince);
+		}
+		
+		if(in_array('coclogcity', $querydata)){
+			$coclogcity 		= 	['c.name as cl_city_name'];								
+			$select[] 			= 	implode(',', $coclogcity);
+		}
+		
+		if(in_array('coclogsuburb', $querydata)){
+			$coclogsuburb 		= 	['s.name as cl_suburb_name'];								
+			$select[] 			= 	implode(',', $coclogsuburb);
+		}
+		
+		if(in_array('coclogcompany', $querydata)){
+			$coclogcompany 		= 	['cd1.company as plumbercompany'];								
+			$select[] 			= 	implode(',', $coclogcompany);
+		}
+		
+		if(in_array('reseller', $querydata)){
+			$reseller 			= 	['pa.createddate as resellercreateddate'];								
+			$select[] 			= 	implode(',', $reseller);
+		}
+		
+		if(in_array('resellerdetails', $querydata)){
+			$resellerdetails 	= 	['rd.company as resellercompany, concat(rd.name, " ", rd.surname) as resellername, rd.user_id as resellersid'];								
+			$select[] 			= 	implode(',', $resellerdetails);
+		}
+		
+		if(in_array('auditor', $querydata)){
+			$auditor 			= 	['a.email as auditoremail'];								
+			$select[] 			= 	implode(',', $auditor);
+		}
+		
+		if(in_array('auditordetails', $querydata)){
+			$auditordetails 	= 	['concat(ad.name, " ", ad.surname) as auditorname, ad.mobile_phone as auditormobile, ad.status as auditorstatus'];								
+			$select[] 			= 	implode(',', $auditordetails);
+		}
+		
+		if(in_array('auditorstatement', $querydata)){
+			$auditorstatement 	= 	[ 
+										'aas.id as_id','aas.audit_date as_audit_date','aas.workmanship as_workmanship','aas.plumber_verification as_plumber_verification','aas.coc_verification as_coc_verification','aas.hold as_hold','aas.reason as_reason','aas.auditcomplete as_auditcomplete','aas.refixcompletedate as_refixcompletedate'
+									];						
+			$select[] 			= 	implode(',', $auditorstatement);
+		}
+		
+		if(in_array('auditorreview', $querydata)){
+			$auditorreview 		= 	[ 
+										'ar.incomplete_point ar_incomplete_point','ar.complete_point ar_complete_point','ar.cautionary_point ar_cautionary_point','ar.noaudit_point ar_noaudit_point','ar.refix_date ar_refix_date'
+									];						
+			$select[] 			= 	implode(',', $auditorreview);
+		}
+		
+		if(isset($requestdata['page']) && (in_array($requestdata['page'], ['adminauditorstatement', 'auditorstatement', 'plumberauditorstatement', 'review']))){
+			$auditorreview1 	= 	[ 
+										'ar1.refix_date ar1_refix_date'
+									];
+			$select[] 			= 	implode(',', $auditorreview1);
+		}
+		
+		$this->db->select(implode(',', $select));
+		$this->db->from('stock_management sm');
+		if(in_array('users', $querydata))				$this->db->join('users u', 'u.id=sm.user_id', 'left'); // Users
+		if(in_array('usersdetail', $querydata))			$this->db->join('users_detail ud', 'ud.user_id=sm.user_id', 'left'); // Users Detail
+		if(in_array('usersplumber', $querydata))		$this->db->join('users_plumber up', 'up.user_id=sm.user_id', 'left'); // Users Plumber
+		if(in_array('coclog', $querydata)) 				$this->db->join('coc_log cl', 'cl.coc_id=sm.id', 'left'); // Coc Log
+		if(in_array('coclogprovince', $querydata)) 		$this->db->join('province p', 'p.id=cl.province', 'left'); // Coc Log Province
+		if(in_array('coclogcity', $querydata)) 			$this->db->join('city c', 'c.id=cl.city', 'left'); // Coc Log City
+		if(in_array('coclogsuburb', $querydata)) 		$this->db->join('suburb s', 's.id=cl.suburb', 'left'); // Coc Log Suburb
+		if(in_array('coclogcompany', $querydata))		$this->db->join('users_detail cd1', 'cd1.user_id=cl.company_details', 'left'); // Coc Log Company Details
+		if(in_array('reseller', $querydata))			$this->db->join('plumberallocate pa', 'pa.stockid=sm.id', 'left'); // Reseller
+		if(in_array('resellerdetails', $querydata))		$this->db->join('users_detail rd', 'rd.user_id=pa.resellersid', 'left'); // Reseller Details
+		if(in_array('auditor', $querydata))				$this->db->join('users a', 'a.id=sm.auditorid', 'left'); // Auditor
+		if(in_array('auditordetails', $querydata))		$this->db->join('users_detail ad', 'ad.user_id=sm.auditorid', 'left'); // Auditor Details
+		if(in_array('auditorstatement', $querydata))	$this->db->join('auditor_statement aas', 'aas.coc_id=sm.id', 'left'); // Auditor Statement
+		if(in_array('auditorreview', $querydata))		$this->db->join('auditor_review ar', 'ar.coc_id=sm.id', 'left'); // Auditor Review
+		if((isset($requestdata['search']['value']) && $requestdata['search']['value']!='') || (isset($requestdata['order']['0']['column']) && $requestdata['order']['0']['column']!='' && isset($requestdata['order']['0']['dir']) && $requestdata['order']['0']['dir']!='')){
+			$this->db->join('custom c1', 'c1.c_id=sm.coc_status and c1.type="1"', 'left');
+			$this->db->join('custom c2', 'c2.c_id=sm.audit_status and c2.type="2"', 'left');
+			$this->db->join('custom c3', 'c3.c_id=sm.type and c3.type="3"', 'left');
+		}
+		if(isset($requestdata['page']) && (in_array($requestdata['page'], ['adminauditorstatement', 'auditorstatement', 'plumberauditorstatement', 'review']))){
+			$this->db->join('auditor_review ar1', 'ar1.coc_id=sm.id and ar1.reviewtype="1"', 'left');
+		}
+		
+		if(isset($requestdata['startrange']) && $requestdata['startrange']!='')				$this->db->where('sm.id >=', $requestdata['startrange']);
+		if(isset($requestdata['endrange']) && $requestdata['endrange']!='')					$this->db->where('sm.id <=', $requestdata['endrange']);
+		if(isset($requestdata['coctype']) && count($requestdata['coctype']) > 0)			$this->db->where_in('sm.type', $requestdata['coctype']);
+		if(isset($requestdata['cocstatus']) && count($requestdata['cocstatus']) > 0)		$this->db->where_in('sm.coc_status', $requestdata['cocstatus']);
+		if(isset($requestdata['nococstatus']) && count($requestdata['nococstatus']) > 0)	$this->db->where_not_in('sm.coc_status', $requestdata['nococstatus']);
+		if(isset($requestdata['startdate']) && $requestdata['startdate']!='')				$this->db->where('sm.purchased_at >=', date('Y-m-d', strtotime($requestdata['startdate'])));
+		if(isset($requestdata['enddate']) && $requestdata['enddate']!='')					$this->db->where('sm.purchased_at <=', date('Y-m-d', strtotime($requestdata['enddate'])));
+		if(isset($requestdata['province']) && $requestdata['province']!='')					$this->db->where('cl.province', $requestdata['province']);
+		if(isset($requestdata['city']) && $requestdata['city']!='')							$this->db->where('cl.city', $requestdata['city']);
+		if(isset($requestdata['auditorid']) && $requestdata['auditorid']!='')				$this->db->where('sm.auditorid', $requestdata['auditorid']);
+		if(isset($requestdata['noaudit']))													$this->db->where('sm.auditorid !=', '');
+		if(isset($requestdata['auditcomplete']))											$this->db->where('aas.auditcomplete', '1');		
+		if(isset($requestdata['user_id']) && $requestdata['user_id']!='')					$this->db->where('sm.user_id', $requestdata['user_id']);
+		if(isset($requestdata['id']) && $requestdata['id']!='')								$this->db->where('sm.id', $requestdata['id']);
+		if(isset($requestdata['auditstatus']) && count($requestdata['auditstatus']) > 0){
+			$this->db->where_in('sm.audit_status', $requestdata['auditstatus']);
+			$this->db->where('sm.coc_status', '2');
+			$this->db->where('sm.auditorid !=', '0');
+		}		
+		if(isset($requestdata['coc_status']) && count($requestdata['coc_status']) > 0){
+			$this->db->group_start();
+				$this->db->where_in('sm.coc_status', $requestdata['coc_status']);
+				$this->db->or_where_in('sm.coc_orders_status', $requestdata['coc_status']);
+			$this->db->group_end();
+		}		
+		if(isset($requestdata['allocated_id'])){
+			$this->db->group_start();
+				$this->db->where('sm.user_id', $requestdata['allocated_id']);
+				$this->db->or_where('sm.allocatedby', $requestdata['allocated_id']);
+			$this->db->group_end();
+		}
+		if(isset($requestdata['monthrange'])){
+			$monthArray 	=	explode('-', $requestdata['monthArray']);
+			$this->db->where('YEAR(sm.purchased_at) = '.$monthArray[0].' AND '.'MONTH(sm.purchased_at) = '.$monthArray[1]);	
+		}
+		
+		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){
+			$searchvalue = $requestdata['search']['value'];
+			
+			if(isset($requestdata['page'])){
+				$page = $requestdata['page'];
+				$this->db->group_start();
+					if($page=='plumbercocstatement'){					
+						$this->db->like('sm.id', $searchvalue, 'both');
+						$this->db->or_like('c1.name', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(sm.allocation_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(cl.log_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('c3.name', $searchvalue, 'both');
+						$this->db->or_like('cl.name', $searchvalue, 'both');
+						$this->db->or_like('cl.address', $searchvalue, 'both');
+						$this->db->or_like('cd1.company', $searchvalue, 'both');					
+						$this->db->or_like('rd.name', $searchvalue, 'both');					
+					}elseif($page=='admincocdetails'){
+						$this->db->like('sm.id', $searchvalue, 'both');
+						$this->db->or_like('c3.name', $searchvalue, 'both');
+						$this->db->or_like('c1.name', $searchvalue, 'both');
+						$this->db->or_like('concat(ud.name, " ", ud.surname)', $searchvalue, 'both');
+						$this->db->or_like('concat(rd.name, " ", rd.surname)', $searchvalue, 'both');
+						$this->db->or_like('concat(ad.name, " ", ad.surname)', $searchvalue, 'both');							
+					}elseif($page=='auditorstatement'){
+						$this->db->like('sm.id', $searchvalue, 'both');
+						$this->db->or_like('c1.name', $searchvalue, 'both');
+						$this->db->or_like('concat(ud.name, " ", ud.surname)', $searchvalue, 'both');		
+						$this->db->or_like('ud.mobile_phone', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(sm.audit_allocation_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(ar1.refix_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(aas.refixcompletedate,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('s.name', $searchvalue, 'both');		
+						$this->db->or_like('cl.name', $searchvalue, 'both');		
+						$this->db->or_like('cl.contact_no', $searchvalue, 'both');		
+					}elseif($page=='plumberauditorstatement'){
+						$this->db->like('sm.id', $searchvalue, 'both');
+						$this->db->or_like('c2.name', $searchvalue, 'both');
+						$this->db->or_like('cl.name', $searchvalue, 'both');		
+						$this->db->or_like('cl.address', $searchvalue, 'both');		
+						$this->db->or_like('DATE_FORMAT(ar1.refix_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(aas.refixcompletedate,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(sm.audit_allocation_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('ad.name', $searchvalue, 'both');		
+					}elseif($page=='adminauditorstatement'){
+						$this->db->like('sm.id', $searchvalue, 'both');
+						$this->db->or_like('c1.name', $searchvalue, 'both');
+						$this->db->or_like('ad.name', $searchvalue, 'both');		
+						$this->db->or_like('ad.mobile_phone', $searchvalue, 'both');		
+						$this->db->or_like('DATE_FORMAT(sm.audit_allocation_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(ar1.refix_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(aas.refixcompletedate,"%d-%m-%Y")', $searchvalue, 'both');
+					}elseif($page=='auditorprofile'){
+						$this->db->like('sm.id', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(aas.audit_date,"%d-%m-%Y")', $searchvalue, 'both');
+						$this->db->or_like('concat(ud.name, " ", ud.surname)', $searchvalue, 'both');
+						$this->db->or_like('s.name', $searchvalue, 'both');		
+						$this->db->or_like('c.name', $searchvalue, 'both');		
+						$this->db->or_like('p.name', $searchvalue, 'both');		
+						$this->db->or_like('ar.incomplete_point', $searchvalue, 'both');		
+						$this->db->or_like('ar.complete_point', $searchvalue, 'both');		
+						$this->db->or_like('ar.cautionary_point', $searchvalue, 'both');		
+						$this->db->or_like('ar.noaudit_point', $searchvalue, 'both');			
+					}
+				$this->db->group_end();
+			}
+		}
+		
 		if(isset($requestdata['order']['0']['column']) && $requestdata['order']['0']['column']!='' && isset($requestdata['order']['0']['dir']) && $requestdata['order']['0']['dir']!=''){
 			if(isset($requestdata['page'])){
 				$page = $requestdata['page'];				
