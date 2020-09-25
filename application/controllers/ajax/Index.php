@@ -381,7 +381,7 @@ class Index extends CC_Controller
 		}		
 		
 		$settingsdetail = $this->Systemsettings_Model->getList('row');
-		if($settingsdetail && $settingsdetail['otp']=='0' && $userid!='7146'){
+		if($settingsdetail && $settingsdetail['otp']=='0'){
 			echo $otp;
 			$this->sms(['no' => $mobile, 'otpcode' => $otp, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdata['id'], 'email' => $userdata['email'], 'smsenable' => '0']);
 		}else{

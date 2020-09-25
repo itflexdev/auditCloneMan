@@ -29,8 +29,8 @@ class Index extends CC_Controller
 	{
 		$post 			= $this->input->post();
 		
-		$totalcount 	= $this->Coc_Model->getCOCList('count', ['status' => ['0','1']]+$post);
-		$results 		= $this->Coc_Model->getCOCList('all', ['status' => ['0','1']]+$post);
+		$totalcount 	= $this->Coc_Model->getCOCList('count', $post, ['users', 'usersdetail', 'reseller', 'resellerdetails', 'auditordetails', 'coclog']);
+		$results 		= $this->Coc_Model->getCOCList('all', $post, ['users', 'usersdetail', 'reseller', 'resellerdetails', 'auditordetails', 'coclog']);
 
 		$checkpermission	=	$this->checkUserPermission('6', '2');
 		
@@ -124,7 +124,7 @@ class Index extends CC_Controller
 		$pagedata['cocrecall']		= $this->config->item('cocrecall');
 		$pagedata['cocreason']		= $this->config->item('cocreason');
 		$pagedata['comments']		= $this->Coc_Details_Comment_Model->getList('all', ['coc_id' => $id]);
-		$pagedata['result']			= $this->Coc_Model->getCOCList('row', ['id' => $id]);
+		$pagedata['result']			= $this->Coc_Model->getCOCList('row', ['id' => $id], ['users', 'usersdetail', 'usersplumber', 'reseller', 'resellerdetails', 'auditordetails', 'coclog']);
 		$pagedata['cocdetails']		= $this->Coc_Model->getCOcDetails('row', ['coc_id' => $id]);
 		
 		$data['plugins']			= ['validation', 'select2'];

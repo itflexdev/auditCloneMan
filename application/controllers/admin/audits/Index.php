@@ -82,8 +82,8 @@ class Index extends CC_Controller
 	public function DTAuditHistory()
 	{
 		$post 			= $this->input->post();	
-		$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2']]+$post);
-		$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2']]+$post);
+		$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2']]+$post, ['usersdetail', 'coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'auditorstatement', 'auditorreview']);
+		$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2']]+$post, ['usersdetail', 'coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'auditorstatement', 'auditorreview']);
 		
 		$totalrecord 	= [];
 		if(count($results) > 0){

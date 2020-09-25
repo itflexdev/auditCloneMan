@@ -54,8 +54,8 @@ class Auditor_allocatecoc_Model extends CC_Model
 		if(isset($requestdata['start_coc_range']) && $requestdata['start_coc_range']!='')				$this->db->where('sm.id>=', $requestdata['start_coc_range']);
 		if(isset($requestdata['end_coc_range']) && $requestdata['end_coc_range']!='') 					$this->db->where('sm.id<=', $requestdata['end_coc_range']);
 		if(isset($requestdata['user_id']) && $requestdata['user_id']!='')								$this->db->where('sm.user_id', $requestdata['user_id']);
-		if(isset($requestdata['province']) && $requestdata['province']!='') 							$this->db->where('ua2.province', $requestdata['province']);
-		if(isset($requestdata['city']) && $requestdata['city']!='') 									$this->db->where('ua2.city', $requestdata['city']);
+		//if(isset($requestdata['province']) && $requestdata['province']!='') 							$this->db->where('ua2.province', $requestdata['province']);
+		//if(isset($requestdata['city']) && $requestdata['city']!='') 									$this->db->where('ua2.city', $requestdata['city']);
 		
 		$this->db->where(['sm.auditorid' => '0', 'sm.coc_status' => '2']);
 		

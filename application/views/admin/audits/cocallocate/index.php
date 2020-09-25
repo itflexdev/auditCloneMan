@@ -268,7 +268,8 @@
 	});
 
 	$('.reset').on('click',function(){		
-		$('#start_date_range,#end_date_range,#start_coc_range,#end_coc_range,#user_search,#user_id,#province1,#city1,#audit_ratio_start,#audit_ratio_end,#rating_start,#rating_end,#rating_end,#no_coc_allocation,#max_allocate_plumber').val('');
+		$('#start_date_range,#end_date_range,#start_coc_range,#end_coc_range,#user_search,#user_id,#audit_ratio_start,#audit_ratio_end,#rating_start,#rating_end,#rating_end,#no_coc_allocation,#max_allocate_plumber').val('');
+		$('#province1,#city1').val('').trigger("change");
 		$('#compulsory_audit').prop('checked', false);
 		$('.tableaccordion').addClass('displaynone');
 		$(document).find('.parenttablecontent').remove();
@@ -448,10 +449,12 @@
 							var postauditorname = summarydata.parent().parent().parent().find('td:nth-child(1)').text();
 						}
 						
+						var installationcode = (v.installationcode.charAt(0)==',') ? v.installationcode.substring(1) : v.installationcode;
+						
 						var data 	= '\
 							<tr class="removecoc">\
 								<td>'+v.coc_id+'</td>\
-								<td>'+v.installationcode+'</td>\
+								<td>'+installationcode+'</td>\
 								<td>'+v.suburbname+'</td>\
 								<td>'+v.cityname+'</td>\
 								<td>'+v.provincename+'</td>\
