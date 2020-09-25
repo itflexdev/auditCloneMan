@@ -393,7 +393,7 @@ class Api_Model extends CC_Model
 						$this->db->or_like('cl.name', $searchvalue, 'both');
 						$this->db->or_like('cl.address', $searchvalue, 'both');
 						$this->db->or_like('cd1.company', $searchvalue, 'both');					
-						$this->db->or_like('rd.name', $searchvalue, 'both');					
+						// $this->db->or_like('rd.name', $searchvalue, 'both');					
 					}elseif($page=='admincocdetails'){
 						$this->db->like('sm.id', $searchvalue, 'both');
 						$this->db->or_like('c3.name', $searchvalue, 'both');
