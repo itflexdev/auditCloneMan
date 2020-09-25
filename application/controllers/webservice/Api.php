@@ -1212,9 +1212,9 @@ class Api extends CC_Controller
 
 			$userid 				= $this->input->post('user_id');
 
-			$totalcount 			 = $this->Api_Model->getCOCList('count', ['user_id' => $userid, 'coc_status' => ['2','4','5','7']]);
-			$results	 			= $this->Api_Model->getCOCList('all', ['user_id' => $userid, 'coc_status' => ['2','4','5','7'], 'api_data' => 'plumber_coc_statement_api']);
-			
+			$totalcount 			 = $this->Api_Model->getCOCList('count', ['user_id' => $userid, 'coc_status' => ['2','4','5','7']], ['coclog']);
+			$results	 			= $this->Api_Model->getCOCList('all', ['user_id' => $userid, 'coc_status' => ['2','4','5','7'], 'api_data' => 'plumber_coc_statement_api'], ['coclog']);
+
 			foreach ($results as $key => $value) {
 				
 				if ($value['coc_status'] == '2') {
@@ -1235,8 +1235,8 @@ class Api extends CC_Controller
 			$userid 		= $this->input->post('user_id');
 			$post 			= $this->input->post();
 
-			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement']);
-			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement']);
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog']);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog']);
 
 			foreach ($results as $key => $value) {
 				
@@ -2760,8 +2760,8 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('type') == 'list') {
 			$userid = $this->input->post('user_id');
 
-			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor']);
-			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor']);
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor'], ['coclog']);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid, 'api_data' => 'auditstatement_auditor'], ['coclog']);
 			if ($results) {
 				foreach ($results as $key => $value) {
 					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => ''];
@@ -2774,8 +2774,8 @@ class Api extends CC_Controller
 			$post['page'] 	= 'auditorstatement';
 			$post['search'] = ['value' => $keywords, 'regex' => false];
 
-			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid]+$post);
-			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid]+$post);
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid], ['coclog']+$post);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid], ['coclog']+$post);
 			if ($results) {
 				foreach ($results as $key => $value) {
 					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => ''];
