@@ -1721,7 +1721,7 @@ class Api extends CC_Controller
 					$colorcode = '#87d0ef';
 				}
 				$jsonData['results'][] = [
-					'coc_number' => $value['id'], 'auditstatus' => $this->config->item('auditstatus')[$value['u_status']], 'colorcode' => $colorcode, 'consumername' => $value['cl_name'], 'auditorname' => $value['auditorname'], 'address' => $value['cl_address'], 'audit_allocation_date' => $value['audit_allocation_date'], 
+					'coc_number' => $value['id'], 'auditstatus' => $this->config->item('auditstatus')[$value['u_status']], 'colorcode' => $colorcode, 'consumername' => $value['cl_name'], 'auditorname' => $value['auditorname'], 'address' => $value['cl_address'], 'audit_allocation_date' => $value['audit_allocation_date'], 'keywords' => $this->input->post('keywords')
 				];
 			}
 			$jsonData['totalcount'] = $totalcount;
