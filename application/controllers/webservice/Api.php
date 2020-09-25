@@ -1235,8 +1235,8 @@ class Api extends CC_Controller
 			$userid 		= $this->input->post('user_id');
 			$post 			= $this->input->post();
 
-			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog']);
-			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog']);
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
 
 			foreach ($results as $key => $value) {
 				
@@ -1275,7 +1275,7 @@ class Api extends CC_Controller
 				$auditorid						= [];
 			}
 			
-			$result							= $this->Coc_Model->getCOCList('row', ['id' => $id, 'user_id' => $plumberID]+$auditorid);
+			$result							= $this->Coc_Model->getCOCList('row', ['id' => $id, 'user_id' => $plumberID], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber']+$auditorid);
 
 			$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $plumberID], ['users', 'usersdetail', 'usersplumber', 'company']);
 			$specialisations 				= explode(',', $userdata['specialisations']);
@@ -1660,15 +1660,15 @@ class Api extends CC_Controller
 
 	// Audit Statement:
 	public function audit_statement(){
-		if ($this->input->post() && $this->input->post('type') == 'search') {
+		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('type') == 'search') {
 			$jsonData = [];
 			$jsonData['results'] = [];
 
 			$keywords 		= $this->input->post('keywords');
 			$userid 		= $this->input->post('user_id');
 			$post 			= $this->input->post();
-			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'noaudit' => '']);
-			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'noaudit' => '']);
+			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'noaudit' => ''], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails', 'auditorstatement']);
+			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'noaudit' => ''], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails', 'auditorstatement']);
 
 			foreach ($results as $key => $value) {
 				if ($value['u_status'] =='1') {
@@ -1731,14 +1731,14 @@ class Api extends CC_Controller
 				$jsonArray = array("status"=>'0', "message"=>'No record found', "result"=>[]);
 			}
 			
-		}elseif ($this->input->post() && $this->input->post('type') == 'list') {
+		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('type') == 'list') {
 			$jsonData = [];
 			$jsonData['results'] = [];
 
 			$userid 		= $this->input->post('user_id');
 			$post 			= $this->input->post();
-			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => '']+$post);
-			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => '']+$post);
+			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => ''], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails']+$post);
+			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => ''], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails']+$post);
 			
 			foreach ($results as $key => $value) {
 				if ($value['u_status'] =='1') {
@@ -1789,7 +1789,7 @@ class Api extends CC_Controller
 			$extraparam['user_id'] 		= $userid;
 			$extraparam['page'] 		= 'review';
 		
-			$result						= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$extraparam);
+			$result						= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails', 'auditorstatement']+$extraparam);
 			$userdata				 	= $this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber', 'company']);
 			$reviewlist					= $this->Auditor_Model->getReviewList('all', ['coc_id' => $id]);
 			
@@ -1890,7 +1890,7 @@ class Api extends CC_Controller
 				$auditorid			 = [];
 			}
 			
-			$result 				 = $this->Coc_Model->getCOCList('row', ['id' => $cocID, 'user_id' => $userid]+$auditorid);
+			$result 				 = $this->Coc_Model->getCOCList('row', ['id' => $cocID, 'user_id' => $userid], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber']+$auditorid);
 			$logdate 				 = isset($result['cl_log_date']) && date('Y-m-d', strtotime($result['cl_log_date']))!='1970-01-01' ? date('d-m-Y', strtotime($result['cl_log_date'])) : '';
 
 			$noncompliance			 = $this->Noncompliance_Model->getList('all', ['coc_id' => $cocID, 'user_id' => $userid]);
