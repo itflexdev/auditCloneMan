@@ -4066,11 +4066,11 @@ class Api extends CC_Controller
 
 
 // Selvamani
-	/*public function get_cocplumber(){
+	public function detail_cocplumber(){
 		if ($this->input->post('COCno')) {
 			$jsonData = [];
 			$id = $this->input->post('COCno');
-			$userdata = $this->Coc_Model->getCOCList('row', ['id' => $id]);
+			$userdata = $this->Coc_Model->getCOCList('row', ['id' => $id], ['usersdetail', 'usersplumber', 'coclog']);
 			if(!empty($userdata)){
 				if($userdata['coc_status'] == '2'){
 
@@ -4132,7 +4132,7 @@ class Api extends CC_Controller
 			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> (object) null);
 		}
 		echo json_encode($jsonArray);
-	}*/
+	}
 	public function get_cocplumber(){
 		if ($this->input->post('COCno')) {
 			$jsonData = [];
