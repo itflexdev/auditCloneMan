@@ -395,7 +395,8 @@ class Cpdtypesetup extends CC_Controller
 
 		if (isset($_FILES) && !$this->input->post()) {
 			$directory 	 = dirname(__DIR__, 4);
-			$filename =  $_FILES["file"]["name"];
+			// $filename =  $_FILES["file"]["name"];
+			$filename =  'cpd template.xlsx';
 			$upload_path = $directory.'/assets/uploads/temp/';
 			if (!file_exists($upload_path.$filename)) {
 		        $location = $upload_path.$filename;
@@ -417,7 +418,8 @@ class Cpdtypesetup extends CC_Controller
 		if ($this->input->post()) {
 			$post = $this->input->post();
 			$directory 	 = dirname(__DIR__, 4);
-			$filename =  $_FILES["filename"]["name"];
+			// $filename =  $_FILES["filename"]["name"];
+			$filename =  'cpd template.xlsx';
 			$upload_path = $directory.'/assets/uploads/temp/';
 			$file 	= $upload_path.$filename;
 			$type 	= \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
@@ -430,41 +432,44 @@ class Cpdtypesetup extends CC_Controller
 			if (isset($exceldata)) {unset($exceldata);}
 			$i = 0;
 			foreach ($datas as $key => $value) {
-				$this->db->select('u.*, up.user_id, up.registration_no, concat(ud.name, " ", ud.surname) as name');
-				$this->db->from('users u');
-				$this->db->join('users_plumber up', 'up.user_id=u.id', 'left');
-				$this->db->join('users_detail ud', 'ud.user_id=u.id', 'left');
-				$this->db->where('up.registration_no', $value[0]);
-				$query = $this->db->get();
-				$result = $query->row_array();
-				// if ($value[1] !='') {
-				// 	$cpdpoints = $value[1];
-				// }else{
-				// 	$cpdpoints = $post['cpdpoints'];
-				// }
-				if ($value[1] !='' && $value[1] !='0') {
-					$cpdpoints = $value[1];
-				}elseif($value[1] !='' && $value[1] =='0'){
-					$cpdpoints = $post['cpdpoints'];
-				}else{
-					$cpdpoints = $post['cpdpoints'];
-				}
+				if($value[0] !=''){
+				
+					$this->db->select('u.*, up.user_id, up.registration_no, concat(ud.name, " ", ud.surname) as name');
+					$this->db->from('users u');
+					$this->db->join('users_plumber up', 'up.user_id=u.id', 'left');
+					$this->db->join('users_detail ud', 'ud.user_id=u.id', 'left');
+					$this->db->where('up.registration_no', $value[0]);
+					$query = $this->db->get();
+					$result = $query->row_array();
+					// if ($value[1] !='') {
+					// 	$cpdpoints = $value[1];
+					// }else{
+					// 	$cpdpoints = $post['cpdpoints'];
+					// }
+					if ($value[1] !='' && $value[1] !='0') {
+						$cpdpoints = $value[1];
+					}elseif($value[1] !='' && $value[1] =='0'){
+						$cpdpoints = $post['cpdpoints'];
+					}else{
+						$cpdpoints = $post['cpdpoints'];
+					}
 
-				if ($result) {
-					
-					$exceldata[$i][0] = $value[0];
-					$exceldata[$i][1] = $cpdpoints;
-					$exceldata[$i][2] = $result['user_id'];
-					$exceldata[$i][3] = $result['name'];
-					$exceldata[$i][4] = 'Plumber found';
-				}else{
-					$exceldata[$i][0] = $value[0];
-					$exceldata[$i][1] = $cpdpoints;
-					$exceldata[$i][2] = $result['user_id'];
-					$exceldata[$i][3] = $result['name'];
-					$exceldata[$i][4] = 'Plumber not found';
+					if ($result) {
+						
+						$exceldata[$i][0] = $value[0];
+						$exceldata[$i][1] = $cpdpoints;
+						$exceldata[$i][2] = $result['user_id'];
+						$exceldata[$i][3] = $result['name'];
+						$exceldata[$i][4] = 'Plumber found';
+					}else{
+						$exceldata[$i][0] = $value[0];
+						$exceldata[$i][1] = $cpdpoints;
+						$exceldata[$i][2] = $result['user_id'];
+						$exceldata[$i][3] = $result['name'];
+						$exceldata[$i][4] = 'Plumber not found';
+					}
+					$i++;
 				}
-				$i++;
 			}
 			$j = 0;
 			
@@ -732,7 +737,7 @@ class Cpdtypesetup extends CC_Controller
 		$filename 		=  $_FILES["filename"]["name"];
 		$post 			= $this->input->post();
 		$directory 		= dirname(__DIR__, 4);
-		$temppath 		= $directory.'/assets/uploads/temp/'.$filename.'';
+		$temppath 		= $directory.'/assets/uploads/temp/cpd template.xlsx';
 		$file 			= $temppath;
 		$type 			= \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
 		$reader 		= \PhpOffice\PhpSpreadsheet\IOFactory::createReader($type);
@@ -795,7 +800,7 @@ class Cpdtypesetup extends CC_Controller
 
 	}
 	public function importproceed(){
-		$tempfile = $_FILES["filename"]["name"];
+		// $tempfile = $_FILES["filename"]["name"];
 		$post 	= $this->input->post();
 		$userid = $this->getUserID();
 		$userdetails = $this->getUserDetails();
@@ -850,8 +855,8 @@ class Cpdtypesetup extends CC_Controller
 				$data 	=  $this->Cpdtypesetup_Model->queue_action($formdata);
 			}
 		}
-		// $temp 	 			= $directory.'/assets/uploads/temp/cpd template.xlsx';
-		$temp 	 			= $directory.'/assets/uploads/temp/'.$tempfile.'';
+		$temp 	 			= $directory.'/assets/uploads/temp/cpd template.xlsx';
+		// $temp 	 			= $directory.'/assets/uploads/temp/'.$tempfile.'';
 		
 		if (file_exists($temp)) {
 			unlink($temp);
@@ -894,11 +899,11 @@ class Cpdtypesetup extends CC_Controller
 
 	public function cancel(){
 
-		$filename =  $_FILES["file"]["name"];
+		// $filename =  $_FILES["file"]["name"];
 		$directory 	 = dirname(__DIR__, 4);
 		$templatepath = $directory.'/assets/uploads/cpdmassimport/cpd_template.xlsx';
 		$errortemplate 	 = $directory.'/assets/uploads/cpdmassimport/cpd_errors.xlsx';
-		$temp 	 			= $directory.'/assets/uploads/temp/'.$filename.'';
+		$temp 	 			= $directory.'/assets/uploads/temp/cpd template.xlsx';
 		
 		if (file_exists($temp)) {
 			unlink($temp);
