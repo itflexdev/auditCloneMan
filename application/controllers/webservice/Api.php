@@ -1237,7 +1237,7 @@ class Api extends CC_Controller
 
 			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
 			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
-			$jsonData['keywords'] = $keywords;
+			$jsonData['keywords'][] = $keywords;
 
 			foreach ($results as $key => $value) {
 				
@@ -1708,7 +1708,7 @@ class Api extends CC_Controller
 			}
 			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'start' => '0', 'length' => $length, 'noaudit' => '']);
 			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'start' => '0', 'length' => $length, 'noaudit' => '']);
-			$jsonData['keywords'] = $keywords;
+			$jsonData['keywords'][] = $keywords;
 
 			foreach ($results as $key => $value) {
 				if ($value['u_status'] =='1') {
@@ -2679,7 +2679,7 @@ class Api extends CC_Controller
 				$post 			= $this->input->post();
 				$totalcount 	= $this->Auditor_Reportlisting_Model->getList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'status' => ['0','1']]);
 				$results 		= $this->Auditor_Reportlisting_Model->getList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'status' => ['0','1']]);
-				$jsonData['keywords'] = $keywords;
+				$jsonData['keywords'][] = $keywords;
 				if ($results) {
 					foreach ($results as $key => $value) {
 						$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $value['installationtype_id']]);
@@ -2776,7 +2776,7 @@ class Api extends CC_Controller
 			$keywords 				= $this->input->post('keywords');
 			$post['page'] 			= 'auditorstatement';
 			$post['search'] 		= ['value' => $keywords, 'regex' => false];
-			$jsonData['keywords'] 	= $keywords;
+			$jsonData['keywords'][] = $keywords;
 
 			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid], ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']+$post);
 			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid], ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']+$post);
@@ -2844,7 +2844,7 @@ class Api extends CC_Controller
 				$results 					= $this->Api_Model->getInvoiceList('all', ['user_id' => $userid]+$post);
 				$jsonData['totalcount']    	= $totalcount;
 				$jsonData['userid']    		= $userid;
-				$jsonData['keywords'] 		= $keywords;
+				$jsonData['keywords'][] 	= $keywords;
 				if(count($results) > 0){
 					$message = 'Auditor Accounts Search Results';
 					foreach($results as $result){
@@ -3602,7 +3602,7 @@ class Api extends CC_Controller
 				$post['page'] 			= 'adminaudithistroy';
 				$totalcount 			= $this->Auditor_Model->getReviewList('count', $post);
 				$reviewresults 			= $this->Auditor_Model->getReviewList('all', $post);
-				$jsonData['keywords'] 	= $this->input->post('keywords');
+				$jsonData['keywords'][] = $this->input->post('keywords');
 				if(count($reviewresults) > 0){
 					foreach($reviewresults as $result){
 						$jsonData['table_content'][] = 	[
