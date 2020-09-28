@@ -76,6 +76,8 @@ class index extends CC_Controller
 			<ul id="name-list1">
 			<?php
 			foreach($data as $key=>$val) {
+				if ($val["activity"] !='') {
+				///
 				//print_r($val['startdate']);die;
 				if ($val['startdate']) {
 					$startDate1 = date('m-d-Y', strtotime($val['startdate']));
@@ -87,7 +89,7 @@ class index extends CC_Controller
 				$cpdPoints 		= $val["points"];
 			?>
 			<li onClick="selectActivity('<?php echo $activity; ?>','<?php echo $val["id"]; ?>','<?php echo $startDate; ?>','<?php echo $cpd_Stream; ?>','<?php echo $cpdPoints; ?>','<?php echo $cpd_Stream_id; ?>');"><?php echo $activity; ?></li>
-			<?php } ?>
+			<?php } } ?>
 			</ul>
 <?php 	} 
 	}
@@ -98,7 +100,6 @@ class index extends CC_Controller
 
 		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']]]+$post);
 		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']]]+$post);
-		//print_r($results);die;
 		
 		$totalrecord 	= [];
 		if(count($results) > 0){
