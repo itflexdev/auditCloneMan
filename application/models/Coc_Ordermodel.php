@@ -15,7 +15,7 @@ class Coc_Ordermodel extends CC_Model
 		$this->db->join('city t5', 't3.city=t5.id','left');		
 
 
-		$this->db->where_in('inv.inv_type', ['1','2']);
+		$this->db->where_in('inv.inv_type', ['1']);
 
 		if(isset($requestdata['id'])) 				$this->db->where('t1.id', $requestdata['id']);
 		if(isset($requestdata['userid'])) 			$this->db->where('t1.user_id', $requestdata['userid']);
