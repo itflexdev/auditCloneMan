@@ -1237,6 +1237,7 @@ class Api extends CC_Controller
 
 			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
 			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
+			$jsonData['keywords'] = $keywords;
 
 			foreach ($results as $key => $value) {
 				
@@ -1247,7 +1248,7 @@ class Api extends CC_Controller
 					$colorcode 	= '#ade33d';
 					$coc_status = 'Un Logged';
 				}
-				$jsonData['coc_statement'][] = [ 'coc_number' => $value['id'], 'plumberid' => $value['user_id'],  'coc_type' => $this->config->item('coctype')[$value['type']], 'cl_name' => $value['cl_name'], 'colorcode' => $colorcode, 'keywords' => $keywords, 'totalcount' => $totalcount
+				$jsonData['coc_statement'][] = [ 'coc_number' => $value['id'], 'plumberid' => $value['user_id'],  'coc_type' => $this->config->item('coctype')[$value['type']], 'cl_name' => $value['cl_name'], 'colorcode' => $colorcode, 'totalcount' => $totalcount
 				];
 			}
 			
@@ -1707,6 +1708,7 @@ class Api extends CC_Controller
 			}
 			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'start' => '0', 'length' => $length, 'noaudit' => '']);
 			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'start' => '0', 'length' => $length, 'noaudit' => '']);
+			$jsonData['keywords'] = $keywords;
 
 			foreach ($results as $key => $value) {
 				if ($value['u_status'] =='1') {
@@ -1721,7 +1723,7 @@ class Api extends CC_Controller
 					$colorcode = '#87d0ef';
 				}
 				$jsonData['results'][] = [
-					'coc_number' => $value['id'], 'auditstatus' => $this->config->item('auditstatus')[$value['u_status']], 'colorcode' => $colorcode, 'consumername' => $value['cl_name'], 'auditorname' => $value['auditorname'], 'address' => $value['cl_address'], 'audit_allocation_date' => $value['audit_allocation_date'], 'keywords' => $this->input->post('keywords')
+					'coc_number' => $value['id'], 'auditstatus' => $this->config->item('auditstatus')[$value['u_status']], 'colorcode' => $colorcode, 'consumername' => $value['cl_name'], 'auditorname' => $value['auditorname'], 'address' => $value['cl_address'], 'audit_allocation_date' => $value['audit_allocation_date']
 				];
 			}
 			$jsonData['totalcount'] = $totalcount;
@@ -2677,6 +2679,7 @@ class Api extends CC_Controller
 				$post 			= $this->input->post();
 				$totalcount 	= $this->Auditor_Reportlisting_Model->getList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'status' => ['0','1']]);
 				$results 		= $this->Auditor_Reportlisting_Model->getList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'status' => ['0','1']]);
+				$jsonData['keywords'] = $keywords;
 				if ($results) {
 					foreach ($results as $key => $value) {
 						$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $value['installationtype_id']]);
@@ -2769,10 +2772,11 @@ class Api extends CC_Controller
 			}
 			$jsonArray 		= array("status"=>'1', "message"=>'Audit Statement', "result"=>$jsonData);
 		}elseif ($this->input->post() && $this->input->post('user_id') && $this->input->post('type') == 'search' && $this->input->post('keywords')) {
-			$userid 		= $this->input->post('user_id');
-			$keywords 		= $this->input->post('keywords');
-			$post['page'] 	= 'auditorstatement';
-			$post['search'] = ['value' => $keywords, 'regex' => false];
+			$userid 				= $this->input->post('user_id');
+			$keywords 				= $this->input->post('keywords');
+			$post['page'] 			= 'auditorstatement';
+			$post['search'] 		= ['value' => $keywords, 'regex' => false];
+			$jsonData['keywords'] 	= $keywords;
 
 			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid], ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']+$post);
 			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid], ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']+$post);
@@ -2833,13 +2837,14 @@ class Api extends CC_Controller
 				}
 			
 			}elseif($this->input->post('type') == 'search' && $this->input->post('keywords') !=''){
-				$userid 			= $this->input->post('user_id');
-				$keywords 			= $this->input->post('keywords');
-				$post['search'] 	= ['value' => $keywords, 'regex' => false];
+				$userid 					= $this->input->post('user_id');
+				$keywords 					= $this->input->post('keywords');
+				$post['search'] 			= ['value' => $keywords, 'regex' => false];
 				$totalcount 				= $this->Api_Model->getInvoiceList('count',['user_id' => $userid]+$post);
 				$results 					= $this->Api_Model->getInvoiceList('all', ['user_id' => $userid]+$post);
-				$jsonData['totalcount']    	= 	$totalcount;
-				$jsonData['userid']    		= 	$userid;
+				$jsonData['totalcount']    	= $totalcount;
+				$jsonData['userid']    		= $userid;
+				$jsonData['keywords'] 		= $keywords;
 				if(count($results) > 0){
 					$message = 'Auditor Accounts Search Results';
 					foreach($results as $result){
@@ -3592,11 +3597,12 @@ class Api extends CC_Controller
 				}
 				$message = 'Plumber History Results';
 			}elseif ($this->input->post() && $this->input->post('plumber_id') && $this->input->post('type') =='search' && $this->input->post('keywords')) {
-				$post['plumberid'] 	= $this->input->post('plumber_id');
-				$post['search'] 	= ['value' => $this->input->post('keywords'), 'regex' => 'false'];
-				$post['page'] 		= 'adminaudithistroy';
-				$totalcount 		= $this->Auditor_Model->getReviewList('count', $post);
-				$reviewresults 		= $this->Auditor_Model->getReviewList('all', $post);
+				$post['plumberid'] 		= $this->input->post('plumber_id');
+				$post['search'] 		= ['value' => $this->input->post('keywords'), 'regex' => 'false'];
+				$post['page'] 			= 'adminaudithistroy';
+				$totalcount 			= $this->Auditor_Model->getReviewList('count', $post);
+				$reviewresults 			= $this->Auditor_Model->getReviewList('all', $post);
+				$jsonData['keywords'] 	= $this->input->post('keywords');
 				if(count($reviewresults) > 0){
 					foreach($reviewresults as $result){
 						$jsonData['table_content'][] = 	[
