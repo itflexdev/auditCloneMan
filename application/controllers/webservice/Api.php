@@ -1670,6 +1670,7 @@ class Api extends CC_Controller
 			$post 			= $this->input->post();
 			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'noaudit' => ''], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails', 'auditorstatement']);
 			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumberauditorstatement', 'noaudit' => ''], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails', 'auditorstatement']);
+			$jsonData['keywords'][] = $keywords;
 
 			foreach ($results as $key => $value) {
 				if ($value['u_status'] =='1') {
