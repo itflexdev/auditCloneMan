@@ -189,7 +189,28 @@
 					</div>
 				</div>
 				
-				<div class="audit_summary displaynone m-t-40">
+				<div class="audit_queue displaynone m-t-30">
+					<h4 class="card-title">Allocation Queue</h4>
+						<table class="table table-bordered table-striped queue_table fullwidth m-t-15">
+							<thead>
+								<tr>
+									<th>COC Number</th>
+									<th>Installation Code(s) of COC</th>
+									<th>Suburb</th>
+									<th>City</th>
+									<th>Province</th>
+									<th>Auditor Name</th>
+									<th>Audit Allocation MTD</th>
+									<th>Open Audits</th>
+									<th>Allocate</th>
+									<th>Cancel</th>
+								</tr>
+							</thead>
+						</table>
+					</form>
+				</div>
+				
+				<div class="audit_summary displaynone m-t-30">
 					<h4 class="card-title">Audit Summary</h4>
 					<div class="row">
 						<div class="col-md-4">
@@ -260,6 +281,8 @@
 		datepicker('#start_date_range');
 		datepicker('#end_date_range');
 		citysuburb(['#province1','#city1'], ['']);
+		
+		queuelist();
 	});
 
 	$('.search').on('click',function(){		
@@ -338,7 +361,7 @@
 												<th>Auditor Name</th>\
 												<th>Audit Allocation MTD</th>\
 												<th>Open Audits</th>\
-												<th>Allocation</th>\
+												<th>Add to Queue</th>\
 											</tr>\
 										</thead>\
 										<tbody></tbody>\
@@ -373,7 +396,7 @@
 		e.preventDefault(); 
 		datatable($(this).find('a').attr('data-ci-pagination-page'));
 	});
-	 
+	
 	$(document).on('click', '.cocaccordion', function(){
 		var _this					= $(this);
 		var rowindex				= $(this).parent().parent().attr('data-index');
@@ -391,10 +414,8 @@
 			_this.parent().find('.fa-caret-up').removeClass('displaynone');
 		}
 		
-		if($(document).find('#childrow'+rowindex+' .removecoc').length){
-			return false;
-		}
-		
+		$(document).find('#childrow'+rowindex+' .removecoc').remove();
+				
 		var data = {
 			user_id					: userid, 
 			coc_count				: coc_count, 
@@ -428,25 +449,15 @@
 						}
 						
 						if(max_allocate_plumber==''){						
-							var autoresult 		= userautocomplete([], ['', 5, {suburb : v.suburbname,city : v.cityname,province : v.provincename}], '', 1);
-							$(autoresult).each(function(ii, vv){
-								$(vv).each(function(index, values){
-									if(values.sort=='0') return false;
-									postauditorname = values.name;
-									postauditorid 	= values.id;
-									openaudit 		= values.openaudit;
-									allowedaudit 	= values.allowedaudit;
-									mtd 			= values.mtd;
-									return false;
-								})
+							var autoresult 		= userautocomplete([], ['', 5, {suburb : v.suburbname,city : v.cityname,province : v.provincename, row : '1'}], '', 1);
+							$(autoresult).each(function(index, values){
+								if(values==null) return false;
+								postauditorname = values.name;
+								postauditorid 	= values.id;
+								openaudit 		= values.openaudit;
+								allowedaudit 	= values.allowedaudit;
+								mtd 			= values.mtd;
 							})
-						}
-						
-						var summarydata = $(document).find('.postcocid[value="'+v.coc_id+'"]');
-						if(summarydata.length > 0){
-							var checkallocate 	= 'checked="checked"';
-							var postauditorid 	= summarydata.parent().find('.postauditorid').val();
-							var postauditorname = summarydata.parent().parent().parent().find('td:nth-child(1)').text();
 						}
 						
 						var installationcode = (v.installationcode.charAt(0)==',') ? v.installationcode.substring(1) : v.installationcode;
@@ -466,7 +477,7 @@
 								</td>\
 								<td class="">'+mtd+'</td>\
 								<td class="openaudit">'+openaudit+'</td>\
-								<td><input type="checkbox" name="allocate" class="allocate" data-automation="'+automation+'" data-cocid="'+v.coc_id+'" '+checkallocate+'></td>\
+								<td><input type="checkbox" name="queue" class="queue" data-automation="'+automation+'" data-cocid="'+v.coc_id+'" '+checkallocate+'></td>\
 							</tr>\
 						'; 
 						
@@ -477,8 +488,8 @@
 
 					if(max_allocate_plumber!=''){
 						$(document).find('#childrow'+rowindex+' tbody tr').each(function(){
-							if($(this).find('.allocate').attr('data-automation')=='1'){
-								$(this).find('.allocate').click();
+							if($(this).find('.queue').attr('data-automation')=='1'){
+								$(this).find('.queue').click();
 							}
 						})
 					}
@@ -487,6 +498,131 @@
 			}
 		});
 	})	
+	
+	$(document).on('click', '.queue', function(){		
+		var _thistr			= $(this).parent().parent();
+			
+		if($(this).attr('data-automation')=='1'){
+			var suburbname 		= _thistr.find('td:nth-child(3)').text();
+			var cityname 		= _thistr.find('td:nth-child(4)').text();
+			var provincename 	= _thistr.find('td:nth-child(5)').text();
+			
+			var autoresult 		= userautocomplete([], ['', 5, {suburb : suburbname,city : cityname,province : provincename}], '', 1);
+			$(autoresult).each(function(ii, vv){
+				$(vv).each(function(index, values){
+					var postauditorname1 		= values.name;
+					var postauditorid1 			= values.id;
+					var openaudit1 				= values.openaudit;
+					var allowedaudit1 			= values.allowedaudit;
+					var mtd1 					= values.mtd;
+					var dynamicallowedaudit1 	= (parseInt($(document).find('.postauditorid[value="'+postauditorid1+'"]').length) + parseInt(openaudit1));
+					
+					if(allowedaudit1 <= dynamicallowedaudit1){
+						return;
+					}
+					
+					_thistr.find('.auditor_search').attr('data-allowedaudit', allowedaudit1).val(postauditorname1);
+					_thistr.find('.auditor_id').val(postauditorid1);
+					_thistr.find('td:nth-child(7)').text(mtd1);
+					_thistr.find('td:nth-child(8)').text(openaudit1);
+					
+					return false;
+				})
+			})
+		}
+
+		$(this).removeAttr('data-automation');
+		
+		var cocid 			= $(this).attr('data-cocid');
+		var auditorid 		= _thistr.find('#auditor_id_'+cocid).val();
+		
+		if(auditorid==''){
+			$(this).prop('checked', false);
+			_thistr.find('#auditor_id_'+cocid).focus();
+			return false;
+		}
+		
+		queueaction(_thistr, 'insert');
+		_thistr.remove();
+	});
+	
+	$(document).on('click', '.cancel', function(){
+		$(document).find('.parenttablecontent').removeClass('open');
+		$(document).find('.childrow').removeClass('open');
+		$(document).find('.fa-caret-up').removeClass('displaynone');
+		$(document).find('.fa-caret-down').addClass('displaynone');
+		
+		queueaction($(this).parent().parent(), 'delete');
+		$(this).parent().parent().remove();
+	});
+	
+	function queueaction(_this, type){
+		var data = {
+			coc_id 				: _this.find('td:eq(0)').text(),
+			installation_code 	: _this.find('td:eq(1)').text(),
+			suburb 				: _this.find('td:eq(2)').text(),
+			city 				: _this.find('td:eq(3)').text(),
+			province 			: _this.find('td:eq(4)').text(),
+			plumber_id 			: _this.find('td:eq(5) .plumber_id').val(),
+			auditor_id 			: _this.find('td:eq(5) .auditor_id').val(),
+			type				: type
+		}
+		
+		ajax('<?php echo base_url()."admin/audits/cocallocate/index/actionQueue"; ?>', data, '', {success: function(data){ queuelist(); }});
+	}
+	
+	function queuelist(){
+		ajax('<?php echo base_url()."admin/audits/cocallocate/index/getQueue"; ?>', {}, '', {success: function(data){
+			if(data.result.length > 0){
+				var table 			= [];
+				
+				$(data.result).each(function(i, v){	
+					var auditorname 	= '';
+					var allowedaudit 	= '0';
+					var mtd				= '0';
+					var openaudit		= '0';
+					var checkallocate 	= ($(document).find('.postcocid[value="'+v.coc_id+'"]').length > 0) ? 'checked="checked"' : '';
+					var autoresult 		= userautocomplete([], ['', 5, {auditorid : v.auditor_id, row : '1'}], '', 1);
+					
+					$(autoresult).each(function(index, values){
+						auditorname 	= values.name;
+						allowedaudit 	= values.allowedaudit;
+						mtd				= values.mtd;
+						openaudit		= values.openaudit;
+					});
+					
+					var data 	= '\
+						<tr class="removequeue">\
+							<td>'+v.coc_id+'</td>\
+							<td>'+v.installation_code+'</td>\
+							<td>'+v.suburb+'</td>\
+							<td>'+v.city+'</td>\
+							<td>'+v.province+'</td>\
+							<td>\
+								<input type="text" autocomplete="off" class="form-control auditor_search" id="auditor_search_'+v.coc_id+'" data-cocid="'+v.coc_id+'" data-suburb="'+v.suburb+'"  data-city="'+v.city+'"  data-province="'+v.province+'" data-allowedaudit="'+allowedaudit+'" value="'+auditorname+'" style="width:100px">\
+								<input type="hidden" class="auditor_id" id="auditor_id_'+v.coc_id+'" value="'+v.auditor_id+'">\
+								<input type="hidden" class="plumber_id" id="plumber_id_'+v.coc_id+'" value="'+v.plumber_id+'">\
+								<div class="auditor_suggestion" id="auditor_suggestion_'+v.coc_id+'"></div>\
+							</td>\
+							<td class="">'+mtd+'</td>\
+							<td class="openaudit">'+openaudit+'</td>\
+							<td><input type="checkbox" name="allocate" class="allocate" data-cocid="'+v.coc_id+'" '+checkallocate+'></td>\
+							<td><input type="checkbox" name="cancel" class="cancel" data-cocid="'+v.coc_id+'" ></td>\
+						</tr>\
+					'; 
+					
+					table.push(data);
+				})
+				
+				
+				$('.audit_queue').removeClass('displaynone');
+				$(document).find('.queue_table .removequeue').remove();
+				$('.queue_table').append(table);
+			}else{
+				$('.audit_queue').addClass('displaynone');
+			}
+		}});
+	}
 	
 	$(document).on('keyup', '.auditor_search', function(){
 		var cocid 		= $(this).attr('data-cocid');
@@ -504,6 +640,7 @@
 		_this.attr('data-allowedaudit', allowedaudit);
 		_this.parent().parent().find('td:nth-child(7)').text(mtd);
 		_this.parent().parent().find('td:nth-child(8)').text(openaudit);
+		queueaction(_this.parent().parent(), 'update');
 	}
 	
 	$(document).on('keyup', '#user_search', function(){

@@ -2,9 +2,11 @@ function baseurl(){
 	var base = window.location;
 
 	if(base.host=='localhost'){
-		return base.protocol + "//" + base.host + "/nantha/pirb/";
+		return "https://" + base.host + "/nantha/pirb/";
+	}else if(base.host=='diyesh.com'){
+		return "https://" + base.host + "/auditit_new/pirb_new/pirb/";
 	}else{
-		return base.protocol + "//" + base.host + "/auditit_new/pirb_new/pirb/";
+		return "https://" + base.host + "/";
 	}
 }
 

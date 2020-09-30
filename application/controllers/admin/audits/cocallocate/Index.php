@@ -190,5 +190,19 @@ class Index extends CC_Controller
 		$result 		= $this->Auditor_allocatecoc_Model->getCOCList('all', $post);
 		echo json_encode(array("result" => $result));
 	}
+	
+	public function getQueue()
+	{ 
+		$post 			= $this->input->post();
+		$result 		= $this->Auditor_allocatecoc_Model->getQueue('all', $post);
+		echo json_encode(array("result" => $result));
+	}
+	
+	public function actionQueue()
+	{ 
+		$post 			= $this->input->post();
+		$result 		= $this->Auditor_allocatecoc_Model->actionQueue($post);
+		echo json_encode(array("result" => $result));
+	}
 } 
 

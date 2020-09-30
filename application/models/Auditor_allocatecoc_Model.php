@@ -81,8 +81,9 @@ class Auditor_allocatecoc_Model extends CC_Model
 		$this->db->join('city c', 'cl.city=c.id','left');					
 		$this->db->join('suburb s', 'cl.suburb=s.id','left');	
 		$this->db->join('stock_management sm', 'sm.id=cl.coc_id','left');	
+		$this->db->join('auditor_allocation aa', 'aa.coc_id=cl.coc_id','left');	
 		
-		$this->db->where(['sm.auditorid' => '0', 'sm.coc_status' => '2']);
+		$this->db->where(['sm.auditorid' => '0', 'sm.coc_status' => '2', 'aa.coc_id' => NULL]);
 		
 		if(isset($requestdata['start_date_range']) && $requestdata['start_date_range']!='') 	$this->db->where('DATE(cl.log_date) >=', date('Y-m-d', strtotime($requestdata['start_date_range'])));
 		if(isset($requestdata['end_date_range']) && $requestdata['end_date_range']!='') 		$this->db->where('DATE(cl.log_date) <=', date('Y-m-d', strtotime($requestdata['end_date_range'])));
@@ -239,7 +240,7 @@ class Auditor_allocatecoc_Model extends CC_Model
 		
 		return $result;
 	}
-
+	
 	public function action($data){
 
 		$requestdata['auditorid'] 				= 	$data['auditor_id'];	
@@ -248,6 +249,44 @@ class Auditor_allocatecoc_Model extends CC_Model
 		$requestdata['notification']			=	'1';
 				
 		$result = $this->db->update('stock_management', $requestdata, ['id' => $data['coc_id']]);
+		$this->db->delete('auditor_allocation', ['coc_id' => $data['coc_id']]);
 		return $result;	
+	}	
+	
+	public function getQueue($type, $requestdata=[])
+	{ 
+		$this->db->select('*');
+		$this->db->from('auditor_allocation');	
+		
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		
+		return $result;
+	}
+
+	public function actionQueue($data){
+		if($data['type']=='insert'){
+			unset($data['type']);
+			$data['created_at'] = date('Y-m-d H:i:s');
+			$data['created_by'] = $this->getUserID();
+			$data['updated_at'] = date('Y-m-d H:i:s');
+			$data['updated_by'] = $this->getUserID();
+			$this->db->insert('auditor_allocation', $data);
+		}elseif($data['type']=='update'){
+			unset($data['type']);
+			$data['updated_at'] = date('Y-m-d H:i:s');
+			$data['updated_by'] = $this->getUserID();
+			$this->db->update('auditor_allocation', $data, ['coc_id' => $data['coc_id']]);
+		}elseif($data['type']=='delete'){
+			$this->db->delete('auditor_allocation', ['coc_id' => $data['coc_id']]);
+		}
+		
+		return '1';
 	}	
 }

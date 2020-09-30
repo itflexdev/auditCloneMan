@@ -14,8 +14,9 @@ class Index extends CC_Controller
 		
 		$pagedata['statusactive'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'plumberstatus' => ['1'], 'status' => ['1']], ['users', 'usersdetail', 'usersplumber']);
 		$pagedata['statussuspended'] 	= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'plumberstatus' => ['6'], 'status' => ['1']], ['users', 'usersdetail', 'usersplumber']);
-		$pagedata['statusexpired'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'plumberstatus' => ['3'], 'status' => ['2']], ['users', 'usersdetail', 'usersplumber']);
+		$pagedata['statusexpired'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'plumberstatus' => ['3', '5'], 'status' => ['2']], ['users', 'usersdetail', 'usersplumber']);
 		$pagedata['statuspending'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'plumberstatus' => ['0'], 'status' => ['1']], ['users', 'usersdetail', 'usersplumber']);
+		$pagedata['statuscpdsuspend'] 	= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'plumberstatus' => ['2'], 'status' => ['1']], ['users', 'usersdetail', 'usersplumber']);
 		
 		$pagedata['designationl'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'designation' => ['1']], ['users', 'usersplumber']);
 		$pagedata['designationtap'] 	= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'designation' => ['2']], ['users', 'usersplumber']);
@@ -24,9 +25,9 @@ class Index extends CC_Controller
 		$pagedata['designationlp'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'designation' => ['5']], ['users', 'usersplumber']);
 		$pagedata['designationmp'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'designation' => ['6']], ['users', 'usersplumber']);
 		
-		$pagedata['racial1'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'racial' => ['1']], ['users', 'usersplumber']);
-		$pagedata['racial2'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'racial' => ['2']], ['users', 'usersplumber']);
-		$pagedata['racial3'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'racial' => ['3']], ['users', 'usersplumber']);
+		$pagedata['racial1'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'racial' => ['2']], ['users', 'usersplumber']);
+		$pagedata['racial2'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'racial' => ['3']], ['users', 'usersplumber']);
+		$pagedata['racial3'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'racial' => ['1']], ['users', 'usersplumber']);
 		$pagedata['racial4'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'racial' => ['4']], ['users', 'usersplumber']);
 		
 		$pagedata['genderm'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'gender' => ['1']], ['users', 'usersdetail', 'usersplumber']);
