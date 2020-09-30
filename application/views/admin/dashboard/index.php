@@ -89,7 +89,7 @@ $noaudit 			= $history['noaudit'];
 						<div class="cus_msg">
 							<p>Registrar Status</p>
 							<div class="row">
-								<div class="col-md-2 offset-2">
+								<div class="col-md-2 offset-1">
 									<div class="form-group coc_pur_sec">
 									<div class="a_round text-white" style="background-color: rgb(68,114,196);"><?php echo $statusactive;?></div>
 									<label class="a_label">Active</label>
@@ -104,13 +104,19 @@ $noaudit 			= $history['noaudit'];
 								<div class="col-md-2">
 									<div class="form-group coc_pur_sec">
 									<div class="a_round text-white" style="background-color: rgb(255,0,0);"><?php echo $statusexpired;?></div>
-									<label class="a_label">Expired</label>
+									<label class="a_label">Expired & Resigned</label>
 									</div>
 								</div>
 								<div class="col-md-2">
 									<div class="form-group coc_pur_sec">
 									<div class="a_round text-white" style="background-color: rgb(192,0,0);"><?php echo $statuspending;?></div>
 									<label class="a_label">Pending</label>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group coc_pur_sec">
+									<div class="a_round text-white" style="background-color: rgb(255,196,0);"><?php echo $statuscpdsuspend;?></div>
+									<label class="a_label">CPD Suspended</label>
 									</div>
 								</div>
 							</div>

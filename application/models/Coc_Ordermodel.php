@@ -243,7 +243,9 @@ class Coc_Ordermodel extends CC_Model
 	}
 
 	public function autosearchAuditor($postData){
-		$openaudit = 	',(
+		if(isset($postData['province'])) $areadata 	= $postData['province'].'@@@'.$postData['city'].'@@@'.$postData['suburb'];
+			
+		$openaudit 	= 	',(
 							select count(sm.id) 
 							from stock_management sm
 							left join auditor_statement as ars on ars.coc_id=sm.id
@@ -260,12 +262,8 @@ class Coc_Ordermodel extends CC_Model
 			u.id, 
 			concat(ud.name, " ", ud.surname) as name,
 			aa.allocation_allowed as allowedaudit,
-			p1.name as province,
-			c1.name as city,
-			s1.name as suburb,
-			group_concat(p2.name separator "@-@") as provincelist,
-			group_concat(c2.name separator "@-@") as citylist,
-			group_concat(s2.name separator "@-@") as suburblist
+			group_concat(concat_ws("@@@", p1.name, c1.name, s1.name) separator "@-@") as arealist1,
+			group_concat(concat_ws("@@@", p2.name, c2.name, s2.name) separator "@-@") as arealist2
 		'.$openaudit.$mtd);
 		$this->db->from('users_detail ud');
 		$this->db->join('users u', 'u.id=ud.user_id','inner');		
@@ -293,30 +291,36 @@ class Coc_Ordermodel extends CC_Model
 		
 		$this->db->group_by("ud.id");
 		
-		$query 		= $this->db->get();
-		$results 	= $query->result_array();
+		if(isset($postData['auditorid'])) $this->db->where(['u.id' => $postData['auditorid']]);
 		
-		if(isset($postData['province'])){
+		if(!isset($postData['auditorid']) && isset($postData['row']) && $postData['row']=='1'){
+			$this->db->having("arealist1 LIKE '%$areadata%'");
+			$this->db->or_having("arealist2 LIKE '%$areadata%'");
+		}
+		
+		$query 		= $this->db->get();
+		
+		if(isset($postData['row']) && $postData['row']=='1') 	$results = $query->row_array();
+		else 													$results = $query->result_array();
+		
+		if(!isset($postData['row']) && isset($postData['province'])){
 			$result		= [];
 			
 			foreach($results as $k => $res){
 				$result[$k] 			= '0';
 				$results[$k]['sort'] 	= '0';
 				
-				if($res['province']==$postData['province'] && $res['city']==$postData['city'] && $res['suburb']==$postData['suburb']){
+				if($res['arealist1']==$areadata){
 					$result[$k] 			= '1';
 					$results[$k]['sort'] 	= '1';
 					continue;
 				}
 				
-				$provincelist 	= array_filter(explode('@-@', $res['provincelist']));
-				$citylist 		= array_filter(explode('@-@', $res['citylist']));
-				$suburblist 	= array_filter(explode('@-@', $res['suburblist']));
+				$arealist2 	= array_filter(explode('@-@', $res['arealist2']));
+				$checklist 	= '';
 				
-				$checklist = '';
-				
-				for($i=0; $i<count($provincelist); $i++){
-					if(isset($provincelist[$i]) && isset($citylist[$i]) && isset($suburblist[$i]) && $provincelist[$i]==$postData['province'] && $citylist[$i]==$postData['city'] && $suburblist[$i]==$postData['suburb']){
+				for($i=0; $i<count($arealist2); $i++){
+					if(isset($arealist2[$i]) && $arealist2[$i]==$areadata){
 						$checklist = '1';
 						break;
 					}
