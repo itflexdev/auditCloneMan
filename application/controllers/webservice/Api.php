@@ -1894,6 +1894,7 @@ class Api extends CC_Controller
 			}
 			
 			$result 				 = $this->Coc_Model->getCOCList('row', ['id' => $cocID, 'user_id' => $userid], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber']+$auditorid);
+
 			$logdate 				 = isset($result['cl_log_date']) && date('Y-m-d', strtotime($result['cl_log_date']))!='1970-01-01' ? date('d-m-Y', strtotime($result['cl_log_date'])) : '';
 
 			$noncompliance			 = $this->Noncompliance_Model->getList('all', ['coc_id' => $cocID, 'user_id' => $userid]);
@@ -1949,7 +1950,7 @@ class Api extends CC_Controller
 						];
 			}
 
-			if ($result['type'] =='2' && $logdate!='') {
+			if ($result['type'] =='1' && $logdate!='') {
 				//$electroniccocreport = base_url().'plumber/auditstatement/index/electroniccocreport/'.$cocID.'/'.$cocID;
 				$electroniccocreport = base_url().'webservice/api/pdfelectroniccocreport_api/'.$cocID.'/'.$cocID;
 			}
@@ -1958,7 +1959,7 @@ class Api extends CC_Controller
 				$noncompliancereport = base_url().'webservice/api/pdfnoncompliancereport_api/'.$cocID.'/'.$cocID;
 			}
 
-			$jsonData['pdf'] = ['electroniccocreport' => $electroniccocreport, 'noncompliancereport' => $noncompliancereport];
+			$jsonData['pdf'] = ['electroniccocreport' => isset($electroniccocreport) ? $electroniccocreport : '', 'noncompliancereport' => isset($noncompliancereport) ? $noncompliancereport : ''];
 
 			$jsonData['page_lables'] = [ 'plumbingwork' => 'Plumbing Work Completion Date *', 'insuranceclaim' => "Insurance Claim/Order no: (if relevant)", "certificatenumber" => $cocID, 'physicaladdress' => "Physical Address Details of Installation", 'ownername' => "Owners Name *", 'complex' => "Name of Complex/Flat and Unit Number (if applicable)", 'street' => "Street *", 'number' => "Number *", 'province' => "Province *", 'city' => "City *", 'suburb' => "Suburb *", 'contactmobile' => "Contact Mobile *", 'Alternate Contact' => "Alternate Contact", 'email' => "Email Address", 'installationimages' => "Installation Images"
 			];
@@ -2778,7 +2779,7 @@ class Api extends CC_Controller
 			$post['page'] 			= 'auditorstatement';
 			$post['search'] 		= ['value' => $keywords, 'regex' => false];
 			$jsonData['keywords'][] = $keywords;
-			
+
 			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid]+$post, ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']);
 			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid]+$post, ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']);
 			if ($results) {
