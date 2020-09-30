@@ -2778,12 +2778,12 @@ class Api extends CC_Controller
 			$post['page'] 			= 'auditorstatement';
 			$post['search'] 		= ['value' => $keywords, 'regex' => false];
 			$jsonData['keywords'][] = $keywords;
-
-			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid], ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']+$post);
-			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid], ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']+$post);
+			
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2'], 'auditorid' => $userid]+$post, ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid]+$post, ['coclog', 'usersdetail', 'auditorstatement', 'coclogprovince', 'coclogcity', 'coclogsuburb']);
 			if ($results) {
 				foreach ($results as $key => $value) {
-					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => ''];
+					$jsonData['auditstatement'][] = ['id' => $value['id'], 'plumbedid' => $value['user_id'], 'plumbedname' => $value['u_name'], 'plumbedmobile' => $value['u_mobile'], 'auditorid' => $value['auditorid'], 'audit_status' => $this->config->item('auditstatus')[$value['audit_status']], 'audit_allocation_date' => date('d-m-Y', strtotime($value['audit_allocation_date'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'as_refixcompletedate' => date('d-m-Y', strtotime($value['as_refixcompletedate'])), 'cl_suburb_name' => $value['cl_suburb_name'], 'cl_name' => $value['cl_name'], 'cl_contact_no' => $value['cl_contact_no'], 'as_refix_duecompletedate' => '', 'totalcount' => $totalcount];
 				}
 			}
 			$jsonArray 		= array("status"=>'1', "message"=>'Audit Statement', "result"=>$jsonData);
