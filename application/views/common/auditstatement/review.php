@@ -262,7 +262,7 @@
 								<div class="form-group">
 									<label>Overall Workmanship</label>
 									<?php
-										echo form_dropdown('workmanship', $workmanship, $workmanshipid, ['id' => 'workmanship', 'class'=>'form-control']+$disabled1array);
+										echo form_dropdown('workmanship', ['' => 'Select Option']+$workmanship, $workmanshipid, ['id' => 'workmanship', 'class'=>'form-control', 'data-select' => 'select2']+$disabled1array);
 									?>
 								</div>
 							</div>
@@ -270,7 +270,7 @@
 								<div class="form-group">
 									<label>Licensed Plumber Present</label>
 									<?php
-										echo form_dropdown('plumberverification', $yesno, $plumberverification, ['id' => 'plumberverification', 'class'=>'form-control']+$disabled1array);
+										echo form_dropdown('plumberverification', ['' => 'Select Option']+$yesno, $plumberverification, ['id' => 'plumberverification', 'class'=>'form-control', 'data-select' => 'select2']+$disabled1array);
 									?>
 								</div>
 							</div>
@@ -278,7 +278,7 @@
 								<div class="form-group">
 									<label>Was COC Completed Correctly</label>
 									<?php
-										echo form_dropdown('cocverification', $yesno, $cocverification, ['id' => 'cocverification', 'class'=>'form-control']+$disabled1array);
+										echo form_dropdown('cocverification', ['' => 'Select Option']+$yesno, $cocverification, ['id' => 'cocverification', 'class'=>'form-control', 'data-select' => 'select2']+$disabled1array);
 									?>
 								</div>
 							</div>
@@ -635,6 +635,15 @@ $(function(){
 	validator = validation(
 		'.form',
 		{
+			workmanship : {
+				required	: true
+			},
+			plumberverification : {
+				required	: true
+			},
+			cocverification : {
+				required	: true
+			},
 			auditdate : {
 				required	: true
 			},
@@ -651,6 +660,15 @@ $(function(){
 			}
 		},
 		{
+			workmanship 	: {
+				required	: "Please select Overall Workmanship."
+			},
+			plumberverification 	: {
+				required	: "Please select Licensed Plumber Present."
+			},
+			cocverification 	: {
+				required	: "Please select Was COC Completed Correctly."
+			},
 			auditdate 	: {
 				required	: "Please select Date of Audit."
 			},
@@ -1086,6 +1104,7 @@ function refixcheck(){
 
 $('.form').submit(function(){
 	pointcalculation();
+	return false;
 })
 
 function pointcalculation(){
@@ -1099,7 +1118,7 @@ function pointcalculation(){
 	
 	var reviewval = 0;
 	$(document).find('.reviewappend').each(function(){
-		reviewval += parseFloat($(this).find('td:eq(4)').text().replace("+", ""));
+		reviewval += parseFloat($(this).find('td:eq(6)').text().replace("+", ""));
 	})
 	
 	$('#workmanshippoint').val(workmanshipval);

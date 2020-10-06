@@ -131,7 +131,8 @@ class Stock_Model extends CC_Model
 		$requestdata1['admin_status']	= '1';
 
 		if(isset($data['order_id'])) $inv_id	= $data['order_id'];
-
+		
+		$stocks = [];
 		if(isset($requestdata)){
 			if(isset($data['coc_type'])){
 				if($data['coc_type']==1){
@@ -149,6 +150,7 @@ class Stock_Model extends CC_Model
 							$insertid = $this->db->insert_id();
 						}
 						
+						$stocks[] = $insertid;
 						$this->diaryactivity(['adminid' => $this->getUserID(), 'plumberid' => $data['user_id'], 'cocid' => $insertid, 'action' => '6', 'type' => '1']);		
 					}		
 				} else if($data['coc_type']==2) {
@@ -158,19 +160,23 @@ class Stock_Model extends CC_Model
 						if(isset($stockexplode2[1])){
 							for($i=$stockexplode2[0];$i<=$stockexplode2[1];$i++){
 								$result1 = $this->db->update('stock_management', $requestdata, ['id' => $i]);
+								$stocks[] = $i;
 								$this->diaryactivity(['adminid' => $this->getUserID(), 'plumberid' => $data['user_id'], 'cocid' => $i, 'action' => '6', 'type' => '1']);
 							}
 						}else{
 							$result1 = $this->db->update('stock_management', $requestdata, ['id' => $stockexplode2[0]]);
+							$stocks[] = $stockexplode2[0];
 							$this->diaryactivity(['adminid' => $this->getUserID(), 'plumberid' => $data['user_id'], 'cocid' => $stockexplode2[0], 'action' => '6', 'type' => '1']);					
-						}
+						}						
 					}
 				}
 			}			
 		
 			$this->db->update('coc_orders', $requestdata1, ['id' => $data['order_id']]);
 		}
-		return $inv_id;
+		
+		$result = $this->stockformat($stocks);
+		return $result;
 	}
 
 }

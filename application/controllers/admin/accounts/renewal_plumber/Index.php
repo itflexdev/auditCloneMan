@@ -49,6 +49,7 @@ class Index extends CC_Controller
 			if($data) $message = 'Records '.(($id=='') ? 'created' : 'updated').' successfully.';	
 
 			if(isset($data)){
+				$this->generaterenewalpdf($id);
 				$this->session->set_flashdata('success', $message);
 				
 				$invtype 		= $this->config->item('invtype');

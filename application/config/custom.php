@@ -28,7 +28,9 @@ $config['roleresellers']	 		= 	'6';
 $config['learner']	 				= 	'23';
 $config['assistant']	 			= 	'3';
 $config['operator']	 				= 	'4';
+$config['qualified']	 			= 	'5';
 $config['licensed']	 				= 	'6';
+$config['master']	 				= 	'7';
 
 $config['cocpaperwork'] 			= 	'13';
 $config['cocelectronic'] 			= 	'14';

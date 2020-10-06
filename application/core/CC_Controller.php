@@ -1155,7 +1155,32 @@ class CC_Controller extends CI_Controller
 		
 		return $filePath.$pdfFilePath;
 	}	
-
+	
+	function generaterenewalpdf($inv_id, $type='', $pdftype=''){
+		$invoice 		= 	$this->db->get_where('invoice', ['inv_id' => $inv_id])->row_array();
+		$orders 		= 	$this->db->get_where('coc_orders', ['inv_id' => $inv_id])->row_array();
+		$userdata1		= 	$this->Plumber_Model->getList('row', ['id' => $invoice['user_id']], ['users', 'usersdetail', 'usersplumber']);
+		$designation	= 	$userdata1['designation'];	
+		$otherfee = [];
+		if($userdata1['registration_card']=='1'){
+			$otherfee['cardfee'] = $this->getRates($this->config->item('cardfee'));
+		}
+		$specialisations = array_filter(explode(',', $userdata1['specialisations']));
+		if(count($specialisations) > 0){
+			$otherfee['specialisationsfee'] = $this->getRates($this->config->item('specializationfee'));
+			$otherfee['specialisationsqty'] = count($specialisations);
+		}
+		if($pdftype!='') $otherfee['type'] = $pdftype;
+		
+		if($type=='1') $this->Renewal_Model->updatedata($invoice['user_id'],$designation,'3',$invoice['inv_id'],$orders['id'],$otherfee);
+		
+		$designation 	=	$this->config->item('designation2')[$designation];
+		unlink('./assets/inv_pdf/'.$inv_id.'.pdf'); 
+		$rowData 		= 	$this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
+		
+		$this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]+$otherfee);
+	}
+	
 	public function mycptindex($pagestatus='',$id='',$userid='')
 	{
 		if($id!=''){
@@ -1462,7 +1487,7 @@ class CC_Controller extends CI_Controller
 			exit;
 		}
 	}
-	
+		
 	function base64conversion($path){
 		$type = pathinfo($path, PATHINFO_EXTENSION);
 		$data = file_get_contents($path);

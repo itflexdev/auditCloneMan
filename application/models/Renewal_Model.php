@@ -176,14 +176,13 @@ class Renewal_Model extends CC_Model
 	{
 		$this->db->select('amount');
 		$this->db->from('rates');
-		if($designation == '4')
-			$this->db->where('id', '6');
-		elseif($designation == '5')
-			$this->db->where('id', '5');
-		elseif($designation == '6')
-			$this->db->where('id', '7');
-		else
-			$this->db->where('supplyitem', 'Registration Rates');
+		if($designation == '1')		$this->db->where('id', $this->config->item('learner'));
+		elseif($designation == '2')	$this->db->where('id', $this->config->item('assistant'));
+		elseif($designation == '3')	$this->db->where('id', $this->config->item('operator'));
+		elseif($designation == '4')	$this->db->where('id', $this->config->item('licensed'));
+		elseif($designation == '5')	$this->db->where('id', $this->config->item('qualified'));
+		elseif($designation == '6')	$this->db->where('id', $this->config->item('master'));
+		else 						$this->db->where('supplyitem', 'Registration Rates');
 		
 		$rates = $this->db->get()->row_array(); 
 		$rate = $rates['amount'];

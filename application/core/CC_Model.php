@@ -250,4 +250,17 @@ class CC_Model extends CI_Model
 		
 		return $amount;
 	}
+	
+	function stockformat($stocks){
+		sort($stocks);
+		$result = '';
+		
+		for($i=0; $i<count($stocks);$i++){
+			if($i==0) $result .= $stocks[$i];
+			elseif($stocks[$i] != $stocks[$i-1]+1) $result .= ', '.$stocks[$i];
+			elseif($stocks[$i] != $stocks[$i+1]-1 || $i==count($stocks)-1) $result .= ' - '.$stocks[$i];
+		}
+		
+		return '('.$result.')';
+	}
 }

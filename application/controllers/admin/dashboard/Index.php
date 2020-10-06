@@ -37,13 +37,13 @@ class Index extends CC_Controller
 		$pagedata['totalelectroniccoc']	= $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['1']]);
 		$pagedata['totalpapercoc']		= $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['2']]);
 		$pagedata['totallogged']		= $this->Coc_Model->getCOCList('count', ['cocstatus' => ['2']]);
-		$pagedata['totalreseller']		= $this->Coc_Model->getCOCList('count', ['cocstatus' => ['6']]);
+		$pagedata['totalreseller']		= $this->Coc_Model->getCOCList('count', ['cocstatus' => ['3']]);
 		$pagedata['totalaudit']			= $this->Coc_Model->getCOCList('count', ['noaudit' => '1']);
 		
 		$pagedata['history']			= $this->Auditor_Model->getReviewHistoryCount();
 		
 		$sixmonthgraph = [];
-		for($i = 1; $i <= 6; $i++){
+		for($i = 0; $i <= 5; $i++){
 			$sixmonthgraph[] = [
 				'month' => date('F', strtotime('-'.$i.' months')), 
 				'electronic' => $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['1'], 'monthArray' => date('Y-m', strtotime('-'.$i.' months')), 'monthrange' => '1']),

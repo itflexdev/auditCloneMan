@@ -728,8 +728,10 @@ class Coc_Model extends CC_Model
 			$request['status'] 		= 	'1';
 			
 			if ($insert_id) {
-
+				$partialdescription = '';
+				
 				if($requestData['coc_type']=='1'){
+					$stocks = [];
 					$log .= 'Electronic COC'.PHP_EOL;
 					for($m=1;$m<=$requestData['quantity'];$m++){
 						$stockmanagement = $this->db->get_where('stock_management', ['user_id' => '0', 'coc_status' => '1', 'coc_orders_status' => '6', 'type' => '1'])->row_array();
@@ -751,12 +753,13 @@ class Coc_Model extends CC_Model
 							$this->db->insert('stock_management', $cocrequestdata);
 							$cocinsertid = $this->db->insert_id();
 						}
-						
+						$stocks[] = $cocinsertid;
 						$log .= $cocinsertid.PHP_EOL;
 						$this->diaryactivity(['adminid' => '1', 'plumberid' => $userid, 'cocid' => $cocinsertid, 'action' => '6', 'type' => '1']);		
 					}	
-
+					$partialdescription 		= $this->stockformat($stocks);
 					$request['admin_status']	= '1';
+					$request['description']		= 'Purchase of '.$requestData['quantity'].' '.$cocname.' Certificate(s) of Compliance '.$partialdescription;
 				}
 
 
@@ -770,7 +773,7 @@ class Coc_Model extends CC_Model
 				$template 	= $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '17'])->get()->row_array();
 				$orders 	= $this->db->select('*')->from('coc_orders')->where(['user_id' => $userid])->order_by('id','desc')->get()->row_array();
 				$currency   = $this->config->item('currency');
-				$cocreport 	= $this->cocreport($inv_id, 'PDF Invoice Plumber COC');					
+				$cocreport 	= $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['partialdescription' => $partialdescription]);					
 				$cocTypes 	= $orders['coc_type'];
 				$mail_date 	= date("d-m-Y", strtotime($orders['created_at']));
 				

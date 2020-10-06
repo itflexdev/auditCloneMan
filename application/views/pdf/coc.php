@@ -64,6 +64,7 @@
 		</tr>';
 	}
 	
+	$partialdescription 	= (isset($extras['partialdescription'])) ? $extras['partialdescription'] : '';
 	$pdfrate 				= (isset($PDF_rate['amount'])) ? currencyconvertors($PDF_rate['amount']) : currencyconvertors($rowData['cost_value']);
 	$latesubtotalamount 	= (isset($extras['latesubtotalamount'])) ? $extras['latesubtotalamount'] : '0';
 	$latevatamount 			= (isset($extras['latevatamount'])) ? $extras['latevatamount'] : '0';
@@ -347,7 +348,7 @@
 									<?php if(isset($extras['description'])){ ?>
 										<?php echo $extras['description']; ?>
 									<?php }else{ ?>
-										Purchase of <?php echo $rowData['quantity']; ?> <?php if(isset($cocname)){ echo ' '.$cocname.' '; } ?> Certificate(s) of Compliance 
+										Purchase of <?php echo $rowData['quantity']; ?> <?php if(isset($cocname)){ echo ' '.$cocname.' '; } ?> Certificate(s) of Compliance <?php echo $partialdescription; ?>
 									<?php } ?>
 									</td>       
 									<td style="width: 10%;  margin: 0; padding: 10px 0 10px 0;text-align: center;"><?php echo $rowData['quantity']; ?></td>

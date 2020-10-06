@@ -383,7 +383,7 @@ $noaudit 			= $history['noaudit'];
 									<p class="cus_my_cpd">Open Audits</p>
 									<div class="text-center">
 										<img src="<?php echo base_url().'assets/images/search.png'; ?>" alt=""> 
-										<input data-plugin="knob" data-width="200" data-height="200" data-min="0" data-thickness="0.2" data-fgColor="#ff0000" data-angleOffset=-125 data-angleArc=250 value="<?php echo $openaudits; ?>" readonly/>
+										<input data-plugin="knob" data-width="200" data-height="200" data-min="0" data-max="10000" data-thickness="0.2" data-fgColor="#ff0000" data-angleOffset=-125 data-angleArc=250 value="<?php echo $openaudits; ?>" readonly/>
 									</div>
 								</div>
 							</div>

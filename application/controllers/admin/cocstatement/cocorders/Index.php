@@ -76,7 +76,9 @@ class Index extends CC_Controller
 					$settingsdetail = $this->Systemsettings_Model->getList('row');
 					
 					if ($inv_id) {
-						$this->db->update('invoice', ['order_status' => '1'], ['inv_id' => $inv_id['inv_id']]);
+						$cocreport = $this->cocreport($inv_id['inv_id'], 'PDF Invoice Plumber COC', ['partialdescription' => $data]);
+						$this->db->update('invoice', ['order_status' => '1', 'description' => $inv_id['description'].' '.$data], ['inv_id' => $inv_id['inv_id']]);
+						$this->db->update('coc_orders', ['description' => $inv_id['description'].' '.$data], ['id' => $requestData['order_id']]);
 						
 						if($requestData['type']=='3'){
 							$invoicedata = $this->db->select('*')->from('invoice')->where(['inv_id' => $inv_id['inv_id']])->get()->row_array();
@@ -103,10 +105,7 @@ class Index extends CC_Controller
 							$template = $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '17'])->get()->row_array();
 							$orders = $this->db->select('*')->from('coc_orders')->where(['user_id' => $requestData['user_id']])->order_by('id','desc')->get()->row_array();
 
-							if(isset($requestData['email_coc_track'])){
-								
-								$cocreport = $this->cocreport($inv_id['inv_id'], 'PDF Invoice Plumber COC');
-								
+							if(isset($requestData['email_coc_track'])){								
 								$cocTypes = $orders['coc_type'];
 								$mail_date = date("d-m-Y", strtotime($orders['created_at']));
 								 
