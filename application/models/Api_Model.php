@@ -1209,4 +1209,27 @@ class Api_Model extends CC_Model
 		
 		return $result;
 	}
+
+	public function autosearchActivity($type, $postData = []){ 
+		$currentDate = date('Y-m-d H:i:s');
+
+		$this->db->select('cp1.*');
+		$this->db->from('cpdtypes cp1');
+
+		// $this->db->like('cp1.activity',$postData['search_keyword']);
+
+		$this->db->where('cp1.status="1"');
+		$this->db->where('cp1.startdate<="'.$currentDate.'"');
+		$this->db->where('cp1.enddate>"'.$currentDate.'"');
+		if(isset($postData['cpdstream'])) $this->db->where('cp1.cpdstream', $postData['cpdstream']);
+		if(isset($postData['pagetype']) && $postData['pagetype'] =='plumbercpd'){
+			$this->db->where('cp1.hidden', '0');
+		}
+		
+		$this->db->group_by("cp1.id");		
+		$query = $this->db->get();
+		$result1 = $query->result_array(); 
+
+		return $result1;
+	}
 }
