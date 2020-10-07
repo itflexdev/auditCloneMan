@@ -4415,4 +4415,43 @@ class Api extends CC_Controller
 		return $plumberData;
 	}
 
+
+	public function getcpddetails(){
+
+		if(isset($workbased)) unset($workbased);
+		if(isset($developmental)) unset($developmental);
+		if(isset($individual)) unset($individual);
+
+		// if(isset($workbasedcount)) unset($workbasedcount);
+		// if(isset($developmentalcount)) unset($developmentalcount);
+		// if(isset($individualcount)) unset($individualcount);
+
+		if(isset($jsonData)) unset($jsonData);
+
+		$workbased 			=  $this->Api_Model->autosearchActivity('all', ['pagetype' => 'plumbercpd', 'cpdstream' => '2']);
+		$developmental 		=  $this->Api_Model->autosearchActivity('all', ['pagetype' => 'plumbercpd', 'cpdstream' => '1']);
+		$individual 		=  $this->Api_Model->autosearchActivity('all', ['pagetype' => 'plumbercpd', 'cpdstream' => '3']);
+
+		// $workbasedcount 	=  $this->Api_Model->autosearchActivity('count', ['pagetype' => 'plumbercpd', 'cpdstream' => '2']);
+		// $developmentalcount =  $this->Api_Model->autosearchActivity('count', ['pagetype' => 'plumbercpd', 'cpdstream' => '1']);
+		// $individualcount 	=  $this->Api_Model->autosearchActivity('count', ['pagetype' => 'plumbercpd', 'cpdstream' => '3']);
+		
+
+		foreach ($workbased as $workbasedkey => $workbasedvalue) {
+			$jsonData['workbased'][] = [ 'id' => $workbasedvalue['id'], 'activity' => $workbasedvalue['activity'], 'startdate' => date('d-m-Y', strtotime($workbasedvalue['startdate'])), 'enddate' => date('d-m-Y', strtotime($workbasedvalue['enddate'])), 'points' => $workbasedvalue['points'], 'qrcode' => base_url().'assets/qrcode/'.$workbasedvalue['qrcode'].'','cpdstream' => $this->config->item('cpdstream')[$workbasedvalue['cpdstream']]
+			];
+		}
+
+		foreach ($developmental as $developmentalkey => $developmentalvalue) {
+			$jsonData['developmental'][] = [ 'id' => $developmentalvalue['id'], 'activity' => $developmentalvalue['activity'], 'startdate' => date('d-m-Y', strtotime($developmentalvalue['startdate'])), 'enddate' => date('d-m-Y', strtotime($developmentalvalue['enddate'])), 'points' => $developmentalvalue['points'], 'qrcode' => base_url().'assets/qrcode/'.$developmentalvalue['qrcode'].'','cpdstream' => $this->config->item('cpdstream')[$developmentalvalue['cpdstream']]
+			];
+		}
+
+		foreach ($individual as $individualkey => $individualvalue) {
+			$jsonData['individual'][] = [ 'id' => $individualvalue['id'], 'activity' => $individualvalue['activity'], 'startdate' => date('d-m-Y', strtotime($individualvalue['startdate'])), 'enddate' => date('d-m-Y', strtotime($individualvalue['enddate'])), 'points' => $individualvalue['points'], 'qrcode' => base_url().'assets/qrcode/'.$individualvalue['qrcode'].'','cpdstream' => $this->config->item('cpdstream')[$individualvalue['cpdstream']]
+			];
+		}
+		echo json_encode($jsonData);
+	}
+
 }
