@@ -1210,7 +1210,7 @@ class Api_Model extends CC_Model
 		return $result;
 	}
 
-	public function autosearchActivity($type, $postData = []){ 
+	public function autosearchActivity($type, $postData = []){
 		$currentDate = date('Y-m-d H:i:s');
 
 		$this->db->select('cp1.*');
@@ -1219,7 +1219,12 @@ class Api_Model extends CC_Model
 		// $this->db->like('cp1.activity',$postData['search_keyword']);
 
 		$this->db->where('cp1.status="1"');
-		$this->db->where('cp1.startdate<="'.$currentDate.'"');
+		$this->db->where('cp1.activity !=" "');
+		$this->db->where('cp1.link !=" "');
+		$this->db->where('cp1.description !=" "');
+		$this->db->where('cp1.proof !=" "');
+		$this->db->where('cp1.image !=" "');
+		// $this->db->where('cp1.startdate<="'.$currentDate.'"');
 		$this->db->where('cp1.enddate>"'.$currentDate.'"');
 		if(isset($postData['cpdstream'])) $this->db->where('cp1.cpdstream', $postData['cpdstream']);
 		if(isset($postData['pagetype']) && $postData['pagetype'] =='plumbercpd'){
