@@ -26,7 +26,7 @@
                 <div class="table_cpd">
                     <div class="row cPd_table">
                         <div class="col-sm-12 col-md-12 col-lg-4 cpd_tab_img">
-                            <a href="<?php echo $workbasedvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$workbasedvalue['image'].'' ?>"> </a>
+                            <a href="<?php echo 'http://'.$workbasedvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$workbasedvalue['image'].'' ?>"> </a>
                         </div>
                         <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
                             <h2 class="tab_right_head"><?php echo $workbasedvalue['activity']; ?></h2>
