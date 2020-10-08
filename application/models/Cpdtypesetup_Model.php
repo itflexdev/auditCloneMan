@@ -68,6 +68,12 @@ class Cpdtypesetup_Model extends CC_Model
 		if(isset($data['startdate'])) 		$request['startdate'] 		= date('Y-m-d',strtotime($data['startdate'])); 
 		if(isset($data['enddate'])) 		$request['enddate'] 		= date('Y-m-d',strtotime($data['enddate']));
 
+		if(isset($data['image1'])) 			$request['image'] 			= $data['image1'];
+		if(isset($data['imagelink'])) 		$request['link'] 			= $data['imagelink'];
+		if(isset($data['description'])) 	$request['description'] 	= $data['description'];
+		if(isset($data['proofrequired'])) 	$request['proof'] 			= $data['proofrequired'];
+
+
 		$request['status'] 					= (isset($data['status'])) ? $data['status'] : '0';
 		$request['hidden'] 					= (isset($data['hidden_option'])) ? $data['hidden_option'] : '0';
 		
