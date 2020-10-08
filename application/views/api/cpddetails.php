@@ -64,7 +64,7 @@
                 <div class="table_cpd">
                     <div class="row cPd_table">
                         <div class="col-sm-12 col-md-12 col-lg-4 cpd_tab_img">
-                            <a href="<?php echo $developmentalvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$developmentalvalue['image'].'' ?>"> </a>
+                            <a href="<?php echo 'http://'.$developmentalvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$developmentalvalue['image'].'' ?>"> </a>
                         </div>
                         <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
                             <h2 class="tab_right_head"><?php echo $developmentalvalue['activity']; ?></h2>
@@ -103,7 +103,7 @@
             <div class="table_cpd">
                 <div class="row cPd_table">
                     <div class="col-sm-12 col-md-12 col-lg-4 cpd_tab_img">
-                        <a href="<?php echo $individualvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$individualvalue['image'].'' ?>"> </a>
+                        <a href="<?php echo 'http://'.$individualvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$individualvalue['image'].'' ?>"> </a>
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
                         <h2 class="tab_right_head"><?php echo $individualvalue['activity']; ?></h2>
