@@ -9,6 +9,9 @@ if(isset($result) && $result){
 	$productcode 		= (set_value('productcode')) ? set_value('productcode') : $result['productcode'];
 	$qrcode 			= (set_value('qrcode')) ? set_value('qrcode') : $result['qrcode'];
 	$status 			= (set_value('status')) ? set_value('status') : $result['status'];
+	$link 				= (set_value('link')) ? set_value('link') : $result['link'];
+	$description 		= (set_value('description')) ? set_value('description') : $result['description'];
+	$proof 				= (set_value('proof')) ? set_value('proof') : $result['proof'];
 	$hide 				= (set_value('hidden')) ? set_value('hidden') : $result['hidden'];
 	
 	$heading			= 'Update';
@@ -23,8 +26,25 @@ if(isset($result) && $result){
 	$cpdstream			= set_value('cpdstream');
 	$status				= set_value('status');
 	$hide 				= set_value('hidden');
+	$link 				= set_value('link');
+	$description 		= set_value('description');
+	$proof 				= set_value('proof');
 
 	$heading			= 'Add';
+}
+$profileimg 			= base_url().'assets/images/profile.jpg';
+$pdfimg 				= base_url().'assets/images/pdf.png';
+$image 					= isset($result['image']) ? $result['image'] : '';
+$filepath 				= base_url().'assets/uploads/cpdtypes/images/';
+$filepath1				= (isset($result['image']) && $result['image']!='') ? $filepath.$result['image'] : base_url().'assets/uploads/cpdqueue/profile.jpg';
+if($image!=''){
+	$explodefile2 	= explode('.', $image);
+	$extfile2 		= array_pop($explodefile2);
+	$photoidimg 	= (in_array($extfile2, ['pdf', 'tiff'])) ? $pdfimg : $filepath1;
+	$photoidurl 	= $filepath1;
+}else{
+	$photoidimg 	= $profileimg;
+	$photoidurl 	= 'javascript:void(0);';
 }
 ?>
 
@@ -76,6 +96,39 @@ if(isset($result) && $result){
 						<div class="form-group col-md-6">
 							<label for="cpdstream">CPD Stream</label>
 							<?php echo form_dropdown('cpdstream1', $cpdstreamID, $cpdstream, ['id' => 'cpdstream', 'class' => 'form-control']); ?>					
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="form-group col-md-12">
+							<label for="imagelink">Image Link</label>
+							<input type="text" name="imagelink" class="form-control" id="imagelink" placeholder="Image Link" value="<?php echo $link ?>">
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-12">
+							<label for="description">Description</label>
+							<textarea name="description" class="form-control" id="description" placeholder="Description"><?php echo $description ?></textarea>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-12">
+							<label for="proofrequired">Proof Required</label>
+							<textarea name="proofrequired" class="form-control" id="proofrequired" placeholder="Proof Required"><?php echo $proof ?></textarea>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<h4 class="card-title">Activity Image *</h4>
+								<div class="form-group">
+									<div>
+										<a href="<?php echo $photoidurl; ?>" target="_blank"><img src="<?php echo $photoidimg; ?>" class="document_image" width="100"></a>
+									</div>
+									<input type="file" id="file" class="document_file">
+									<label for="file" class="choose_file">Choose File</label>
+									<input type="hidden" name="image1" class="document percentageslide" value="<?php echo $image; ?>">
+									<p>(Image/File Size Smaller than 5mb)</p>
+								</div>
 						</div>
 					</div>
 					<?php
@@ -186,7 +239,7 @@ if(isset($result) && $result){
 							<input type="hidden" id='codstream' name="cpdstream" value="<?php echo $cpdstream; ?>">
 							<input type="hidden" id='activity' name="activity" value="<?php echo $activityname; ?>">
 							<input type="hidden" id='cpdid' name="id" value="<?php echo $id; ?>">
-							<input type="hidden" name="productcode" value="<?php echo $productcode; ?>">
+							<input type="hidden" name="productcode" class="productcode" value="<?php echo $productcode; ?>">
 							<button type="submit" name="submit" value="submit" class="btn btn-primary"><?php echo $heading; ?> CPD Type</button>
 						</div>
 					</div>
@@ -236,6 +289,9 @@ if(isset($result) && $result){
 }
 	
 	$(function(){
+		var filepath 	= '<?php echo $filepath; ?>';
+		var pdfimg		= '<?php echo $pdfimg; ?>';
+		fileupload([".document_file", "./assets/uploads/cpdtypes/images", ['jpg','jpeg','png','tiff','tif']], ['.document', '.document_image', filepath, pdfimg]);
 		// <?php //echo base_url().'admin/cpd/cpdtypesetup/massimport'; ?>
 
 		// fileupload([".file1", "./assets/uploads/temp", ['xls', 'xlsx','csv']]);
@@ -284,7 +340,7 @@ if(isset($result) && $result){
 		validation(
 			'.form',
 			{
-				activity : {
+				activityname : {
 					required	: true,
 				},
 				startdate : {
@@ -301,10 +357,22 @@ if(isset($result) && $result){
 				},
 				stream : {
 					required	: true,
-				}
+				},
+				imagelink : {
+					required	: true,
+				},
+				description : {
+					required	: true,
+				},
+				proofrequired : {
+					required	: true,
+				},
+				image1 : {
+					required	: true,
+				},
 			},
 			{
-				activity 	: {
+				activityname 	: {
 					required	: "Activity field is required."
 				},
 				startdate 	: {
@@ -321,7 +389,22 @@ if(isset($result) && $result){
 				},
 				stream 	: {
 					required	: "CPD Stream field is required."
-				}
+				},
+				imagelink : {
+					required	: "Image Link field is required."
+				},
+				description : {
+					required	: "Description field is required."
+				},
+				proofrequired : {
+					required	: "Proof Frequired field is required."
+				},
+				image1 : {
+					required	: "Identity Document field is required.",
+				},
+			},
+			{
+				ignore : '.productcode',
 			}
 			);
 
