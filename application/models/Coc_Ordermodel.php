@@ -29,7 +29,11 @@ class Coc_Ordermodel extends CC_Model
 			$this->db->limit($requestdata['length'], $requestdata['start']);
 		}
 		if(isset($requestdata['order']['0']['column']) && isset($requestdata['order']['0']['dir'])){
-			$column = ['t1.id','t1.inv_id','t1.created_at','t1.status','t1.internal_inv','t2.name','t1.coc_type','t1.quantity','t1.delivery_type','t3.address','t1.tracking_no'];
+			if(isset($requestdata['admin_status']) && $requestdata['admin_status']=='closed'){
+				$column = ['t1.id','t1.description','t1.inv_id','t1.created_at','t1.status','t1.internal_inv','t2.name','t1.coc_type','t1.quantity','t1.delivery_type','t3.address','t1.tracking_no'];
+			} else {
+				$column = ['t1.id','t1.inv_id','t1.created_at','t1.status','t1.internal_inv','t2.name','t1.coc_type','t1.quantity','t1.delivery_type','t3.address','t1.tracking_no'];
+			}
 			$this->db->order_by($column[$requestdata['order']['0']['column']], $requestdata['order']['0']['dir']);	
 		}
 		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){

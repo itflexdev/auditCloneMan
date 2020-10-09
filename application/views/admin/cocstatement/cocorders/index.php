@@ -293,6 +293,7 @@ $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' 
 							<input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
 							<input type="hidden" name="coc_count" value="<?php echo $quantity; ?>">
 							<input type="hidden" class="form-control" name="order_id" id="order_id" value="<?php echo $id; ?>">
+							<input type="hidden" class="form-control" name="inv_id" value="<?php echo $inv_id; ?>">
 							<input type="hidden" class="form-control" name="type" value="<?php echo $type; ?>">
 							<input type="hidden" name="coc_type" value="<?php echo $coc_type; ?>">
 							<button type="submit" name="allocate_certificate" value="submit" class="btn btn-primary" <?php echo $allocate_button_disbled; ?>>Allocate Certificates</button>
@@ -312,6 +313,9 @@ $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' 
 							<thead>
 								<tr>
 									<th>OrderID</th>
+									<?php if($closed_status=='closed'){ ?>
+										<th>Description</th>
+									<?php } ?>
 									<th>Inv Number</th>
 									<th>Date of order</th>
 									<th>Payment Status</th>
@@ -416,6 +420,9 @@ $(function(){
 		data 	: 	{admin_status : '<?php echo $closed_status; ?>'},
 		columns : 	[
 						{ "data": "id" },
+						<?php if($closed_status=='closed'){ ?>
+						{ "data": "description" },
+						<?php } ?>
 						{ "data": "inv_id" },
 						{ "data": "created_at" },
 						{ "data": "status" },

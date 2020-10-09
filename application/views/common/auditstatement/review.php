@@ -1104,7 +1104,6 @@ function refixcheck(){
 
 $('.form').submit(function(){
 	pointcalculation();
-	return false;
 })
 
 function pointcalculation(){

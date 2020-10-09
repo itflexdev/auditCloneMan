@@ -201,6 +201,7 @@ class Index extends CC_Controller
 				$totalrecord[] 	= 	[
 										'id' 			=> 	$result['id'],
 										'user_id' 		=> 	$name,
+										'description' 	=> 	$result['description'],
 										'coc_type' 		=> 	$coctype,
 										'delivery_type'	=> 	$deliverytype,
 										'quantity' 		=> 	$result['quantity'],	

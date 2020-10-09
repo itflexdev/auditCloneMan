@@ -33,6 +33,7 @@ class CC_Controller extends CI_Controller
 		$this->load->model('Resellers_allocatecoc_Model');
 		$this->load->model('Plumberperformance_Model');
 		$this->load->model('Chat_Model');
+		$this->load->model('Documentsletters_Model');
 
 		$this->load->library('pdf');
 		$this->load->library('phpqrcode/qrlib');
@@ -368,6 +369,7 @@ class CC_Controller extends CI_Controller
 		if(!$result){
 			redirect($extras['redirect']); 
 		}
+		//$this->plumberregistrationdocument($result);
 		
 		if($this->input->post()){
 			$requestData 					= 	$this->input->post();
@@ -411,6 +413,7 @@ class CC_Controller extends CI_Controller
 					if(isset($requestData['approval_status'])){
 						$diaryparam = ($extras['roletype']=='1') ? ['adminid' => $this->getUserID(), 'type' => '1'] : [];
 						if($requestData['approval_status']=='1'){
+							//$this->plumberregistrationdocument($result);
 							$this->CC_Model->diaryactivity(['plumberid' => $id, 'action' => '2']+$diaryparam);
 							
 							$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '5', 'emailstatus' => '1']);
@@ -1024,7 +1027,7 @@ class CC_Controller extends CI_Controller
 	public function getaudithistory($id, $pagedata=[], $extras=[])
 	{
 		$auditorid					= isset($extras['auditorid']) ? ['auditorid' => $extras['auditorid']] : [];
-		$result						= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$auditorid);	
+		$result						= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']]+$auditorid, ['auditorstatement']);	
 		if(!$result){
 			$this->session->set_flashdata('error', 'No Record Found.');
 			redirect($extras['redirect']); 
@@ -1505,5 +1508,84 @@ class CC_Controller extends CI_Controller
 		}
 		
 		return $amount;
+	}
+	
+	public function plumberregistrationdocument($result){
+		$filename				= 'registrationletter'.date("dmY").'.docx';
+		$userid					= $result['id'];
+		
+		$billingaddress 		= isset($result['billingaddress']) ? explode('@-@', $result['billingaddress']) : [];
+		$address				= isset($billingaddress[2]) ? $billingaddress[2] : '';
+		$suburb 				= isset($billingaddress[3]) ? $this->Managearea_Model->getList('row', ['id' => $billingaddress[3]]) : '';
+		$city					= isset($billingaddress[4]) ? $this->Managearea_Model->getListCity('row', ['id' => $billingaddress[4]]) : '';
+		$province 				= isset($billingaddress[5]) ? $this->Managearea_Model->getListProvince('row', ['id' => $billingaddress[5]]) : '';
+		$postalcode 			= isset($billingaddress[6]) ? $billingaddress[6] : '';
+		$designationid 			= isset($result['designation']) ? $result['designation'] : '';
+		$specialisationsid 		= isset($result['specialisations']) ? array_filter(explode(',', $result['specialisations'])) : [];
+		$expirydatestart 		= isset($result['expirydate']) && $result['expirydate']!='1970-01-01' ? date('d-m-Y', strtotime("-1 year", strtotime($result['expirydate']))) : '';
+		$expirydateend 			= isset($result['expirydate']) && $result['expirydate']!='1970-01-01' ? date('d-m-Y', strtotime($result['expirydate'])) : '';
+		$card 					= $this->plumbercard($userid);
+		
+		$specialisations		= [];
+		foreach($specialisationsid as $specialisationsdata){
+			if(isset($this->config->item('specialisations')[$specialisationsdata])){
+				$specialisations[] = $this->config->item('specialisations')[$specialisationsdata];
+			}
+		}
+		$designation 			= (isset($this->config->item('designation2')[$designationid]) ? $this->config->item('designation2')[$designationid] : '');
+		$specialisations 		= ((count($specialisations) > 0) ? implode(',', $specialisations) : 'None');
+		
+		$cardurl 	= base_url().'common/import/plumbercarddesign/'.$userid;
+		$imageurl 	= $_SERVER['DOCUMENT_ROOT'].'/assets/uploads/temp/card'.$userid.'.png';
+		$output 	= shell_exec('wkhtmltoimage '.$cardurl.' '.$imageurl);
+		
+		$templateDocx = new \PhpOffice\PhpWord\TemplateProcessor('./assets/docx/registrationletter.docx');
+		$templateDocx->setValue(
+			[
+				'Current date and time', 
+				'Plumber name', 
+				'Plumber surname',
+				'RegNo',
+				'Delivery address street',
+				'Delivery address suburb',
+				'Delivery address city',
+				'Delivery address province',
+				'Delivery address area code',
+				'Designation',
+				'Specialization',
+				'Expiration date start',
+				'Expiration date end'
+			],
+			[
+				date("d-m-Y H:i:s"), 
+				$result['name'], 
+				$result['surname'],
+				$result['registration_no'],
+				$address,
+				$suburb['name'],
+				$city['name'],
+				$province['name'],
+				$postalcode,
+				$designation,
+				$specialisations,
+				$expirydatestart,
+				$expirydateend
+			]
+		);
+		
+		$templateDocx->setImageValue('Card', array('path' => './assets/uploads/temp/card'.$userid.'.png', 'width' => 100, 'height' => 100, 'ratio' => false));
+		$templateDocx->saveAs('./assets/test.docx');
+		/*
+		$templateDocx->saveAs('./assets/uploads/plumber/'.$userid.'/'.$filename);
+		
+		$data = [
+			'description' 	=> 'Registration Confirmation Letter',
+			'file1'			=> $filename,
+			'plumberid'		=> $userid,
+			'documentsid'	=> ''
+		];
+		
+		$this->Documentsletters_Model->action($data);
+		*/
 	}
 }

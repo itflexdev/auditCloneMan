@@ -741,6 +741,7 @@ class Coc_Model extends CC_Model
 							'type' 						=> $requestData['coc_type'],
 							'coc_orders_status' 		=> null,
 							'user_id' 					=> $userid,
+							'inv_id' 					=> $inv_id
 						];
 						
 						if($stockmanagement){

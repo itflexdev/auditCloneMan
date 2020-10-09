@@ -13,6 +13,5 @@ class Index extends CC_Controller
 	{
 		$id = $this->getUserID();
 		$this->plumberprofile($id, ['roletype' => $this->config->item('roleplumber'), 'pagetype' => 'profile'], ['redirect' => 'plumber/profile/index']);
-	}
-	
+	}	
 }
