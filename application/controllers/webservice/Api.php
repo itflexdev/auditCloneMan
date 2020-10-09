@@ -3183,7 +3183,7 @@ class Api extends CC_Controller
 					}
 				}
 			}
-			$post['insertid'] = $insertid;
+			$request['insertid'] = $insertid;
 			$jsonArray 		= array("status"=>'1', "message"=>'Review Added Sucessfully', "result"=>$request);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
@@ -3310,8 +3310,8 @@ class Api extends CC_Controller
 				}
 
 			}
-			$post['insertid'] = $insertid;
-			$jsonArray 		= array("status"=>'1', "message"=>'Audit Review Sucessfully', "result"=>$post);
+			$request['insertid'] = $insertid;
+			$jsonArray 		= array("status"=>'1', "message"=>'Audit Review Sucessfully', "result"=>$request);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
