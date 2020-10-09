@@ -3094,6 +3094,9 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumber_id')) {
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
 			$this->form_validation->set_rules('reviewpoint','Review','trim|required');
+			$this->form_validation->set_rules('workmanship','Workmanship','trim|required');
+			$this->form_validation->set_rules('plumber_verification','Plumber Verification','trim|required');
+			$this->form_validation->set_rules('coc_verification','Plumber Verification','trim|required');
 
 			if ($this->form_validation->run()==FALSE) {
 				$findtext 		= ['<div class="form_error">', "</div>"];
@@ -3192,6 +3195,9 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumber_id')) {
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
 			$this->form_validation->set_rules('auditstatus','Audit Status','trim|required');
+			$this->form_validation->set_rules('workmanship','Workmanship','trim|required');
+			$this->form_validation->set_rules('plumber_verification','Plumber Verification','trim|required');
+			$this->form_validation->set_rules('coc_verification','Plumber Verification','trim|required');
 
 			if ($this->form_validation->run()==FALSE) {
 				$findtext 		= ['<div class="form_error">', "</div>"];
