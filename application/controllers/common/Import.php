@@ -18,6 +18,7 @@ class Import extends CC_Controller {
 		$this->load->model('CC_Model');
 		$this->load->model('Auditor_Model');
 		$this->load->model('Renewal_Model');
+		$this->load->model('Auditor_allocatecoc_Model');
 	}
 
     public function timezone()
@@ -1163,6 +1164,21 @@ class Import extends CC_Controller {
 				fwrite($file, PHP_EOL);
 				fclose($file);
 			}
+		}
+	}
+	
+	public function plumbercarddesign($id)
+	{
+		echo '<link href="'.base_url().'assets/css/style.min.css" rel="stylesheet">';
+		echo '<link href="'.base_url().'assets/css/custom.css" rel="stylesheet">';
+		echo '<div class="row" style="padding-left:268px!important;background:white;"><div class="col-12"><div class="card" style="background-color:unset;border: unset;"><div class="card-body">'.$this->plumbercard($id).'</div></div></div></div>';
+	}
+	
+	public function auditorration($id)
+	{
+		$auditratiocalculations	= $this->Auditor_allocatecoc_Model->getList('all');
+		foreach($auditratiocalculations as $auditratiocalculation){
+			$this->Auditor_Model->actionRatio($auditratiocalculation['user_id']);
 		}
 	}
 }

@@ -126,6 +126,7 @@ class Stock_Model extends CC_Model
 		
 		if(isset($data['coc_type'])) $requestdata['type']	= $data['coc_type'];
 		if(isset($data['user_id'])) $requestdata['user_id']	= $data['user_id'];
+		if(isset($data['inv_id'])) $requestdata['inv_id']	= $data['inv_id'];
 		$requestdata['coc_orders_status']	= null;
 		
 		$requestdata1['admin_status']	= '1';
