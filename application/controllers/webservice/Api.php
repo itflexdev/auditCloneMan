@@ -3095,8 +3095,8 @@ class Api extends CC_Controller
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
 			$this->form_validation->set_rules('reviewpoint','Review','trim|required');
 			$this->form_validation->set_rules('workmanship','Workmanship','trim|required');
-			$this->form_validation->set_rules('plumber_verification','Plumber Verification','trim|required');
-			$this->form_validation->set_rules('coc_verification','Plumber Verification','trim|required');
+			$this->form_validation->set_rules('plumberverification','Plumber Verification','trim|required');
+			$this->form_validation->set_rules('cocverification','CoC Verification','trim|required');
 
 			if ($this->form_validation->run()==FALSE) {
 				$findtext 		= ['<div class="form_error">', "</div>"];
@@ -3182,9 +3182,9 @@ class Api extends CC_Controller
 						}
 					}
 				}
+				$request['insertid'] = $insertid;
+				$jsonArray 		= array("status"=>'1', "message"=>'Review Added Sucessfully', "result"=>$request);
 			}
-			$post['insertid'] = $insertid;
-			$jsonArray 		= array("status"=>'1', "message"=>'Review Added Sucessfully', "result"=>$request);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
@@ -3196,8 +3196,8 @@ class Api extends CC_Controller
 			$this->form_validation->set_rules('auditdate','Audit Date','trim|required');
 			$this->form_validation->set_rules('auditstatus','Audit Status','trim|required');
 			$this->form_validation->set_rules('workmanship','Workmanship','trim|required');
-			$this->form_validation->set_rules('plumber_verification','Plumber Verification','trim|required');
-			$this->form_validation->set_rules('coc_verification','Plumber Verification','trim|required');
+			$this->form_validation->set_rules('plumberverification','Plumber Verification','trim|required');
+			$this->form_validation->set_rules('cocverification','CoC Verification','trim|required');
 
 			if ($this->form_validation->run()==FALSE) {
 				$findtext 		= ['<div class="form_error">', "</div>"];
@@ -3308,10 +3308,10 @@ class Api extends CC_Controller
 					}
 
 				}
-
+				$request['insertid'] = $insertid;
+				$jsonArray 		= array("status"=>'1', "message"=>'Audit Review Sucessfully', "result"=>$request);
 			}
-			$post['insertid'] = $insertid;
-			$jsonArray 		= array("status"=>'1', "message"=>'Audit Review Sucessfully', "result"=>$post);
+			
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
