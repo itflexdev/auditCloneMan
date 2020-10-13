@@ -124,8 +124,8 @@ if($image!=''){
 									<div>
 										<a href="<?php echo $photoidurl; ?>" target="_blank"><img src="<?php echo $photoidimg; ?>" class="document_image" width="100"></a>
 									</div>
-									<input type="file" id="file" class="document_file">
-									<label for="file" class="choose_file">Choose File</label>
+									<input type="file" id="file_2" class="document_file">
+									<label for="file_2" class="choose_file">Choose File</label>
 									<input type="hidden" name="image1" class="document percentageslide" value="<?php echo $image; ?>">
 									<p>(Image/File Size Smaller than 5mb)</p>
 								</div>
@@ -411,6 +411,7 @@ if($image!=''){
 		
 		
 	});
+
 	$( document ).ready(function() {
 		
 		datepicker('#startdate', ['currentdate']);
