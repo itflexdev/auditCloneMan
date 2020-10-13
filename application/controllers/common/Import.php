@@ -1167,6 +1167,27 @@ class Import extends CC_Controller {
 		}
 	}
 	
+	public function invoicedelete($type='')
+	{
+		$this->db->select('i.inv_id,u.id,u.expirydate');		
+		$this->db->from('invoice i');
+		$this->db->join('users as u', 'u.id=i.user_id', 'inner');
+		$this->db->where_in('i.inv_type', ['2','3']);	
+		$this->db->where("DATE(u.expirydate) >", 'DATE(DATE_ADD(NOW(), INTERVAL 30 DAY))');	
+		$results = $this->db->get()->result_array();	
+		
+		if($type==1){
+			echo $this->db->last_query().'<br>';
+			echo count($results).'<br>';
+			echo '<pre>';print_r($results);die;
+		}
+		
+		foreach($results as $result){
+			$this->db->delete('invoice', ['inv_id' => $result['inv_id']]);
+			$this->db->delete('coc_orders', ['inv_id' => $result['inv_id']]);
+		}
+	}
+	
 	public function plumbercarddesign($id)
 	{
 		echo '<link href="'.base_url().'assets/css/style.min.css" rel="stylesheet">';
