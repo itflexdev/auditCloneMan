@@ -389,7 +389,7 @@ class Plumber_Model extends CC_Model
 	public function performancestatus($type, $requestdata=[]){	
 		
 		if(!isset($requestdata['auditorstatement'])){
-			$this->db->select('astat.id as id, astat.auditcompletedate as date, "Audit" as type, "" as comments, astat.point as point, "" as attachment, astat.plumber_id as userid, "1" as flag, concat(ud.name, " ", ud.surname) as name, ud.file2 as image');
+			$this->db->select('astat.id as id, astat.auditcompletedate as date, "Audit" as type, astat.coc_id as comments, astat.point as point, "" as attachment, astat.plumber_id as userid, "1" as flag, concat(ud.name, " ", ud.surname) as name, ud.file2 as image');
 			$this->db->from('auditor_statement astat');		
 			$this->db->join('users u', 'u.id=astat.plumber_id', 'inner');
 			$this->db->join('users_detail ud', 'ud.user_id=u.id', 'inner');

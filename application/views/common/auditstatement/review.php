@@ -466,7 +466,7 @@
 									<?php
 										foreach($reviewtype as $key => $value){
 									?>
-											<div class="col-md-3">
+											<div class="col-md-3 reviewtyperadio" data-reviewtyperadio="<?php echo $key; ?>">
 												<div class="custom-control custom-radio">
 													<input type="radio" name="reviewtype" id="r_reviewtype<?php echo $key.'-'.$value; ?>" class="custom-control-input r_reviewtype" value="<?php echo $key; ?>">
 													<label class="custom-control-label" for="r_reviewtype<?php echo $key.'-'.$value; ?>"><?php echo $value; ?></label>
@@ -1041,6 +1041,7 @@ function reviewextras(){
 function refixcheck(){
 	$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport, .refixcompletedate_wrapper').addClass('displaynone');
 	$('#refixcompletedate').val('');
+	$('.reviewtyperadio').removeClass('displaynone');
 	
 	var reportcheck = 0;
 	var newdate;
@@ -1053,6 +1054,12 @@ function refixcheck(){
 		newdate			= date.setDate(date.getDate() + Number($('#refixperiod').val()));
 		var todaydate 	= new Date();
 		var expirydate 	= new Date(formatdate(newdate, 2));
+		
+		if(reviewtypecolumn==1 || reviewtypecolumn==2){
+			$('div[data-reviewtyperadio="4"]').addClass('displaynone');
+		}else if(reviewtypecolumn==4){
+			$('div[data-reviewtyperadio="4"], div[data-reviewtyperadio="1"], div[data-reviewtyperadio="2"]').addClass('displaynone');
+		}
 		
 		if(reviewtypecolumn==1 && statuscolumn==0){
 			if(expirydate >= todaydate){
