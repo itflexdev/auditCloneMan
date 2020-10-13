@@ -66,7 +66,6 @@ class Renewal_Model extends CC_Model
 	
 	public function getUserids()
 	{
-		
 		$this->db->select('us.id, us.expirydate, up.designation');		
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'left');
@@ -156,11 +155,11 @@ class Renewal_Model extends CC_Model
 
 	public function checkinv($userid)
 	{
-			$this->db->select('*');		
-			$this->db->from('invoice');			
-			$this->db->where('user_id', $userid );		
-			$result = $this->db->get()->result_array();
-			return $result;
+		$this->db->select('*');		
+		$this->db->from('invoice');			
+		$this->db->where('user_id', $userid );		
+		$result = $this->db->get()->result_array();
+		return $result;
 	}
 
 	public function get_lateamount()

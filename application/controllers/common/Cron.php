@@ -215,6 +215,7 @@ class Cron extends CC_Controller {
 	
 	public function renewalreminder1()
 	{	
+		$log 		= '';
 		$fileName 	= base_url().'common/cron/renewalreminder1';
 		$starttime 	= date('Y-m-d H:i:s');
 
@@ -240,33 +241,34 @@ class Cron extends CC_Controller {
 
 			if($inv_type == '2' || $inv_type == '3' || $inv_type == '4'){
 				continue;
-			}
-			else{
-
-			$designation = $data['designation'];
-			$renewal_date1 = $data['expirydate'];
-			$rdate = strtotime($renewal_date1);
-			$new_date = strtotime('+ 1 year', $rdate);
-			$renewal_date =  date('d/m/Y', $new_date);
-
-			$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
-			$otherfee 	= 	$this->invoiceotherfee($userdata1);
-			
-			$result = $this->Renewal_Model->updatedata($userid,$designation,'2','','',$otherfee);			
-			$invoice_id = $result['invoice_id'];
-			$cocorder_id = $result['cocorder_id'];
-			
-			if ($invoice_id) {
-				$inid 				= $cocorder_id;
-				$inv_id 			= $invoice_id;
-
-				$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
-
-				// invoice PDF
+			}else{
+				$designation 		= $data['designation'];
+				$renewal_date1 		= $data['expirydate'];
+				$rdate 				= strtotime($renewal_date1);
+				$new_date 			= strtotime('+ 1 year', $rdate);
+				$renewal_date 		= date('d/m/Y', $new_date);
 				
-				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
-				$designation =	$this->config->item('designation2')[$rowData['designation']];					
-				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]+$otherfee);
+				
+				$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
+				$otherfee 	= 	$this->invoiceotherfee($userdata1);
+				
+				$result = $this->Renewal_Model->updatedata($userid,$designation,'2','','',$otherfee);			
+				$invoice_id = $result['invoice_id'];
+				$cocorder_id = $result['cocorder_id'];
+			
+				$log	.= $userid.'-'.$invoice_id.'-'.date('d-m-Y', strtotime($renewal_date1)).PHP_EOL;
+				
+				if ($invoice_id) {
+					$inid 				= $cocorder_id;
+					$inv_id 			= $invoice_id;
+
+					$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
+
+					// invoice PDF
+					
+					$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
+					$designation =	$this->config->item('designation2')[$rowData['designation']];					
+					$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]+$otherfee);
 					
 					$cocTypes = $orders['coc_type'];
 					$mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -302,11 +304,20 @@ class Cron extends CC_Controller {
 		
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
-		}		
+		}
+
+		$file = fopen("assets/payment/renewalreminder.txt","a");
+		fwrite($file, 'Renewal Reminder 1'.PHP_EOL);
+		fwrite($file, 'Date -'.date('d-m-Y H:i:s').PHP_EOL);
+		fwrite($file, $log.PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fclose($file);		
 	}
 
 	public function renewalreminder2()
 	{	
+		$log		= '';		
 		$fileName 	= base_url().'common/cron/renewalreminder2';
 		$starttime 	= date('Y-m-d H:i:s');
 
@@ -328,6 +339,8 @@ class Cron extends CC_Controller {
 			$insert_result = $this->Renewal_Model->updatedata($userid,$designation,'3',$invoice_id,$cocid,$otherfee);
 			$invoice_id = $insert_result['invoice_id'];
 			$cocorder_id = $insert_result['cocorder_id'];
+			
+			$log	.= $userid.'-'.$invoice_id.PHP_EOL;
 			
 			if ($invoice_id) {
 				$inv_id 			= $invoice_id;
@@ -371,10 +384,18 @@ class Cron extends CC_Controller {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
 		}
 		
+		$file = fopen("assets/payment/renewalreminder.txt","a");
+		fwrite($file, 'Renewal Reminder 2'.PHP_EOL);
+		fwrite($file, 'Date -'.date('d-m-Y H:i:s').PHP_EOL);
+		fwrite($file, $log.PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fclose($file);		
 	}
 
 	public function renewalreminder2_1()
 	{	
+		$log		= '';
 		$fileName 	= base_url().'common/cron/renewalreminder2_1';
 		$starttime 	= date('Y-m-d H:i:s');
 
@@ -400,8 +421,7 @@ class Cron extends CC_Controller {
 
 			if($inv_type == '2' || $inv_type == '3' || $inv_type == '4'){
 				continue;
-			}
-			else{
+			}else{
 
 				$designation = $data['designation'];
 				$renewal_date1 = $data['expirydate'];
@@ -417,6 +437,8 @@ class Cron extends CC_Controller {
 				$invoice_id = $insert_result['invoice_id'];
 				$cocorder_id = $insert_result['cocorder_id'];
 			
+				$log	.= $userid.'-'.$invoice_id.'-'.date('d-m-Y', strtotime($renewal_date1)).PHP_EOL;
+				
 				if ($invoice_id) {
 					$inv_id 			= $invoice_id;
 
@@ -458,11 +480,21 @@ class Cron extends CC_Controller {
 		
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
-		}		
+		}	
+
+		
+		$file = fopen("assets/payment/renewalreminder.txt","a");
+		fwrite($file, 'Renewal Reminder 2_1'.PHP_EOL);
+		fwrite($file, 'Date -'.date('d-m-Y H:i:s').PHP_EOL);
+		fwrite($file, $log.PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fclose($file);		
 	}
 
 	public function renewalreminder3()
 	{	
+		$log		= '';
 		$fileName 	= base_url().'common/cron/renewalreminder3';
 		$starttime 	= date('Y-m-d H:i:s');
 
@@ -484,6 +516,8 @@ class Cron extends CC_Controller {
 			$invoice_id = $insert_result['invoice_id'];
 			$cocorder_id = $insert_result['cocorder_id'];
 			$cocorder_id2 = $insert_result['cocorder_id2'];
+			
+			$log	.= $userid.'-'.$invoice_id.PHP_EOL;
 			
 			if ($invoice_id) {
 				$inv_id 			= $invoice_id;
@@ -530,12 +564,20 @@ class Cron extends CC_Controller {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
 		}
 		
+		$file = fopen("assets/payment/renewalreminder.txt","a");
+		fwrite($file, 'Renewal Reminder 3'.PHP_EOL);
+		fwrite($file, 'Date -'.date('d-m-Y H:i:s').PHP_EOL);
+		fwrite($file, $log.PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fclose($file);		
 	}
 
 	public function renewalreminder4()
 	{	
+		$log		= '';
 		$fileName 	= base_url().'common/cron/renewalreminder4';
-		$starttime = date('Y-m-d H:i:s');
+		$starttime 	= date('Y-m-d H:i:s');
 
 		$result = $this->Renewal_Model->getUserids_alert4();	
 		$settings = $this->Systemsettings_Model->getList('row');	
@@ -549,6 +591,7 @@ class Cron extends CC_Controller {
 			$request1['status'] = '2';
 			$this->db->update('users', $request1, ['id' => $userid]);
 			
+			$log	.= $userid.PHP_EOL;
 			/*	
 			$template = $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '3'])->get()->row_array();
 			
@@ -577,6 +620,14 @@ class Cron extends CC_Controller {
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
 		}
+		
+		$file = fopen("assets/payment/renewalreminder.txt","a");
+		fwrite($file, 'Renewal Reminder 4'.PHP_EOL);
+		fwrite($file, 'Date -'.date('d-m-Y H:i:s').PHP_EOL);
+		fwrite($file, $log.PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fwrite($file, PHP_EOL);
+		fclose($file);		
 	}
 	
 	public function monthlyperformance()
