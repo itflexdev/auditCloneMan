@@ -21,6 +21,7 @@
     <div class="table_cpd--main">
     <div class="table_cpd">
     <div class="row cPd_table">
+        <div class="table_cpd--parent">
         <?php
         if (isset($developmental) && count($developmental) > 0) {
         foreach ($developmental as $developmentalkey => $developmentalvalue) {
@@ -46,6 +47,7 @@
                     No Activity Found
                 </div>
             <?php } ?>
+            </div>
     </div>
 </div>
 </div>
@@ -60,6 +62,7 @@
     <div class="table_cpd">
 
     <div class="row cPd_table">
+        <div class="table_cpd--parent">
         <?php
         if (isset($workbased) && count($workbased) > 0) {
         foreach ($workbased as $workbasedkey => $workbasedvalue) {
@@ -83,6 +86,7 @@
                     No Activity Found
                 </div>
             <?php } ?>
+        </div>
     </div>
 </div>
 </div>
@@ -98,6 +102,7 @@
     <div class="table_cpd">
 
     <div class="row cPd_table">
+        <div class="table_cpd--parent">
         <?php
         if (isset($individual) && count($individual) > 0) {
         foreach ($individual as $individualkey => $individualvalue) {
@@ -121,6 +126,7 @@
                     No Activity Found
                 </div>
             <?php } ?>
+        </div>
     </div>
 </div>
 </div>
