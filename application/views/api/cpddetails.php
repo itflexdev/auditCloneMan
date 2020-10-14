@@ -23,12 +23,22 @@
     <div class="row cPd_table">
         <div class="table_cpd--parent">
         <?php
+        isset($url) unset($url);
+        isset($validURL) unset($validURL);
         if (isset($developmental) && count($developmental) > 0) {
         foreach ($developmental as $developmentalkey => $developmentalvalue) {
+            $url = $developmentalvalue['link'];
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                // echo("$url is a valid URL");
+                $validURL = $url;
+            } else {
+                // echo("$url is not a valid URL");
+                $validURL = 'https://'.$url;
+            }
             ?>
             <div class="main--test--cpd">
             <div class="col-sm-12 col-md-12 col-lg-4 cpd_tab_img">
-                <a href="<?php echo 'http://'.$developmentalvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$developmentalvalue['image'].'' ?>"> </a>
+                <a href="<?php echo $validURL; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$developmentalvalue['image'].'' ?>"> </a>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
                 <h2 class="tab_right_head"><?php echo $developmentalvalue['activity']; ?></h2>
@@ -64,11 +74,21 @@
     <div class="row cPd_table">
         <div class="table_cpd--parent">
         <?php
+        isset($url) unset($url);
+        isset($validURL) unset($validURL);
         if (isset($workbased) && count($workbased) > 0) {
         foreach ($workbased as $workbasedkey => $workbasedvalue) {
+            $url = $workbasedvalue['link'];
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                // echo("$url is a valid URL");
+                $validURL = $url;
+            } else {
+                // echo("$url is not a valid URL");
+                $validURL = 'https://'.$url;
+            }
             ?>
             <div class="col-sm-12 col-md-12 col-lg-4 cpd_tab_img">
-                <a href="<?php echo 'http://'.$workbasedvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$workbasedvalue['image'].'' ?>"> </a>
+                <a href="<?php echo $validURL; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$workbasedvalue['image'].'' ?>"> </a>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
                 <h2 class="tab_right_head"><?php echo $workbasedvalue['activity']; ?></h2>
@@ -104,11 +124,21 @@
     <div class="row cPd_table">
         <div class="table_cpd--parent">
         <?php
+        isset($url) unset($url);
+        isset($validURL) unset($validURL);
         if (isset($individual) && count($individual) > 0) {
         foreach ($individual as $individualkey => $individualvalue) {
+            $url = $individualvalue['link'];
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                // echo("$url is a valid URL");
+                $validURL = $url;
+            } else {
+                // echo("$url is not a valid URL");
+                $validURL = 'https://'.$url;
+            }
             ?>
             <div class="col-sm-12 col-md-12 col-lg-4 cpd_tab_img">
-                <a href="<?php echo 'http://'.$individualvalue['link']; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$individualvalue['image'].'' ?>"> </a>
+                <a href="<?php echo $validURL; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$individualvalue['image'].'' ?>"> </a>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
                 <h2 class="tab_right_head"><?php echo $individualvalue['activity']; ?></h2>
