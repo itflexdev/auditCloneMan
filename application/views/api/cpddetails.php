@@ -23,8 +23,8 @@
     <div class="row cPd_table">
         <div class="table_cpd--parent">
         <?php
-        isset($url) unset($url);
-        isset($validURL) unset($validURL);
+        if(isset($url)) unset($url);
+        if(isset($validURL)) unset($validURL);
         if (isset($developmental) && count($developmental) > 0) {
         foreach ($developmental as $developmentalkey => $developmentalvalue) {
             $url = $developmentalvalue['link'];
@@ -74,8 +74,8 @@
     <div class="row cPd_table">
         <div class="table_cpd--parent">
         <?php
-        isset($url) unset($url);
-        isset($validURL) unset($validURL);
+        if(isset($url)) unset($url);
+        if(isset($validURL)) unset($validURL);
         if (isset($workbased) && count($workbased) > 0) {
         foreach ($workbased as $workbasedkey => $workbasedvalue) {
             $url = $workbasedvalue['link'];
@@ -124,8 +124,8 @@
     <div class="row cPd_table">
         <div class="table_cpd--parent">
         <?php
-        isset($url) unset($url);
-        isset($validURL) unset($validURL);
+        if(isset($url)) unset($url);
+        if(isset($validURL)) unset($validURL);
         if (isset($individual) && count($individual) > 0) {
         foreach ($individual as $individualkey => $individualvalue) {
             $url = $individualvalue['link'];
