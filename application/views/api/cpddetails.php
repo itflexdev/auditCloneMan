@@ -41,11 +41,13 @@
                 <a href="<?php echo $validURL; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$developmentalvalue['image'].'' ?>"> </a>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
-                <h2 class="tab_right_head"><?php echo $developmentalvalue['activity']; ?></h2>
-                <h2 class="tab_right_head"><?php echo $developmentalvalue['points']; ?> CPD points</h2>
-                <p class="cus_cpd_para"><span>Description: </span><?php echo $developmentalvalue['description']; ?></p>
-                <p class="cus_cpd_para"><span>Proof: </span><?php echo $developmentalvalue['proof']; ?></p>
-                <p class="cus_cpd_para"><span>End date: </span><?php echo date('d F Y', strtotime($developmentalvalue['enddate'])); ?></p>
+                <a href="<?php echo $validURL; ?>" target = "_blank">
+                    <h2 class="tab_right_head"><?php echo $developmentalvalue['activity']; ?></h2>
+                    <h2 class="tab_right_head"><?php echo $developmentalvalue['points']; ?> CPD points</h2>
+                    <p class="cus_cpd_para"><span>Description: </span><?php echo $developmentalvalue['description']; ?></p>
+                    <p class="cus_cpd_para"><span>Proof: </span><?php echo $developmentalvalue['proof']; ?></p>
+                    <p class="cus_cpd_para"><span>End date: </span><?php echo date('d F Y', strtotime($developmentalvalue['enddate'])); ?></p>
+                </a>
             </div>
             </div>
             <?php } ?>
@@ -91,11 +93,13 @@
                 <a href="<?php echo $validURL; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$workbasedvalue['image'].'' ?>"> </a>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
-                <h2 class="tab_right_head"><?php echo $workbasedvalue['activity']; ?></h2>
-                <h2 class="tab_right_head"><?php echo $workbasedvalue['points']; ?> CPD points</h2>
-                <p class="cus_cpd_para"><span>Description: </span><?php echo $workbasedvalue['description']; ?></p>
-                <p class="cus_cpd_para"><span>Proof: </span><?php echo $workbasedvalue['proof']; ?></p>
-                <p class="cus_cpd_para"><span>End date: </span><?php echo date('d F Y', strtotime($workbasedvalue['enddate'])); ?></p>
+                <a href="<?php echo $validURL; ?>" target = "_blank">
+                    <h2 class="tab_right_head"><?php echo $workbasedvalue['activity']; ?></h2>
+                    <h2 class="tab_right_head"><?php echo $workbasedvalue['points']; ?> CPD points</h2>
+                    <p class="cus_cpd_para"><span>Description: </span><?php echo $workbasedvalue['description']; ?></p>
+                    <p class="cus_cpd_para"><span>Proof: </span><?php echo $workbasedvalue['proof']; ?></p>
+                    <p class="cus_cpd_para"><span>End date: </span><?php echo date('d F Y', strtotime($workbasedvalue['enddate'])); ?></p>
+                </a>
             </div>
             <?php } ?>
             <?php }else{ ?>
@@ -141,11 +145,13 @@
                 <a href="<?php echo $validURL; ?>" target = "_blank"> <img src="<?php echo base_url().'assets/uploads/cpdtypes/images/'.$individualvalue['image'].'' ?>"> </a>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-8 tab_right">
-                <h2 class="tab_right_head"><?php echo $individualvalue['activity']; ?></h2>
-                <h2 class="tab_right_head"><?php echo $individualvalue['points']; ?> CPD points</h2>
-                <p class="cus_cpd_para"><span>Description: </span><?php echo $individualvalue['description']; ?></p>
-                <p class="cus_cpd_para"><span>Proof: </span><?php echo $individualvalue['proof']; ?></p>
-                <p class="cus_cpd_para"><span>End date: </span><?php echo date('d F Y', strtotime($individualvalue['enddate'])); ?></p>
+                <a href="<?php echo $validURL; ?>" target = "_blank">
+                    <h2 class="tab_right_head"><?php echo $individualvalue['activity']; ?></h2>
+                    <h2 class="tab_right_head"><?php echo $individualvalue['points']; ?> CPD points</h2>
+                    <p class="cus_cpd_para"><span>Description: </span><?php echo $individualvalue['description']; ?></p>
+                    <p class="cus_cpd_para"><span>Proof: </span><?php echo $individualvalue['proof']; ?></p>
+                    <p class="cus_cpd_para"><span>End date: </span><?php echo date('d F Y', strtotime($individualvalue['enddate'])); ?></p>
+                </a>
             </div>
             <?php } ?>
             <?php }else{ ?>
