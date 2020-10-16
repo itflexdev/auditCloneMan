@@ -172,12 +172,22 @@ class Index extends CC_Controller
 		$pagedata['notification'] 	= $this->getNotification();
 		
 		$pagedata['history']		= $this->Auditor_Model->getReviewHistory2Count(['plumberid' => $id]);
-		$developmental 				= $this->Auditor_Model->getcpdpoints('row', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'developmental']);
-		$individual 				= $this->Auditor_Model->getcpdpoints('row', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'individual']);
-		$workbased 				= $this->Auditor_Model->getcpdpoints('row', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'workbased']);
-		$pagedata['developmental'] 	= $developmental['count'];
-		$pagedata['individual']		= $individual['count'];
-		$pagedata['workbased']		= $workbased['count'];
+		$developmental 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'developmental']);
+		$individual 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'individual']);
+		$workbased 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'workbased']);
+
+		if (count($developmental) > 0) {
+			$pagedata['developmental'] = array_sum(array_column($developmental, 'points')); 
+		}
+		if (count($individual) > 0) {
+			$pagedata['individual'] = array_sum(array_column($individual, 'points')); 
+		}
+		if (count($workbased) > 0) {
+			$pagedata['workbased'] = array_sum(array_column($workbased, 'points')); 
+		}
+		// $pagedata['developmental'] 	= $developmental['points'];
+		// $pagedata['individual']		= $individual['points'];
+		// $pagedata['workbased']		= $workbased['points'];
 		$pagedata['settings_cpd']	= $this->Systemsettings_Model->getList('all');
 		
 		$data['plugins']			= ['datatables', 'datatablesresponsive', 'sweetalert', 'validation', 'echarts'];
