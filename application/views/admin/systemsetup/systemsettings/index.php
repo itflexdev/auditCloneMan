@@ -15,6 +15,7 @@ if(isset($result) && $result){
 		$developemantal4			= (isset($cpd_points1[4])) ?  $cpd_points1[4] : '';
 		$developemantal5			= (isset($cpd_points1[5])) ?  $cpd_points1[5] : '';
 		$developemantal6			= (isset($cpd_points1[6])) ?  $cpd_points1[6] : '';
+		$developemantal7			= (isset($cpd_points1[7])) ?  $cpd_points1[7] : '';
 	
 	
 		$cpd_points2				= (isset($cpd[1])) ? explode('@-@', $cpd[1]) : [];
@@ -25,6 +26,7 @@ if(isset($result) && $result){
 		$workbased4					= (isset($cpd_points2[4])) ?  $cpd_points2[4] : '';
 		$workbased5					= (isset($cpd_points2[5])) ?  $cpd_points2[5] : '';
 		$workbased6					= (isset($cpd_points2[6])) ?  $cpd_points2[6] : '';
+		$workbased7					= (isset($cpd_points1[7])) ?  $cpd_points1[7] : '';
 	
 	
 		$cpd_points3				= (isset($cpd[2])) ? explode('@-@', $cpd[2]) : [];
@@ -35,6 +37,7 @@ if(isset($result) && $result){
 		$individual4				= (isset($cpd_points3[4])) ?  $cpd_points3[4] : '';
 		$individual5				= (isset($cpd_points3[5])) ?  $cpd_points3[5] : '';
 		$individual6				= (isset($cpd_points3[6])) ?  $cpd_points3[6] : '';
+		$individual7				= (isset($cpd_points3[7])) ?  $cpd_points3[7] : '';
 	
 
 	if(isset($result['physical'])){
@@ -96,6 +99,7 @@ if(isset($result) && $result){
 	$developemantal4			= '';
 	$developemantal5			= '';
 	$developemantal6			= '';
+	$developemantal7			= '';
 
 	$physical_id 				= '';
 	$postal_id 					= '';
@@ -107,6 +111,7 @@ if(isset($result) && $result){
 	$workbased4					= '';
 	$workbased5					= '';
 	$workbased6					= '';
+	$workbased7					= '';
 
 	$cpd_id3					= '';
 	$individual1				= '';
@@ -115,6 +120,7 @@ if(isset($result) && $result){
 	$individual4				= '';
 	$individual5				= '';
 	$individual6				= '';
+	$individual7				= '';
 
 	$postaladdress    			= '';
 	$postaladdress1   			= '';
@@ -168,7 +174,7 @@ if(isset($result) && $result){
 		width: 105px;
 	}
 
-	input#direct-plumber, input#master-plumber, input#license-plumber, input#techinical-plumber, input#assisting-plumber, input#learner-plumber {
+	input#direct-plumber, input#master-plumber, input#license-plumber, input#techinical-plumber, input#assisting-plumber, input#learner-plumber, input#qualified-plumber {
 		width: 105px;
 		max-width: 100%;
 	}
@@ -178,6 +184,10 @@ if(isset($result) && $result){
 	input#vat_no::-webkit-inner-spin-button {
     	-webkit-appearance: none;
 	}
+	table#mainTable {
+    display: block;
+    overflow: auto;
+}
 </style>
 
 <div class="row page-titles">
@@ -368,11 +378,12 @@ if(isset($result) && $result){
 											<th>Technical Operator Practitioner</th>
 											<th>Technical Assistant Practitioner</th>
 											<th>Learner</th>
+											<th>Qualified</th>
 										</tr>
 									</thead>
 									<tbody class="cpd_body">
 										<?php
-										$desig_array = [2=>'master',3=>'licensed',4=>'operating',5=>'assistant',6=>'learner'];
+										$desig_array = [2=>'master',3=>'licensed',4=>'operating',5=>'assistant',6=>'learner',7=>'qualified'];
 										foreach ($cpdstream as $key => $value) {
 											echo "<tr>
 											<td>$value</td>";
@@ -385,7 +396,6 @@ if(isset($result) && $result){
 											else if($key==3){
 												$str_key = 2;			
 											}
-											//print_r($cpd);die;
 											$exp_arr = explode('@-@',$cpd[$str_key]);
 											$id = $exp_arr[0];
 											$cpd_id = $exp_arr[1];												
@@ -405,7 +415,8 @@ if(isset($result) && $result){
 											<td><input id="master-plumber" class="col-sm-5 cpdlicensed-total" type="text" name="" readonly="readonly"></td>
 											<td><input id="license-plumber" class="col-sm-5 cpdoperating-total" type="text" name="" readonly="readonly"></td>
 											<td><input id="techinical-plumber" class="col-sm-5 cpdassistant-total" type="text" name="" readonly="readonly"></td>
-											<td><input id="assisting-plumber" class="col-sm-5 cpdlearner-total" type="text" name="" readonly="readonly"></td>										   
+											<td><input id="assisting-plumber" class="col-sm-5 cpdlearner-total" type="text" name="" readonly="readonly"></td>
+											<td><input id="qualified-plumber" class="col-sm-5 cpdqualified-total" type="text" name="" readonly="readonly"></td>
 										</tr>
 
 									</tbody>
@@ -457,6 +468,7 @@ if(isset($result) && $result){
 		totalcalculation('.cpdoperating', '.cpdoperating-total');
 		totalcalculation('.cpdassistant', '.cpdassistant-total');
 		totalcalculation('.cpdlearner', '.cpdlearner-total');
+		totalcalculation('.cpdqualified', '.cpdqualified-total');
 		
 	});
 	
@@ -479,6 +491,10 @@ if(isset($result) && $result){
 	$(".cpdlearner").on('keyup change scroll', function(){
 		totalcalculation('.cpdlearner', '.cpdlearner-total');
 	});
+	$(".cpdqualified").on('keyup change scroll', function(){
+		totalcalculation('.cpdqualified', '.cpdqualified-total');
+	});
+
 			
 	function totalcalculation(selector, totalselector){
 		var total=0;
