@@ -8,7 +8,7 @@ class Systemsettings_Model extends CC_Model
 			sd.*,
 			CONCAT_WS("@-@", sa1.id,  sa1.address, sa1.suburb, sa1.city, sa1.province, sa1.postal_code, sa1.type) as physical,
 			CONCAT_WS("@-@", sa2.id,  sa2.address, sa2.suburb, sa2.city, sa2.province, sa2.postal_code, sa2.type) as postal,
-			GROUP_CONCAT(CONCAT_WS("@-@", cpd.id,  cpd.cpd_id, cpd.master, cpd.licensed, cpd.operating, cpd.assistant, cpd.learner) SEPARATOR "@@@") as cpd
+			GROUP_CONCAT(CONCAT_WS("@-@", cpd.id,  cpd.cpd_id, cpd.master, cpd.licensed, cpd.operating, cpd.assistant, cpd.learner, cpd.qualified) SEPARATOR "@@@") as cpd
 			');
 		$this->db->from('settings_details sd');
 		$this->db->join('settings_address sa1', 'sa1.type="1"', 'left');
@@ -80,18 +80,21 @@ class Systemsettings_Model extends CC_Model
 		if(isset($data['cpd'][1]['operating'])) 		$developemental['operating']			= $data['cpd'][1]['operating'];
 		if(isset($data['cpd'][1]['assistant'])) 		$developemental['assistant']			= $data['cpd'][1]['assistant'];
 		if(isset($data['cpd'][1]['learner'])) 			$developemental['learner']				= $data['cpd'][1]['learner'];
+		if(isset($data['cpd'][1]['qualified'])) 		$developemental['qualified']			= $data['cpd'][1]['qualified'];
 
 		if(isset($data['cpd'][2]['master'])) 			$workbased['master']					= $data['cpd'][2]['master'];
 		if(isset($data['cpd'][2]['licensed'])) 			$workbased['licensed']					= $data['cpd'][2]['licensed'];
 		if(isset($data['cpd'][2]['operating'])) 		$workbased['operating']					= $data['cpd'][2]['operating'];
 		if(isset($data['cpd'][2]['assistant'])) 		$workbased['assistant']					= $data['cpd'][2]['assistant'];
 		if(isset($data['cpd'][2]['learner'])) 			$workbased['learner']					= $data['cpd'][2]['learner'];
+		if(isset($data['cpd'][2]['qualified'])) 		$workbased['qualified']					= $data['cpd'][2]['qualified'];
 
 		if(isset($data['cpd'][3]['master'])) 			$individual['master']					= $data['cpd'][3]['master'];
 		if(isset($data['cpd'][3]['licensed'])) 			$individual['licensed']					= $data['cpd'][3]['licensed'];
 		if(isset($data['cpd'][3]['operating'])) 		$individual['operating']				= $data['cpd'][3]['operating'];
 		if(isset($data['cpd'][3]['assistant'])) 		$individual['assistant']				= $data['cpd'][3]['assistant'];
 		if(isset($data['cpd'][3]['learner'])) 			$individual['learner']					= $data['cpd'][3]['learner'];
+		if(isset($data['cpd'][3]['qualified'])) 		$individual['qualified']				= $data['cpd'][3]['qualified'];
 // echo "<pre>";
 // 		print_r($request1);die;
 
