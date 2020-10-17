@@ -37,6 +37,11 @@ elseif($user_details['designation'] == '4'){
 	$workbased1 = isset($workarray[3]) ? $workarray[3] : '';
 	$individual1 = isset($indarray[3]) ? $indarray[3] : '';
 }
+elseif($user_details['designation'] == '5'){
+	$developmental1 = isset($devarray[7]) ? $devarray[7] : '';
+	$workbased1 = isset($workarray[7]) ? $workarray[7] : '';
+	$individual1 = isset($indarray[7]) ? $indarray[7] : '';
+}
 elseif($user_details['designation'] == '6'){
 	$developmental1 = isset($devarray[2]) ? $devarray[2] : '';
 	$workbased1 = isset($workarray[2]) ? $workarray[2] : '';
