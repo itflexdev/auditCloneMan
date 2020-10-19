@@ -322,7 +322,7 @@ $noaudit 			= $history['noaudit'];
 								<div class="col-md-3">
 									<div class="form-group coc_pur_sec">
 									<img class="racial2" src="<?php echo base_url().'assets/images/icons/y_pic4.png'; ?>" alt="">
-									<div class="a_ratio"><?php echo round(($totalaudit/$totalcoc) * 100, 2).'%'; ?></div>
+									<div class="a_ratio"><?php echo round(($totalaudit/$totallogged) * 100, 2).'%'; ?></div>
 									<label class="a_label">Audit Ratio</label>
 									</div>
 								</div>

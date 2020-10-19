@@ -33,9 +33,9 @@ class Index extends CC_Controller
 		$pagedata['genderm'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'gender' => ['1']], ['users', 'usersdetail', 'usersplumber']);
 		$pagedata['genderf'] 			= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'gender' => ['2']], ['users', 'usersdetail', 'usersplumber']);
 		
-		$pagedata['totalcoc']			= $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1']]);
-		$pagedata['totalelectroniccoc']	= $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['1']]);
-		$pagedata['totalpapercoc']		= $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['2']]);
+		$pagedata['totalcoc']			= $this->Coc_Model->getCOCList('count');
+		$pagedata['totalelectroniccoc']	= $this->Coc_Model->getCOCList('count', ['coctype' => ['1']]);
+		$pagedata['totalpapercoc']		= $this->Coc_Model->getCOCList('count', ['coctype' => ['2']]);
 		$pagedata['totallogged']		= $this->Coc_Model->getCOCList('count', ['cocstatus' => ['2']]);
 		$pagedata['totalreseller']		= $this->Coc_Model->getCOCList('count', ['cocstatus' => ['3']]);
 		$pagedata['totalaudit']			= $this->Coc_Model->getCOCList('count', ['noaudit' => '1']);

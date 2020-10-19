@@ -641,7 +641,7 @@ class Import extends CC_Controller {
 		foreach($datas as $key => $data){
 			$name 		= trim($data[0]);
 			$coc 		= trim($data[1]);
-			$created 	= date('Y-m-d', strtotime(trim($data[2])));
+			$created 	= date('Y-m-d H:i:s', strtotime(trim($data[2])));
 			
 			$getUser = $this->db->get_where('users_detail', ['trim(company)' => $name])->row_array();
 			
@@ -1173,7 +1173,7 @@ class Import extends CC_Controller {
 		$this->db->from('invoice i');
 		$this->db->join('users as u', 'u.id=i.user_id', 'inner');
 		$this->db->where_in('i.inv_type', ['2','3']);	
-		$this->db->where("DATE(u.expirydate) >", 'DATE(DATE_ADD(NOW(), INTERVAL 30 DAY))');	
+		$this->db->where("DATE(u.expirydate) > DATE(DATE_ADD(NOW(), INTERVAL 30 DAY))");	
 		$results = $this->db->get()->result_array();	
 		
 		if($type==1){

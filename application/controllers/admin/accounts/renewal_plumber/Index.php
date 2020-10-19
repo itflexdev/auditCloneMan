@@ -118,7 +118,7 @@ class Index extends CC_Controller
 			{
 				$internal_inv = "";
 				$originalDate=$result['created_at'];
-				$newDate = date("d-m-Y", strtotime($originalDate));
+				$newDate = date("d-m-Y H:i:s", strtotime($originalDate));
 				if($result['status'] == '1'){
 					$status = "Paid";
 					$internal_inv = $result['internal_inv'];

@@ -60,7 +60,7 @@ class Accounts extends CC_Controller
 			foreach($results as $result){
 
       $originalDate=$result['created_at'];
-      $newDate = date("d-m-Y", strtotime($originalDate));
+      $newDate = date("d-m-Y H:i:s", strtotime($originalDate));
 
 				// $date=date("d-m-Y",);
       if ($result['total_cost']!='') {

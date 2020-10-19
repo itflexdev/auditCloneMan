@@ -69,7 +69,7 @@ class Index extends CC_Controller
 			foreach($results as $result)
 			{
 				$internal_inv = "";	
-				$originalDate = isset($result['created_at']) && $result['created_at']!='1970-01-01' && $result['created_at']!='0000-00-00' ? date('d-m-Y', strtotime($result['created_at'])) : '';
+				$originalDate = isset($result['created_at']) && $result['created_at']!='1970-01-01' && $result['created_at']!='0000-00-00' ? date('d-m-Y H:i:s', strtotime($result['created_at'])) : '';
 				
 				if($result['status'] == '0'){
 
