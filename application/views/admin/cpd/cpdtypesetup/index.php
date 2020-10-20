@@ -359,13 +359,28 @@ if($image!=''){
 					required	: true,
 				},
 				imagelink : {
-					required	: true,
+					required	: function() {
+								return $('#status').is(":checked");
+							},
+					required	: function() {
+								return $('#hidden_option').prop('checked') == false;
+							}
 				},
 				description : {
-					required	: true,
+					required	: function() {
+								return $('#status').is(":checked");
+							},
+					required	: function() {
+								return $('#hidden_option').prop('checked') == false;
+							}
 				},
 				proofrequired : {
-					required	: true,
+					required	: function() {
+								return $('#status').is(":checked");
+							},
+					required	: function() {
+								return $('#hidden_option').prop('checked') == false;
+							}
 				},
 				image1 : {
 					required	: true,
