@@ -841,6 +841,7 @@ class Auditor_Model extends CC_Model
 	}
 	public function admingetcpdpoints($type, $requestdata=[]){
 
+		$datetime = date('Y-m-d H:i:s');
 		$plumberid = $requestdata['plumberid'];
 		$this->db->select('t1.*, t2.renewal_date, t2.expirydate');
 		$this->db->from('cpd_activity_form t1');
