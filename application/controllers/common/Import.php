@@ -1192,7 +1192,7 @@ class Import extends CC_Controller {
 	{
 		echo '<link href="'.base_url().'assets/css/style.min.css" rel="stylesheet">';
 		echo '<link href="'.base_url().'assets/css/custom.css" rel="stylesheet">';
-		echo '<div class="row" style="padding-left:268px!important;background:white;"><div class="col-12"><div class="card" style="background-color:unset;border: unset;"><div class="card-body">'.$this->plumbercard($id).'</div></div></div></div>';
+		echo '<body style="background:white;"><div class="row"><div class="col-12"><div class="card" style="background-color:white;border: none;padding: 0;margin: 0;"><div class="card-body" style="padding: 0;">'.$this->plumbercard($id).'</div></div></div></div></body>';
 	}
 	
 	public function auditorration($id)

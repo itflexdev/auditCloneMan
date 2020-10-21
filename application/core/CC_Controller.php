@@ -369,7 +369,6 @@ class CC_Controller extends CI_Controller
 		if(!$result){
 			redirect($extras['redirect']); 
 		}
-		//$this->plumberregistrationdocument($result);
 		
 		if($this->input->post()){
 			$requestData 					= 	$this->input->post();
@@ -1514,12 +1513,12 @@ class CC_Controller extends CI_Controller
 		$filename				= 'registrationletter'.date("dmY").'.docx';
 		$userid					= $result['id'];
 		
-		$billingaddress 		= isset($result['billingaddress']) ? explode('@-@', $result['billingaddress']) : [];
-		$address				= isset($billingaddress[2]) ? $billingaddress[2] : '';
-		$suburb 				= isset($billingaddress[3]) ? $this->Managearea_Model->getList('row', ['id' => $billingaddress[3]]) : '';
-		$city					= isset($billingaddress[4]) ? $this->Managearea_Model->getListCity('row', ['id' => $billingaddress[4]]) : '';
-		$province 				= isset($billingaddress[5]) ? $this->Managearea_Model->getListProvince('row', ['id' => $billingaddress[5]]) : '';
-		$postalcode 			= isset($billingaddress[6]) ? $billingaddress[6] : '';
+		$postaladdress 		= isset($result['postaladdress']) ? explode('@-@', $result['postaladdress']) : [];
+		$address				= isset($postaladdress[2]) ? $postaladdress[2] : '';
+		$suburb 				= isset($postaladdress[3]) ? $this->Managearea_Model->getList('row', ['id' => $postaladdress[3]]) : '';
+		$city					= isset($postaladdress[4]) ? $this->Managearea_Model->getListCity('row', ['id' => $postaladdress[4]]) : '';
+		$province 				= isset($postaladdress[5]) ? $this->Managearea_Model->getListProvince('row', ['id' => $postaladdress[5]]) : '';
+		$postalcode 			= isset($postaladdress[6]) ? $postaladdress[6] : '';
 		$designationid 			= isset($result['designation']) ? $result['designation'] : '';
 		$specialisationsid 		= isset($result['specialisations']) ? array_filter(explode(',', $result['specialisations'])) : [];
 		$expirydatestart 		= isset($result['expirydate']) && $result['expirydate']!='1970-01-01' ? date('d-m-Y', strtotime("-1 year", strtotime($result['expirydate']))) : '';
@@ -1572,10 +1571,10 @@ class CC_Controller extends CI_Controller
 				$expirydateend
 			]
 		);
-		
-		$templateDocx->setImageValue('Card', array('path' => './assets/uploads/temp/card'.$userid.'.png', 'width' => 100, 'height' => 100, 'ratio' => false));
-		$templateDocx->saveAs('./assets/test.docx');
+		$templateDocx->setImageValue('Card', array('path' => './assets/uploads/temp/card'.$userid.'.png', 'width' => 500, 'height' => 250, 'ratio' => false));
 		/*
+		$templateDocx->saveAs('./assets/test.docx');
+		*/
 		$templateDocx->saveAs('./assets/uploads/plumber/'.$userid.'/'.$filename);
 		
 		$data = [
@@ -1586,6 +1585,5 @@ class CC_Controller extends CI_Controller
 		];
 		
 		$this->Documentsletters_Model->action($data);
-		*/
 	}
 }

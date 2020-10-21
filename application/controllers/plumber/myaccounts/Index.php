@@ -307,7 +307,7 @@ td {
 		//$query3 = $this->db->update('cpd_activity_form', $requestData3);
 		
 		$result = $this->Plumber_Model->getList('row', ['id' => $userid, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
-		$this->plumberregistrationdocument($result);
+		//$this->plumberregistrationdocument($result);
 		
 		if ($query && $query2) {
 			$this->session->set_flashdata('success','Registration Renewed Sucessfully.');

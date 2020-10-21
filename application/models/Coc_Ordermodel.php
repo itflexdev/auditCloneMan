@@ -9,7 +9,7 @@ class Coc_Ordermodel extends CC_Model
 		$this->db->from('coc_orders t1');
 		$this->db->join('invoice inv', 'inv.inv_id=t1.inv_id', 'left');
 		$this->db->join('users_detail t2', 't1.user_id=t2.user_id', 'left');
-		$this->db->join('users_address t3', 't1.user_id=t3.user_id AND t3.type="2"', 'left');
+		$this->db->join('users_address t3', 't1.user_id=t3.user_id AND t3.type="3"', 'left');
 		$this->db->join('users t4', 't1.user_id=t4.id', 'left');
 		$this->db->join('coc_count cc', 't1.user_id=cc.user_id');		
 		$this->db->join('city t5', 't3.city=t5.id','left');		
@@ -157,10 +157,10 @@ class Coc_Ordermodel extends CC_Model
 				$this->db->where('user_id', $data['user_id']); 
 				$decrease_count = $this->db->update('coc_count'); 
 
-				$userdata1				= 	$this->Plumber_Model->getList('row', ['id' => $requestdata['user_id']], ['users', 'usersdetail']);
+				$userdata1				= 	$this->Plumber_Model->getList('row', ['id' => $requestdata['user_id'], 'type' => '3'], ['users', 'usersdetail']);
 
 				//$request['status'] 		= 	'1';
-				 if ($inv_id) {
+				 if ($inv_id && $userdata1) {
 					//$result 			= $this->db->update('invoice', $request, ['inv_id' => $inv_id,'user_id' => $requestdata['user_id']]);
 				 	//$result 			= $this->db->update('coc_orders', $request, ['inv_id' => $inv_id,'user_id' => $requestdata['user_id'] ]);
 

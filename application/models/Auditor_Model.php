@@ -729,41 +729,49 @@ class Auditor_Model extends CC_Model
 		
 		$count = $this->db->select('count(id) as count')->where($plumberdata1+$auditordata1)->get('stock_management')->row_array();
 		
-		$openaudits = $this->db->select('count(id) as count')->where(['audit_status' => '2']+$plumberdata1+$auditordata1)->get('stock_management')->row_array();
+		$openaudits = 	$this->db->select('count(id) as count')
+						->group_start()
+							->where(['audit_status' => '2'])
+							->or_where(['audit_status' => '3'])
+							->or_where(['audit_status' => '5'])
+						->group_end()
+						->where(['1' => '1']+$plumberdata1+$auditordata1)
+						->get('stock_management')
+						->row_array();
 		
 		$total 	= 	$this->db->select('count(ar.id) as count')
 					->join('auditor_statement as', 'as.coc_id=ar.coc_id', 'left')
-					->where(['as.auditcomplete' => '1']+$plumberdata2+$auditordata2)
+					->where(['1' => '1']+$plumberdata2+$auditordata2)
 					->get('auditor_review ar')
 					->row_array();
 
 		$refixincomplete 	= 	$this->db->select('count(ar.id) as count')
 								->join('auditor_statement as', 'as.coc_id=ar.coc_id', 'left')
-								->where(['as.auditcomplete' => '1', 'ar.reviewtype' => '1', 'ar.status' => '0']+$plumberdata2+$auditordata2)
+								->where(['ar.reviewtype' => '1', 'ar.status' => '0']+$plumberdata2+$auditordata2)
 								->get('auditor_review ar')
 								->row_array();
 
 		$refixcomplete 		= 	$this->db->select('count(ar.id) as count')
 								->join('auditor_statement as', 'as.coc_id=ar.coc_id', 'left')
-								->where(['as.auditcomplete' => '1', 'ar.reviewtype' => '1', 'ar.status' => '1']+$plumberdata2+$auditordata2)
+								->where(['ar.reviewtype' => '1', 'ar.status' => '1']+$plumberdata2+$auditordata2)
 								->get('auditor_review ar')
 								->row_array();
 
 		$cautionary 		= 	$this->db->select('count(ar.id) as count')
 								->join('auditor_statement as', 'as.coc_id=ar.coc_id', 'left')
-								->where(['as.auditcomplete' => '1', 'ar.reviewtype' => '2']+$plumberdata2+$auditordata2)
+								->where(['ar.reviewtype' => '2']+$plumberdata2+$auditordata2)
 								->get('auditor_review ar')
 								->row_array();
 
 		$compliment 		= 	$this->db->select('count(ar.id) as count')
 								->join('auditor_statement as', 'as.coc_id=ar.coc_id', 'left')
-								->where(['as.auditcomplete' => '1', 'ar.reviewtype' => '3']+$plumberdata2+$auditordata2)
+								->where(['ar.reviewtype' => '3']+$plumberdata2+$auditordata2)
 								->get('auditor_review ar')
 								->row_array();
 
 		$noaudit 			= 	$this->db->select('count(ar.id) as count')
 								->join('auditor_statement as', 'as.coc_id=ar.coc_id', 'left')
-								->where(['as.auditcomplete' => '1', 'ar.reviewtype' => '4']+$plumberdata2+$auditordata2)
+								->where(['ar.reviewtype' => '4']+$plumberdata2+$auditordata2)
 								->get('auditor_review ar')
 								->row_array();
 
