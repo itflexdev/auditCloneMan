@@ -402,11 +402,11 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr><td><?php echo ($usertype=='5') ? $rowData['bank_name'] : $rowData1['bank_name']; ?></td></tr>            
-								<tr><td><?php echo ($usertype=='5') ? $rowData['branch_code'] : $rowData1['branch_code']; ?></td></tr>
-								<tr><td><?php echo ($usertype=='5') ? $rowData['account_name'] : $rowData1['account_name']; ?></td></tr>
-								<tr><td><?php echo ($usertype=='5') ? $rowData['account_no'] : $rowData1['account_no']; ?></td></tr>
-								<tr><td><?php echo ($usertype=='5') ? $rowData['account_type'] : $rowData1['account_type']; ?></td></tr>
+								<tr><td><?php echo ($usertype=='5') ? ($rowData['bank_name']!='' ? $rowData['bank_name'] : '&nbsp;') : $rowData1['bank_name']; ?></td></tr>            
+								<tr><td><?php echo ($usertype=='5') ? ($rowData['branch_code']!='' ? $rowData['branch_code'] : '&nbsp;') : $rowData1['branch_code']; ?></td></tr>
+								<tr><td><?php echo ($usertype=='5') ? ($rowData['account_name']!='' ? $rowData['account_name'] : '&nbsp;') : $rowData1['account_name']; ?></td></tr>
+								<tr><td><?php echo ($usertype=='5') ? ($rowData['account_no']!='' ? $rowData['account_no'] : '&nbsp;') : $rowData1['account_no']; ?></td></tr>
+								<tr><td><?php echo ($usertype=='5') ? ($rowData['account_type']!='' ? $rowData['account_type'] : '&nbsp;') : $rowData1['account_type']; ?></td></tr>
 							</tbody>
 						</table>
 					</td>

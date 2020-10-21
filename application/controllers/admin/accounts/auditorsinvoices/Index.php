@@ -129,11 +129,10 @@ class Index extends CC_Controller
 	public function generatepdf($inv_id)
 	{
 		$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
-		$designation =	$this->config->item('designation2')[$rowData['designation']];					
 		$cocreport = $this->cocreport($inv_id, 'PDF Invoice Auditor', [
 			'description' => $rowData['description'], 
 			'type' => '2', 
-			'logo' => base_url()."assets/uploads/auditor/".$rowData["file2"],
+			'logo' => ($rowData["file2"]!='' && file_exists("./assets/uploads/auditor/".$rowData["file2"])) ? base_url()."assets/uploads/auditor/".$rowData["file2"] : base_url()."assets/images/profile.jpg",
 			'sublogo' => base_url()."assets/images/paid.png",
 			'terms' => "30 Days"
 		]);
