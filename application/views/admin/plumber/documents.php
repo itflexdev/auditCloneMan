@@ -75,7 +75,15 @@ $pagestatus = isset($pagestatus) ? $pagestatus : '';
 					<input type="submit" name="submit" id="submit" value="submit" class="btn btn-primary">
 				</div>				
 			</form>	
-
+			
+			<?php if(in_array($user_details['plumberstatus'], ['1','2','6']) && $user_details['approval_status']=='1'){ ?>
+				<form method="post">
+					<div class="col-md-12 text-right">
+						<input type="submit" name="submit" value="Generate Card Letter" class="btn btn-primary">
+					</div>				
+				</form>
+			<?php } ?>
+			
 			<div class="table-responsive m-t-40">
 					<table class="table table-bordered table-striped datatables fullwidth">
 						<thead>

@@ -712,24 +712,29 @@ class Index extends CC_Controller
 		}
 		
 		if($this->input->post()){
-			$requestData 	= 	$this->input->post();			
-			$result 	=  $this->Documentsletters_Model->action($requestData);				
-			if($result){
-			 $this->session->set_flashdata('success', 'Documents Letters '.(($result=='') ? 'created' : 'updated').' successfully.');
-
-			 redirect('admin/plumber/index/documents/'.$plumberid);
+			$requestData 	= 	$this->input->post();		
+			
+			if(isset($requestData['submit']) && $requestData['submit']=='Generate Card Letter'){
+				$result = $this->Plumber_Model->getList('row', ['id' => $plumberid, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+				$this->plumberregistrationdocument($result);
+				$this->session->set_flashdata('success', 'Documents Letters created successfully.');
+				redirect('admin/plumber/index/documents/'.$plumberid);
+			}else{
+				$result 	=  $this->Documentsletters_Model->action($requestData);				
+				if($result){
+					$this->session->set_flashdata('success', 'Documents Letters '.(($result=='') ? 'created' : 'updated').' successfully.');
+					redirect('admin/plumber/index/documents/'.$plumberid);
+				}else{
+					$this->session->set_flashdata('error', 'Try Later.');
+				}
 			}
-			else{
-			 $this->session->set_flashdata('error', 'Try Later.');
-			}
-
 		}
 		
-		$userdata1	= $this->Plumber_Model->getList('row', ['id' => $plumberid], ['usersdetail']);
+		$userdata1	= $this->Plumber_Model->getList('row', ['id' => $plumberid], ['usersdetail', 'usersplumber']);
 		$pagedata['user_details'] 	= $userdata1;
 		$pagedata['roletype']		= $this->config->item('roleadmin');
 		$pagedata['notification'] 	= $this->getNotification();
-		$pagedata['plumberid'] 	= $plumberid;
+		$pagedata['plumberid'] 		= $plumberid;
 		$pagedata['menu']			= $this->load->view('common/plumber/menu', ['id'=>$plumberid],true);
 		$data['plugins'] = ['datatables', 'datatablesresponsive', 'sweetalert', 'validation','inputmask'];
 		$data['content'] = $this->load->view('admin/plumber/documents', (isset($pagedata) ? $pagedata : ''), true);
@@ -752,12 +757,13 @@ class Index extends CC_Controller
 				
 				$filepath	= base_url().'assets/uploads/plumber/'.$post['plumberid'].'/';
 				$pdfimg 	= base_url().'assets/images/pdf.png';
+				$docimg 	= base_url().'assets/images/docx.png';
 				$file 		= '';
 				
 				if($filename!=''){
 					$explodefile 	= explode('.', $filename);
 					$extfile 		= array_pop($explodefile);
-					$imgpath 		= (in_array($extfile, ['pdf', 'tiff'])) ? $pdfimg : $filepath.$filename;
+					$imgpath 		= (in_array($extfile, ['pdf', 'tiff'])) ? $pdfimg : ((in_array($extfile, ['docx'])) ? $docimg : $filepath.$filename);
 					$file = '<div class="col-md-6"><a href="' .$filepath.$filename.'" target="_blank"><img src="'.$imgpath.'" width="100"></div></a>';
 				}
 				
