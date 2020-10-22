@@ -19,11 +19,11 @@ class Mycpd_Model extends CC_Model
 			if(isset($requestdata['user_id'][0])) $this->db->where('t2.id', $requestdata['user_id'][0]);
 
 			// $this->db->where('t2.expirydate>=','t1.created_at', false);
-			$this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
-			$this->db->where('t1.created_at>=', $datetime);
+			// $this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
+			$this->db->where('t1.created_at >= DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)');
 
 		}elseif ($requestdata['pagestatus'] == '0') {
-			$this->db->select('t1.*, if(t1.status="2", 0, t1.points) as custompoint, t2.renewal_date');
+			$this->db->select('t1.*, if(t1.status="2", 0, t1.points) as custompoint, t2.renewal_date, t2.expirydate');
 			$this->db->from('cpd_activity_form t1');
 			$this->db->join('users t2', 't2.id = t1.user_id', 'right');
 
@@ -32,8 +32,8 @@ class Mycpd_Model extends CC_Model
 			if(isset($requestdata['id'])) $this->db->where('t1.id', $requestdata['id']);
 
 			// $this->db->where('t2.expirydate<=','t1.created_at', false);
-			$this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
-			$this->db->where('t1.created_at<', $datetime);
+			// $this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
+			$this->db->where('t1.created_at < DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)');
 		}
 
 
