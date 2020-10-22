@@ -860,12 +860,14 @@ class Auditor_Model extends CC_Model
 
 		if ($requestdata['pagestatus'] == '1') {
 			// $this->db->where('t2.expirydate>=','t1.created_at', false);
-			$this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
-			$this->db->where('t1.created_at>=', $datetime);
+			// $this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
+			// $this->db->where('t1.created_at>=', $datetime);
+			$this->db->where('t1.created_at >= DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)');
 		}elseif($requestdata['pagestatus'] == '0'){
 			// $this->db->where('t2.expirydate<=','t1.created_at', false);
-			$this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
-			$this->db->where('t1.created_at<', $datetime);
+			// $this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
+			// $this->db->where('t1.created_at<', $datetime);
+			$this->db->where('t1.created_at < DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)');
 		}
 
 		if($type=='count'){
