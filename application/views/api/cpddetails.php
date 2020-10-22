@@ -173,21 +173,14 @@
 <!-- <script type="text/javascript" src="./custom.js"></script> -->
 <script type="text/javascript">
 var action ='click';
- var speed ="500";
-    $(document).ready(function(){
-        // $('.table_cpd').hide();
- $('.head_expan').click('.head_expan', function(){
-    //$('.head_expan').addClass('open');
-      $(this).closest('.head_expan').toggleClass('open').click(action);
- $(this).next().slideToggle().siblings('.table_cpd').slideUp();
- });
- });
-
- // var action ='click';
- // var speed ="500";
- // $(document).on('click', '.head_expan', function(){
- //      $(this).closest('.head_expan').toggleClass('open').click(action);
- // $(this).next().slideToggle().siblings('.table_cpd').slideUp();
- // });
+var speed ="500";
+$(document).ready(function(){
+$('.table_cpd').hide();
+$('.head_expan').click('.head_expan', function(){
+//$('.head_expan').addClass('open');
+$(this).closest('.head_expan').toggleClass('open').click(action);
+$(this).next().slideToggle().siblings('.table_cpd').slideUp();
+});
+});
 </script>
 </html>
