@@ -175,7 +175,7 @@
 var action ='click';
 var speed ="500";
 $(document).ready(function(){
-$('.table_cpd').hide();
+$('.table_cpd--main').hide();
 $('.head_expan').click('.head_expan', function(){
 //$('.head_expan').addClass('open');
 $(this).closest('.head_expan').toggleClass('open').click(action);
