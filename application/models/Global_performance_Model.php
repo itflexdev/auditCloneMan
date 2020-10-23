@@ -62,31 +62,21 @@ class Global_performance_Model extends CC_Model
 
     public function action($data)
 	{ 
-		// echo "<pre>";
-		// print_r($data);die;
-		 $this->db->trans_begin();
+		$this->db->trans_begin();
 		
-		$userid	  = 	$this->getUserID();
-		$id       =     $data['id'];
-		
-       $point = $data['points'];
+		$userid = $this->getUserID();
+		$point 	= $data['points'];
 
-       foreach($point as $k => $v)
+		foreach($point as $k => $v)
     	{
-        
     		$this->db->update('gps_point', ['point' => $v],['id' => $k]);
-
-
     	}
 
         $notification_points = $data['points1'];
    
-    	  foreach($notification_points as $n => $p)
+    	foreach($notification_points as $n => $p)
     	{
-
     		$this->db->update('gps_notification', ['point' => $p],['id' => $n]);
-    	
- 
     	}
     	  for ($i=1; $i <= 4; $i++) { 
 		    if (isset($data['status'][$i])=='on') {

@@ -17,9 +17,9 @@ class Globalperformance extends CC_Controller
 
 			$this->checkUserPermission('15', '2', '1');
 			
-                $requestData 	= 	$this->input->post();
+            $requestData 	= 	$this->input->post();
 
-            	$data 	=  $this->Global_performance_Model->action($requestData);
+            $data 	=  $this->Global_performance_Model->action($requestData);
 			if($data) $this->session->set_flashdata('success', 'Global Performance Settings '.(($id=='') ? 'updated' : 'updated').' successfully.');
 			else $this->session->set_flashdata('error', 'Try Later.');
 			
@@ -30,8 +30,7 @@ class Globalperformance extends CC_Controller
 		$pagedata['msggrp'] 				= $this->config->item('messagegroup');
 		$pagedata['checkpermission'] 		= $this->checkUserPermission('15', '2');
 		$pagedata['results'] 				= $this->Global_performance_Model->getPointList('all');
-		$pagedata['results1'] 				= $this->Global_performance_Model->getPointList('all');
-		$pagedata['result'] 		= $this->Global_performance_Model->getWarningList('all', ['status' => ['0','1']]+$post);
+		$pagedata['result'] 				= $this->Global_performance_Model->getWarningList('all', ['status' => ['0','1']]+$post);
 		
 		$data['plugins']					= ['datatables', 'datatablesresponsive', 'sweetalert', 'validation', 'datepicker'];
 

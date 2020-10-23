@@ -33,45 +33,44 @@ if(isset($result) && $result){
 					<form class="mt-4 form" action="" method="post">
 					    <table class="table  fullwidth" border="1">
 					    	<thead>
-							<tr>
-								<th>Description</th>
-								<th>Point Allocation</th>
-								<th>Performance Wording</th>
-							</tr>
+								<tr>
+									<th>Description</th>
+									<th>Point Allocation</th>
+									<th>Performance Wording</th>
+								</tr>
 					 		</thead>
 					 		<tbody>
-					 			<?php foreach($results as $key=>$val){
-					 			
-					 		  ?>
-							<tr>
-                                <?php if($val['type'] == 1 || $val['type'] == 3 || $val['type'] == 5|| $val['type'] == 7 ){
-                                     
-                                	?>
-				        		<td class="key" style="font-weight:bold;"><?php echo $val['description'];?></td>
-				        	<?php }
-				        	else { 
-
-                                   if($val['id']!=13){
-				        		?>
-				        		<td class="key"><?php echo $val['description'];?></td>
-				        		<?php }}if($val['id']!=13){ ?>
-								<td class="point">
-									<?php if($val['type']!=1 && $val['type']!=3 && $val['type']!=5 ){
-                                        
-										?>
-									<input type="text" size="2" min="0" id="points" name="points[<?php echo $val['id']; ?>]"  value="<?php echo $val['point'];?>" style="margin: 0px 20px;width: 40%;">
-								<?php }}?>
-								</td>
-                                <?php if($val['id']!=13){?>
-								<td class="wording" ><?php echo $val['wording'];?></td>
-							<?php }?>
-							</tr>
-						<?php 	}?>
-						</tbody>
-					    </table></br></br>
+								<?php 
+									foreach($results as $key=>$val){
+										if(!in_array($val['type'], [0])){
+								?>
+											<tr>
+												<?php if($val['type'] == 1 || $val['type'] == 3 || $val['type'] == 5|| $val['type'] == 7 ){ ?>
+													<td class="key" style="font-weight:bold;"><?php echo $val['description'];?></td>
+												<?php }else {  ?>
+													<td class="key"><?php echo $val['description'];?></td>
+												<?php } ?>
+												<td class="point">
+													<?php if($val['type']!=1 && $val['type']!=3 && $val['type']!=5 ){ ?>
+														<input type="text" size="2" min="0" name="points[<?php echo $val['id']; ?>]"  value="<?php echo $val['point'];?>" style="margin: 0px 20px;width: 40%;">
+													<?php } ?>
+												</td>
+												<td class="wording" >
+													<?php if($val['type']!=1 && $val['type']!=3 && $val['type']!=5 ){ ?>
+														<?php echo $val['wording'];?>
+													<?php } ?>
+												</td>
+											</tr>
+								<?php 
+										} 
+									} 
+								?>
+							</tbody>
+					    </table>
+						</br></br>
 					
 			   
-				<h4 class="card-title">Global Performance Settings - Warning Notifications to Plumbers</h4>
+						<h4 class="card-title">Global Performance Settings - Warning Notifications to Plumbers</h4>
 					    <table class="table  fullwidth no_padd" border="1">
 					    	<thead>
 							<tr>
@@ -80,49 +79,75 @@ if(isset($result) && $result){
 								<th>Active</th>
 							</tr>
 					 		</thead>
-					 		
 					 		<tbody>
-					 			<?php 
-					 			foreach($result as $key1=>$val1){
-
-					 				
-					 			?>
-					 			
-							<tr>
-								<td class="key1"><?php echo $val1['warning'];?></td>
-								<td class="point">
-									<input type="text" size="2" min="0" id="points" name="points1[<?php echo $val1['id'];?>]"  value="<?php echo $val1['point'];?>" style="margin: 0px 20px;width: 10%;">
-								</td>
-
-								<td>
-                                <div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
-								<input type="checkbox" class="custom-control-input" name="status[<?php echo $val1['id'];?>]" id="status_<?php echo $val1['id'];?>" <?php echo ($val1['status']=='1') ? 'checked="checked"' : ''; ?>>
-								<label class="custom-control-label" for="status_<?php echo $val1['id'];?>"></label>
-							    </div></td>
-							    
-							</tr>
-							<?php }?>
-						</tbody>
-					    </table></br>
+					 			<?php foreach($result as $key1=>$val1){ ?>
+									<tr>
+										<td class="key1"><?php echo $val1['warning'];?></td>
+										<td class="point">
+											<input type="text" size="2" min="0" name="points1[<?php echo $val1['id'];?>]"  value="<?php echo $val1['point'];?>" style="margin: 0px 20px;width: 10%;">
+										</td>
+										<td>
+											<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
+												<input type="checkbox" class="custom-control-input" name="status[<?php echo $val1['id'];?>]" id="status_<?php echo $val1['id'];?>" <?php echo ($val1['status']=='1') ? 'checked="checked"' : ''; ?>>
+												<label class="custom-control-label" for="status_<?php echo $val1['id'];?>"></label>
+											</div>
+										</td>
+									</tr>
+								<?php } ?>
+							</tbody>
+					    </table>
+						</br>
 					    <div class="row">
-					    <div class="col-md-8">
-			                <div class="form-group">
-								<label style="font-weight:bold;">Performance Rolling Averages</label>&nbsp&nbsp&nbsp &nbsp &nbsp  
-
-								<?php foreach($results1 as $key2=>$val2){}?>
-
-								<input type="text" class="form-group" id="avg" name="points[<?php echo $val2['id']; ?>]"  value="<?php echo $val2['point']; ?>" placeholder="months" >	
-								<span>Month(s)</span>				
-					        </div>			
-		    			</div>
-                		<div class="col-md-4 text-right">
-					       <input type="hidden" name="id" value="<?php //echo $id; ?>">
-					       <?php if($checkpermission){ ?>
-						   <button type="submit" name="submit" value="submit" class="btn btn-primary"><?php echo $heading; ?>
-						   </button>
-							<?php } ?>
-				    	</div>
-			    	</div>
+							<div class="col-md-8">
+								<div class="form-group">
+									<label style="font-weight:bold;">Performance Rolling Averages</label>&nbsp&nbsp&nbsp &nbsp &nbsp 
+									<input type="text" class="form-group" id="avg" name="points[13]"  value="<?php echo $results['12']['point']; ?>" placeholder="months" >	
+									<span>Month(s)</span>				
+								</div>			
+							</div>
+						</div>
+						<h4 class="card-title">Global Performance listing factors</h4>
+					    <div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<div class="row">
+										<label class="col-md-5 mt-3" style="font-weight:bold;"><?php echo $results['13']['description']; ?></label>
+										<input type="text" class="form-group col-md-6" name="points[14]"  value="<?php echo $results['13']['point']; ?>" placeholder="points">	
+									</div>			
+								</div>			
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<div class="row">
+										<label class="col-md-5 mt-3" style="font-weight:bold;"><?php echo $results['14']['description']; ?></label>
+										<input type="text" class="form-group  col-md-6" name="points[15]"  value="<?php echo $results['14']['point']; ?>" placeholder="points">	
+									</div>			
+								</div>			
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<div class="row">
+										<label class="col-md-5 mt-3" style="font-weight:bold;"><?php echo $results['15']['description']; ?></label>
+										<input type="text" class="form-group col-md-6" name="points[16]"  value="<?php echo $results['15']['point']; ?>" placeholder="points">	
+									</div>			
+								</div>			
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<div class="row">
+										<label class="col-md-5 mt-3" style="font-weight:bold;"><?php echo $results['16']['description']; ?></label>
+										<input type="text" class="form-group col-md-6" name="points[17]"  value="<?php echo $results['16']['point']; ?>" placeholder="points">	
+									</div>			
+								</div>			
+							</div>
+						</div>
+					    <div class="row">
+							<div class="col-md-12 text-right">
+								<?php if($checkpermission){ ?>
+									<button type="submit" name="submit" value="submit" class="btn btn-primary"><?php echo $heading; ?></button>
+								<?php } ?>
+							</div>
+						</div>
 			      </form>		
 		    </div>
 	    </div>
