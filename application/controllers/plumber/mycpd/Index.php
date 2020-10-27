@@ -97,10 +97,14 @@ class index extends CC_Controller
 	public function DTCpdQueue()
 	{
 		$post 			= $this->input->post();
-
-		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']]]+$post);
-		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']]]+$post);
+		$userdetails 	= $this->getUserDetails();
 		
+		$dbexpirydate = $userdetails['expirydate'];
+
+		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
+		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
+
+		// print_r($this->getUserDetails());die;
 		$totalrecord 	= [];
 		if(count($results) > 0){
 			foreach($results as $result){
