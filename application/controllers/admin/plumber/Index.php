@@ -170,11 +170,13 @@ class Index extends CC_Controller
 		$pagedata['user_details'] 	= $userdata1;
 		$pagedata['menu']			= $this->load->view('common/plumber/menu', ['id'=>$id],true);
 		$pagedata['notification'] 	= $this->getNotification();
+		$userdetails 				= $this->getUserDetails($id);
+		$dbexpirydate 				= $userdetails['expirydate'];
 		
 		$pagedata['history']		= $this->Auditor_Model->getReviewHistory2Count(['plumberid' => $id]);
-		$developmental 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'developmental']);
-		$individual 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'individual']);
-		$workbased 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'workbased']);
+		$developmental 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userdetails['expirydate']]);
+		$individual 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userdetails['expirydate']]);
+		$workbased 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagedata['pagestatus'], 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userdetails['expirydate']]);
 
 		if (count($developmental) > 0) {
 			$pagedata['developmental'] = array_sum(array_column($developmental, 'points')); 
@@ -260,9 +262,11 @@ class Index extends CC_Controller
 	public function DTCpdQueue()
 	{
 		$post 			= $this->input->post();
+		$userdetails 				= $this->getUserDetails($post['user_id']);
+		$dbexpirydate 				= $userdetails['expirydate'];
 
-		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']]]+$post);
-		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']]]+$post);
+		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
+		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
 		//print_r($results);die;
 		
 		$totalrecord 	= [];
