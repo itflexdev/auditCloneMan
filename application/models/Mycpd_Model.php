@@ -4,7 +4,6 @@ class Mycpd_Model extends CC_Model
 {
 	public function getQueueList($type, $requestdata=[])
 	{
-		//print_r($requestdata['user_id'][0]);die;
 		
 		$datetime = date('Y-m-d H:i:s');
 		// $datetime = '2020-10-22 00:00:00.000000';
@@ -18,9 +17,23 @@ class Mycpd_Model extends CC_Model
 
 			if(isset($requestdata['user_id'][0])) $this->db->where('t2.id', $requestdata['user_id'][0]);
 
+			$dbexpirydate = $requestdata['dbexpirydate'];
+			$minusoneyear = date('Y-m-d H:i:s', strtotime('-1 year', strtotime($dbexpirydate)));
+
+			$minusoneyearTotime = date('Y-m-d H:i:s', strtotime($minusoneyear));
+			$datetimeTotime 	= date('Y-m-d H:i:s', strtotime($datetime));
+
+			if ($minusoneyearTotime > $datetimeTotime) {
+				$queryDate = date('Y-m-d H:i:s', strtotime('-1 year', strtotime($minusoneyear)));
+			}elseif($minusoneyearTotime < $datetimeTotime){
+				$queryDate = $minusoneyear;
+			}else{
+				$queryDate = $datetime;
+			}
+
 			// $this->db->where('t2.expirydate>=','t1.created_at', false);
 			// $this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
-			$this->db->where('t1.created_at >= DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)');
+			$this->db->where('t1.created_at >=', $queryDate);
 
 		}elseif ($requestdata['pagestatus'] == '0') {
 			$this->db->select('t1.*, if(t1.status="2", 0, t1.points) as custompoint, t2.renewal_date, t2.expirydate');
@@ -31,9 +44,23 @@ class Mycpd_Model extends CC_Model
 			if(isset($requestdata['user_id'][0])) $this->db->where('t2.id', $requestdata['user_id'][0]);
 			if(isset($requestdata['id'])) $this->db->where('t1.id', $requestdata['id']);
 
+			$dbexpirydate = $requestdata['dbexpirydate'];
+			$minusoneyear = date('Y-m-d H:i:s', strtotime('-1 year', strtotime($dbexpirydate)));
+
+			$minusoneyearTotime = date('Y-m-d H:i:s', strtotime($minusoneyear));
+			$datetimeTotime 	= date('Y-m-d H:i:s', strtotime($datetime));
+
+			if ($minusoneyearTotime > $datetimeTotime) {
+				$queryDate = date('Y-m-d H:i:s', strtotime('-1 year', strtotime($minusoneyear)));
+			}elseif($minusoneyearTotime < $datetimeTotime){
+				$queryDate = $minusoneyear;
+			}else{
+				$queryDate = $datetime;
+			}
+
 			// $this->db->where('t2.expirydate<=','t1.created_at', false);
 			// $this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
-			$this->db->where('t1.created_at < DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)');
+			$this->db->where('t1.created_at <', $queryDate);
 		}
 
 
