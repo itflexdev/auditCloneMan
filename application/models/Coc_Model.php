@@ -122,8 +122,8 @@ class Coc_Model extends CC_Model
 		if(isset($requestdata['coctype']) && count($requestdata['coctype']) > 0)			$this->db->where_in('sm.type', $requestdata['coctype']);
 		if(isset($requestdata['cocstatus']) && count($requestdata['cocstatus']) > 0)		$this->db->where_in('sm.coc_status', $requestdata['cocstatus']);
 		if(isset($requestdata['nococstatus']) && count($requestdata['nococstatus']) > 0)	$this->db->where_not_in('sm.coc_status', $requestdata['nococstatus']);
-		if(isset($requestdata['startdate']) && $requestdata['startdate']!='')				$this->db->where('DATE(sm.purchased_at) >=', date('Y-m-d', strtotime($requestdata['startdate'])));
-		if(isset($requestdata['enddate']) && $requestdata['enddate']!='')					$this->db->where('DATE(sm.purchased_at) <=', date('Y-m-d', strtotime($requestdata['enddate'])));
+		if(isset($requestdata['startdate']) && $requestdata['startdate']!='')				$this->db->where('DATE(sm.allocation_date) >=', date('Y-m-d', strtotime($requestdata['startdate'])));
+		if(isset($requestdata['enddate']) && $requestdata['enddate']!='')					$this->db->where('DATE(sm.allocation_date) <=', date('Y-m-d', strtotime($requestdata['enddate'])));
 		if(isset($requestdata['province']) && $requestdata['province']!='')					$this->db->where('cl.province', $requestdata['province']);
 		if(isset($requestdata['city']) && $requestdata['city']!='')							$this->db->where('cl.city', $requestdata['city']);
 		if(isset($requestdata['auditorid']) && $requestdata['auditorid']!='')				$this->db->where('sm.auditorid', $requestdata['auditorid']);
