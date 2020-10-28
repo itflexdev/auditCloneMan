@@ -596,7 +596,10 @@ var reviewclass 			= JSON.parse('<?php echo json_encode($reviewtableclass); ?>')
 var workmanshippt 			= JSON.parse('<?php echo json_encode($workmanshippt); ?>');
 var plumberverificationpt 	= JSON.parse('<?php echo json_encode($plumberverificationpt); ?>');
 var cocverificationpt 		= JSON.parse('<?php echo json_encode($cocverificationpt); ?>');
-var refixcompletedate 		= '<?php echo $refixcompletedate; ?>';
+var refixcompletept 		= '<?php echo $refixcompletept; ?>';
+var cautionarypt 			= '<?php echo $cautionarypt; ?>';
+var complimentpt 			= '<?php echo $complimentpt; ?>';
+var cpdpt 					= '<?php echo $cpdpt; ?>';
 var noaudit		= '<?php echo $noaudit; ?>';
 var filepath 	= '<?php echo $filepath; ?>';
 var chatpath 	= '<?php echo $chatfilepath; ?>';
@@ -816,7 +819,7 @@ $(document).on('change', '.reviewstatus', function(){
 	ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.parent().parent().attr('data-id'), 'point' : point, 'refixperiod' : refixperiod, 'status' : _this.val()}, '', { success : function(data){ 
 		sweetalertautoclose('successfully saved'); 
 		refixcheck(); 
-		_this.parent().parent().find('td:eq(4)').text(point)
+		_this.parent().parent().find('td:eq(6)').text(point)
 	}});
 })
 
@@ -847,16 +850,20 @@ function reviewpoint(){
 		if(statement.val()!='' && statement.val()!=undefined){
 			var statementoption = statement.find('option:selected');
 			if(reviewtype==1){
-				$('.r_point').val(statementoption.attr('data-refixincomplete'));
-				$('#incompletepoint').val(statementoption.attr('data-refixincomplete'));
-				$('#completepoint').val(statementoption.attr('data-refixcomplete'));
+				var refixincompletecalc = statementoption.attr('data-refixincomplete');
+				var refixcompletecalc 	= parseFloat(statementoption.attr('data-refixcomplete')) * (parseFloat(refixcompletept));
+				$('.r_point').val(refixincompletecalc);
+				$('#incompletepoint').val(refixincompletecalc);
+				$('#completepoint').val(refixcompletecalc);
 				$('#r_status').val('0');
 			}else if(reviewtype==2){
-				$('.r_point').val(statementoption.attr('data-cautionary'));
-				$('#cautionarypoint').val(statementoption.attr('data-cautionary'));
+				var cautionarycalc = parseFloat(statementoption.attr('data-cautionary')) * (parseFloat(cautionarypt));
+				$('.r_point').val(cautionarycalc);
+				$('#cautionarypoint').val(cautionarycalc);
 			}else if(reviewtype==3){
-				$('.r_point').val(statementoption.attr('data-compliment'));
-				$('#complimentpoint').val(statementoption.attr('data-compliment'));
+				var complimentcalc = parseFloat(statementoption.attr('data-compliment')) * (parseFloat(complimentpt));
+				$('.r_point').val(complimentcalc);
+				$('#complimentpoint').val(complimentcalc);
 			}
 			
 			$('#r_reference').val(statementoption.attr('data-reference'));

@@ -1010,8 +1010,11 @@ class CC_Controller extends CI_Controller
 		$pagedata['workmanshippt']				= $this->getWorkmanshipPoint();
 		$pagedata['plumberverificationpt']		= $this->getPlumberVerificationPoint();
 		$pagedata['cocverificationpt']			= $this->getCocVerificationPoint();
-		$pagedata['cocverificationpt']			= $this->getCocVerificationPoint();
 		$pagedata['noaudit']					= $this->getAuditorPoints($this->config->item('noaudit'));
+		$pagedata['refixcompletept'] 			= $this->getAuditorPoints($this->config->item('refixcompletept'));	
+		$pagedata['cautionarypt'] 				= $this->getAuditorPoints($this->config->item('cautionarypt'));	
+		$pagedata['complimentpt'] 				= $this->getAuditorPoints($this->config->item('complimentpt'));	
+		$pagedata['cpdpt'] 						= $this->getAuditorPoints($this->config->item('cpdpt'));	
 		$pagedata['workmanship'] 				= $this->config->item('workmanship');
 		$pagedata['yesno'] 						= $this->config->item('yesno');		
 		$pagedata['reviewtype'] 				= $this->config->item('reviewtype');	
