@@ -63,6 +63,11 @@ $config['noaudit']					= 	'12';
 
 $config['rollingaverage']			= 	'13';
 
+$config['refixcompletept']			= 	'14';
+$config['cautionarypt']				= 	'15';
+$config['complimentpt']				= 	'16';
+$config['cpdpt']					= 	'17';
+
 $config['usertype1'] 				= 	[
 											'plumber' 	=> '3',
 											'company' 	=> '4',
