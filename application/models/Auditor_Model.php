@@ -873,7 +873,8 @@ class Auditor_Model extends CC_Model
 			}else{
 				$queryDate = $datetime;
 			}
-			$this->db->where('t1.created_at >=', $queryDate);
+			// $this->db->where('t1.created_at >=', $queryDate);
+			$this->db->where('t1.cpd_start_date >=', $queryDate);
 		}elseif($requestdata['pagestatus'] == '0'){
 
 			$dbexpirydate = $requestdata['dbexpirydate'];
@@ -889,7 +890,8 @@ class Auditor_Model extends CC_Model
 			}else{
 				$queryDate = $datetime;
 			}
-			$this->db->where('t1.created_at <', $queryDate);
+			// $this->db->where('t1.created_at <', $queryDate);
+			$this->db->where('t1.cpd_start_date <', $queryDate);
 		}
 
 		if($type=='count'){
