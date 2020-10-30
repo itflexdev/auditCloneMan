@@ -32,8 +32,8 @@ class Mycpd_Model extends CC_Model
 			}
 
 			// $this->db->where('t2.expirydate>=','t1.created_at', false);
-			// $this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
-			$this->db->where('t1.created_at >=', $queryDate);
+			// $this->db->where('t1.created_at >=', $queryDate);
+			$this->db->where('t1.cpd_start_date >=', $queryDate);
 
 		}elseif ($requestdata['pagestatus'] == '0') {
 			$this->db->select('t1.*, if(t1.status="2", 0, t1.points) as custompoint, t2.renewal_date, t2.expirydate');
@@ -59,8 +59,8 @@ class Mycpd_Model extends CC_Model
 			}
 
 			// $this->db->where('t2.expirydate<=','t1.created_at', false);
-			// $this->db->where('DATE_SUB(t2.expirydate, INTERVAL 1 YEAR)<=',$datetime);
-			$this->db->where('t1.created_at <', $queryDate);
+			// $this->db->where('t1.created_at <', $queryDate);
+			$this->db->where('t1.cpd_start_date <', $queryDate);
 		}
 
 
