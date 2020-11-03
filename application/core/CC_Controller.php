@@ -374,6 +374,7 @@ class CC_Controller extends CI_Controller
 			$requestData 					= 	$this->input->post();
 			$requestData['user_id'] 		= 	$id;
 			$requestData['commonaction'] 	= 	'1';
+			$userdata 						= 	$this->getUserDetails($id);
 			
 			if(isset($requestData['coc_purchase_limit'])){
 				$currentcoclimit	= $result['coc_purchase_limit'];
@@ -395,6 +396,17 @@ class CC_Controller extends CI_Controller
 			}
 			
 			$plumberdata 	=  $this->Plumber_Model->action($requestData);
+			if (isset($pagedata['pagetype']) && $pagedata['pagetype'] =='applications' && isset($plumberdata['registration_no'])) {
+				
+				$curlData['firstname'] 	= $requestData['name'];
+				$curlData['surname'] 	= $requestData['surname'];
+				$curlData['username'] 	= $plumberdata['registration_no'];
+				$curlData['password'] 	= $userdata['password_raw'];
+				$curlData['email'] 		= $userdata['email'];
+				$curlData['nickname'] 	= $plumberdata['registration_no'];
+				$curlData['userid'] 	= $id;
+				$this->lmscurl($curlData);
+			}
 				
 			if(isset($requestData['submit']) && $requestData['submit']=='approvalsubmit'){
 				$commentdata 	=  $this->Comment_Model->action($requestData);				
@@ -1469,6 +1481,50 @@ class CC_Controller extends CI_Controller
 			$this->db->trans_commit();
 			return true;
 		}
+	}
+	public function lmscurl($data){
+		$url = 'https://iopsatraining.co.za/wp-json/lms/v2/users/register/';
+		$method = 'GET';
+		$curlaction['url'] = $url;
+		$curl = curl_init(); 
+
+		$param = [
+					'firstname' 		=> $data['firstname'],
+					'surname' 			=> $data['surname'],
+					'password' 			=> $data['password'],
+					'username' 			=> $data['username'],
+					'email' 			=> $data['email'],
+					'nickname' 			=> $data['nickname'],
+				];
+		$curlaction['request'] = json_encode($param);
+		$url = $url.'?'.http_build_query($param);
+
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json')); 
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); 
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+		$result = curl_exec($curl); 
+		if (curl_errno($curl)){
+		//return false;
+		//echo 'cURL error: ' . curl_error($curl); 
+		$curlaction['error'] = curl_error($curl); 
+		}else{ 
+		// print_r(curl_getinfo($curl)); 
+		$curlaction['info'] = json_encode(curl_getinfo($curl)); 
+		}
+
+		curl_close($curl);
+		$curlaction['response'] = $result;
+		$curlaction['userid'] 	= $data['userid'];
+		$this->lmscurlaction($curlaction);
+		return $result;
+	}
+
+	public function lmscurlaction($data){
+		$request['lms_status'] = '1';
+		$this->db->update('users_plumber', $request, ['user_id' => $data['userid']]);
+		return true;
+
 	}
 
 	public function cronLog($extras=[]){
