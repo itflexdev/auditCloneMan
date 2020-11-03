@@ -58,6 +58,9 @@
 	$province3 				= isset($billingaddress[5]) ? $billingaddress[5] : '';
 	$postalcode3 			= isset($billingaddress[6]) ? $billingaddress[6] : '';
 
+	$lms_registration 		= isset($result['lms_registration']) ? $result['lms_registration'] : '';
+	$lms_status 			= isset($result['lms_status']) ? $result['lms_status'] : '';
+
 	$skills 				= isset($result['skills']) ? array_filter(explode('@-@', $result['skills'])) : [];
 	
 	$filepath				= base_url().'assets/uploads/plumber/'.$userid.'/';
@@ -250,6 +253,25 @@
 									echo form_dropdown('citizen', $citizen, $citizenid,['id'=>'citizen', 'class'=>'form-control percentageslide']);
 									?>
 									</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="row">
+								<div class="col-md-6">
+									<label>Register on Iopsatraining.co.za?</label>
+								</div>
+								<div class="col-md-3">
+									<div class="custom-control custom-radio">
+										<input type="radio" name="lmsregistration" id="registrationyes" class="custom-control-input" value="1" <?php if($lms_registration =='1' || $lms_registration ==''){ echo 'checked="checked"'; } if($result['formstatus'] == '1'){ echo "disabled"; } ?>>
+										<label class="custom-control-label" for="registrationyes">Yes (default)</label>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="custom-control custom-radio">
+										<input type="radio" name="lmsregistration" id="registrationno" class="custom-control-input" value="2" <?php if($lms_registration =='2'){ echo 'checked="checked"'; } if($result['formstatus'] == '1'){ echo "disabled"; } ?>>
+										<label class="custom-control-label" for="registrationno">No</label>
+									</div>
+								</div>
 							</div>
 						</div>
 						<div class="row add_top_value">
