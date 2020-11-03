@@ -375,7 +375,7 @@ class CC_Controller extends CI_Controller
 			$requestData['user_id'] 		= 	$id;
 			$requestData['commonaction'] 	= 	'1';
 			$userdata 						= 	$this->getUserDetails($id);
-			
+
 			if(isset($requestData['coc_purchase_limit'])){
 				$currentcoclimit	= $result['coc_purchase_limit'];
 				$coclimit 			= $requestData['coc_purchase_limit'];						
@@ -396,7 +396,7 @@ class CC_Controller extends CI_Controller
 			}
 			
 			$plumberdata 	=  $this->Plumber_Model->action($requestData);
-			if (isset($pagedata['pagetype']) && $pagedata['pagetype'] =='applications' && isset($plumberdata['registration_no'])) {
+			if (isset($pagedata['pagetype']) && $pagedata['pagetype'] =='applications' && isset($plumberdata['registration_no']) && $requestData['lmsregistration'] =='1') {
 				
 				$curlData['firstname'] 	= $requestData['name'];
 				$curlData['surname'] 	= $requestData['surname'];
@@ -406,6 +406,10 @@ class CC_Controller extends CI_Controller
 				$curlData['nickname'] 	= $plumberdata['registration_no'];
 				$curlData['userid'] 	= $id;
 				$this->lmscurl($curlData);
+			}elseif(isset($pagedata['pagetype']) && $pagedata['pagetype'] =='applications' && isset($plumberdata['registration_no']) && $requestData['lmsregistration'] =='2'){
+				$curlData['userid'] 	= $id;
+				$curlData['lms_status'] = '0';
+				$this->lmscurlaction($curlData);
 			}
 				
 			if(isset($requestData['submit']) && $requestData['submit']=='approvalsubmit'){
@@ -1516,12 +1520,13 @@ class CC_Controller extends CI_Controller
 		curl_close($curl);
 		$curlaction['response'] = $result;
 		$curlaction['userid'] 	= $data['userid'];
+		$curlaction['lms_status'] = '1';
 		$this->lmscurlaction($curlaction);
 		return $result;
 	}
 
 	public function lmscurlaction($data){
-		$request['lms_status'] = '1';
+		$request['lms_status'] = $data['lms_status'];
 		$this->db->update('users_plumber', $request, ['user_id' => $data['userid']]);
 		return true;
 
