@@ -30,20 +30,19 @@ $lms_status 			= isset($result['lms_status']) ? $result['lms_status'] : '';
 			<div class="card-body">
 				<div class="row">
 					<div class="col-md-6">
+						<?php if ($lms_status =='0' && $lms_registration =='1') { ?>
 						<div class="row">
 							<div class="form-group col-md-12">
 								<label for="registerlms">Register yourself for iopsatraining.co.za:</label>
-								<?php if ($lms_status =='0' && $lms_registration =='1') { ?>
 									<button type="button" id="registerlmsbtn" name="submit" value="Register" class="btn btn-primary">Register Now</button>
-								<?php } ?>
 								</div>	
 							</div>
-						
+						<?php } ?>
 						<div class="modalloader"></div>
 						<?php if ($lms_status =='1' && $lms_registration =='1') { ?>
 						<div class="row lms-exist">
 							<div class="form-group col-md-12">
-								<label for="registerlms-exist">Account Linked</label>
+								<label for="registerlms-exist">Account already created. Use your current email and password, or your registration number and password, to log into iopsatraining.co.za</label>
 						</div>
 						<?php } ?>
 						<div class="row lms-sucess">
