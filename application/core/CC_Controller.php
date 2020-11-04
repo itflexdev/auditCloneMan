@@ -737,12 +737,13 @@ class CC_Controller extends CI_Controller
 		}
 
 		if($this->input->post()){
+			if(isset($flag)) unset($flag);
 			$requestData 	= $this->input->post();	
-				
 			$data 			= $this->Auditor_Model->action($requestData);
 			
 			if ($requestData['logincredentials'] =='1') {
 				$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => '16', 'type' => '4']);
+				$flag = '1';
 			}
 
 			if ($requestData['statusradio'] =='1') {
@@ -752,9 +753,12 @@ class CC_Controller extends CI_Controller
 					$auditaction = '18';
 				}
 				$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => $auditaction, 'type' => '4']);
+				$flag = '1';
+			}
+			if (!isset($flag)) {
+				$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => '19', 'type' => '4']);
 			}
 			
-			$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => '19', 'type' => '4']);
 
 			if($data) $this->session->set_flashdata('success', 'Auditor '.(($id=='') ? 'created' : 'updated').' successfully.');
 			else $this->session->set_flashdata('error', 'Try Later.');
