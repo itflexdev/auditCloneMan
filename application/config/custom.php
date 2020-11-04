@@ -564,13 +564,14 @@ $config['diary'] 				= 		[
 											'5' => 'Purchased COC',
 											'6' => 'Allocated COC',
 											'7' => 'COC Logged',
-											'8' => 'Auditor Allocated',
+											'8' => 'Audit Allocated',
 											'9' => 'Auditor Review Completed',
 											'10' => 'Auditor Review Completed with refix',
 											'11' => 'Audit completed With refixes',
 											'12' => 'Audit completed',
 											'13' => 'Audit put on hold',
 											'14' => 'Audit edited',
+											'15' => 'Audit Cancelled',
 										];	
 
 $config['invtype'] 				= 		[
