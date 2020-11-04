@@ -59,7 +59,7 @@
 				<div class="col-md-12">	
 					<div class="form-group ">
 						<label>Comments</label>
-						<form action="<?php echo base_url().'admin/plumber/index/diary'; ?>" method="post" class="form">
+						<form action="<?php echo base_url().'admin/audits/index/diary'; ?>" method="post" class="form">
 							<input type="text" class="form-control" placeholder="Type your Comment here" name="comments" id="comments">
 							<input type="hidden" class="form-control" name="user_id" id="user_id" value="<?php echo $user_id; ?>">
 							<button type="submit" name="submit" class="btn btn-primary">Add Comment</button>
