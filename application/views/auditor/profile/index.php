@@ -171,7 +171,7 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label>Password</label>
-								<input type="password" class="form-control"  name="password" value="<?php echo $password; ?>">
+								<input type="password" class="form-control" id="password" name="password" value="<?php echo $password; ?>">
 							</div>
 						</div>
 						<div class="col-md-6">
