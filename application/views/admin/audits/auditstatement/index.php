@@ -53,6 +53,8 @@
 						</div>
 						<div class="col-md-12 text-center">
 							<input type="hidden" name="coc_id" id="coc_id">
+							<input type="hidden" name="audit_id" id="audit_id">
+							<input type="hidden" name="plumber_id" id="plumber_id">
 							<button type="submit" name="cancelcocsubmit" class="btn btn-success cancelcocsubmit">Confirm</button>
 							<button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
 						</div>
@@ -105,6 +107,8 @@
 	
 	$(document).on('click', '#cancelcoc', function(){
 		$('#coc_id').val($(this).attr('data-id'));
+		$('#audit_id').val($(this).attr('data-auditid'));
+		$('#plumber_id').val($(this).attr('data-plumberid'));
 		$('#cancelcocmodal').modal('show');
 	})
 </script>
