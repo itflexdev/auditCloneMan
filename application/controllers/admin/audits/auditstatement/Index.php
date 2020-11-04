@@ -21,6 +21,7 @@ class Index extends CC_Controller
 			$requestData 	= 	$this->input->post();
 
 			$data 	=  $this->Coc_Model->cancelcoc($requestData);
+			$this->CC_Model->diaryactivity(['plumberid' => $requestData['plumber_id'], 'auditorid' => $requestData['audit_id'], 'cocid' => $requestData['coc_id'], 'action' => '15', 'type' => '4']);
 				
 			if($data) $this->session->set_flashdata('success', 'Coc Cancelled Successfully.');
 			else $this->session->set_flashdata('error', 'Try Later.');
@@ -49,7 +50,7 @@ class Index extends CC_Controller
 			foreach($results as $result){
 
 				if($checkpermission){
-					$delete  = 	'<a href="javascript:void(0);" data-id="'.$result['id'].'" id="cancelcoc" data-toggle="tooltip" data-placement="top" title="Cancel Coc"><i class="fa fa-times"></i></a>';
+					$delete  = 	'<a href="javascript:void(0);" data-id="'.$result['id'].'" data-auditid="'.$result['auditorid'].'" data-plumberid="'.$result['user_id'].'" id="cancelcoc" data-toggle="tooltip" data-placement="top" title="Cancel Coc"><i class="fa fa-times"></i></a>';
 				}else{
 					$delete = '';
 				}
