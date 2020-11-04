@@ -113,5 +113,47 @@ class Index extends CC_Controller
 
 		echo json_encode($json);
 	}
+
+	public function diary($id='')
+	{
+		if($id!=''){
+			$result = $this->Auditor_Model->getList('row', ['id' => $id, 'type' => '5', 'status' => ['1', '2']], ['usersdetail']);
+
+			$pagedata['result'] 		= $result;
+
+			$DBcomments = $this->Comment_Model->getList('all', ['user_id' => $id, 'type' => '5', 'status' => ['1', '2']]);
+			if($DBcomments){
+				$pagedata['comments']		= $DBcomments;
+			}else{
+				// $this->session->set_flashdata('error', 'No comments Found.');
+				//redirect('admin/plumber/index'); 
+			}
+		}
+
+		if($this->input->post()){
+			$requestData 	= 	$this->input->post();
+			$data = $this->Auditor_Model->plumberdiary($requestData);
+			if($data) $message = 'Comment added successfully.';
+
+			if(isset($data)) $this->session->set_flashdata('success', $message);
+			else $this->session->set_flashdata('error', 'Try Later.');
+
+			redirect('admin/plumber/index/diary/'.$requestData['user_id'].''); 
+
+		}
+
+
+		$pagedata['diarylist'] = $this->diaryactivity(['auditorid'=>$id]);		
+
+		$pagedata['user_id']		= $id;
+		$pagedata['user_role']		= $this->config->item('roletype');
+		$pagedata['notification'] 	= $this->getNotification();
+		$pagedata['roletype']		= $this->config->item('roleadmin');
+		$pagedata['menu']			= $this->load->view('common/auditor/menu', ['id'=>$id],true);
+		$data['plugins']			= ['datatables', 'datatablesresponsive', 'sweetalert', 'datepicker'];
+		$data['content'] 			= $this->load->view('admin/audits/diary', (isset($pagedata) ? $pagedata : ''), true);
+		
+		$this->layout2($data);		
+	}
 }
 
