@@ -751,6 +751,8 @@ class CC_Controller extends CI_Controller
 		$pagedata['notification'] = $this->getNotification();
 		$pagedata['provincelist'] = $this->getProvinceList();
 		$pagedata['audit_status'] = $this->config->item('audits_status1');
+		$pagedata['menu']		  = $this->load->view('common/auditor/menu', ['id'=>$id],true);
+		$pagedata['roletype']	  = $this->config->item('roleadmin');
 		
 		$pagedata['history']	  = $this->Auditor_Model->getReviewHistoryCount(['auditorid' => $id]);	
 		
@@ -909,14 +911,21 @@ class CC_Controller extends CI_Controller
 			if($data){
 				if($requestData['submit']=='save' && isset($requestData['hold'])){
 					$this->db->update('stock_management', ['audit_status' => '5', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
+					$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '13', 'type' => '4']);
+
 				}elseif($requestData['submit']=='save' && !isset($requestData['hold']) && $requestData['auditstatus']=='0'){
 					$this->db->update('stock_management', ['audit_status' => '3', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
+					$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '14', 'type' => '4']);
+
 				}elseif($requestData['submit']=='save' && !isset($requestData['hold']) && $requestData['auditstatus']=='1'){
 					$this->db->update('stock_management', ['audit_status' => '2', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
+					$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '14', 'type' => '4']);
 				}
 				
 				if($requestData['auditstatus']=='0'){
 					$auditreviewrow = $this->Auditor_Model->getReviewList('row', ['coc_id' => $pagedata['result']['id'], 'reviewtype' => '1', 'status' => '0']);
+					$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '11', 'type' => '4']);
+
 					if($auditreviewrow){
 						$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '22', 'emailstatus' => '1']);
 						
@@ -988,11 +997,13 @@ class CC_Controller extends CI_Controller
 						// Stock
 						$this->db->update('stock_management', ['audit_status' => '1', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
 						
-						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '9', 'type' => '4']);
+						// $this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '9', 'type' => '4']);
+						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '12', 'type' => '4']);
 					}elseif($requestData['auditstatus']=='0'){
 						$this->db->update('stock_management', ['audit_status' => '4', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
 						
-						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '10', 'type' => '4']);
+						// $this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '10', 'type' => '4']);
+						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '11', 'type' => '4']);
 					}
 					
 					$this->Auditor_Model->actionRatio($requestData['plumberid']);
