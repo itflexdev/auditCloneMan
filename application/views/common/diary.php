@@ -12,7 +12,12 @@
 				$action 		= isset($result['action']) ? $result['action'] : '';
 				$type 			= isset($result['type']) ? $result['type'] : '';
 				$message 		= isset($result['message']) ? $result['message'] : '';
-				$datetime 		= isset($result['datetime']) && $result['datetime']!='1970-01-01' ? date('d-m-Y', strtotime($result['datetime'])) : '';
+				if ($type =='4') {
+					$datetime 		= isset($result['datetime']) && $result['datetime']!='1970-01-01' ? date('d-m-Y H:i:s', strtotime($result['datetime'])) : '';
+				}else{
+					$datetime 		= isset($result['datetime']) && $result['datetime']!='1970-01-01' ? date('d-m-Y', strtotime($result['datetime'])) : '';
+				}
+				
 				$diary			= $this->config->item('diary');
 		?>
 			<div>
