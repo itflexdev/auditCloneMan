@@ -572,6 +572,10 @@ $config['diary'] 				= 		[
 											'13' => 'Audit put on hold',
 											'14' => 'Audit edited',
 											'15' => 'Audit Cancelled',
+											'16' => 'Auditor login details changed.',
+											'17' => 'Auditor set as Available',
+											'18' => 'Auditor set as Un-Available',
+											'19' => 'Auditor details updated',
 										];	
 
 $config['invtype'] 				= 		[
