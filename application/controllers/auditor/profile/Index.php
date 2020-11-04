@@ -24,7 +24,22 @@ class Index extends CC_Controller
 		if($this->input->post()){
 			$requestData 	= 	$this->input->post();		
 			$id				=	$requestData['id'];		
-			$data 			=  	$this->Auditor_Model->profileAction($requestData);			
+			$data 			=  	$this->Auditor_Model->profileAction($requestData);	
+
+			if ($requestData['logincredentials'] =='1') {
+				$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => '16', 'type' => '4']);
+			}
+
+			if ($requestData['statusradio'] =='1') {
+				if ($requestData['auditstatus'] =='1') {
+					$auditaction = '17';
+				}elseif($requestData['auditstatus'] =='2'){
+					$auditaction = '18';
+				}
+				$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => $auditaction, 'type' => '4']);
+			}
+			
+			$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => '19', 'type' => '4']);		
 
 			if(isset($data)) $this->session->set_flashdata('success', 'Records '.(($id=='') ? 'created' : 'updated').' successfully.');
 			else $this->session->set_flashdata('error', 'Try Later.');
