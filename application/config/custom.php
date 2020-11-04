@@ -567,6 +567,10 @@ $config['diary'] 				= 		[
 											'8' => 'Auditor Allocated',
 											'9' => 'Auditor Review Completed',
 											'10' => 'Auditor Review Completed with refix',
+											'11' => 'Audit completed With refixes',
+											'12' => 'Audit completed',
+											'13' => 'Audit put on hold',
+											'14' => 'Audit edited',
 										];	
 
 $config['invtype'] 				= 		[
