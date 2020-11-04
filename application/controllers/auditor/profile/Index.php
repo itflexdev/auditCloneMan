@@ -22,12 +22,14 @@ class Index extends CC_Controller
 		}
 		
 		if($this->input->post()){
+			if(isset($flag)) unset($flag);
 			$requestData 	= 	$this->input->post();		
 			$id				=	$requestData['id'];		
 			$data 			=  	$this->Auditor_Model->profileAction($requestData);	
 
 			if ($requestData['logincredentials'] =='1') {
 				$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => '16', 'type' => '4']);
+				$flag = '1';
 			}
 
 			if ($requestData['statusradio'] =='1') {
@@ -37,6 +39,10 @@ class Index extends CC_Controller
 					$auditaction = '18';
 				}
 				$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => $auditaction, 'type' => '4']);
+				$flag = '1';
+			}
+			if (!isset($flag)) {
+				$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => '19', 'type' => '4']);
 			}
 			
 			$this->CC_Model->diaryactivity([ 'auditorid' => $requestData['id'], 'action' => '19', 'type' => '4']);		
