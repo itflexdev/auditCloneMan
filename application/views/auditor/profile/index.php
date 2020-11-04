@@ -381,6 +381,8 @@
 						<input type="hidden" name="auditoravaid" value="<?php echo $auditoravaid; ?>">
 						<input type="hidden" name="usertype" value="<?php echo $usertype; ?>">
 						<input type="hidden" name="userbankid" value="<?php echo $userbankid; ?>">
+						<input type="hidden" id="logincredentials" name="logincredentials" value="0">
+						<input type="hidden" id="statusradio" name="statusradio" value="0">
 						
 						<div class="audt-ara-updte">
 							<button type="submit" name="submit" value="submit" class="btn btn-block btn-primary btn-rounded"><?php echo $heading; ?> </button>
@@ -397,6 +399,17 @@
 <script type="text/javascript">
 
 	$(function(){
+		$('#email').keypress(function(){
+			$('#logincredentials').val('1');
+		});
+		$('#password').keypress(function(){
+			$('#logincredentials').val('1');
+		});
+		
+		$('.auditstatus').click(function(){
+			$('#statusradio').val('1');
+		});
+
 		select2('#province, #city, #suburb, #area_province, #area_city, #area_suburb');
 		
 		fileupload([".auditor_image", "./assets/uploads/auditor/", ['jpg','gif','jpeg','png','pdf','tiff','tif']], ['.auditor_picture', '.auditor_photo', '<?php echo base_url()."assets/uploads/auditor/"; ?>']);
