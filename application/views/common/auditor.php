@@ -74,23 +74,27 @@
 		$photoidimg1 	= $profileimg;
 		$photoidurl1 	= 'javascript:void(0);';
 	}
+	if($roletype=='1'){
+		$heading = 'Auditors Profile';
+	}
 
 ?>
 
 <div class="row page-titles">
 	<div class="col-md-5 align-self-center">
-		<h4 class="text-themecolor">My Profile</h4>
+		<h4 class="text-themecolor"><?php echo $heading ?></h4>
 	</div>
 	<div class="col-md-7 align-self-center text-right">
 		<div class="d-flex justify-content-end align-items-center">
 			<ol class="breadcrumb">
 				<li class="breadcrumb-item">Home</li>
-				<li class="breadcrumb-item active">My Profile</li>
+				<li class="breadcrumb-item active"><?php echo $heading ?></li>
 			</ol>
 		</div>
 	</div>
 </div>
 <?php echo $notification; ?>
+<?php if($roletype=='1'){ echo isset($menu) ? $menu : ''; } ?>
 <div class="row">
 	<div class="col-12">
 		<div class="card">
