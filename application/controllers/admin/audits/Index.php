@@ -132,13 +132,13 @@ class Index extends CC_Controller
 
 		if($this->input->post()){
 			$requestData 	= 	$this->input->post();
-			$data = $this->Auditor_Model->plumberdiary($requestData);
+			$data = $this->Auditor_Model->auditordiary($requestData);
 			if($data) $message = 'Comment added successfully.';
 
 			if(isset($data)) $this->session->set_flashdata('success', $message);
 			else $this->session->set_flashdata('error', 'Try Later.');
 
-			redirect('admin/plumber/index/diary/'.$requestData['user_id'].''); 
+			redirect('admin/audits/index/diary/'.$requestData['user_id'].''); 
 
 		}
 
