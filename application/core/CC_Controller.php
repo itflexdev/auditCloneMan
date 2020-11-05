@@ -175,7 +175,7 @@ class CC_Controller extends CI_Controller
 		}
 		
 		if(isset($userid)){
-			$result = $this->Users_Model->getUserDetails('row', ['id' => $userid, 'status' => ['0','1']]);
+			$result = $this->Users_Model->getUserDetails('row', ['id' => $userid, 'status' => ['0','1','2']]);
 			
 			if($result){
 				return $result;
