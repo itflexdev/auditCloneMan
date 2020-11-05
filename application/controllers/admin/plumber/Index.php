@@ -171,7 +171,6 @@ class Index extends CC_Controller
 		$pagedata['menu']			= $this->load->view('common/plumber/menu', ['id'=>$id],true);
 		$pagedata['notification'] 	= $this->getNotification();
 		$userdetails 				= $this->getUserDetails($id);
-		echo "<pre>";print_r($userdetails);die;
 		$dbexpirydate 				= $userdetails['expirydate'];
 		
 		$pagedata['history']		= $this->Auditor_Model->getReviewHistory2Count(['plumberid' => $id]);
