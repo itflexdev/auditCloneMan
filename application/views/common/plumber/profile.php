@@ -358,31 +358,33 @@
 							</div>
 						</div>
 					<?php } ?>
-					<div class="form-group">
-						<div class="row">
-							<div class="col-md-6">
-								<label>Register on Iopsatraining.co.za?</label>
-							</div>
-							<div class="col-md-3">
-								<div class="custom-control custom-radio">
-									<input type="radio" name="lmsregistration" id="registrationyes" class="custom-control-input" value="1" <?php if($lms_registration =='1'){ echo 'checked="checked"'; } if ($pagetype != 'applications') { echo "disabled"; } if ($lms_status == '1') { echo "disabled"; } ?>>
-									<label class="custom-control-label" for="registrationyes">Yes (default)</label>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="custom-control custom-radio">
-									<input type="radio" name="lmsregistration" id="registrationno" class="custom-control-input" value="2" <?php if($lms_registration =='2'){ echo 'checked="checked"'; } if ($pagetype != 'applications') { echo "disabled"; } if ($lms_status == '1') { echo "disabled"; } ?>>
-									<label class="custom-control-label" for="registrationno">No</label>
-								</div>
-							</div>
-							<?php if ($lms_status == '1') { ?>
+					<?php
+					 if($roletype=='3' || ($roletype=='1' && $registration_no =='')){ ?>
+						<div class="form-group">
+							<div class="row">
 								<div class="col-md-6">
-									<label>An account with the email <?php echo $email; ?> already exists on iopsatraining.co.za.</label>
+									<label>Register on Iopsatraining.co.za?</label>
 								</div>
-							<?php } ?>
-							
+								<div class="col-md-3">
+									<div class="custom-control custom-radio">
+										<input type="radio" name="lmsregistration" id="registrationyes" class="custom-control-input" value="1" <?php if($lms_registration =='1'){ echo 'checked="checked"'; } if ($pagetype != 'applications') { ?> disabled <?php } if ($lms_status == '1') { echo "disabled"; } ?>>
+										<label class="custom-control-label" for="registrationyes">Yes (default)</label>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="custom-control custom-radio">
+										<input type="radio" name="lmsregistration" id="registrationno" class="custom-control-input" value="2" <?php if($lms_registration =='2'){ echo 'checked="checked"'; } if ($pagetype != 'applications') { ?> disabled <?php } if ($lms_status == '1') { echo "disabled"; } ?>>
+										<label class="custom-control-label" for="registrationno">No</label>
+									</div>
+								</div>
+								<?php if ($lms_status == '1') { ?>
+									<div class="col-md-6">
+										<label>An account with the email <?php echo $email; ?> already exists on iopsatraining.co.za.</label>
+									</div>
+								<?php } ?>
+							</div>
 						</div>
-					</div>
+					<?php }?>
 					
 					<?php 
 						if($roletype=='1' || ($roletype=='3' && $approval_status=='1')){ 
