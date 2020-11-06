@@ -150,7 +150,7 @@ class Index extends CC_Controller
 		$pagedata['notification'] 	= $this->getNotification();
 		$pagedata['roletype']		= $this->config->item('roleadmin');
 		$pagedata['menu']			= $this->load->view('common/auditor/menu', ['id'=>$id],true);
-		$data['plugins']			= ['datatables', 'datatablesresponsive', 'sweetalert', 'datepicker'];
+		$data['plugins']			= ['datatables', 'datatablesresponsive', 'sweetalert', 'datepicker', 'validation'];
 		$data['content'] 			= $this->load->view('admin/audits/diary', (isset($pagedata) ? $pagedata : ''), true);
 		
 		$this->layout2($data);		
