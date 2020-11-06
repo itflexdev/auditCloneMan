@@ -848,20 +848,20 @@ function reviewpoint(){
 		$('#r_status').val('1');
 	
 		if(statement.val()!='' && statement.val()!=undefined){
-			var statementoption = statement.find('option:selected');
+			var statementoption 	= statement.find('option:selected');
+			var refixincompletecalc = statementoption.attr('data-refixincomplete');
 			if(reviewtype==1){
-				var refixincompletecalc = statementoption.attr('data-refixincomplete');
-				var refixcompletecalc 	= parseFloat(statementoption.attr('data-refixcomplete')) * (parseFloat(refixcompletept));
+				var refixcompletecalc 	= (parseFloat(refixincompletecalc) * (parseFloat(refixcompletept))).toFixed(2);
 				$('.r_point').val(refixincompletecalc);
 				$('#incompletepoint').val(refixincompletecalc);
 				$('#completepoint').val(refixcompletecalc);
 				$('#r_status').val('0');
 			}else if(reviewtype==2){
-				var cautionarycalc = parseFloat(statementoption.attr('data-cautionary')) * (parseFloat(cautionarypt));
+				var cautionarycalc = (parseFloat(refixincompletecalc) * (parseFloat(cautionarypt))).toFixed(2);
 				$('.r_point').val(cautionarycalc);
 				$('#cautionarypoint').val(cautionarycalc);
 			}else if(reviewtype==3){
-				var complimentcalc = parseFloat(statementoption.attr('data-compliment')) * (parseFloat(complimentpt));
+				var complimentcalc = (parseFloat(refixincompletecalc) * (parseFloat(complimentpt))).toFixed(2);
 				$('.r_point').val(complimentcalc);
 				$('#complimentpoint').val(complimentcalc);
 			}
