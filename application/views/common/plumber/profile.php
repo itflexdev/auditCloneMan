@@ -368,7 +368,7 @@
 								<div class="col-md-3">
 									<div class="custom-control custom-radio">
 										<input type="radio" name="lmsregistration" id="registrationyes" class="custom-control-input" value="1" <?php if($lms_registration =='1'){ echo 'checked="checked"'; } if ($pagetype != 'applications') { ?> disabled <?php } if ($lms_status == '1') { echo "disabled"; } ?>>
-										<label class="custom-control-label" for="registrationyes">Yes (default)</label>
+										<label class="custom-control-label" for="registrationyes">Yes</label>
 									</div>
 								</div>
 								<div class="col-md-3">

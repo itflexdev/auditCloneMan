@@ -155,5 +155,19 @@ class Index extends CC_Controller
 		
 		$this->layout2($data);		
 	}
+
+	public function audithistory($id=''){
+		$pagedata['notification'] = $this->getNotification();
+		$pagedata['provincelist'] = $this->getProvinceList();
+		$pagedata['audit_status'] = $this->config->item('audits_status1');
+		$pagedata['menu']		  = $this->load->view('common/auditor/menu', ['id'=>$id],true);
+		$pagedata['roletype']	  = $this->config->item('roleadmin');
+		
+		$pagedata['history']	  = $this->Auditor_Model->getReviewHistoryCount(['auditorid' => $id]);	
+		
+		$data['plugins'] = ['datatables', 'datatablesresponsive', 'sweetalert', 'validation','inputmask','echarts','select2'];
+		$data['content'] = $this->load->view('common/auditor/audithistory', (isset($pagedata) ? $pagedata : ''), true);
+		$this->layout2($data);
+	}
 }
 
