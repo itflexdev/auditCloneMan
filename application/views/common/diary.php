@@ -1,6 +1,6 @@
 <p>Diary of Activities</p>
 <div class="row">
-	<div class="col-12 <?php if(isset($results[0]['type']) && $results[0]['type'] !='4'){ echo "diarybar"; }  ?>">
+	<div class="col-12">
 		<?php			
 			foreach($results as $result){
 				$id 			= isset($result['id']) ? $result['id'] : '';
