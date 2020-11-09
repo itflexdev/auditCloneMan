@@ -1,6 +1,6 @@
 <?php
 
-$config['sitename']	 				= 	'Audit IT';
+$config['sitename']	 				= 	'PIRB';
 
 $config['googleapikey']	 			= 	'AIzaSyD7kpv3FWxlVF2HWBsX6lrJJMGVWucTcoY';
 
