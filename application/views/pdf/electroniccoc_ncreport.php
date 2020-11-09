@@ -238,6 +238,7 @@ table.coc_details_overall label, table.auditor_details_overall label {
 table.notice-license-text tbody tr td {
     padding: 5px;
 }
+
     </style>
 
   </head>                
@@ -246,12 +247,11 @@ table.notice-license-text tbody tr td {
 
       <div id="wrapper">
 
-          <div class="certificate-block">
+          <div class="certificate-block" >
 
-              <div class="container" style=" font-family:Helvetica; width:auto; margin:0 auto; padding:0 15px; margin-bottom: 10px;">
+              <div class="container" style=" font-family:Helvetica; width:auto; margin:0 auto; padding:0 15px; margin-bottom: 10px; padding-top:4px; border: 4px solid #00aeef; border-radius:20px;">
               <style>
               body{
-                border: 4px solid #00aeef;
                 border-radius:20px;
                 padding-top:10px;
                 padding-bottom: 15px;
@@ -565,7 +565,7 @@ $agreement = '
                         </tr>
                         <tr>
                         <td style="height: 48px;font-family:Helvetica; vertical-align: top; font-size:10px;font-weight: 400; text-align: justify; padding: 2px 10px;">
-                        
+                          Refer to Non-Compliance report attached below
                         </td>
                         </tr>
                       </table>
@@ -698,11 +698,11 @@ $agreement = '
 
   <div style="page-break-after: always;"></div>
 
-  <div id="wrapper">
+  <div id="wrapper" >
 
   <div class="certificate-block" style="margin-top:0px; ">
 
-    <div class="container--pdf" style=" font-family:Helvetica; width:100%; margin: 0 auto; padding:0 15px 0 15px;">
+    <div class="container--pdf" style="border: 4px solid #00aeef; font-family:Helvetica; width:100%; margin: 0 auto; padding:15px 15px 15px 15px;  border-radius:20px;">
 
         <div class="title" style=" font-family:Helvetica; background: #d1e28d; text-align: center; color: #000; padding:4px 0; margin-bottom:4px;">
 
@@ -872,15 +872,15 @@ $agreement = '
 
   </div>
 
-  <table class="page_overall_auditreport">
-  <tbody>
+  <table class="page_overall_auditreport" style="page-break-before: always; border:none;">
+  <tbody style=" border:none;">
 
     <tr>
       <td>
-        <table class="head-all">
+        <table class="head-all" style="margin-bottom: 0 !important; padding-bottom: 0 !important;">
           <tbody>
             <tr>
-              <td><h2>NOTICE OF NON-COMPLIANCE</h2></td>
+              <td><h2  style="padding-left: 5px">NOTICE OF NON-COMPLIANCE</h2></td>
               <td style="text-align: right; width:250px;"><img width="200px" src='.$logoimg.'></td>                   
             </tr>
           </tbody>
@@ -890,7 +890,7 @@ $agreement = '
 
     <tr>
       <td style="border-bottom: 1.5px solid #000">
-        <table class="notice-license-text">
+        <table class="notice-license-text" style="margin-bottom: 0;">
           <thead>
             <tr>
             <th style="text-align: center;"><h3>NOTICE TO HOME OWNERS</h3></th>
@@ -898,7 +898,7 @@ $agreement = '
           </thead>
           <tbody>
             <tr>
-              <td style="padding: 5px 15px; text-align:center;">In terms of the, Water Services Act of 8 June 2001; Occupational Health & Safety Act (Pressure Equipment Regulations, 2009); the National Standard SANS 10254 (The Installation, Maintenance, Replacement and Reparation of Fixed Electric Storage Water Heating Systems); the National Standard SANS 1352 (The Installation, Maintenance, Replacement and Reparation of Domestic Air Source Water Heating Heat Pump Systems); the National Standard SANS 10106 (The Installation, Maintenance, Replacement and Reparation of Domestic Solar Water Heating Systems); as well as Section 58 of the Consumer Protection Act, any aspect of your plumbing installation that does not comply with the latest requirements of the above-mentioned national standards and legislation must be notified in writing to the user/owner by the relevant Licensed Plumber. THIS NOTICE SERVES NOTIFY TO YOU OF SUCH NON-COMPLIANCES.  Unless otherwise stated, this inspection is a visual inspection of component(s) and part(s) of your plumbing system, as listed.  These non-compliances are reasonably visible and capable of being inspected without creating damage(s).  Although the applicable plumbing at your premises may have been compliant at the time that it was installed, changes to the above-mentioned requirements are made from time to time for improvement and to minimise any potential risks. In doing so, it ensures that your safety, as the consumer, is the highest priority.</td>             
+              <td style="padding: 5px 15px; text-align: justify; font-size: 15px;">In terms of the, Water Services Act of 8 June 2001; Occupational Health & Safety Act (Pressure Equipment Regulations, 2009); the National Standard SANS 10254 (The Installation, Maintenance, Replacement and Reparation of Fixed Electric Storage Water Heating Systems); the National Standard SANS 1352 (The Installation, Maintenance, Replacement and Reparation of Domestic Air Source Water Heating Heat Pump Systems); the National Standard SANS 10106 (The Installation, Maintenance, Replacement and Reparation of Domestic Solar Water Heating Systems); as well as Section 58 of the Consumer Protection Act, any aspect of your plumbing installation that does not comply with the latest requirements of the above-mentioned national standards and legislation must be notified in writing to the user/owner by the relevant Licensed Plumber. THIS NOTICE SERVES NOTIFY TO YOU OF SUCH NON-COMPLIANCES.  Unless otherwise stated, this inspection is a visual inspection of component(s) and part(s) of your plumbing system, as listed.  These non-compliances are reasonably visible and capable of being inspected without creating damage(s).  Although the applicable plumbing at your premises may have been compliant at the time that it was installed, changes to the above-mentioned requirements are made from time to time for improvement and to minimise any potential risks. In doing so, it ensures that your safety, as the consumer, is the highest priority.</td>             
             </tr>
           </tbody>
         </table>
@@ -906,48 +906,48 @@ $agreement = '
     </tr>
 
     <tr> 
-      <td>
-        <table class="coc_details_overall">
+      <td style="border:none;">
+        <table class="coc_details_overall" style="margin-bottom: 0; border:none;">
           <tbody>
           <tr> 
-            <td style="padding: 0;"> <h3 style="margin: 20px 0 10px">COC DETAILS</h3> </td>
+            <td style="padding: 0; border:none; padding-left: 5px"> <h3 style="margin: 20px 0 10px">COC DETAILS</h3> </td>
           </tr>
 
           <tr>
-            <td style="padding: 0;"><label>Certificate No</label></td>
-            <td><label>Plumbing Work Completion Date</label></td>
-            <td><label>Owners Name</label></td>
+            <td style="padding: 0;padding-left: 5px"><label>Certificate No</label></td>
+            <td style="padding-left: 5px"><label>Plumbing Work Completion Date</label></td>
+            <td style="padding-left: 5px"><label>Owners Name</label></td>
           </tr>
 
           <tr>
-            <td style="padding: 0;"><span class = "nc-td-cls">'.$cocid1.'</span></td>
-            <td><span class = "nc-td-cls">'.$completiondate1.'</span></td>
-            <td><span class = "nc-td-cls">'.$name.'</span></td>
+            <td style="padding: 0;padding-left: 5px"><span class = "nc-td-cls">'.$cocid1.'</span></td>
+            <td style="padding-left: 5px"><span class = "nc-td-cls">'.$completiondate1.'</span></td>
+            <td style="padding-left: 5px"><span class = "nc-td-cls">'.$name.'</span></td>
           </tr>           
 
           <tr>
-            <td style="padding: 0;"><label>Name of Complex/Flat (if applicable)</label></td>
-            <td><label>Street</label></td>
-            <td><label>Number</label></td>
+            <td style="padding: 0;padding-left: 5px"><label>Name of Complex/Flat (if applicable)</label></td>
+            <td style="padding-left: 5px"><label>Street</label></td>
+            <td style="padding-left: 5px"><label>Number</label></td>
           </tr>
 
           <tr>
           
-            <td style="padding: 0;"><span class = "nc-td-cls">'.$address.'</span></td>
-            <td><span class = "nc-td-cls">'.$street.'</span></td>
-            <td><span class = "nc-td-cls">'.$number.'</span></td>
+            <td style="padding: 0;padding-left: 5px"><span class = "nc-td-cls">'.$address.'</span></td>
+            <td style="padding-left: 5px"><span class = "nc-td-cls">'.$street.'</span></td>
+            <td style="padding-left: 5px"><span class = "nc-td-cls">'.$number.'</span></td>
           </tr>
 
           <tr>
-            <td style="padding: 0;"><label>Province</label></td>
-            <td><label>City</label></td>
-            <td><label>Suburb</label></td>
+            <td style="padding: 0;padding-left: 5px"><label>Province</label></td>
+            <td style="padding-left: 5px"><label>City</label></td>
+            <td style="padding-left: 5px"><label>Suburb</label></td>
           </tr>
 
           <tr>
-            <td style="padding: 0;"><span class = "nc-td-cls">'.$province.'</span></td>
-            <td><span class = "nc-td-cls">'.$city.'</span></td>
-            <td><span class = "nc-td-cls">'.$suburb.'</span></td>
+            <td style="padding: 0;padding-left: 5px"><span class = "nc-td-cls">'.$province.'</span></td>
+            <td style="padding-left: 5px"><span class = "nc-td-cls">'.$city.'</span></td>
+            <td style="padding-left: 5px"><span class = "nc-td-cls">'.$suburb.'</span></td>
           </tr>
             
           </tbody>
@@ -957,21 +957,21 @@ $agreement = '
     
 
     <tr>
-      <td>
-        <table class="auditor_details_overall">
+      <td style="border:none;">
+        <table class="auditor_details_overall" style="border:none; margin-bottom: 77px;">
           <tbody>
             <tr>
-              <td colspan="3" style="padding-left: 0;"><h3>PLUMBERS DETAILS</h3></td>
+              <td colspan="3" style="padding-left: 6px;"><h3>PLUMBERS DETAILS</h3></td>
             </tr>
             <tr>
-              <td style="padding: 0;"><label>Plumbers Name and Surname</label></td>
-              <td><label>Company of Plumber</label></td>
-              <td><label>Company Contact (work number)</label></td>
+              <td style="padding: 0;padding-left: 5px"><label>Plumbers Name and Surname</label></td>
+              <td style="padding-left: 5px"><label>Company of Plumber</label></td>
+              <td style="padding-left: 5px"><label>Company Contact (work number)</label></td>
             </tr>
             <tr>
-              <td style="padding: 0;"><span class = "nc-td-cls">'.$plumbername.'</span></td>
-              <td><span class = "nc-td-cls">'.$plumbercompany.'</span></td>
-              <td><span class = "nc-td-cls">'.$plumberwork.'</span></td>
+              <td style="padding: 0;padding-left: 5px"><span class = "nc-td-cls">'.$plumbername.'</span></td>
+              <td style="padding-left: 5px"><span class = "nc-td-cls">'.$plumbercompany.'</span></td>
+              <td style="padding-left: 5px"><span class = "nc-td-cls">'.$plumberwork.'</span></td>
             </tr>
           </tbody>
         </table>
@@ -1021,7 +1021,7 @@ $agreement = '
   echo '
   </tbody>                            
 </table>
-  <h5>DISCLAIMER: This document was developed by the PIRB to assist plumbers in providing a Non-Compliance notice.  The responsibility for notifying the user & owner, lies with the licenced plumber. This document simply is a guide and is not exhaustive.  </h5>
+  <h5 style="    padding: 0 15px 0 15px;">DISCLAIMER: This document was developed by the PIRB to assist plumbers in providing a Non-Compliance notice.  The responsibility for notifying the user & owner, lies with the licenced plumber. This document simply is a guide and is not exhaustive.  </h5>
   </body>
 
 </html>';

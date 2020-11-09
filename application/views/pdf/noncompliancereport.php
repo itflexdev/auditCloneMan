@@ -1,11 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+</head>
+<body style=" padding-top: 10px; padding-bottom: 15px; font-family: 'Helvetica' !important;">
 <style type="text/css">
 table.page_overall_auditreport {
     margin: 10px auto;
 }
 table.head-all {
     width: 100%;
-    margin-bottom: 20px;
-    padding-bottom: 20px;    
+  /*  margin-bottom: 20px;
+    padding-bottom: 20px;  */  
 }
 table.coc_details_overall {
     width: 100%;
@@ -79,6 +85,17 @@ table.coc_details_overall label, table.auditor_details_overall label {
 table.notice-license-text tbody tr td {
     padding: 5px;
 }
+
+table, th, td {
+    border: 1px solid #a7a9ab;
+    font-family: Helvetica !important;
+}
+
+table{
+border-collapse: collapse;
+    width: 100%;
+}
+
 </style>
 
 <?php
@@ -107,15 +124,15 @@ function base64conversion($path){
 $logoimg = base64conversion(base_url().'assets/images/pitrb-logo.png');
 ?>
 
-<table class="page_overall_auditreport">
-	<tbody>
+<table class="page_overall_auditreport" style="border:none !important;">
+	<tbody style="border:none !important;">
 
 		<tr>
 			<td>
-				<table class="head-all">
+				<table class="head-all" style="margin-bottom: 0 !important;">
 					<tbody>
 						<tr>
-							<td><h2>NOTICE OF NON-COMPLIANCE</h2></td>
+							<td><h2 style="padding-left: 6px">NOTICE OF NON-COMPLIANCE</h2></td>
 							<td style="text-align: right; width:250px;"><img width="200px" src="<?php echo $logoimg; ?>"></td>                   
 						</tr>
 					</tbody>
@@ -125,15 +142,15 @@ $logoimg = base64conversion(base_url().'assets/images/pitrb-logo.png');
 
 		<tr>
 			<td style="border-bottom: 1.5px solid #000">
-				<table class="notice-license-text">
+				<table class="notice-license-text" style="margin-bottom: 0; padding-bottom: 0;">
 					<thead>
 						<tr>
-						<th style="text-align: center;"><h3>NOTICE TO HOME OWNERS</h3></th>
+						<th style="text-align: center;"><h3 >NOTICE TO HOME OWNERS</h3></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td style="padding: 5px 15px; text-align:center;">In terms of the, Water Services Act of 8 June 2001; Occupational Health & Safety Act (Pressure Equipment Regulations, 2009); the National Standard SANS 10254 (The Installation, Maintenance, Replacement and Reparation of Fixed Electric Storage Water Heating Systems); the National Standard SANS 1352 (The Installation, Maintenance, Replacement and Reparation of Domestic Air Source Water Heating Heat Pump Systems); the National Standard SANS 10106 (The Installation, Maintenance, Replacement and Reparation of Domestic Solar Water Heating Systems); as well as Section 58 of the Consumer Protection Act, any aspect of your plumbing installation that does not comply with the latest requirements of the above-mentioned national standards and legislation must be notified in writing to the user/owner by the relevant Licensed Plumber. THIS NOTICE SERVES NOTIFY TO YOU OF SUCH NON-COMPLIANCES.  Unless otherwise stated, this inspection is a visual inspection of component(s) and part(s) of your plumbing system, as listed.  These non-compliances are reasonably visible and capable of being inspected without creating damage(s).  Although the applicable plumbing at your premises may have been compliant at the time that it was installed, changes to the above-mentioned requirements are made from time to time for improvement and to minimise any potential risks. In doing so, it ensures that your safety, as the consumer, is the highest priority.</td>             
+							<td style="padding: 5px 15px;text-align: justify; font-size: 15px;">In terms of the, Water Services Act of 8 June 2001; Occupational Health & Safety Act (Pressure Equipment Regulations, 2009); the National Standard SANS 10254 (The Installation, Maintenance, Replacement and Reparation of Fixed Electric Storage Water Heating Systems); the National Standard SANS 1352 (The Installation, Maintenance, Replacement and Reparation of Domestic Air Source Water Heating Heat Pump Systems); the National Standard SANS 10106 (The Installation, Maintenance, Replacement and Reparation of Domestic Solar Water Heating Systems); as well as Section 58 of the Consumer Protection Act, any aspect of your plumbing installation that does not comply with the latest requirements of the above-mentioned national standards and legislation must be notified in writing to the user/owner by the relevant Licensed Plumber. THIS NOTICE SERVES NOTIFY TO YOU OF SUCH NON-COMPLIANCES.  Unless otherwise stated, this inspection is a visual inspection of component(s) and part(s) of your plumbing system, as listed.  These non-compliances are reasonably visible and capable of being inspected without creating damage(s).  Although the applicable plumbing at your premises may have been compliant at the time that it was installed, changes to the above-mentioned requirements are made from time to time for improvement and to minimise any potential risks. In doing so, it ensures that your safety, as the consumer, is the highest priority.</td>             
 						</tr>
 					</tbody>
 				</table>
@@ -141,47 +158,47 @@ $logoimg = base64conversion(base_url().'assets/images/pitrb-logo.png');
 		</tr>
 
 		<tr> 
-			<td>
-				<table class="coc_details_overall">
+			<td style="border:none;">
+				<table class="coc_details_overall"  style="margin-bottom: 0; border:none;">
 					<tbody>
 					<tr> 
-						<td style="padding: 0;"> <h3 style="margin: 20px 0 10px">COC DETAILS</h3> </td>
+						<td style="padding: 0; padding-left: 6px; border:none;"> <h3 style="margin: 20px 0 10px">COC DETAILS</h3> </td>
 					</tr>
 
 					<tr>
-						<td style="padding: 0;"><label>Certificate No</label></td>
-						<td><label>Plumbing Work Completion Date</label></td>
-						<td><label>Owners Name</label></td>
+						<td style="padding: 0; padding-left: 6px"><label>Certificate No</label></td>
+						<td style="padding-left: 6px"><label>Plumbing Work Completion Date</label></td>
+						<td style="padding-left: 6px"><label>Owners Name</label></td>
 					</tr>
 
 					<tr>
-						<td style="padding: 0;"><input type="text" value="<?php echo $cocid; ?>"></td>
-						<td><input type="text" value="<?php echo $completiondate; ?>"></td>
-						<td><input type="text" value="<?php echo $name; ?>"></td>
+						<td style="padding: 0; padding-left: 6px"><span class = "nc-td-cls"><?php echo $cocid; ?></span></td>
+						<td style="padding-left: 6px"><span class = "nc-td-cls"><?php echo $completiondate; ?></span></td>
+						<td style="padding-left: 6px"><span class = "nc-td-cls"><?php echo $name; ?></span></td>
 					</tr>           
 
 					<tr>
-						<td style="padding: 0;"><label>Name of Complex/Flat (if applicable)</label></td>
-						<td><label>Street</label></td>
-						<td><label>Number</label></td>
+						<td style="padding: 0; padding-left:6px"><label>Name of Complex/Flat (if applicable)</label></td>
+						<td style="padding-left: 6px"><label>Street</label></td>
+						<td style="padding-left: 6px"><label>Number</label></td>
 					</tr>
 
 					<tr>
-						<td style="padding: 0;"><input type="text" value="<?php echo $address; ?>"></td>
-						<td><input type="text" value="<?php echo $street; ?>"></td>
-						<td><input type="text" value="<?php echo $number; ?>"></td>
+						<td style="padding: 0; padding-left:6px"><span class = "nc-td-cls"><?php echo $address; ?></span></td>
+						<td style="padding-left: 6px"><span class = "nc-td-cls"><?php echo $street; ?></span></td>
+						<td style="padding-left: 6px"><span class = "nc-td-cls"><?php echo $number; ?></span></td>
 					</tr>
 
 					<tr>
-						<td style="padding: 0;"><label>Province</label></td>
-						<td><label>City</label></td>
-						<td><label>Suburb</label></td>
+						<td style="padding: 0; padding-left:6px"><label>Province</label></td>
+						<td style="padding-left: 6px"><label>City</label></td>
+						<td style="padding-left: 6px"><label>Suburb</label></td>
 					</tr>
 
 					<tr>
-						<td style="padding: 0;"><input type="text" value="<?php echo $province; ?>"></td>
-						<td><input type="text" value="<?php echo $city; ?>"></td>
-						<td><input type="text" value="<?php echo $suburb; ?>"></td>
+						<td style="padding: 0; padding-left:5px"><span class = "nc-td-cls"><?php echo $province; ?></span></td>
+						<td style="padding-left: 6px"><span class = "nc-td-cls"><?php echo $city; ?></span></td>
+						<td style="padding-left: 6px"><span class = "nc-td-cls"><?php echo $suburb; ?></span></td>
 					</tr>
 						
 					</tbody>
@@ -191,21 +208,21 @@ $logoimg = base64conversion(base_url().'assets/images/pitrb-logo.png');
 		
 
 		<tr>
-			<td>
-				<table class="auditor_details_overall">
+			<td style="border:none;">
+				<table class="auditor_details_overall" style="border:none; margin-bottom: 77px;">
 					<tbody>
 						<tr>
-							<td colspan="3" style="padding-left: 0;"><h3>PLUMBERS DETAILS</h3></td>
+							<td colspan="3" style="padding-left: 0; padding-left: 6px"><h3>PLUMBERS DETAILS</h3></td>
 						</tr>
 						<tr>
-							<td style="padding: 0;"><label>Plumbers Name and Surname</label></td>
-							<td><label>Company of Plumber</label></td>
-							<td><label>Company Contact (work number)</label></td>
+							<td style="padding: 0; padding-left:5px"><label>Plumbers Name and Surname</label></td>
+							<td style="padding-left: 5px"><label>Company of Plumber</label></td>
+							<td style="padding-left: 5px"><label>Company Contact (work number)</label></td>
 						</tr>
 						<tr>
-							<td style="padding: 0;"><input type="text" value="<?php echo $plumbername; ?>"></td>
-							<td><input type="text" value="<?php echo $plumbercompany; ?>"></td>
-							<td><input type="text" value="<?php echo $plumberwork; ?>"></td>
+							<td style="padding: 0; padding-left:5px"><span class = "nc-td-cls"><?php echo $plumbername; ?></span></td>
+							<td style="padding-left: 5px"><span class = "nc-td-cls"><?php echo $plumbercompany; ?></span></td>
+							<td style="padding-left: 5px"><span class = "nc-td-cls"><?php echo $plumberwork; ?></span></td>
 						</tr>
 					</tbody>
 				</table>
@@ -216,8 +233,8 @@ $logoimg = base64conversion(base_url().'assets/images/pitrb-logo.png');
 </table>
 
 
-<h3 style="margin: 10 0 20px;" class="audit-table-heading">NON COMPLIANCES</h3>
-<table class="table table-bordered reviewtable">    
+<h3 style="margin: 10 0 20px; padding: 0 15px 0 15px;" class="audit-table-heading">NON COMPLIANCES</h3>
+<table class="table table-bordered reviewtable" >    
 	<thead>
 		<tr>
 			<th>Non Compliance Details</th>
@@ -255,5 +272,7 @@ $logoimg = base64conversion(base_url().'assets/images/pitrb-logo.png');
 	</tbody>                            
 </table>
 
-<h5>DISCLAIMER: This document was developed by the PIRB to assist plumbers in providing a Non-Compliance notice.  The responsibility for notifying the user & owner, lies with the licenced plumber. This document simply is a guide and is not exhaustive.  </h5>
-			
+<h5 style="padding: 0 15px 0 15px;">DISCLAIMER: This document was developed by the PIRB to assist plumbers in providing a Non-Compliance notice.  The responsibility for notifying the user & owner, lies with the licenced plumber. This document simply is a guide and is not exhaustive.  </h5>
+
+</body>
+</html>
