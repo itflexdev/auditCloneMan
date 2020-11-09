@@ -247,20 +247,35 @@ class Coc_Ordermodel extends CC_Model
 	}
 
 	public function autosearchAuditor($postData){
+
+		$currentdate = date('Y-m-d');
+		$first_day_of_month = date('Y-m-01', strtotime($currentdate));
+		$last_day_of_month = date('Y-m-t', strtotime($currentdate));
 		if(isset($postData['province'])) $areadata 	= $postData['province'].'@@@'.$postData['city'].'@@@'.$postData['suburb'];
 			
+		// $openaudit 	= 	',(
+		// 					select count(sm.id) 
+		// 					from stock_management sm
+		// 					left join auditor_statement as ars on ars.coc_id=sm.id
+		// 					where sm.auditorid=ud.user_id and (ars.auditcomplete=0 or ars.auditcomplete IS NULL)
+		// 				) as openaudit';
 		$openaudit 	= 	',(
 							select count(sm.id) 
 							from stock_management sm
 							left join auditor_statement as ars on ars.coc_id=sm.id
-							where sm.auditorid=ud.user_id and (ars.auditcomplete=0 or ars.auditcomplete IS NULL)
+							where sm.auditorid=ud.user_id and ars.auditcomplete=0
 						) as openaudit';
 						
+		// $mtd 		= 	',(
+		// 					select count(sm.id) 
+		// 					from stock_management sm
+		// 					where sm.auditorid=ud.user_id and month(audit_allocation_date) = '.date('m').' and year(audit_allocation_date) = '.date('Y').'
+		// 				) as mtd';
 		$mtd 		= 	',(
 							select count(sm.id) 
-							from stock_management sm
-							where sm.auditorid=ud.user_id and month(audit_allocation_date) = '.date('m').' and year(audit_allocation_date) = '.date('Y').'
-						) as mtd';
+		 					from stock_management sm
+		 					where sm.auditorid=ud.user_id and audit_allocation_date >= '.$first_day_of_month.' and audit_allocation_date <= '.$last_day_of_month.'
+		 				) as mtd';
 		
 		$this->db->select('
 			u.id, 
