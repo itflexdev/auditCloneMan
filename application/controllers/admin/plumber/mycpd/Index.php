@@ -17,7 +17,9 @@ class index extends CC_Controller
 		
 		$userid = $this->getUserID();
 		if($id!=''){
-			$result = $this->Mycpd_Model->getQueueList('row', ['id' => $id, 'pagestatus' => '1']);
+			$userdetails 				= $this->getUserDetails($plumber_id);
+			$dbexpirydate 				= $userdetails['expirydate'];
+			$result = $this->Mycpd_Model->getQueueList('row', ['id' => $id, 'pagestatus' => '1', 'dbexpirydate' => $dbexpirydate]);
 			if($result){
 				$pagedata['result'] = $result;
 			}else{
