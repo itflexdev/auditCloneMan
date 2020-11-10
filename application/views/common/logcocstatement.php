@@ -746,6 +746,7 @@ function installationdefaultimage(){
 }
 
 $(document).on('click', '.savecocbtn', function(){
+	$('.form').data("validator").cancelSubmit = true;
 	$('#submitbtn').attr('value', 'save').click();
 })
 
