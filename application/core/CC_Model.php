@@ -13,7 +13,7 @@ class CC_Model extends CI_Model
 	public function sentMail($to, $subject, $message, $file='', $cc='')
 	{
 		$settings 	= 	$this->db->get('settings_details')->row_array();
-		$sitename	=	$this->config->item('sitename');
+		$sitename	=	$this->config->item('mailname');
 		
 		$this->load->library('email');
 		
