@@ -3781,17 +3781,26 @@ class Api extends CC_Controller
 
 	public function pdfelectroniccocreport_api($id, $userid){
 
-		$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
+		$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber', 'coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'coclogcompany']);
+
 		$pagedata['userdata']	 		= $userdata;
 		$pagedata['specialisations']	= explode(',', $pagedata['userdata']['specialisations']);
-		$pagedata['result']		    	= $this->Coc_Model->getCOCList('row', ['id' => $id]);
+		$pagedata['result']		    	= $this->Coc_Model->getCOCList('row', ['id' => $id], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'coclogcompany', 'users', 'usersdetail']);
+		
 		$pagedata['designation2'] 		= $this->config->item('designation2');
 		$specialisations 				= explode(',', $userdata['specialisations']);
 		$pagedata['installationtype']	= $this->getInstallationTypeList();
 		$pagedata['installation'] 		= $this->Installationtype_Model->getList('all', ['ids' => ['1','2','3','5','6','7']]);
 		$pagedata['specialisations']	= $this->Installationtype_Model->getList('all', ['ids' => ['4','8']]);
 
-		$html = $this->load->view('pdf/electroniccocreport', (isset($pagedata) ? $pagedata : ''), true);
+		$noncompliance					= $this->Noncompliance_Model->getList('all', ['coc_id' => $id, 'user_id' => $userid]);
+		if (count($noncompliance) > 0) {
+			$pagedata['noncompliance'] 	= $this->Noncompliance_Model->getList('all', ['coc_id' => $id, 'user_id' => $userid]);
+			$html = $this->load->view('pdf/electroniccoc_ncreport', (isset($pagedata) ? $pagedata : ''), true);
+		}else{
+			$html = $this->load->view('pdf/electroniccocreport', (isset($pagedata) ? $pagedata : ''), true);
+		}
+		// $html = $this->load->view('pdf/electroniccocreport', (isset($pagedata) ? $pagedata : ''), true);
 		$this->pdf->loadHtml($html);
 		$this->pdf->setPaper('A4', 'portrait');
 		$this->pdf->render();
