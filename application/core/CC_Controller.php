@@ -1246,7 +1246,9 @@ class CC_Controller extends CI_Controller
 	public function mycptindex($pagestatus='',$id='',$userid='')
 	{
 		if($id!=''){
-			$result = $this->Mycpd_Model->getQueueList('row', ['id' => $id, 'pagestatus' => $pagestatus]);
+			$userdetails 	= $this->getUserDetails();
+			$dbexpirydate = $userdetails['expirydate'];
+			$result = $this->Mycpd_Model->getQueueList('row', ['id' => $id, 'pagestatus' => $pagestatus, 'dbexpirydate' => $userdetails['expirydate']]);
 			if($result){
 				$pagedata['result'] = $result;
 			}else{
