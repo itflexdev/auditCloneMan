@@ -742,7 +742,7 @@ function rejectother(){
 
 
 function ajaxotp(){
-	ajax('<?php echo base_url().'ajax/index/ajaxotp'; ?>', {}, '', { 
+	ajax('<?php echo base_url().'ajax/index/ajaxotp'; ?>', {mobile : $('#mobile_phone').val()}, '', { 
 		success:function(data){
 			if(data!=''){
 				$('#sampleotp').removeClass('displaynone').val(data);
