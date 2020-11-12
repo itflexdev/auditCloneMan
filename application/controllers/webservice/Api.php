@@ -1952,11 +1952,11 @@ class Api extends CC_Controller
 
 			if ($result['type'] =='1' && $logdate!='') {
 				//$electroniccocreport = base_url().'plumber/auditstatement/index/electroniccocreport/'.$cocID.'/'.$cocID;
-				$electroniccocreport = base_url().'webservice/api/pdfelectroniccocreport_api/'.$cocID.'/'.$cocID;
+				$electroniccocreport = base_url().'webservice/api/pdfelectroniccocreport_api/'.$cocID.'/'.$userid;
 			}
 			if (count($jsonData['noncompliance']) > 0 && $logdate!='') {
 				//$noncompliancereport = base_url().'plumber/auditstatement/index/noncompliancereport/'.$cocID.'/'.$userid;
-				$noncompliancereport = base_url().'webservice/api/pdfnoncompliancereport_api/'.$cocID.'/'.$cocID;
+				$noncompliancereport = base_url().'webservice/api/pdfnoncompliancereport_api/'.$cocID.'/'.$userid;
 			}
 
 			$jsonData['pdf'] = ['electroniccocreport' => isset($electroniccocreport) ? $electroniccocreport : '', 'noncompliancereport' => isset($noncompliancereport) ? $noncompliancereport : ''];
