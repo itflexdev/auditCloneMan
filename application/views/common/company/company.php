@@ -451,6 +451,9 @@
 						<input type="hidden" name="user_id" value="<?php echo $id; ?>">
 						<input type="hidden" name="usersdetailid" value="<?php echo $usersdetailid; ?>">
 						<input type="hidden" name="userscompanyid" value="<?php echo $userscompanyid; ?>">
+						<?php if ($roletype !='4') { ?>
+							<input type="hidden" name="roletype" value="<?php echo $roletype; ?>">
+						<?php } ?>
 						<?php if ($roletype!='1') {
 							if((!isset($disablebtn) &&  !isset($save_flag)) || ($pagetype=='registration') || ($pagetype=='companyprofile' && $result['formstatus'] =='0')){ ?>
 							<button type="button" id="save" name="save" value="save" class="btn btn-primary">Save</button>
