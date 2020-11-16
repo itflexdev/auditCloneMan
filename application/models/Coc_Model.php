@@ -145,7 +145,7 @@ class Coc_Model extends CC_Model
 		if(isset($requestdata['allocated_id'])){
 			$this->db->group_start();
 				$this->db->where('sm.user_id', $requestdata['allocated_id']);
-				$this->db->or_where('sm.allocatedby', $requestdata['allocated_id']);
+				// $this->db->or_where('sm.allocatedby', $requestdata['allocated_id']);
 			$this->db->group_end();
 		}
 		if(isset($requestdata['monthrange'])){
