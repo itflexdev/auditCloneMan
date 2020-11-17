@@ -67,6 +67,7 @@ class Api extends CC_Controller
 		$this->load->model('Subtype_Model');
 		$this->load->model('Reportlisting_Model');
 		$this->load->model('Api_Model');
+		$this->load->model('Noncompliancelisting_Model');
 	}
 
 	public function login(){
@@ -391,6 +392,8 @@ class Api extends CC_Controller
 				$post['user_id']	 	= 	$plumberID;
 				$post['usersdetailid'] 	= 	$userdata['usersdetailid'];
 				$post['usersplumberid'] = 	$userdata['usersplumberid'];
+
+				isset($post['coc_electronic']) ? $post['coc_electronic'] : '0';
 
 				if ((isset($post['address'][1]['id']) && $post['address'][1]['id'] !='') && (isset($post['address'][1]['type']) && $post['address'][1]['type'] !='')) {
 					$post['address'][1]['id'] 	= $post['address'][1]['id'];
@@ -1342,7 +1345,7 @@ class Api extends CC_Controller
 			if ($this->input->post() && $this->input->post('submit') == 'save') {
 			
 
-			$this->form_validation->set_rules('completion_date','Completeion date','trim|required');
+			/*$this->form_validation->set_rules('completion_date','Completeion date','trim|required');
 			$this->form_validation->set_rules('name','Owners name','trim|required');
 			$this->form_validation->set_rules('street','Street','trim|required');
 			$this->form_validation->set_rules('number','Number','trim|required');
@@ -1357,7 +1360,7 @@ class Api extends CC_Controller
 				$replacetext 	= ['', ''];
 				$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
 				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
-			}else{
+			}else{*/
 
 				$post 				= $this->input->post();
 				$plumberID 			= $this->input->post('user_id');
@@ -1457,7 +1460,7 @@ class Api extends CC_Controller
 				}
 
 				$jsonArray = array("status"=>'1', "message"=>'Thanks for Saving the COC.', "result"=>$jsonData);
-			}
+			// }
 		}else{
 
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
@@ -2121,11 +2124,12 @@ class Api extends CC_Controller
 			$user_id 		= $this->input->post('user_id');
 			$pagestatus 	= '1';
 			$post['pagestatus'] = $pagestatus;
-
-			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$pagestatus], 'user_id' => [$user_id]]+$post);
-			$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$pagestatus], 'user_id' => [$user_id]]+$post);
-			$mycpd 			= $this->userperformancestatus(['userid' => $user_id, 'performancestatus' => '1', 'auditorstatement' => '1']);
 			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
+
+			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$pagestatus], 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
+			$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$pagestatus], 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
+			$mycpd 			= $this->userperformancestatus(['userid' => $user_id, 'performancestatus' => '1', 'auditorstatement' => '1']);
+			
 
 			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'Comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further declare that I understand that I must keep verifiable evidence of all my CPD Activities for at least two years, as the PIRB may conduct a random audit of my activities, which would require me to submit the evidence to the PIRB.', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points'
 			];
@@ -2463,11 +2467,19 @@ class Api extends CC_Controller
 				$data					= $this->getSubTypeList_api(['installationtypeid' => $installationtypeid]);
 				$message 				= 'Sub Types';
 
+			}elseif ($this->input->post('request_type') !='' && $this->input->post('request_type') =='ajaxgetstatement' && $this->input->post('installationtypeid') !='' && $this->input->post('subtypeid') !='') {
+
+				$installationtypeid		= $this->input->post('installationtypeid');
+				$subtypeid		= $this->input->post('subtypeid');
+				$data					= $this->reportlisting_api(['installationtypeid' => $installationtypeid, 'subtypeid' => $subtypeid]);
+				$message 				= 'Statement Details';
+
 			}elseif ($this->input->post('request_type') !='' && $this->input->post('request_type') =='ajaxreportreportlisting' && $this->input->post('installationtypeid') !='' && $this->input->post('subtypeid') !='') {
 
 				$installationtypeid		= $this->input->post('installationtypeid');
 				$subtypeid 				= $this->input->post('subtypeid');
-				$data					= $this->getreportlisting_api(['installationtypeid' => $installationtypeid, 'subtypeid' => $subtypeid]);
+				$statementid 				= $this->input->post('statementid');
+				$data					= $this->ajaxreportlisting_api(['installationtypeid' => $installationtypeid, 'subtypeid' => $subtypeid, 'statementid' => $statementid]);
 				$message 				= 'Non Compliance Report';
 
 			}elseif ($this->input->post('request_type') !='' && $this->input->post('request_type') =='imageupload') {
@@ -3744,6 +3756,46 @@ class Api extends CC_Controller
 		}
 		
 		return $arraydata;
+	}
+	// for to get statement and report listing
+	public function reportlisting_api($data = []){
+
+		if (!isset($data['id']) && !isset($data['type'])) {
+			$reportlistresult = $this->Reportlisting_Model->getList('all', ['status' => ['1'], 'installationtypeid' => $data['installationtypeid'], 'subtypeid' => $data['subtypeid']]);
+			if(count($reportlistresult) > 0){
+				foreach ($reportlistresult as $key => $value) {
+					$arraydata[] = ['id' => $value['id'], 'statementname' => $value['statement'], 'regulation' => $value['regulation'], 'installationtypeid' => $value['installationtype_id'], 'installationname' => $value['insname'], 'subtypeid' => $value['subtype_id'], 'subtypename' => $value['name']];
+				}
+			}else{
+				$arraydata[] = [];
+			}
+		}else{
+			$data = $this->Reportlisting_Model->getList('all', ['status' => ['1'], 'id' => $data['id']]);
+			if(count($data) > 0){
+				foreach ($data as $key => $value) {
+					$arraydata[] = ['id' => $value['id'], 'statementname' => $value['statement'], 'regulation' => $value['regulation'], 'installationtypeid' => $value['installationtype_id'], 'installationname' => $value['insname'], 'subtypeid' => $value['subtype_id'], 'subtypename' => $value['name']];
+				}
+			}else{
+				$arraydata[] = [];
+			}
+		}
+		
+		return $arraydata;
+	}
+	// ajax non compilance report
+	public function ajaxreportlisting_api($data =[]){
+		$post = $this->input->post();
+		$result = $this->Noncompliancelisting_Model->getList('row', $post+['status' => ['1']]);
+		if(count($result) > 0){
+				// foreach ($result as $key => $value) {
+					$arraydata[] = ['id' => $result['id'], 'statementid' => $result['statement'], 'regulation' => $result['reference'], 'ncn_details' => $result['details'], 'pub_remedial_ac' => $result['action'], 'installationtypeid' => $result['installationtype'], 'installationname' => $result['installationname'], 'subtypeid' => $result['subtype'], 'subtypename' => $result['subtypename']];
+				// }
+			}else{
+				$arraydata[] = [];
+			}
+		$jsonArray 		= array("status"=>'1', "message"=>'Non Compliance', "result"=>$arraydata);
+		echo json_encode($jsonArray);
+
 	}
 	public function getreportlisting_api($data =[]){
 
