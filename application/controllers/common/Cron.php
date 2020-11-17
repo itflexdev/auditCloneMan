@@ -264,8 +264,6 @@ class Cron extends CC_Controller {
 
 					$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
 
-					// invoice PDF
-					
 					$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 					$designation =	$this->config->item('designation2')[$rowData['designation']];					
 					$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]+$otherfee);
@@ -274,15 +272,13 @@ class Cron extends CC_Controller {
 					$mail_date = date("d-m-Y", strtotime($orders['created_at']));
 					
 					
-					//$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '1', 'emailstatus' => '1']);
-					$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '1']);
+					$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '1', 'emailstatus' => '1']);
 					
 					if($notificationdata){
 						$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}','{renewal_date}'];
 						$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes],$renewal_date];
 						$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 						$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
-						//$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
 					}
 					
 					if($settings && $settings['otp']=='1'){
@@ -301,7 +297,6 @@ class Cron extends CC_Controller {
 		}
 		
 		$endtime = date('Y-m-d H:i:s');
-		
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
 		}
@@ -348,7 +343,6 @@ class Cron extends CC_Controller {
 
 				$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
 
-				// invoice PDF
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
 				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
@@ -363,7 +357,6 @@ class Cron extends CC_Controller {
 					$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes]];
 					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
-					//$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
 				}
 				
 				if($settings && $settings['otp']=='1'){
@@ -379,112 +372,12 @@ class Cron extends CC_Controller {
 		}
 		
 		$endtime = date('Y-m-d H:i:s');
-		
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
 		}
 		
 		$file = fopen("assets/payment/renewalreminder.txt","a");
 		fwrite($file, 'Renewal Reminder 2'.PHP_EOL);
-		fwrite($file, 'Date -'.date('d-m-Y H:i:s').PHP_EOL);
-		fwrite($file, $log.PHP_EOL);
-		fwrite($file, PHP_EOL);
-		fwrite($file, PHP_EOL);
-		fclose($file);		
-	}
-
-	public function renewalreminder2_1()
-	{	
-		$log		= '';
-		$fileName 	= base_url().'common/cron/renewalreminder2_1';
-		$starttime 	= date('Y-m-d H:i:s');
-
-		$result = $this->Renewal_Model->getUserids_alert2_1();		
-		$settings = $this->Systemsettings_Model->getList('row');
-		
-		foreach($result as $data)
-		{
-			$inv_type = '1';
-			$userid = $data['id'];
-			$checkinv_result = $this->Renewal_Model->checkinv($userid);					
-
-			if(count($checkinv_result)){				
-				foreach($checkinv_result as $checkinv_data){
-					$checkinvtype = $checkinv_data['inv_type'];
-					if($checkinvtype == '2' || $checkinvtype == '3' || $checkinvtype == '4'){
-						$inv_type = $checkinv_data['inv_type'];
-						break;
-					}
-				}
-			}
-			
-
-			if($inv_type == '2' || $inv_type == '3' || $inv_type == '4'){
-				continue;
-			}else{
-
-				$designation = $data['designation'];
-				$renewal_date1 = $data['expirydate'];
-				$rdate = strtotime($renewal_date1);
-				$new_date = strtotime('+ 1 year', $rdate);
-				$renewal_date =  date('d/m/Y', $new_date);
-
-				$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
-				$otherfee 	= 	$this->invoiceotherfee($userdata1);
-
-				$result = $this->Renewal_Model->updatedata($userid,$designation,'2','','',$otherfee);	
-				$insert_result = $this->Renewal_Model->updatedata($userid,$designation,'3',$result['invoice_id'],$result['cocorder_id'],$otherfee);
-				$invoice_id = $insert_result['invoice_id'];
-				$cocorder_id = $insert_result['cocorder_id'];
-			
-				$log	.= $userid.'-'.$invoice_id.'-'.date('d-m-Y', strtotime($renewal_date1)).PHP_EOL;
-				
-				if ($invoice_id) {
-					$inv_id 			= $invoice_id;
-
-					$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
-
-					// invoice PDF
-					$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
-					$designation =	$this->config->item('designation2')[$rowData['designation']];					
-					$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2']+$otherfee);
-					
-					$cocTypes = $orders['coc_type'];
-					$mail_date = date("d-m-Y", strtotime($orders['created_at']));
-								
-					$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '2', 'emailstatus' => '1']);
-					
-					if($notificationdata){
-						$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}'];
-						$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes]];
-						$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
-						$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
-						//$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
-					}
-					
-					if($settings && $settings['otp']=='1'){
-						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '2', 'smsstatus' => '1']);
-			
-						if($smsdata){
-							$sms = $smsdata['sms_body'];
-							$this->sms(['no' => $userdata1['mobile_phone'], 'msg' => $sms]);
-						}
-					}
-				}			 
-
-			}
-			
-		}
-		
-		$endtime = date('Y-m-d H:i:s');
-		
-		if ($starttime && $endtime) {
-			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
-		}	
-
-		
-		$file = fopen("assets/payment/renewalreminder.txt","a");
-		fwrite($file, 'Renewal Reminder 2_1'.PHP_EOL);
 		fwrite($file, 'Date -'.date('d-m-Y H:i:s').PHP_EOL);
 		fwrite($file, $log.PHP_EOL);
 		fwrite($file, PHP_EOL);
@@ -529,7 +422,6 @@ class Cron extends CC_Controller {
 				$total_lateamount = $lateamount_result['total_due'];
 				$vat_lateamount = $lateamount_result['vat'];
 
-				// invoice PDF
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
 				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no'], 'type' => '2', 'latesubtotalamount' => $lateamount, 'latevatamount' => $vat_lateamount, 'latetotalamount' => $total_lateamount]+$otherfee);
@@ -544,7 +436,6 @@ class Cron extends CC_Controller {
 					$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes]];
 					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
-					//$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body, $cocreport);
 				}
 				
 				if($settings && $settings['otp']=='1'){
@@ -559,6 +450,7 @@ class Cron extends CC_Controller {
 			}
 			
 		}
+		
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
@@ -592,30 +484,8 @@ class Cron extends CC_Controller {
 			$this->db->update('users', $request1, ['id' => $userid]);
 			
 			$log	.= $userid.PHP_EOL;
-			/*	
-			$template = $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '3'])->get()->row_array();
-			
-			$mail_date = date("d-m-Y");
-			$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '3', 'emailstatus' => '1']);
-				
-			if($notificationdata){
-				$array1 = ['{Plumbers Name and Surname}','{date of purchase}'];
-				$array2 = [$data['name']." ".$data['surname'], $mail_date];
-				$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
-				//$this->CC_Model->sentMail($data['email'], $notificationdata['subject'], $body);
-				$this->CC_Model->sentMail('suresh@itflexsolutions.com', $notificationdata['subject'], $body);
-			}
-			
-			if($settings && $settings['otp']=='1'){
-				$smsdata 	= $this->Communication_Model->getList('row', ['id' => '3', 'smsstatus' => '1']);
-	
-				if($smsdata){
-					$sms = $smsdata['sms_body'];
-					$this->sms(['no' => $data['mobile_phone'], 'msg' => $sms]);
-				}
-			}
-			*/
 		}
+		
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);

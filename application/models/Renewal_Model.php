@@ -69,9 +69,8 @@ class Renewal_Model extends CC_Model
 		$this->db->select('us.id, us.expirydate, up.designation');		
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'left');
-		$this->db->where('us.type', '3' );
-		$this->db->where('us.status', '1' );
-		$this->db->where("DATEDIFF(us.expirydate,now()) = 30");
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'DATE(us.expirydate)' => date('Y-m-d',strtotime('+30 days'))]);
+		$this->db->group_by('us.id');
 		$result = $this->db->get()->result_array();		
 		
 		return $result;
@@ -84,25 +83,8 @@ class Renewal_Model extends CC_Model
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->join('invoice inv', 'inv.user_id=us.id', 'inner');
 		$this->db->join('coc_orders coc', 'coc.inv_id=inv.inv_id', 'inner');
-		$this->db->where('inv.inv_type', '2' );
-		$this->db->where('inv.status', '0' );
-		$this->db->where('us.type', '3' );
-		$this->db->where('us.status', '1' );
-		//$this->db->where("DATEDIFF(us.expirydate,now()) = 7");		
-		$this->db->where("DATE(us.expirydate)", date('Y-m-d'));		
-		$result = $this->db->get()->result_array();			
-		
-		return $result;
-	}
-
-	public function getUserids_alert2_1()
-	{	
-		$this->db->select('us.id, us.expirydate, up.designation');		
-		$this->db->from('users us');
-		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'left');
-		$this->db->where('us.type', '3' );
-		$this->db->where('us.status', '1' );
-		$this->db->where("DATE(us.expirydate)", date('Y-m-d'));		
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'DATE(us.expirydate)' => date('Y-m-d'), 'inv.inv_type' => '2', 'inv.status' => '0']);
+		$this->db->group_by('us.id');
 		$result = $this->db->get()->result_array();			
 		
 		return $result;
@@ -110,25 +92,13 @@ class Renewal_Model extends CC_Model
 
 	public function getUserids_alert3()
 	{
-		
-		$penalty = 0;
-		$this->db->select('penalty');		
-		$this->db->from('settings_details');
-		$this->db->where('id', '1' );
-		$penalty_result = $this->db->get()->row_array();
-		$penalty = $penalty_result['penalty'];
-
 		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid, DATE_ADD(us.expirydate, INTERVAL 1 DAY) as intervaldate');		
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->join('invoice inv', 'inv.user_id=us.id', 'inner');
 		$this->db->join('coc_orders coc', 'coc.inv_id=inv.inv_id', 'inner');
-		$this->db->where('inv.inv_type', '3' );
-		$this->db->where('inv.status', '0' );
-		$this->db->where('us.type', '3' );
-		$this->db->where('us.status', '1' );
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'inv.inv_type' => '3', 'inv.status' => '0']);
 		$this->db->group_by('us.id');
-		//$this->db->where("DATEDIFF(now(),us.expirydate) > ".$penalty);	
 		$this->db->having("DATE(intervaldate)", date('Y-m-d'));	
 		$result = $this->db->get()->result_array();	
 		
@@ -137,16 +107,12 @@ class Renewal_Model extends CC_Model
 
 	public function getUserids_alert4()
 	{
-		
 		$this->db->select('us.id, us.email, us.expirydate, up.designation, inv.inv_id, ud.name, ud.surname, ud.mobile_phone');	
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->join('users_detail as ud', 'ud.user_id=us.id', 'inner');
 		$this->db->join('invoice inv', 'inv.user_id=us.id', 'inner');
-		$this->db->where('inv.inv_type', '4' );
-		$this->db->where('inv.status', '0' );
-		$this->db->where('us.type', '3' );
-		$this->db->where('us.status', '1' );		
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'inv.inv_type' => '4', 'inv.status' => '0']);
 		$result = $this->db->get()->result_array();		 	
 		
 		return $result;
@@ -185,7 +151,6 @@ class Renewal_Model extends CC_Model
 		
 		$rates = $this->db->get()->row_array(); 
 		$rate = $rates['amount'];
-
 
 		$this->db->select('vat_percentage');
 		$this->db->from('settings_details');
@@ -308,6 +273,7 @@ class Renewal_Model extends CC_Model
 				$this->db->insert('coc_orders', $otherfeedata);
 			}			
 		}
+		
 		$sumotherfee = $this->db->select('sum(cost_value) as cost, sum(vat) as vat, sum(total_due) as total')->from('coc_orders')->where(['inv_id' => $invoice_id, 'otherfee' => '1'])->get()->row_array();
 		$originalfee = $this->db->select('total_cost, vat')->from('invoice')->where(['inv_id' => $invoice_id])->get()->row_array();
 		$this->db->update('invoice', ['total_cost' => $originalfee['total_cost']+$sumotherfee['cost'], 'vat' => $originalfee['vat']+$sumotherfee['vat']], ['inv_id' => $invoice_id]);
