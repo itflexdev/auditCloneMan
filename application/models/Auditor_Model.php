@@ -1019,6 +1019,7 @@ class Auditor_Model extends CC_Model
 		if(isset($data['point'])) 						$request['point'] 						= $data['point'];
 		if(isset($data['reason'])) 						$request['reason'] 						= $data['reason'];
 		if(isset($data['reportdate']))		 			$request['reportdate'] 					= date('Y-m-d H:i:s');
+		if(isset($data['refuserefix']))		 			$request['refix_refuse'] 				= $data['refuserefix'];
 		if(isset($data['auditcomplete']) && isset($data['submit']) && $data['submit']=='submitreport')	$request['auditcomplete'] 		= $data['auditcomplete'];
 		if(isset($data['auditcomplete']) && isset($data['submit']) && $data['submit']=='submitreport') 	$request['status'] 				= '1';
 		if(isset($data['auditcomplete']) && isset($data['submit']) && $data['submit']=='submitreport') 	$request['auditcompletedate'] 	= date('Y-m-d');
