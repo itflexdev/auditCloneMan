@@ -228,18 +228,7 @@ class Cron extends CC_Controller {
 			$userid = $data['id'];
 			$checkinv_result = $this->Renewal_Model->checkinv($userid);					
 
-			if(count($checkinv_result)){					
-				foreach($checkinv_result as $checkinv_data){	
-					$checkinvtype = $checkinv_data['inv_type'];
-					if($checkinvtype == '2' || $checkinvtype == '3' || $checkinvtype == '4'){
-						$inv_type = $checkinv_data['inv_type'];
-						break;
-					}
-				}
-			}
-			
-
-			if($inv_type == '2' || $inv_type == '3' || $inv_type == '4'){
+			if(count($checkinv_result) > 0){
 				continue;
 			}else{
 				$designation 		= $data['designation'];

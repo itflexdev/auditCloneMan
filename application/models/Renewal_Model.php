@@ -123,7 +123,8 @@ class Renewal_Model extends CC_Model
 	{
 		$this->db->select('*');		
 		$this->db->from('invoice');			
-		$this->db->where('user_id', $userid );		
+		$this->db->where(['user_id' => $userid, 'status' => '0']);	
+		$this->db->where_in('inv_type', ['2','3','4']);	
 		$result = $this->db->get()->result_array();
 		return $result;
 	}
