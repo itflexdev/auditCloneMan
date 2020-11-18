@@ -646,14 +646,11 @@ $(function(){
 		})
 	}
 
-	
+	if ($('#refuserefix').is(':checked')) {
+		$('.auditcomplete_wrapper').removeClass('displaynone');
+	}
 
-	$('#refuserefix').click(function() {
-	    if($(this).is(':checked'))
-	        $('#submitreport, .auditcomplete_wrapper').removeClass('displaynone');
-	    else
-	        $('#submitreport, .auditcomplete_wrapper').addClass('displaynone');
-	});
+	
 	
 	validator = validation(
 		'.form',
@@ -1066,17 +1063,25 @@ function reviewextras(){
 }
 
 function refixcheck(){
-	$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport, .refixcompletedate_wrapper').addClass('displaynone');
+	var refuserefix = '<?php echo $refixrefuse ; ?>';
+	$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport, .refixcompletedate_wrapper, .refuserefix_wrapper').addClass('displaynone');
 	$('#refixcompletedate').val('');
 	$('.reviewtyperadio').removeClass('displaynone');
 
-
-	if ($('#refuserefix').is(':checked')) {
-		$('.auditcomplete_wrapper').removeClass('displaynone');
+	if(refuserefix !='1'){
+		$('#refuserefix').prop('checked',false);
+	}else if(refuserefix =='1'){
+		$('#submitreport').removeClass('displaynone');
 	}
-	// else if(!$('#refuserefix').is(':checked')){
-	// 	$('.auditcomplete_wrapper').addClass('displaynone');
-	// }
+
+	$('#refuserefix').click(function() {
+	    if($(this).is(':checked'))
+	        $('#submitreport, .auditcomplete_wrapper').removeClass('displaynone');
+	    else
+	        $('#submitreport, .auditcomplete_wrapper').addClass('displaynone');
+	});
+
+	
 	
 	var reportcheck = 0;
 	var newdate;
@@ -1108,12 +1113,10 @@ function refixcheck(){
 			reportcheck = 3;
 		}
 	})
-
 	
 	$('#auditstatus').val(1);
 	
 	if($('#hold').is(':checked')){
-		alert(reportcheck);
 		$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport').addClass('displaynone');
 		$('#auditcomplete').prop('checked', false);
 		
