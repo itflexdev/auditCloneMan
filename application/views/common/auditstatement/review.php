@@ -48,6 +48,7 @@
 	$hold 					= isset($result['as_hold']) ? $result['as_hold'] : '';
 	$reason 				= isset($result['as_reason']) ? $result['as_reason'] : '';
 	$auditcomplete 			= isset($result['as_auditcomplete']) ? $result['as_auditcomplete'] : '';
+	$refixrefuse 			= isset($result['as_refix_refuse']) ? $result['as_refix_refuse'] : '';
 	$refixcompletedate 		= isset($result['as_refixcompletedate']) && $result['as_refixcompletedate']!='' ? date('d-m-Y', strtotime($result['as_refixcompletedate'])) : date('d-m-Y');
 	
 	$reviewtableclass		= ['1' => 'review_failure', '2' => 'review_cautionary', '3' => 'review_compliment', '4' => 'review_noaudit'];
@@ -359,6 +360,14 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="row">
+							<?php if($roletype=='5' && $pagetype=='1'){ ?> 
+							<div class="col-md-6 refuserefix_wrapper displaynone">
+								<div class="custom-control custom-checkbox">
+									<input type="checkbox" id="refuserefix" class="custom-control-input refuserefix" name="refuserefix" value="1" <?php if($refixrefuse =='1'){ echo "checked='checked'"; } ?>>
+									<label class="custom-control-label" for="refuserefix">Client refused refixes</label>
+								</div>
+							</div>
+							<?php } ?>
 							<div class="col-md-12 refixcompletedate_wrapper displaynone">
 								<div class="form-group">
 									<label>Refix Completed date</label>
@@ -371,6 +380,7 @@
 									<input type="text" class="form-control" name="refixperiod" id="refixperiod" value="<?php echo $settings['refix_period']; ?>" readonly>
 								</div>
 							</div>
+							
 							<?php if($pagetype=='1'){ ?>
 								<div class="col-md-12 report_wrapper displaynone">
 									<div class="form-group">
@@ -381,6 +391,7 @@
 							<?php } ?>
 						</div>
 					</div>
+					
 					<?php if($roletype=='5' && $pagetype=='1'){ ?>
 						<div class="col-md-6 auditcomplete_wrapper displaynone">
 							<div class="custom-control custom-checkbox">
@@ -634,6 +645,15 @@ $(function(){
 			review(reviewlistdata);
 		})
 	}
+
+	
+
+	$('#refuserefix').click(function() {
+	    if($(this).is(':checked'))
+	        $('#submitreport, .auditcomplete_wrapper').removeClass('displaynone');
+	    else
+	        $('#submitreport, .auditcomplete_wrapper').addClass('displaynone');
+	});
 	
 	validator = validation(
 		'.form',
@@ -1049,6 +1069,14 @@ function refixcheck(){
 	$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport, .refixcompletedate_wrapper').addClass('displaynone');
 	$('#refixcompletedate').val('');
 	$('.reviewtyperadio').removeClass('displaynone');
+
+
+	if ($('#refuserefix').is(':checked')) {
+		$('.auditcomplete_wrapper').removeClass('displaynone');
+	}
+	// else if(!$('#refuserefix').is(':checked')){
+	// 	$('.auditcomplete_wrapper').addClass('displaynone');
+	// }
 	
 	var reportcheck = 0;
 	var newdate;
@@ -1080,10 +1108,12 @@ function refixcheck(){
 			reportcheck = 3;
 		}
 	})
+
 	
 	$('#auditstatus').val(1);
 	
 	if($('#hold').is(':checked')){
+		alert(reportcheck);
 		$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport').addClass('displaynone');
 		$('#auditcomplete').prop('checked', false);
 		
@@ -1101,6 +1131,8 @@ function refixcheck(){
 			$('.refix_wrapper').removeClass('displaynone');
 			$('.refixdateappend').text(formatdate(newdate, 1));
 			$('#auditstatus').val(0);
+			$('.refuserefix_wrapper').removeClass('displaynone');
+
 		}else if(reportcheck==2){
 			if($('.attachmenthidden').val()!=''){
 				$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport').removeClass('displaynone');
