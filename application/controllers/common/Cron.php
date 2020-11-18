@@ -59,7 +59,6 @@ class Cron extends CC_Controller {
 	}
 	
 	public function monthlycpdtype(){
-	
 		$fileName 	= base_url().'common/cron/monthlycpdtype';
 		$starttime 	= date('Y-m-d H:i:s');
 
@@ -69,26 +68,31 @@ class Cron extends CC_Controller {
 		
 		$settingsplumberDetails = [];
 		$cpdTable 				= '';
-		$dev 					= '';
-		$work 					= '';
-		$indi 					= '';
 		$total 					= '';
 		$totalDB 				= '';
 
-		$this->db->select('t1.*, t3.designation, t2.renewal_date, t2.expirydate, t4.mobile_phone, t2.email');
+		$this->db->select('t1.id as t1id, t1.name_surname, t2.id as plumberid, t3.designation, t2.renewal_date, t2.expirydate, t4.mobile_phone, t2.email');
+		// $this->db->select('group_concat(concat_ws("@@@", t1.user_id, t1.name_surname,t1.cpd_stream,t1.points) separator "@-@") as cpddata');
 		$this->db->from('cpd_activity_form t1');
 		$this->db->join('users t2', 't2.id=t1.user_id','left');
 		$this->db->join('users_plumber t3', 't3.user_id=t1.user_id','left');
 		$this->db->join('users_detail t4', 't4.user_id=t1.user_id','left');
 		$this->db->where('t2.type', '3');
 		$this->db->where('t2.status', '1');
-		$this->db->where('MONTH(t1.cpd_start_date) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND t1.status="1" OR t1.status="2"');
+		// $this->db->where('MONTH(t1.cpd_start_date) = MONTH(CURDATE() - INTERVAL 1 MONTH)');
+		// $this->db->where('MONTH(t1.cpd_start_date) = MONTH(CURDATE())');
+		$this->db->group_start();
+		$this->db->where('t1.status="1"');
+		$this->db->group_end();
+		$this->db->group_by('t1.user_id');
+		
 		$userQuery = $this->db->get()->result_array();
+		// echo "<pre>";print_r($userQuery);die;
 		$settingsCPD = $this->db->select('*')->from('settings_cpd')->get()->result_array();
 		$template 	= $this->db->select('*')->from('email_notification')->where('id','14')->where('sms_active','1')->get()->row_array();	
-
-		foreach ($userQuery as $key => $value) {
-			$designationDB = $this->config->item('designation2')[$value['designation']];
+		foreach ($userQuery as $userQuerykey => $userQueryvalue) {
+			if(isset($settingsplumberDetails)) unset($settingsplumberDetails);
+			$designationDB = $this->config->item('designation2')[$userQueryvalue['designation']];
 
 			if ($designationDB == 'Learner Plumber') {
 				$designation = 'learner';
@@ -99,83 +103,72 @@ class Cron extends CC_Controller {
 			}elseif($designationDB == 'Licensed Plumber'){
 				$designation = 'licensed';
 			}elseif($designationDB == 'Qualified Plumber'){
-				$designation = '';
+				$designation = 'qualified';
 			}elseif($designationDB == 'Master Plumber'){
 				$designation = 'master';				
 			}
-
-			if($value['cpd_stream']=='1'){
-					$dev = $value['points'];
-				}elseif($value['cpd_stream']=='2'){
-					$work = $value['points'];
-				}
-				elseif($value['cpd_stream']=='3'){
-					$indi = $value['points'];
-				}
-				if($dev==''){
-					$dev = 0;				
-					
-				}if ($work=='') {
-					$work = 0;
-				}if ($indi=='') {
-					$indi = 0;
-				}
-				
-				foreach ($settingsCPD as $key1 => $value1) {
+			foreach ($settingsCPD as $key1 => $value1) {
 				$settingsplumberDetails[] = $value1[$designation];
 			}
+			$totalDB = $settingsplumberDetails[0]+$settingsplumberDetails[1]+$settingsplumberDetails[2];
+
+
+			$developmentalpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 			
+			$individualpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 
-			$total = $dev+$work+$indi;
-			$totalDB = $settingsplumberDetails[1]+$settingsplumberDetails[2]+$settingsplumberDetails[3];
+			$workbasedpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 
+			$developmental 	= array_sum(array_column($developmentalpts, 'points')); 
+			$individual 	= array_sum(array_column($individualpts, 'points')); 
+			$workbased 		= array_sum(array_column($workbasedpts, 'points')); 
+			$total 			= $developmental+$individual+$workbased;
 			$cpdTable = '<table style="width:40%; border-collapse:collapse;" class="tablcpd">
-			<tr>
-			<th style="border: 1px solid #000;padding:5px 10px;text-align:center;">CPD Stream</th>
-			<th style="border: 1px solid #000;padding:5px 10px;text-align:center;">Your Points (YTD)</th>
-			<th style="border: 1px solid #000;padding:5px 10px;text-align:center;">Preferred Points Required</th>
-			
-			</tr>
-			<tr>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Developmental</td>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$dev.'</td>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$settingsplumberDetails[1].'</td>
-			</tr>
-			<tr>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Work-based</td>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$work.'</td>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$settingsplumberDetails[2].'</td>
-			</tr>
-			<tr>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Individual</td>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$indi.'</td>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$settingsplumberDetails[3].'</td>
-			</tr>
-			<tr>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Total</td>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$total.'</td>
-			<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$totalDB.'</td>
-			</tr>
-			</table>';
-
-			$array1 = ['{Plumbers Name and Surname}','{TODAYS DATE}', 'Points Table', '{plumbers registration renewal date}'];
-			$array2 = [$value['name_surname'], $currentDate, $cpdTable, date('m-d-Y', strtotime($value['renewal_date']))];
-			$body = str_replace($array1, $array2, $template['email_body']);
-
-			if ($template['email_active'] == '1') {
-
-				$this->CC_Model->sentMail($value['email'],$template['subject'],$body);
-
-				$smsbody1 = ['{total Points}','{total points required}', '{next registration date}'];
-				$smsbody2 = [$total, $totalDB, date('m-d-Y', strtotime($value['expirydate']))];
-
-				$smsdata 	= $this->Communication_Model->getList('row', ['id' => '14', 'smsstatus' => '1']);
-					
-				if($smsdata){
-					$sms = str_replace([$smsbody1, $smsbody2, $smsdata['sms_body']]);
-					$this->sms(['no' => $userQuery['mobile_phone'], 'msg' => $sms]);
-				}
-			}
+						<tr>
+						<th style="border: 1px solid #000;padding:5px 10px;text-align:center;">CPD Stream</th>
+						<th style="border: 1px solid #000;padding:5px 10px;text-align:center;">Your Points (YTD)</th>
+						<th style="border: 1px solid #000;padding:5px 10px;text-align:center;">Preferred Points Required</th>
+						
+						</tr>
+						<tr>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Developmental</td>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$developmental.'</td>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$settingsplumberDetails[0].'</td>
+						</tr>
+						<tr>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Work-based</td>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$individual.'</td>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$settingsplumberDetails[1].'</td>
+						</tr>
+						<tr>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Individual</td>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$workbased.'</td>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$settingsplumberDetails[2].'</td>
+						</tr>
+						<tr>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Total</td>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$total.'</td>
+						<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$totalDB.'</td>
+						</tr>
+						</table>';
+						
+						if ($template['email_active'] == '1') {
+							if(isset($array1)) unset($array1);
+							if(isset($array2)) unset($array2);
+							$array1 = ['{Plumbers Name and Surname}','{TODAYS DATE}', 'Points Table', '{plumbers registration renewal date}'];
+							$array2 = [$userQueryvalue['name_surname'], $currentDate, $cpdTable, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
+							$body = str_replace($array1, $array2, $template['email_body']);
+							$this->CC_Model->sentMail($userQueryvalue['email'],$template['subject'],$body);
+						}
+						if($smsdata && isset($userQueryvalue['mobile_phone'])){
+						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '14', 'smsstatus' => '1']);
+							if(isset($smsbody1)) unset($smsbody1);
+							if(isset($smsbody2)) unset($smsbody2);
+							$smsbody1 = ['{total Points}','{total points required}', '{next registration date}'];
+							$smsbody2 = [$total, $totalDB, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
+							$sms = str_replace($smsbody1, $smsbody2, $smsdata['sms_body']);
+							$this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
+						}
 		}
 		
 		$endtime = date('Y-m-d H:i:s');
