@@ -2123,11 +2123,11 @@ class Api extends CC_Controller
 
 			$user_id 		= $this->input->post('user_id');
 			$pagestatus 	= '1';
-			$post['pagestatus'] = $pagestatus;
+			// $post['pagestatus'] = $pagestatus;
 			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
 
-			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => [$pagestatus], 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
-			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => [$pagestatus], 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
+			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => $pagestatus], 'user_id' => $user_id, 'dbexpirydate' => $userdata['expirydate']]);
+			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => $pagestatus, 'user_id' => $user_id, 'dbexpirydate' => $userdata['expirydate']]);
 			$mycpd 			= $this->userperformancestatus(['userid' => $user_id, 'performancestatus' => '1', 'auditorstatement' => '1']);
 			
 
@@ -2227,10 +2227,11 @@ class Api extends CC_Controller
 
 			$user_id 		= $this->input->post('user_id');
 			$pagestatus 	= '0';
-			$post['pagestatus'] = $pagestatus;
+			// $post['pagestatus'] = $pagestatus;
+			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
 
-			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => [$pagestatus], 'user_id' => [$user_id]]+$post);
-			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => [$pagestatus], 'user_id' => [$user_id]]+$post);
+			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => $pagestatus, 'user_id' => $user_id, 'dbexpirydate' => $userdata['expirydate']]);
+			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => $pagestatus, 'user_id' => $user_id, 'dbexpirydate' => $userdata['expirydate']]);
 			
 			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points'
 			];
@@ -2245,6 +2246,9 @@ class Api extends CC_Controller
 					$statusicons = '';
 				}elseif($value['status'] == '2'){
 					$status = 'Reject';
+					$statusicons = '';
+				}elseif($value['status'] == '3'){
+					$status = 'Not Submitted';
 					$statusicons = '';
 				}
 				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id']
@@ -2325,9 +2329,24 @@ class Api extends CC_Controller
 					}elseif($result['status'] == '2'){
 						$status = 'Reject';
 						$statusicons = '';
+					}elseif($result['status'] == '3'){
+						$status = 'Not Submitted';
+						$statusicons = '';
 					}
 
-				$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file1'].'', 'plumberdocument' => ''.$base_url.'assets/uploads/cpdqueue/'.$result['file2'].'','cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => '', 'admin_comments' => $result['admin_comments']
+					if ($result['file1'] !='') {
+						$admindocumentURL = $base_url.'assets/uploads/cpdqueue/'.$result['file1'];
+					}else{
+						$admindocumentURL = '';
+					}
+
+					if ($result['file2'] !='') {
+						$plumberdocumentURL = $base_url.'assets/uploads/cpdqueue/'.$result['file2'];
+					}else{
+						$plumberdocumentURL = '';
+					}
+
+				$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => $admindocumentURL, 'plumberdocument' => $plumberdocumentURL,'cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => '', 'admin_comments' => $result['admin_comments']
 					];
 
 					$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$jsonData);
