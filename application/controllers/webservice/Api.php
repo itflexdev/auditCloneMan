@@ -2270,8 +2270,10 @@ class Api extends CC_Controller
 			$base_url 		= base_url();
 			$file1 			= '';
 			$file2 			= '';
+			$user_id 		= $this->input->post('user_id');
+			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
 
-			$result 		= $this->Mycpd_Model->getQueueList('row', ['id' => $cpdID, 'pagestatus' => $pagestatus]);
+			$result 		= $this->Mycpd_Model->getQueueList('row', ['id' => $cpdID, 'pagestatus' => $pagestatus, 'dbexpirydate' => $userdata['expirydate']]);
 			if (count($result) > 0) {
 					if ($result['file1'] !='') {
 						$file1 			= $base_url.'assets/uploads/cpdqueue/'.$result['file1'];
@@ -2298,6 +2300,8 @@ class Api extends CC_Controller
 			$jsonData['page_lables'] 	= [];
 			$jsonData['result'] 		= [];
 			$base_url 					= base_url();
+			$user_id 					= $this->input->post('user_id');
+			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
 
 			$cpdID 			= $this->input->post('cpdID');
 			if ($this->input->post('pagestatus') =='2' || $this->input->post('pagestatus') =='0') {
@@ -2306,7 +2310,7 @@ class Api extends CC_Controller
 				$pagestatus 	= $this->input->post('pagestatus');
 			}
 
-			$result 		= $this->Mycpd_Model->getQueueList('row', ['id' => $cpdID, 'pagestatus' => $pagestatus]);
+			$result 		= $this->Mycpd_Model->getQueueList('row', ['id' => $cpdID, 'pagestatus' => $pagestatus, 'dbexpirydate' => $userdata['expirydate']]);
 
 			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'Comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points', 'renewalcpd' => 'CPD points needed for renewal'
 			];
