@@ -1064,14 +1064,19 @@ function reviewextras(){
 
 function refixcheck(){
 	var refuserefix = '<?php echo $refixrefuse ; ?>';
-	$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport, .refixcompletedate_wrapper, .refuserefix_wrapper').addClass('displaynone');
+	$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport, .refixcompletedate_wrapper').addClass('displaynone');
 	$('#refixcompletedate').val('');
 	$('.reviewtyperadio').removeClass('displaynone');
 
-	if(refuserefix !='1'){
-		$('#refuserefix').prop('checked',false);
-	}else if(refuserefix =='1'){
-		$('#submitreport').removeClass('displaynone');
+	if(refixperiod =='0'){
+		$('#refuserefix').prop('checked',true);
+		$('#refuserefix').val(1);
+	}else if(refixperiod !='0'){
+		if(refuserefix !='1'){
+			$('#refuserefix').prop('checked',false);
+		}else if(refuserefix =='1'){
+			$('#submitreport').removeClass('displaynone');
+		}
 	}
 
 	$('#refuserefix').click(function() {
@@ -1143,10 +1148,15 @@ function refixcheck(){
 				$('#auditstatus').val(0);
 			}
 		}else if(reportcheck==3){
-			$('#refixcompletedate').val(refixcompletedate);
+			// $('#refixcompletedate').val(refixcompletedate);
+			$('#refixcompletedate').val('');
 			if($('.attachmenthidden').val()!='') $('.report_wrapper, .auditcomplete_wrapper, #submitreport, .refixcompletedate_wrapper').removeClass('displaynone');
 		}else{
-			if($('.attachmenthidden').val()!='') $('.report_wrapper, .auditcomplete_wrapper, #submitreport').removeClass('displaynone');
+			$('.refuserefix_wrapper').removeClass('displaynone');
+			if($('.attachmenthidden').val()!=''){
+				$('.report_wrapper, .auditcomplete_wrapper, #submitreport').removeClass('displaynone');
+			}
+
 		}
 	}
 }
