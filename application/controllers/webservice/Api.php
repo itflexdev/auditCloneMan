@@ -2126,8 +2126,8 @@ class Api extends CC_Controller
 			$post['pagestatus'] = $pagestatus;
 			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
 
-			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$pagestatus], 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
-			$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$pagestatus], 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
+			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => [$pagestatus], 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
+			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => [$pagestatus], 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
 			$mycpd 			= $this->userperformancestatus(['userid' => $user_id, 'performancestatus' => '1', 'auditorstatement' => '1']);
 			
 
@@ -2229,8 +2229,8 @@ class Api extends CC_Controller
 			$pagestatus 	= '0';
 			$post['pagestatus'] = $pagestatus;
 
-			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$pagestatus], 'user_id' => [$user_id]]+$post);
-			$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$pagestatus], 'user_id' => [$user_id]]+$post);
+			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => [$pagestatus], 'user_id' => [$user_id]]+$post);
+			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => [$pagestatus], 'user_id' => [$user_id]]+$post);
 			
 			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points'
 			];
