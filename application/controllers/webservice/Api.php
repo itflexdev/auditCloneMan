@@ -2126,8 +2126,8 @@ class Api extends CC_Controller
 			// $post['pagestatus'] = $pagestatus;
 			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
 
-			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => $pagestatus], 'user_id' => $user_id, 'dbexpirydate' => $userdata['expirydate']]);
-			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => $pagestatus, 'user_id' => $user_id, 'dbexpirydate' => $userdata['expirydate']]);
+			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => $pagestatus, 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]);
+			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => $pagestatus, 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]);
 			$mycpd 			= $this->userperformancestatus(['userid' => $user_id, 'performancestatus' => '1', 'auditorstatement' => '1']);
 			
 
