@@ -2393,6 +2393,7 @@ class Api extends CC_Controller
 				if(isset($image)) 		 				$requestData1['file1'] 				= $image;
 				if(isset($post['points'])) 		 		$requestData1['points'] 			= $post['points'];
 				if(isset($post['hidden_stream_id'])) 	$requestData1['cpd_stream'] 		= $post['hidden_stream_id'];
+				if(isset($post['cpdtype_id'])) 			$requestData1['cpdtype_id'] 		= $post['cpdtype_id'];
 				// 1- submit 2- save
 				if ($this->input->post('submit') == '1') {
 					$requestData1['status'] 												= '0';
