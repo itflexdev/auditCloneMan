@@ -152,7 +152,7 @@ class index extends CC_Controller
 
 
 				$totalrecord[] = 	[
-					'date' 					=> 	date("m-d-Y", strtotime($result['cpd_start_date'])),
+					'date' 					=> 	date("d-m-Y", strtotime($result['cpd_start_date'])),
 					'acivity' 				=> 	$result['cpd_activity'],
 					'streams' 				=> 	isset($this->config->item('cpdstream')[$result['cpd_stream']]) ? $this->config->item('cpdstream')[$result['cpd_stream']] : '',
 					'comments' 				=> 	$result['comments'],
