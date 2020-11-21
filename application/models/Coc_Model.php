@@ -108,6 +108,7 @@ class Coc_Model extends CC_Model
 		if(in_array('auditordetails', $querydata))		$this->db->join('users_detail ad', 'ad.user_id=sm.auditorid', 'left'); // Auditor Details
 		if(in_array('auditorstatement', $querydata))	$this->db->join('auditor_statement aas', 'aas.coc_id=sm.id', 'left'); // Auditor Statement
 		if(in_array('auditorreview', $querydata))		$this->db->join('auditor_review ar', 'ar.coc_id=sm.id', 'left'); // Auditor Review
+		if(in_array('invoice', $querydata))				$this->db->join('invoice i', 'i.inv_id=sm.inv_id', 'left'); // Auditor Review
 		if((isset($requestdata['search']['value']) && $requestdata['search']['value']!='') || (isset($requestdata['order']['0']['column']) && $requestdata['order']['0']['column']!='' && isset($requestdata['order']['0']['dir']) && $requestdata['order']['0']['dir']!='')){
 			$this->db->join('custom c1', 'c1.c_id=sm.coc_status and c1.type="1"', 'left');
 			$this->db->join('custom c2', 'c2.c_id=sm.audit_status and c2.type="2"', 'left');
@@ -150,7 +151,7 @@ class Coc_Model extends CC_Model
 		}
 		if(isset($requestdata['monthrange'])){
 			$monthArray 	=	explode('-', $requestdata['monthArray']);
-			$this->db->where('YEAR(sm.allocation_date) = '.$monthArray[0].' AND '.'MONTH(sm.allocation_date) = '.$monthArray[1]);	
+			$this->db->where('YEAR(i.payment_date) = '.$monthArray[0].' AND '.'MONTH(i.payment_date) = '.$monthArray[1]);	
 		}
 		
 		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){
@@ -687,6 +688,7 @@ class Coc_Model extends CC_Model
 			$requestData1['inv_type']		= 	1;
 			$requestData1['coc_type']		= 	$requestData['coc_type'];
 			$requestData1['payment_id']		= 	$result['pf_payment_id'];
+			$requestData1['payment_date']	= 	date('Y-m-d');
 			if($requestData['coc_type']=='1') $requestData1['order_status'] = '1';
 			
 			$log = 'Invoice - '.json_encode($requestData1).PHP_EOL;

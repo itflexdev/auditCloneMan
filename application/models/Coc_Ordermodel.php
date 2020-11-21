@@ -5,7 +5,7 @@ class Coc_Ordermodel extends CC_Model
 	public function getCocorderList($type, $requestdata){
 
 		// $this->db->select('t1.*');
-		$this->db->select('t1.*,inv.email_track,inv.sms_track,t2.name,t2.surname,t3.type, concat(t3.address, ",", t5.name) as address, t2.company, t4.type, cc.count');
+		$this->db->select('t1.*,inv.payment_date,inv.email_track,inv.sms_track,t2.name,t2.surname,t3.type, concat(t3.address, ",", t5.name) as address, t2.company, t4.type, cc.count');
 		$this->db->from('coc_orders t1');
 		$this->db->join('invoice inv', 'inv.inv_id=t1.inv_id', 'left');
 		$this->db->join('users_detail t2', 't1.user_id=t2.user_id', 'left');
@@ -102,12 +102,15 @@ class Coc_Ordermodel extends CC_Model
 		if(isset($data['tracking_no'])) 	$requestdata['tracking_no']  	= $data['tracking_no'];
 		if(isset($data['email_track'])) 	$requestdata['email_track']  	= $data['email_track'];
 		if(isset($data['sms_track'])) 		$requestdata['sms_track']  		= $data['sms_track'];
-
+		if(isset($data['status']) && $data['status']=='1') 	$requestdata['payment_date'] 	= date('Y-m-d', strtotime($data['payment_date']));
+		if(isset($data['status']) && $data['status']=='0') 	$requestdata['payment_date'] 	= NULL;
+		
 		if(isset($requestdata)){	
 
 			if(isset($data['total_due'])) unset($requestdata['total_cost']);
 
-			$requestdata1 			= 	$requestdata;			
+			$requestdata1 			= 	$requestdata;	
+			
 			if(isset($data['quantity'])) 		$requestdata1['quantity'] 		= $data['quantity'];
 			if(isset($data['cost_value'])) 		$requestdata1['cost_value'] 	= $data['cost_value'];
 			if(isset($data['delivery_cost'])) 	$requestdata1['delivery_cost'] 	= $data['delivery_cost'];

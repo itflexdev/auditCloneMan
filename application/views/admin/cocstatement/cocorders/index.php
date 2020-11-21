@@ -22,6 +22,7 @@ $trackingno 			= isset($result['tracking_no']) ? $result['tracking_no'] : '';
 $emailtrack 			= isset($result['email_track']) ? $result['email_track'] : '';
 $smstrack 				= isset($result['sms_track']) ? $result['sms_track'] : '';
 $status 				= isset($result['status']) ? $result['status'] : '';
+$paymentdate 			= isset($result['payment_date']) ?  date('d-m-Y', strtotime($result['payment_date'])) : date('d-m-Y');
 
 $type 					= isset($result['type']) ? $result['type'] : '';
 $full_name				= isset($result['name']) && isset($result['surname']) ? $result['name'].' '.$result['surname'] : '';
@@ -221,7 +222,7 @@ $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' 
 						</div>
 						<div class="col-md-12">
 							<div class="form-group col-md-6 row">
-								<label>Internal Acc Invocie Number</label>
+								<label>Internal Acc Invoice Number</label>
 								<input type="text" autocomplete="off" class="form-control" name="internal_inv" value="<?php echo $internalinv; ?>">
 							</div>
 						</div>
@@ -240,6 +241,12 @@ $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' 
 									<input type="checkbox" class="custom-control-input" id="email_trak_notifi" name="email_track" value="1" <?php if($emailtrack=='1'){ echo 'checked="checked"'; } ?>>
 									<label class="custom-control-label" for="email_trak_notifi">Send an Email Tracking Notifiation</label>
 								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group col-md-6 row">
+								<label>Payment Date</label>
+								<input type="text" autocomplete="off" class="form-control payment_date" name="payment_date" value="<?php echo $paymentdate; ?>">
 							</div>
 						</div>
 						<div class="col-md-12">
@@ -351,6 +358,7 @@ var couriour 		= '<?php echo $couriour; ?>';
 var collectedbypirb = '<?php echo $collectedbypirb; ?>';
 
 $(function(){
+	datepicker('.payment_date');
 	datepicker('.created_at');
 
 	validation(
@@ -381,7 +389,11 @@ $(function(){
 			},
 			user_id : {
 				required	: true,
-			}			
+			},
+			payment_date : {
+				required	: true,
+			}
+						
 		},
 		{
 			created_at 	: {
@@ -407,6 +419,9 @@ $(function(){
 			},
 			user_id 	: {
 				required	: "Please select user."
+			},
+			payment_date : {
+				required	: "Please select Payment Date."
 			}
 		},
 		{

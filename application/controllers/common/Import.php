@@ -1172,7 +1172,8 @@ class Import extends CC_Controller {
 		$this->db->select('i.inv_id,u.id,u.expirydate');		
 		$this->db->from('invoice i');
 		$this->db->join('users as u', 'u.id=i.user_id', 'inner');
-		$this->db->where_in('i.inv_type', ['2','3']);	
+		$this->db->where_in('i.inv_type', ['2','3','4']);	
+		$this->db->where("i.status", "0");	
 		$this->db->where("DATE(u.expirydate) > DATE(DATE_ADD(NOW(), INTERVAL 30 DAY))");	
 		$results = $this->db->get()->result_array();	
 		

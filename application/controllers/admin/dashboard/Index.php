@@ -46,8 +46,8 @@ class Index extends CC_Controller
 		for($i = 0; $i <= 5; $i++){
 			$sixmonthgraph[] = [
 				'month' => date('F', strtotime('-'.$i.' months')), 
-				'electronic' => $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['1'], 'monthArray' => date('Y-m', strtotime('-'.$i.' months')), 'monthrange' => '1']),
-				'paper' => $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['2'], 'monthArray' => date('Y-m', strtotime('-'.$i.' months')), 'monthrange' => '1'])
+				'electronic' => $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['1'], 'monthArray' => date('Y-m', strtotime('-'.$i.' months')), 'monthrange' => '1'], ['invoice']),
+				'paper' => $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['2'], 'monthArray' => date('Y-m', strtotime('-'.$i.' months')), 'monthrange' => '1'], ['invoice'])
 			];
 		}	
 		$pagedata['sixmonthgraph']	= array_reverse($sixmonthgraph);
