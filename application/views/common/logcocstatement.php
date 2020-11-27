@@ -311,7 +311,7 @@
 											<img src="<?php echo $file1img; ?>" class="file1_img" width="100">
 										</a>
 									</div>
-									<input type="file" id="file1_file" class="file1_file">
+									<input type="file" id="file1_file" class="file1_file" <?php echo $disablefield; ?>>
 									<input type="hidden" name="file1" class="file1" value="<?php echo $file1; ?>">
 									<p>(Image/File Size Smaller than 5mb)</p>
 								</div>
