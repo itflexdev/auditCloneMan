@@ -2140,16 +2140,16 @@ class Api extends CC_Controller
 
 				if ($value['status'] == '0') {
 					$status = 'Pending';
-					$statusicons = '';
+					$statusicons = base_url().'assets/images/icons/clock.png';
 				}elseif($value['status'] == '1'){
 					$status = 'Approve';
-					$statusicons = '';
+					$statusicons = base_url().'assets/images/icons/Green_tick.png';
 				}elseif($value['status'] == '2'){
 					$status = 'Reject';
-					$statusicons = '';
+					$statusicons = base_url().'assets/images/icons/Red_cross.png';
 				}elseif($value['status'] == '3'){
 					$status = 'Not Submitted';
-					$statusicons = '';
+					$statusicons = base_url().'assets/images/icons/clock.png';
 				}
 				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $value['status'], 'status_words' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id'], 
 				];
