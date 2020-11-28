@@ -140,6 +140,14 @@ if(isset($result) && $result){
 									</div>			
 								</div>			
 							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<div class="row">
+										<label class="col-md-5 mt-3" style="font-weight:bold;"><?php echo $results['17']['description']; ?></label>
+										<input type="text" class="form-group col-md-6" name="points[18]"  value="<?php echo $results['17']['point']; ?>" placeholder="points">	
+									</div>			
+								</div>			
+							</div>
 						</div>
 					    <div class="row">
 							<div class="col-md-12 text-right">
