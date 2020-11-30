@@ -2346,7 +2346,7 @@ class Api extends CC_Controller
 						$plumberdocumentURL = '';
 					}
 
-				$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => $admindocumentURL, 'plumberdocument' => $plumberdocumentURL,'cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => '', 'admin_comments' => $result['admin_comments']
+				$jsonData['result'] = [ 'dateofactivity' => date('d/m/Y', strtotime($result['cpd_start_date'])), 'activity' => $result['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $result['points'], 'comments' => $result['comments'], 'admindocument' => $admindocumentURL, 'plumberdocument' => $plumberdocumentURL,'cpdstreamid' => $result['cpd_stream'], 'userid' => $result['user_id'], 'cpdid' => $result['id'], 'renewalcpd' => '', 'admin_comments' => $result['admin_comments'], 'actid' => $result['cpdtype_id'],
 					];
 
 					$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$jsonData);
