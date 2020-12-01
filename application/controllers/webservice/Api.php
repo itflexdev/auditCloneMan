@@ -2409,7 +2409,7 @@ class Api extends CC_Controller
 				}else{
 					$requestData1['updated_at'] = 	$datetime;
 					$requestData1['updated_by']	= 	$plumberID;
-					$result = $this->db->update('cpd_activity_form', $requestData1, ['id' => $cpd_id]);
+					$result = $this->db->update('cpd_activity_form', $requestData1, ['id' => $id]);
 					$message = 'My CPD Updated Successfully';
 				}
 
