@@ -467,14 +467,19 @@
     
     // });
 
+    // $(".scroll--up").click(function() {
+    //     $("html, body").animate({ scrollTop: 0 }, "slow");
+    //     return false;
+    // });
+
     $(".scroll--up").click(function() {
-        $("html, body").animate({ scrollTop: 0 }, "slow");
-        return false;
+    $([document.documentElement, document.body]).animate({
+        scrollTop: $("#scroll_ticker_title").offset().top
+      }, 2000);
     });
       
    </script>
    <a href="javascript:void(0)" class="scrolltop-link scroll--up" style=""> 
-     <!-- <img class="scrolltop" src="https://pirb.co.za/wp-content/uploads/2019/07/pirb3_blue-1.png">  -->
      <i class="fa fa-angle-double-up scrolltop" aria-hidden="true"></i>
    </a>
 
@@ -487,8 +492,8 @@
         float: right;
         display: inline-block;
         position: fixed;
-        top: 50%;
-        right: 17px;
+        bottom: 25px;
+        right: 0;
         transform: translateY(-50%);
       }
 
