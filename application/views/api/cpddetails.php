@@ -307,7 +307,6 @@
                  autoplaySpeed:1500,
                  prevArrow: $('.prev-three'),
                  nextArrow: $('.next-three'),
-                 
                  speed: 300,
                  slidesToShow: 3,
                  slidesToScroll: 3,
@@ -335,7 +334,7 @@
                      slidesToScroll: 2,
                      adaptiveHeight: true,
                      variableWidth: true,
-                     vertical: true,
+                     vertical: false,
                      prevArrow: false,
                      dots: true,
                      prevArrow: $('.prev-three'),
@@ -356,7 +355,9 @@
                      verticalSwiping: true,
                      prevArrow: false,
                      prevArrow: $('.prev-three'),
-                     nextArrow: $('.next-three') } }
+                     nextArrow: $('.next-three') 
+                   } 
+                   }
                  ] 
                });
               }
@@ -469,7 +470,7 @@
     $(".scroll--up").click(function() {
         $("html, body").animate({ scrollTop: 0 }, "slow");
         return false;
-      });
+    });
       
    </script>
    <a href="javascript:void(0)" class="scrolltop-link scroll--up" style=""> 
