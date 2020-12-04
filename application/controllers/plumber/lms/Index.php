@@ -26,7 +26,7 @@ class index extends CC_Controller
 
 	public function lmsaction(){
 		$post = $this->input->post();
-		echo "<pre>";print_r($post);
+		// echo "<pre>";print_r($post);
 		$request['lms_status'] = $post['lms_status'];
 		$this->db->update('users_plumber', $request, ['user_id' => $post['uid']]);
 		echo '1';
