@@ -400,7 +400,7 @@ class CC_Controller extends CI_Controller
 				
 				$curlData['firstname'] 	= $requestData['name'];
 				$curlData['surname'] 	= $requestData['surname'];
-				$curlData['username'] 	= $plumberdata['registration_no'];
+				// $curlData['username'] 	= $plumberdata['registration_no'];
 				$curlData['password'] 	= $userdata['password_raw'];
 				$curlData['email'] 		= $userdata['email'];
 				$curlData['nickname'] 	= $plumberdata['registration_no'];
@@ -1539,7 +1539,7 @@ class CC_Controller extends CI_Controller
 					'firstname' 		=> $data['firstname'],
 					'surname' 			=> $data['surname'],
 					'password' 			=> $data['password'],
-					'username' 			=> $data['username'],
+					// 'username' 			=> $data['username'],
 					'email' 			=> $data['email'],
 					'nickname' 			=> $data['nickname'],
 				];
