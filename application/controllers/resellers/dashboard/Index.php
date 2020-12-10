@@ -24,7 +24,7 @@ class Index extends CC_Controller
 		$post['monthrange']				= 	'6';		
 		for($i = 1; $i <= 6; $i++){
 			$post['monthArray']			= 	date('Y-m', strtotime('-'.$i.' months'));
-			$cochistory 				= 	$this->Coc_Model->getCOCList('all',$post);
+			$cochistory 				= 	$this->Coc_Model->getCOCList('all',$post, ['reseller', 'invoice']);
 
 			foreach ($cochistory as $key => $value) {			
 				if($value['user_id'] 		== 	$user_id){
