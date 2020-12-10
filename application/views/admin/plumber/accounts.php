@@ -23,8 +23,11 @@ if($roletype=='1'){ echo isset($menu) ? $menu : ''; }
 	<div class="col-12">
 		<div class="card">
 			<div class="card-body">
-			
 				<h4 class="card-title">Account Details for <?php echo $user_details['name']." ".$user_details['surname']?></h4>
+				<?php if ($invoicedetails =='' && $user_details['plumberstatus'] =='1') { ?>
+					<a href="javascript:void(0);" class="active_link_btn trigerr-btn" style="margin-left: 112px !important;">Trigger Renewal</a>
+				<?php } ?>
+				<div class="modalloader displaynone"></div>
 				<div id="active" class="table-responsive m-t-40">
 					<table class="table table-bordered table-striped datatables fullwidth">
 						<thead>
@@ -40,7 +43,7 @@ if($roletype=='1'){ echo isset($menu) ? $menu : ''; }
 						</thead>
 					</table>
 				</div>
-
+				<h5 class="">Note: "Trigger Renewal" button will not available when there is active Invoice found.</h4>
 			</div>
 		</div>
 	</div>
@@ -49,7 +52,7 @@ if($roletype=='1'){ echo isset($menu) ? $menu : ''; }
 <script>
 	$(function(){
 
-
+$('.modalloader').html('<img src="<?php echo base_url().'assets/images/ajax-loader.gif'; ?>" height="50"/>');
 		
 		var options = {
 			url 	: 	'<?php echo base_url()."admin/plumber/index/DTAccounts"; ?>',
@@ -66,6 +69,29 @@ if($roletype=='1'){ echo isset($menu) ? $menu : ''; }
 		};
 		
 		ajaxdatatables('.datatables', options);
+
+		$('.trigerr-btn').click(function(){
+			$('.modalloader').removeClass('displaynone');
+			$(this).prop('disabled', true);
+			var form_data = new FormData();
+	        form_data.append("id", '<?php echo $user_details['id']; ?>');
+
+	        $.ajax({
+		      	data: form_data,
+		        type: 'POST',
+		        url: '<?php echo base_url().'admin/plumber/index/triggerrenewal'; ?>',
+		        contentType: false,  
+	            cache: false,  
+	            processData:false,
+	            success:function(data)
+		        {
+		        	$('.modalloader').addClass('displaynone');
+		        	sweetalertautoclose('Renewal triggered sucessfully.');
+		        	location.reload();
+		        }
+		      });
+
+		});
 	
 	});
 	

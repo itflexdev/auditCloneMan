@@ -1,5 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once 'application/libraries/dompdf/autoload.inc.php';
+use Dompdf\Dompdf;
 
 class Index extends CC_Controller 
 {
@@ -15,6 +17,9 @@ class Index extends CC_Controller
 		$this->load->model('Documentsletters_Model');
 		$this->load->model('Diary_Model');
 		$this->load->model('Performancestatus_Model');
+		$this->load->model('Systemsettings_Model');
+		$this->load->model('Renewal_Model');
+		$this->load->model('Communication_Model');
 
 		
 	}
@@ -625,7 +630,9 @@ class Index extends CC_Controller
 
 	public function accounts($id)
 	{
-		$userdata1					= $this->Plumber_Model->getList('row', ['id' => $id], ['usersdetail']);
+		$userdata1					= $this->Plumber_Model->getList('row', ['id' => $id], ['users', 'usersdetail', 'usersplumber']);
+		$invoicedetails				= $this->Accounts_Model->getInvdeatils('row', ['user_id' => $id, 'inv_type' => '2', 'status' => '0']);
+		// echo "<pre>";print_r($invoicedetails);die;
 		$pagedata['roletype']		= $this->config->item('roleadmin');
 		$pagedata['id'] 			= $id;
 		$pagedata['user_details'] 	= $userdata1;
@@ -634,6 +641,91 @@ class Index extends CC_Controller
 		$data['plugins']			= ['datatables', 'datatablesresponsive', 'sweetalert', 'validation'];
 		$data['content'] 			= $this->load->view('admin/plumber/accounts', (isset($pagedata) ? $pagedata : ''), true);
 		$this->layout2($data);
+	}
+
+	public function triggerrenewal(){
+		$post 		= $this->input->post();
+		$result		= $this->Accounts_Model->getDetails($post['id']);
+		$settings 	= $this->Systemsettings_Model->getList('row');
+		$userid 	= $post['id'];
+		
+		foreach($result as $data)
+		{
+			$designation 		= $data['designation'];
+			$renewal_date1 		= $data['expirydate'];
+			$rdate 				= strtotime($renewal_date1);
+			$new_date 			= strtotime('+ 1 year', $rdate);
+			$renewal_date 		= date('d/m/Y', $new_date);
+			
+			
+			$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
+			$otherfee 	= 	$this->invoiceotherfee($userdata1);
+			
+			$result = $this->Renewal_Model->updatedata($userid,$designation,'2','','',$otherfee);			
+			$invoice_id = $result['invoice_id'];
+			$cocorder_id = $result['cocorder_id'];
+		
+			$log	.= $userid.'-'.$invoice_id.'-'.date('d-m-Y', strtotime($renewal_date1)).PHP_EOL;
+			
+			if ($invoice_id) {
+				$inid 				= $cocorder_id;
+				$inv_id 			= $invoice_id;
+
+				$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
+
+				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
+				$designation =	$this->config->item('designation2')[$rowData['designation']];					
+				$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC', ['description' => 'PIRB year renewal fee for '.$designation.' for '.$rowData['username'].' '.$rowData['surname'].', registration number '.$rowData['registration_no']]+$otherfee);
+				
+				$cocTypes = $orders['coc_type'];
+				$mail_date = date("d-m-Y", strtotime($orders['created_at']));
+				
+				
+				$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '1', 'emailstatus' => '1']);
+				
+				if($notificationdata){
+					$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}','{renewal_date}'];
+					$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes],$renewal_date];
+					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
+					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+				}
+				
+				if($settings && $settings['otp']=='1'){
+					$smsdata 	= $this->Communication_Model->getList('row', ['id' => '1', 'smsstatus' => '1']);
+		
+					if($smsdata){
+						$sms = $smsdata['sms_body'];
+						$this->sms(['no' => $userdata1['mobile_phone'], 'msg' => $sms]);
+					}
+				}
+
+			}
+
+		}
+		echo "1";
+
+	}
+
+
+	public function invoiceotherfee($userdata1){
+		$otherfee = [];
+		if($userdata1['registration_card']=='1'){
+			$otherfee['cardfee'] = $this->getRates($this->config->item('cardfee'));
+			/*if($userdata1['delivery_card']=='1'){
+				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('postage'));
+				$otherfee['deliverycard'] 	= '1';
+			}elseif($userdata1['delivery_card']=='2'){
+				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('couriour'));
+				$otherfee['deliverycard'] 	= '2';
+			}*/
+		}
+		$specialisations = array_filter(explode(',', $userdata1['specialisations']));
+		if(count($specialisations) > 0){
+			$otherfee['specialisationsfee'] = $this->getRates($this->config->item('specializationfee'));
+			$otherfee['specialisationsqty'] = count($specialisations);
+		}
+		
+		return $otherfee;
 	}
 
 	public function DTAccounts()
@@ -851,6 +943,25 @@ class Index extends CC_Controller
 		
 		$this->layout2($data);		
 	}
+
+	public function exportcard($id){
+		$data['company'] 			= $this->getCompanyList();
+		$data['designation2'] 		= $this->config->item('designation3');
+		$data['specialisations'] 	= $this->config->item('specialisations');
+		$data['settings'] 			= $this->Systemsettings_Model->getList('row');
+		
+		$data['result'] = $this->Plumber_Model->getList('row', ['id' => $id], ['users', 'usersdetail', 'usersplumber', 'company']);
+
 	
+		// $front = $this->load->view('api/card/card_front', $data, true);
+		$html = $this->load->view('common/card_export', $data, true);
+		echo $html;die;
+		$this->pdf->loadHtml($html);
+		$this->pdf->setPaper('A4', 'portrait');
+		$this->pdf->render();
+		$output = $this->pdf->output();
+		$this->pdf->stream('Card Export '.$id);
+		// $this->plumberprofile($id, ['roletype' => $this->config->item('roleadmin'), 'pagetype' => 'applications'], ['redirect' => 'admin/plumber/index']);
+	}
 }
 

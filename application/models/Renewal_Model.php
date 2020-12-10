@@ -188,9 +188,29 @@ class Renewal_Model extends CC_Model
 		$request['delivery_type'] = '2';		
 		$request['created_at'] = $currentdate;
 
-		if($inv_type == '2'){
+		/*if($inv_type == '2'){
 			$this->db->insert('invoice', ['description' => "Renewal Fee", 'user_id' => $userid, 'status' => '0', 'inv_type' => $inv_type,  'coc_type' => '0',  'delivery_type' => '2', 'total_cost' => $rate, 'vat'=>$vat_amount, 'created_at' => $currentdate]) ;
 			$result['invoice_id'] = $this->db->insert_id();
+		}*/
+		if($inv_type == '2'){
+			$this->db->select('inv.*');
+			$this->db->from('invoice inv');
+			$this->db->where('inv.user_id', $userid);
+			$this->db->where('inv.inv_type', $inv_type);
+			$this->db->where('inv.status', '0');
+			$invquery 	= $this->db->get();
+			$invresult 	= $invquery->row_array();
+
+			if ($invresult =='') {
+				$this->db->insert('invoice', ['description' => "Renewal Fee", 'user_id' => $userid, 'status' => '0', 'inv_type' => $inv_type,  'coc_type' => '0',  'delivery_type' => '2', 'total_cost' => $rate, 'vat'=>$vat_amount, 'created_at' => $currentdate]) ;
+				$result['invoice_id'] = $this->db->insert_id();
+			}else{
+				$request['total_cost'] 	= $rate;
+				$request['vat'] 		= $vat_amount;
+				$result['invoice_id'] 	= $invresult['id'];
+				$this->db->update('invoice', $request, ['inv_id' => $invresult['id']]);
+			}
+			
 		}
 		elseif($inv_type == '4'){			
 			$request['total_cost'] = $rate1;
