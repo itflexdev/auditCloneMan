@@ -671,7 +671,8 @@ class Index extends CC_Controller
 				$inid 				= $cocorder_id;
 				$inv_id 			= $invoice_id;
 
-				$orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
+				// $orders = $this->db->select('*')->from('coc_orders')->where(['inv_id' => $invoice_id])->get()->row_array();
+				$orders = $this->db->select('cocod.coc_type, cocod.created_at, cocod.quantity, cocod.inv_id')->from('coc_orders as cocod')->where(['cocod.inv_id' => $invoice_id])->get()->row_array();
 
 				$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
 				$designation =	$this->config->item('designation2')[$rowData['designation']];					
