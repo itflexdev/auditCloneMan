@@ -4557,4 +4557,26 @@ class Api extends CC_Controller
 		// echo json_encode($jsonData);
 	}
 
+	public function pirbverification(){
+		if ($this->input->post() && $this->input->post('email') && $this->input->post('password')) {
+			$post 			= $this->input->post();
+			$post['type'] 	= '3';
+			$userdata 		= $this->Api_Model->checkusers($post);
+			// print_r($this->db->last_query());die;
+			if ($userdata['status'] =='1' || $userdata['status'] =='2' || $userdata['status'] =='3') {
+				$status 	= $userdata['status'];
+				$message 	= $userdata['message'];
+				$result 	= '';
+			}else{
+				$status 	= '0';
+				$message 	= 'Profile not verified on Audit-IT database.';
+				$result 	= '';
+			}
+			$jsonData = array("status"=>$status, "message"=>$message, "result"=> $result);
+		}else{
+			$jsonData = array("status"=>'0', "message"=>'Invalid API', "result"=> []);
+		}
+		echo json_encode($jsonData);
+	}
+
 }
