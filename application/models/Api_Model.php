@@ -1237,4 +1237,47 @@ class Api_Model extends CC_Model
 
 		return $result1;
 	}
+
+
+	public function checkusers($data){
+
+		$email 		= trim($data['email']);
+		$password 	= md5($data['password']);
+		$type 		= $data['type'];
+
+		$this->db->select('u.id, u.email, u.password');
+		$this->db->from('users u');
+		$this->db->where('u.email', $email);
+		$this->db->where('u.type', $type);
+		$emailcount = $this->db->count_all_results();
+		if ($emailcount =='1') {
+			$this->db->select('u.id, u.email, u.password');
+			$this->db->from('users u');
+			$this->db->where('u.email', $email);
+			$this->db->where('u.password', $password);
+			$this->db->where('u.type', $type);
+			$passwordcount = $this->db->count_all_results();
+			if ($passwordcount =='1') {
+				$status 	= '1';
+				$message 	= 'Profile verified on Audit-IT database.';
+			}else{
+				$status 	= '3';
+				$message 	= 'Entered password not match with Audit-IT database.';
+			}
+		}else{
+			$status 		= '2';
+			$message 		= 'There is no matching emaill address on Audit-IT database.';
+		}
+
+		// $query = $this->db->where_in('type', $type)->get_where('users', ['email' => $email, 'password' => $password]);
+
+		// if($query->num_rows() > 0){
+		// 	$result = $query->row_array();
+		// }else{
+		// 	$result = '';
+		// }
+		$result['status'] 	= $status;
+		$result['message'] 	= $message;
+		return $result;
+	}
 }
