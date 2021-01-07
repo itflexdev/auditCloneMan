@@ -44,7 +44,11 @@ if(isset($id) && $id >0)
 		</div>
 	</div>
 </div>
-<?php echo $notification; ?>
+<?php 
+if ($id !='') {
+	echo $notification;
+}
+?>
 <div class="row">
 	<div class="col-12">
 		<div class="card">
@@ -95,114 +99,117 @@ if(isset($id) && $id >0)
 					<?php echo $card ;?>
 				</div>
 				</br>
-				<div class="row">
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Current Licesed Plumbers Employer : </label>
+				<?php if ($result['plumberstatus'] =='1'){ ?>
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Current Licesed Plumbers Employer : </label>
+							</div>
+						</div>
+						<div class="col-md-9">
+							<div class="form-group">
+								<label><?php echo $companyname;?></label>
+								<input type="hidden" name="company_details" value="<?php echo $company_details; ?>">
+							</div>
 						</div>
 					</div>
-					<div class="col-md-9">
-						<div class="form-group">
-							<label><?php echo $companyname;?></label>
-							<input type="hidden" name="company_details" value="<?php echo $company_details; ?>">
+					
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Number of COC's Permitted to be allocated to the Plumber : </label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<input type="text" class="form-control"  name="balace_coc" id="balace_coc"  value="<?php echo $balace_coc;?>" disabled>
+								<input type="hidden" class="form-control"  name="balace_coc1" id="balace_coc1"  value="<?php echo $balace_coc;?>">
+							</div>
 						</div>
 					</div>
-				</div>
-				
-				<div class="row">
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Number of COC's Permitted to be allocated to the Plumber : </label>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="form-group">
-							<input type="text" class="form-control"  name="balace_coc" id="balace_coc"  value="<?php echo $balace_coc;?>" disabled>
-							<input type="hidden" class="form-control"  name="balace_coc1" id="balace_coc1"  value="<?php echo $balace_coc;?>">
-						</div>
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-md-12 align-self-center">
-						<h5 class="card-title">Allocted COC from My Stock</h5>
+					<div class="row">
+						<div class="col-md-12 align-self-center">
+							<h5 class="card-title">Allocted COC from My Stock</h5>
+						</div>
 					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Number of COC's to be Allocated to Licensed Plumber : </label>
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Number of COC's to be Allocated to Licensed Plumber : </label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<input type="text" class="form-control"  name="rangebalace_coc" id="rangebalace_coc"  value="">
+								<span id="checklimit" style="color:red"></span>
+							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<div class="form-group">
-							<input type="text" class="form-control"  name="rangebalace_coc" id="rangebalace_coc"  value="">
-							<span id="checklimit" style="color:red"></span>
-						</div>
-					</div>
-				</div>
 
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Certificate No Start Range : </label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<input type="text" value="" readonly name="startrange" id="startrange">
+							</div>
+						</div>
+					</div>
 
-				<div class="row">
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Certificate No Start Range : </label>
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Certificate No End Range : </label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">							
+								<input type="text" value="" readonly name="endrange" id="endrange">
+							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<div class="form-group">
-							<input type="text" value="" readonly name="startrange" id="startrange">
-						</div>
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Certificate No End Range : </label>
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Reseller Invoice Number : </label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<input type="text" class="form-control"  name="invoiceno" id="invoiceno"  value="">
+							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<div class="form-group">							
-							<input type="text" value="" readonly name="endrange" id="endrange">
-						</div>
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Reseller Invoice Number : </label>
+					<div class="row">
+						<div class="col-md-12">
+							<h4 class="card-title add_top_value">Disclaimer</h4>
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" id="disclaimer" name="disclaimer" class="custom-control-input">
+								<label class="custom-control-label" for="disclaimer">I declare and understand</label>
+							</div>
+							<p class="info_text">
+								That I have allocated/sold the relevant COC to a valid PIRB Licensed Plumber, and that if I am found to have allocated/sold any COC to non-valid PIRB Licensed Plumber I will be held accountable for my actions.
+							</p>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<div class="form-group">
-							<input type="text" class="form-control"  name="invoiceno" id="invoiceno"  value="">
-						</div>
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-md-12">
-						<h4 class="card-title add_top_value">Disclaimer</h4>
-						<div class="custom-control custom-checkbox">
-							<input type="checkbox" id="disclaimer" name="disclaimer" class="custom-control-input">
-							<label class="custom-control-label" for="disclaimer">I declare and understand</label>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="form-group">
+								<button type="submit" id="submit2" name="submit2" value="submit2" class="btn btn-primary">Allocate Certificates</button>
+							</div>
 						</div>
-						<p class="info_text">
-							That I have allocated/sold the relevant COC to a valid PIRB Licensed Plumber, and that if I am found to have allocated/sold any COC to non-valid PIRB Licensed Plumber I will be held accountable for my actions.
-						</p>
 					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-md-5">
-						<div class="form-group">
-							<button type="submit" id="submit2" name="submit2" value="submit2" class="btn btn-primary">Allocate Certificates</button>
-						</div>
-					</div>
-				</div>
+				<?php }?>
+
 			</form>
 
 			<div id="skillmodal" class="modal fade" role="dialog">

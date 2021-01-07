@@ -25,6 +25,11 @@ class Index extends CC_Controller
 					$requestData1['id'] = $requestData['user_id_hide'];
 					$pagedata['result'] 	=  $this->Plumber_Model->getList('row',$requestData1, ['users', 'usersdetail', 'usersplumber', 'company']);
 					$pagedata['user_id_hide'] = '1';
+					
+					if ($pagedata['result']['plumberstatus'] !='1') {
+						$this->session->set_flashdata('error', 'Plumber cannot purchase COCs as plumber is '.$this->config->item('plumberstatus')[$pagedata['result']['plumberstatus']].'');
+					}
+					
 				}else{
 					$pagedata['user_id_hide'] = '0';
 					$pagedata['result'] 	=  $this->Plumber_Model->getList('row',$requestData, ['users', 'usersdetail', 'usersplumber', 'company']);
@@ -32,6 +37,10 @@ class Index extends CC_Controller
 						$pagedata['emptyvalue'] = 0;
 					else
 						$pagedata['emptyvalue'] = 1;
+
+					if ($pagedata['result']['plumberstatus'] !='1') {
+						$this->session->set_flashdata('error', 'Plumber cannot purchase COCs as plumber is '.$this->config->item('plumberstatus')[$pagedata['result']['plumberstatus']].'');
+					}
 				}
 
 				$resultid['user_id'] = $pagedata['result']['id'];						
