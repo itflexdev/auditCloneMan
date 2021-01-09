@@ -77,6 +77,48 @@ class Accounts_Model extends CC_Model
 		return $result;
 	}
 
+	public function getInvdeatils($type, $requestdata=[]){
+
+		$this->db->select('t1.*');
+        $this->db->from('invoice t1');
+  //       $this->db->join('coc_orders t2','t2.inv_id = t1.inv_id', 'left');
+  //       $this->db->join('users_detail t3', 't3.user_id = t1.user_id', 'left');
+  //       $this->db->join('users_address t4', 't4.user_id = t1.user_id AND t4.type=1', 'left');
+		// $this->db->join('users_plumber t5', 't5.user_id = t1.user_id', 'left');
+		// $this->db->join('users u', 'u.id=t1.user_id', 'left');
+		// $this->db->join('custom c1', 'c1.c_id=t1.order_status and c1.type="7"', 'left');
+		// $this->db->where('u.type', '3');
+		
+		if(isset($requestdata['id'])) 		$this->db->where('t1.inv_id', $requestdata['id']);
+		if(isset($requestdata['user_id'])) 	$this->db->where('t1.user_id', $requestdata['user_id']);
+		if(isset($requestdata['inv_type'])) $this->db->where('t1.inv_type', $requestdata['inv_type']);
+		if(isset($requestdata['status'])) 	$this->db->where('t1.status', $requestdata['status']);
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+   
+		return $result;
+
+	}
+
+	public function getDetails($id)
+	{
+		$this->db->select('us.id, us.expirydate, up.designation');		
+		$this->db->from('users us');
+		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'left');
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.id' => $id]);
+		$this->db->group_by('us.id');
+		$result = $this->db->get()->result_array();		
+		
+		return $result;
+	}
+	
     public function getPermissions($type1)
 	{ 
 		$this->db->select('*');
