@@ -633,6 +633,7 @@ class Index extends CC_Controller
 		$userdata1					= $this->Plumber_Model->getList('row', ['id' => $id], ['users', 'usersdetail', 'usersplumber']);
 		$invoicedetails				= $this->Accounts_Model->getInvdeatils('row', ['user_id' => $id, 'inv_type' => '2', 'status' => '0']);
 		// echo "<pre>";print_r($invoicedetails);die;
+		$pagedata['invoicedetails']	= $invoicedetails;
 		$pagedata['roletype']		= $this->config->item('roleadmin');
 		$pagedata['id'] 			= $id;
 		$pagedata['user_details'] 	= $userdata1;
