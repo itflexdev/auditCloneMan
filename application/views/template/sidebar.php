@@ -152,7 +152,7 @@ if(count($permission) > 0){
 						<li class=""> 
 							<a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><img class="admin_dash_icon" src="<?php echo base_url().'assets/images/sidebar/menu11.png'; ?>" alt=""><span class="hide-menu">Reports</span></a>
 							<ul aria-expanded="false" class="collapse">
-								<?php if($menu=='1' || ($menu=='2' && (in_array('32', $readpermission) || in_array('25', $writepermission)))){ ?>
+								<?php if($menu=='1' || ($menu=='2' && (in_array('32', $readpermission) || in_array('32', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/reports/index'; ?>">Reports</a></li>
 								<?php } ?>
 							</ul>
