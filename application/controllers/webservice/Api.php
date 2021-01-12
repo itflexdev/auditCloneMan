@@ -2548,7 +2548,7 @@ class Api extends CC_Controller
 				$subtype 			= $this->getSubTypeList_api(['id' => $result['subtype'], 'type' => 'getsubtypes']);
 				$statement 			= $this->getreportlisting_api(['id' => $result['statement'], 'type' => 'getstatement']);
 
-				$jsonData['noncompliance_details'][] = [ 'id' => $result['id'], 'user_id' => $result['user_id'], 'coc_id' => $result['coc_id'], 'installationtypeid' => $result['installationtype'], 'subtypeid' => $result['subtype'], 'statementid' => $result['statement'], 'details' => $result['details'], 'action' => $result['action'], 'reference' => $result['reference'], 'installationtype' => $installationtype[0]['name'], 'subtype' => $subtype[0]['name'], 'statement' => $statement[0]['statement']
+				$jsonData['noncompliance_details'][] = [ 'id' => $result['id'], 'user_id' => $result['user_id'], 'coc_id' => $result['coc_id'], 'installationtypeid' => $result['installationtype'], 'subtypeid' => $result['subtype'], 'statementid' => $result['statement'], 'details' => $result['details'], 'action' => $result['action'], 'reference' => $result['reference'], 'installationtype' => isset($installationtype[0]['name']) ? $installationtype[0]['name'] : '', 'subtype' => isset($subtype[0]['name']) ? $subtype[0]['name'] : '', 'statement' => $statement[0]['statement']
 				];
 			}
 			$jsonData['page_lables'] = [ 'heading' => 'Pre-existing Non Compliance Conditions', 'installation' => 'Installation Type', 'subtype' => 'Sub Type', 'statement' => 'Statement', 'nc_details' => 'Non compliance details', 'remedi' => 'Possible remedial actions', 'sans' => 'SANS / Regulation / Bylaw Reference', 'img' => 'images', 'addimg' => 'Add images'
@@ -2703,7 +2703,7 @@ class Api extends CC_Controller
 					$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $value['installationtype_id']]);
 					$get_subtype 			= $this->getSubTypeList_api(['id' => $value['subtype_id']]);
 					$get_statement 			= $this->getreportlisting_api(['id' => $value['statement_id']]);
-					$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' => $get_installationtype[0]['name'], 'subtype_id' => $value['subtype_id'], 'subtype' => $get_subtype[0]['name'], 'comments' => $value['comments'], 'statusicon' => $this->config->item('statusicon')[$value['status']], 'favourname' => $value['favour_name'], 'statement_id' => $value['statement_id'], 'statementname' => $get_statement, 'colorcode' => $colorcode, 'status' => $value['status']];
+					$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' =>isset($get_installationtype[0]['name']) ? $get_installationtype[0]['name'] : '', 'subtype_id' => $value['subtype_id'], 'subtype' => isset($get_subtype[0]['name']) ? $get_subtype[0]['name'] : '', 'comments' => $value['comments'], 'statusicon' => $this->config->item('statusicon')[$value['status']], 'favourname' => $value['favour_name'], 'statement_id' => $value['statement_id'], 'statementname' => $get_statement, 'colorcode' => $colorcode, 'status' => $value['status']];
 					}
 				}
 				$message = 'My Report Listing';
