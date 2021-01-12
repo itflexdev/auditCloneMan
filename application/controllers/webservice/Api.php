@@ -2421,6 +2421,28 @@ class Api extends CC_Controller
 		}
 		echo json_encode($jsonArray);
 	}
+	public function cpdproductcode(){
+		if ($this->input->post() && $this->input->post('productcode')) {
+			$post = $this->input->post();
+			$productcode = $post['productcode'].'-Qrcode.png';
+			$result = $this->Cpdtypesetup_Model->getList('row', ['productcode' => $productcode]);
+			if ($result!='') {
+				$jsonData = [ 'id' 			=> $result['id'],
+							  'activity' 	=> $result['activity'],
+							  'startdate' 	=> $result['startdate'],
+							  'enddate' 	=> $result['enddate'],
+							  'points' 		=> $result['points'],
+							  'qrcode' 		=> base_url().'assets/qrcode/'.$result['qrcode'],	
+				];
+				$jsonArray = array("status"=>'1', "message"=>'Product code details', "result"=>$jsonData);
+			}else{
+				$jsonArray 		= array("status"=>'0', "message"=>'No record found', "result"=>[]);
+			}
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+		echo json_encode($jsonArray);
+	}
 
 	// public function mycpd_edit_action(){
 
