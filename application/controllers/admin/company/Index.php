@@ -8,6 +8,7 @@ class Index extends CC_Controller
         parent::__construct();
         $this->load->model('Company_Model');
         $this->load->model('Documentsletters_Model');
+        $this->load->model('Companyperformancedetails_Model');
     }
 
     public function index()
@@ -24,9 +25,9 @@ class Index extends CC_Controller
     public function DTcompanylist()
     {
         $post = $this->input->post();
-        $totalcount 	= $this->Company_Model->getList('count', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany']);
-        $results 		= $this->Company_Model->getList('all', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany', 'lttqcount', 'lmcount']);
-        $companystatus	= $this->config->item('companystatus');
+        $totalcount     = $this->Company_Model->getList('count', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany']);
+        $results        = $this->Company_Model->getList('all', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany', 'lttqcount', 'lmcount']);
+        $companystatus  = $this->config->item('companystatus');
 
         $checkpermission = $this->checkUserPermission('20', '2');
         
@@ -42,14 +43,14 @@ class Index extends CC_Controller
                     $action = '';
                 }
 
-				$companystatus1 = isset($companystatus[$result['companystatus']]) ? $companystatus[$result['companystatus']] : '';
+                $companystatus1 = isset($companystatus[$result['companystatus']]) ? $companystatus[$result['companystatus']] : '';
                 $totalrecord[] = [
-									'id' 			=> $result['id'],
-									'company' 		=> $result['company'],
-									'status' 		=> $companystatus1,
-									'lmcount' 		=> $result['lmcount'],
-									'lttqcount' 	=> $result['lttqcount'],
-									'action' 		=>  $action,
+                                    'id'            => $result['id'],
+                                    'company'       => $result['company'],
+                                    'status'        => $companystatus1,
+                                    'lmcount'       => $result['lmcount'],
+                                    'lttqcount'     => $result['lttqcount'],
+                                    'action'        =>  $action,
                 ];
             }
         }
@@ -134,8 +135,8 @@ class Index extends CC_Controller
     {
        $this->employee(['compid' => $compid, 'id' => $id], ['roletype' => $this->config->item('roleadmin'), 'pagetype' => 'adminempdetails'], ['redirect' => 'admin/company/company/employee_listing']);
     }
-	
-	public function action($id)
+    
+    public function action($id)
     {
         $this->companyprofile($id, ['roletype' => $this->config->item('roleadmin'), 'pagetype' => 'adminprofile'], ['redirect' => 'admin/company/index']);
     }
@@ -156,8 +157,10 @@ class Index extends CC_Controller
     public function DTRejectedCompany()
     {
         $post = $this->input->post();
+        // print_r($post);die;
         $totalcount     = $this->Company_Model->getList('count', ['type' => '4', 'approvalstatus' => ['2'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany']);
         $results        = $this->Company_Model->getList('all', ['type' => '4', 'approvalstatus' => ['2'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany']);
+        // print_r($this->db->last_query());die;
         $companystatus  = $this->config->item('companystatus');
 
         $checkpermission = $this->checkUserPermission('21', '2');
@@ -167,9 +170,9 @@ class Index extends CC_Controller
             foreach ($results as $result) {
 
                 if ($checkpermission) {
-                    $action = 	'<div class="table-action">
-									<a href="' . base_url() . 'admin/company/index/action/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
-								</div>';
+                    $action =   '<div class="table-action">
+                                    <a href="' . base_url() . 'admin/company/index/action/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
+                                </div>';
                 }else{
                     $action = '';
                 }
@@ -205,8 +208,8 @@ class Index extends CC_Controller
     public function emplist($id){
          $this->employee($id, ['roletype' => $this->config->item('roleadmin'),'redirect' => 'admin/company/index/index']);
     }
-	
-	 public function diary($id){
+    
+     public function diary($id){
         //print_r($id);die;
         $this->companydiary($id, ['roletype' => $this->config->item('roleadmin'),'redirect' => 'admin/company/index/index']);
     }
@@ -278,15 +281,18 @@ class Index extends CC_Controller
                 $filepath   = base_url().'assets/uploads/company/';
                 $pdfimg     = base_url().'assets/images/pdf.png';
                 $file       = '';
+                $download   = '';
                 
                 if($filename!=''){
                     $explodefile    = explode('.', $filename);
                     $extfile        = array_pop($explodefile);
                     $imgpath        = (in_array($extfile, ['pdf', 'tiff'])) ? $pdfimg : $filepath.$filename;
-                    $file = '<div class="col-md-6"><a href="' .$imgpath.'" target="_blank"><img src="'.$imgpath.'" width="100"></div></a>';
+                    $file           = '<div class="col-md-6"><a href="' .$imgpath.'" target="_blank"><img src="'.$imgpath.'" width="100"></div></a>';
+
+                    $download       = '<a href="' .base_url().'assets/uploads/company/'.$result['file'].'" download><i class="fa fa-download" style="color:blue;"></i></a>';
                 }
                 
-                $action = '<div class="table-action"><a href="' . base_url() . 'admin/company/index/documents/'.$result['user_id'].'/' . $result['id'] . '" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a><a href="'.base_url().'admin/company/index/Deletefunc/'.$result['user_id'].'/' . $result['id'] .'" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash" style="color:red;"></i></a><a href="' .base_url().'assets/uploads/company/'.$result['file'].'" download><i class="fa fa-download" style="color:blue;"></i></a></div>';
+                $action = '<div class="table-action"><a href="' . base_url() . 'admin/company/index/documents/'.$result['user_id'].'/' . $result['id'] . '" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a><a href="'.base_url().'admin/company/index/Deletefunc/'.$result['user_id'].'/' . $result['id'] .'" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash" style="color:red;"></i></a>'.$download.'</div>';
 
                 $totalrecord[] =    [   
                                         'description'=>     $result['description'], 
@@ -325,5 +331,159 @@ class Index extends CC_Controller
         redirect('admin/company/index/documents/'.$compId);
     }
 
+
+    public function perfomacerating($compid = '', $id ='')
+    {
+        $user_id        = $compid;
+        $results        = $this->Company_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'userscompany']);
+        $companystatus1 = $this->config->item('companystatus');
+
+        $pagedata['companystatus'] = $companystatus1[$results['companystatus']];
+
+        if ($id != '') {
+            $result = $this->Companyperformancedetails_Model->getList('row', ['user_id' => $user_id, 'id' => $id, 'status' => ['1']]);
+            if ($result) {
+                $pagedata['result'] = $result;
+            } else {
+                $this->session->set_flashdata('error', 'No Record Found.');
+                redirect('admin/company/index/perfomacerating/'.$user_id.'');
+            }
+        }
+
+        if ($this->input->post()) {
+
+            $requestData = $this->input->post();
+
+            if (isset($requestData['submit']) && $requestData['submit'] == 'submit') {
+                $data = $this->Companyperformancedetails_Model->action($requestData);
+                if ($data) {
+                    $message = 'Performance Details ' . (($id == '') ? 'created' : 'updated') . ' successfully.';
+                }
+
+            } else {
+                $data    = $this->Companyperformancedetails_Model->changestatus($requestData);
+                $message = 'Performance Details deleted successfully.';
+            }
+
+            if (isset($data)) {
+                $this->session->set_flashdata('success', $message);
+            } else {
+                $this->session->set_flashdata('error', 'Try Later.');
+            }
+            redirect('admin/company/index/perfomacerating/'.$user_id.'');
+        }
+
+        $totalpoints = $this->Companyperformancedetails_Model->getList('all', ['user_id' => $user_id, 'status' => ['1']]);
+
+        $points = 0;
+        foreach ($totalpoints as $totalpoint) {
+            $points += $totalpoint['points'];
+        }
+
+        $pagedata['totalpoints']  = $points;
+        $pagedata['notification'] = $this->getNotification();
+        $today = date("Y-m-d");
+
+        $company_performance = $this->config->item('company_performance');
+
+        $document_type_list = array();
+        if ($id == '') {
+            foreach ($company_performance as $key => $value) {
+                $document_types = $this->Companyperformancedetails_Model->GetDate_of_Renewal(['user_id' => $user_id, 'status' => ['1'], 'date_of_renewal' => $today, 'document_type' => $key]);
+
+                if (!$document_types) {
+                    $document_type_list[$key] = $value;
+                }
+            }
+        } else {
+            $document_type_list = $company_performance;
+        }
+
+        $pagedata['document_type_list'] = $document_type_list;
+        $pagedata['userid']             = $user_id;
+
+        $data['plugins']            = ['datatables', 'datatablesresponsive', 'sweetalert', 'validation', 'datepicker'];
+        $pagedata['menu']           = $this->load->view('common/company/menu', ['id'=>$user_id],true);
+        $data['content']            = $this->load->view('common/company/performancedetails/index', (isset($pagedata) ? $pagedata : ''), true);
+        $this->layout2($data);
+    }
+
+    public function DTCompanyperformancedetails()
+    {
+        $post           = $this->input->post();
+        $user_id        = $post['compid'];
+        $statusresults  = $this->Company_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'userscompany']);
+        $companystatus1 = $this->config->item('companystatus');
+
+        $companystatus = $companystatus1[$statusresults['companystatus']];
+
+        
+        $totalcount = $this->Companyperformancedetails_Model->getList('count', ['user_id' => $user_id, 'status' => ['1']] + $post);
+        $results    = $this->Companyperformancedetails_Model->getList('all', ['user_id' => $user_id, 'status' => ['1']] + $post);
+
+        $totalrecord = [];
+        if (count($results) > 0) {
+            foreach ($results as $result) {
+                $profileimg  = base_url() . 'assets/images/profile.jpg';
+                $pdfimg      = base_url() . 'assets/images/pdf.png';
+                $attachments = isset($result['attachments']) ? $result['attachments'] : '';
+                $filepath    = base_url() . 'assets/uploads/company/documents/' . $user_id . '/';
+                $filepath1   = (isset($result['attachments']) && $result['attachments'] != '') ? $filepath . $result['attachments'] : base_url() . 'assets/uploads/cpdqueue/profile.jpg';
+                if ($attachments != '') {
+                    $explodefile2 = explode('.', $attachments);
+                    $extfile2     = array_pop($explodefile2);
+                    $photoidimg   = (in_array($extfile2, ['pdf', 'tiff'])) ? $pdfimg : $filepath1;
+                    $photoidurl   = $filepath1;
+                } else {
+                    $photoidimg = $profileimg;
+                    $photoidurl = 'javascript:void(0);';
+                }
+
+                $files = '<a href="' . $photoidurl . '" target="_blank"><img src="' . $photoidimg . '" width="80"></a>';
+
+                $points = $this->Companyperformancedetails_Model->getList('row', ['user_id' => $user_id, 'document_type' => $result['document_type']]);
+                $points = $points['points'];
+
+                $action = '<div class="table-action">
+                                <a href="' . base_url() . 'admin/company/index/perfomacerating/'.$user_id.'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>';
+                if ($companystatus == 'Active') {
+                    $action .= '   <a href="javascript:void(0);" data-id="' . $result['id'] . '" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
+                                </div>';
+                }
+
+                $totalrecord[] = [
+                    'updated_at'      => date('d-m-Y H:i:s', strtotime($result['updated_at'])),
+                    'date_of_renewal' => date('d-m-Y', strtotime($result['date_of_renewal'])),
+                    'document_type'   => $this->config->item('company_performance')[$result['document_type']],
+                    'points'          => $points,
+                    'attachments'     => $files,
+                    'action'          => $action,
+                ];
+
+            }
+        }
+
+        $json = array(
+            "draw"            => intval($post['draw']),
+            "recordsTotal"    => intval($totalcount),
+            "recordsFiltered" => intval($totalcount),
+            "data"            => $totalrecord,
+        );
+
+        echo json_encode($json);
+    }
+
+    public function deleteDoc(){
+
+        $post       = $this->input->post();
+        $data       = $this->Companyperformancedetails_Model->changestatus($post);
+        $message    = 'Performance Details deleted successfully.';
+        if (isset($data)) {
+            $this->session->set_flashdata('success', $message);
+        } else {
+            $this->session->set_flashdata('error', 'Try Later.');
+        }
+        redirect('admin/company/index/perfomacerating/'.$post['userid'].'');
+    }
 
 }
