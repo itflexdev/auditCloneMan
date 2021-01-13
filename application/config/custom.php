@@ -407,10 +407,15 @@ $config['rejectreason'] 			= 	[
 											'4' => 'Other',
 										];			
 
-$config['companyrejectreason'] 		= 	[
+/*$config['companyrejectreason'] 		= 	[
 											'1' => 'Cannot Verifiy',
 											'2' => 'Other',
-										];			
+										];		*/	
+$config['companyrejectreason'] 		= 	[
+											'1' => 'No Evidance',
+											'2' => 'Cannot Verifiy',
+											'3' => 'Other',
+										];
 
 $config['plumberstatus'] 			= 	[
 											'0' => 'Pending',
@@ -469,16 +474,81 @@ $config['worktype'] 				= 	[
 											'6' => 'Construction - Commercial',
 											'7' => 'Construction - Civil Works'
 										];
+/*$config['worktype1'] 				= 	[
+											'1' => 'After Hours Emergency',
+											'2' => 'Drainage',
+											'3' => 'Hot Water Systems',
+											'4' => 'New Housing',
+											'5' => 'Roofing',
+											'6' => 'Water Leak Detection',
+											'7' => 'Backflow',
+											'8' => 'Gas Installations',
+											'9' => 'Industrial',
+											'10' => 'Part Payments',
+											'11' => 'Seniors Discount',
+											'12' => 'Commercial',
+											'13' => 'Gas Servicing',
+											'14' => 'Maintenance- Commercial',
+											'15' => 'Renovations',
+											'16' => 'Sewer Conversion',
+											'17' => 'Consultency or Design',
+											'18' => 'Greywater',
+											'19' => 'Maintenance - Domestic',
+											'19' => 'Restricted Electrical',
+											'20' => 'Solar',
+											'21' => 'Other',
+										];*/
+$config['worktype1'] 				= 	[
+											'1' => 'After Hours Emergency',
+											'2' => 'Maintenance- Commercial',
+											'3' => 'Bathroom renovations',
+											'4' => 'Maintenance - Domestic',
+											'5' => 'Commercial Plumbing Work',
+											'6' => 'New Housing Plumbing Work',
+											'7' => 'Industrial Plumbing Work',
+											'8' => 'Renovations'
+										];
+
+$config['document_type'] 			= 	[
+											'1' => 'BEE Certificate',
+											'2' => 'Proof of Association Member',
+											'3' => 'Proof of InProof of Tax Clearance',
+										];
+
+$config['company_performance'] 			= 	[
+											''  => 'Select Document Type',
+											'1' => 'BEE Certificate',											
+											'2' => 'IOPSA Membership',
+											'3' => 'Master Builders',
+											'4' => 'Public Liability Insurance',
+											'5' => 'Contractors Liability Insurance',
+											'6' => 'Tax Clearance Certificate',
+											'7' => 'COIDA Letter of Good Standing',
+										];
 				
-$config['specialization'] 			= 	[
+/*$config['specialization'] 			= 	[
 											'1' => 'Leak Detection',
 											'2' => 'Drain Cleaning',
 											'3' => 'Solar Water Heating',
 											'4' => 'Heat Pumps',
 											'5' => 'Gas',
 											'6' => 'Bathroom renovations'
-										];					
+										];*/
 
+$config['specialization'] 			= 	[
+											'1' => 'Backflow',
+											'2' => 'Geysers and Hot Water Systems',
+											'3' => 'Boreholes',
+											'4' => 'Greywater',
+											'5' => 'Drain Cleaning',
+											'6' => 'Heat Pumps',
+											'7' => 'Drain Jetting',
+											'8' => 'Leak Detection',
+											'9' => 'Drain Camera Inspection',
+											'10' => 'Solar Water Heating',
+											'11' => 'Gas Installations',
+											'12' => 'Rainwater',
+										];
 
 $config['purchasecocdelivery'] 		= 	[
 											'1' => 'Collected at PIRB',
