@@ -539,7 +539,7 @@ class CC_Controller extends CI_Controller
 	
 	public function companyprofile($id, $pagedata=[], $extras=[])
 	{
-		$result = $this->Company_Model->getList('row', ['id' => $id, 'type' => '4', 'status' => ['0','1', '2']], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress']);
+		$result = $this->Company_Model->getList('row', ['id' => $id, 'type' => '4', 'status' => ['0','1', '2']], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress', 'billingaddress']);
 		if(!$result){
 			redirect($extras['redirect']); 
 		}
@@ -547,6 +547,25 @@ class CC_Controller extends CI_Controller
 		if($this->input->post()){
 			$requestData 			= 	$this->input->post();
 			$requestData['user_id'] = 	$id;
+
+			if(isset($requestData['coc_purchase_limit'])){
+				$currentcoclimit	= $result['coc_purchase_limit'];
+				$coclimit 			= $requestData['coc_purchase_limit'];						
+				$userpaperstock 	= $this->Paper_Model->getList('count', ['nococstatus' => '2', 'userid' => $id]); 				
+				$orderquantity 		= $this->Coc_Ordermodel->getCocorderList('all', ['admin_status' => '0', 'userid' => $id]);
+				$userorderstock 	= array_sum(array_column($orderquantity, 'quantity'));
+				$companystock		= ($userpaperstock + $userorderstock);
+				
+				if($coclimit < $companystock){
+					$this->session->set_flashdata('error', 'Company already has '.$userpaperstock.' coc without logged and '.$userorderstock.' coc waiting for approval.');
+					
+					redirect($extras['redirect']); 
+				}else{
+					$stockcount = $coclimit - $companystock;
+				}
+				
+				$this->Coc_Model->actionCocCount(['count' => $stockcount, 'user_id' => $id]);	
+			}
 			
 			$companydata 	=  $this->Company_Model->action($requestData);
 				
@@ -575,14 +594,17 @@ class CC_Controller extends CI_Controller
 		$pagedata['approvalstatus'] 		= $this->config->item('approvalstatus');
 		$pagedata['companyrejectreason'] 	= $this->config->item('companyrejectreason');
 		$pagedata['worktype'] 				= $this->config->item('worktype');
+		$pagedata['worktype1'] 				= $this->config->item('worktype1');
+		$pagedata['documenttype'] 			= $this->config->item('document_type');
 		$pagedata['specialization']			= $this->config->item('specialization');
 		$pagedata['companystatus']			= $this->config->item('companystatus');
 		$pagedata['comments'] 				= $this->Comment_Model->getList('all', ['user_id' => $id]);
 		$pagedata['result'] 				= $result;
 		$pagedata['menu']					= $this->load->view('common/company/menu', ['id'=>$id],true);
+		$pagedata['documentlist']			= $this->Documentsletters_Model->getcompanyList('all', ['user_id' => $id]);
 		//
-		$data['plugins']				= ['validation','datepicker','inputmask','select2'];
-		$data['content'] 				= $this->load->view('common/company/company', (isset($pagedata) ? $pagedata : ''), true);
+		$data['plugins']					= ['validation','datepicker','inputmask','select2', 'datatables', 'sweetalert'];
+		$data['content'] 					= $this->load->view('common/company/company', (isset($pagedata) ? $pagedata : ''), true);
 		$this->layout2($data);
 	}
 	// Company Employee Listing
@@ -641,6 +663,7 @@ class CC_Controller extends CI_Controller
 		$pagedata['designation2']		= $this->config->item('designation2');
 		$pagedata['plumberstatus']		= $this->config->item('plumberstatus');
 		$pagedata['id'] 				= $companyID;
+		$pagedata['menu']				= $this->load->view('common/company/menu', ['id'=>$companyID],true);
 		$data['content'] 				= $this->load->view('common/company/employee_listing', (isset($pagedata) ? $pagedata : ''), true);
 		$this->layout2($data);
 	}
@@ -675,7 +698,7 @@ class CC_Controller extends CI_Controller
 		$pagedata['user_role']		= $this->config->item('roletype');
 		$pagedata['notification'] 	= $this->getNotification();
 		$pagedata['roletype']		= $this->config->item('roleadmin');
-		$pagedata['menu']			= $this->load->view('common/company/menu', ['id'=>$result['id']],true);
+		$pagedata['menu']			= $this->load->view('common/company/menu', ['id'=>$id],true);
 		$data['plugins']			= ['datatables', 'datatablesresponsive', 'sweetalert', 'datepicker'];
 		$data['content'] 			= $this->load->view('common/company/diary', (isset($pagedata) ? $pagedata : ''), true);
 		
