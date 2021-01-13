@@ -16,7 +16,7 @@ class Company_Model extends CC_Model
 		
 		if(in_array('usersdetail', $querydata)){
 			$usersdetail 	= 	[ 
-									'ud.id as usersdetailid','ud.company','ud.reg_no','ud.vat_no','ud.contact_person','ud.work_phone','ud.mobile_phone','ud.specialisations','ud.email2','ud.mobile_phone2','ud.home_phone','ud.status as companystatus'
+									'ud.id as usersdetailid','ud.company','ud.reg_no','ud.vat_no','ud.contact_person','ud.work_phone','ud.mobile_phone','ud.specialisations','ud.email2','ud.mobile_phone2','ud.home_phone','ud.status as companystatus', 'ud.file1 as file1','ud.billing_email','ud.billing_contact', 'ud.vat_vendor', 'ud.coc_purchase_limit'
 								];
 			
 			$select[] 		= 	implode(',', $usersdetail);
@@ -24,7 +24,7 @@ class Company_Model extends CC_Model
 		
 		if(in_array('userscompany', $querydata)){
 			$userscompany 	= 	[ 
-									'uc.id as userscompanyid','uc.work_type','uc.message','uc.approval_status','uc.reject_reason','uc.reject_reason_other'
+									'uc.id as userscompanyid','uc.work_type','uc.message','uc.approval_status','uc.reject_reason','uc.reject_reason_other', 'uc.includeprofile as includeprofile', 'uc.company_description as companydescription', 'uc.websiteurl'
 								];
 			
 			$select[] 		= 	implode(',', $userscompany);
@@ -36,6 +36,10 @@ class Company_Model extends CC_Model
 		
 		if(in_array('postaladdress', $querydata)){
 			$select[]		= 	'concat_ws("@-@", ua2.id, ua2.user_id, ua2.address, ua2.suburb, ua2.city, ua2.province, ua2.postal_code, ua2.type)  as postaladdress';
+		}
+
+		if(in_array('billingaddress', $querydata)){
+			$select[]		= 	'concat_ws("@-@", ua3.id, ua3.user_id, ua3.address, ua3.suburb, ua3.city, ua3.province, ua3.postal_code, ua3.type)  as billingaddress';
 		}
 		
 		if(in_array('lttqcount', $querydata)){
@@ -71,8 +75,9 @@ class Company_Model extends CC_Model
 		$this->db->from('users u');		
 		if(in_array('usersdetail', $querydata)) 		$this->db->join('users_detail ud', 'ud.user_id=u.id', 'left');
 		if(in_array('userscompany', $querydata))		$this->db->join('users_company uc', 'uc.user_id=u.id', 'left');
-		if(in_array('physicaladdress', $querydata))		$this->db->join('users_address ua1', 'ua1.user_id=u.id and ua1.type="1"', 'left');		
+		if(in_array('physicaladdress', $querydata))		$this->db->join('users_address ua1', 'ua1.user_id=u.id and ua1.type="1"', 'left');
 		if(in_array('postaladdress', $querydata))		$this->db->join('users_address ua2', 'ua2.user_id=u.id and ua2.type="2"', 'left');
+		if(in_array('billingaddress', $querydata)) 		$this->db->join('users_address ua3', 'ua3.user_id=u.id and ua3.type="3"', 'left');
 			
 		if(isset($requestdata['id'])) 					$this->db->where('u.id', $requestdata['id']);
 		if(isset($requestdata['type'])) 				$this->db->where('u.type', $requestdata['type']);
@@ -200,15 +205,29 @@ class Company_Model extends CC_Model
 		if(isset($data['contact_person'])) 		$request1['contact_person'] 	= $data['contact_person'];
 		if(isset($data['work_phone'])) 			$request1['work_phone'] 		= $data['work_phone'];
 		if(isset($data['mobile_phone'])) 		$request1['mobile_phone'] 		= $data['mobile_phone'];
+		if(isset($data['image2'])) 				$request1['file1'] 				= $data['image2'];
+		if(isset($data['billing_email'])) 		$request1['billing_email'] 		= $data['billing_email'];
+		if(isset($data['billing_contact'])) 	$request1['billing_contact'] 	= $data['billing_contact'];
+		if(isset($data['company_name'])) 		$request1['company'] 			= $data['company_name'];
+		if(isset($data['reg_no1'])) 			$request1['reg_no'] 			= $data['reg_no1'];
+		// if(isset($data['vat_no'])) 				$request1['vat_no'] 			= $data['vat_no'];
+		$request1['vat_vendor'] 				= isset($data['vat_vendor']) ? $data['vat_vendor'] : '0';
+		if(isset($data['coc_purchase_limit'])) 	$request1['coc_purchase_limit']	= $data['coc_purchase_limit'];
 
 		if(isset($data['home_phone'])) 			$request1['home_phone'] 		= $data['home_phone'];
 		if(isset($data['secondary_phone'])) 	$request1['mobile_phone2'] 		= $data['secondary_phone'];
-		if(isset($data['email'])) 				$request1['email2'] 			= $data['email'];
+		if(isset($data['email2'])) 				$request1['email2'] 			= $data['email2'];
 
 		if(isset($data['specilisations'])) 		$request1['specialisations']	= implode(',', $data['specilisations']);
 		if(isset($data['companystatus'])) 		$request1['status'] 			= $data['companystatus'];
 		if(isset($data['approval_status']) && $data['approval_status']=='1'){
 			$request1['status'] 	= '1';
+		}
+
+		if (isset($data['roletype'])) {
+			$user_id = $data['user_id'];
+			$u_request['email'] = $data['email'];
+			$usersdata = $this->db->update('users', $u_request, ['id' => $user_id]);
 		}
 		
 		if(isset($request1)){
@@ -228,14 +247,19 @@ class Company_Model extends CC_Model
 				if(isset($data['user_id'])) $request2['user_id'] = $data['user_id'];
 				if($request2['id']==''){
 					$usersaddress = $this->db->insert('users_address', $request2);
+					$usersaddressinsertids[$request2['type']] = $this->db->insert_id();
 				}else{
 					$usersaddress = $this->db->update('users_address', $request2, ['id' => $request2['id']]);
+					$usersaddressinsertids[$request2['type']] = $request2['id'];
 				}
 			}
 		}
 		
 		if(isset($data['worktype'])) 				$request3['work_type'] 				= implode(',', $data['worktype']);
-		if(isset($data['approval_status']))			$request3['approval_status'] 		= '0';
+		if(isset($data['includeprofile'])) 			$request3['includeprofile'] 		= $data['includeprofile'];
+		if(isset($data['companydescription'])) 		$request3['company_description'] 	= $data['companydescription'];
+		if(isset($data['websiteurl'])) 				$request3['websiteurl'] 			= $data['websiteurl'];
+		if(isset($data['approval_status']))			$request3['approval_status'] 		= $data['approval_status'];
 		if(isset($data['message'])) 				$request3['message'] 				= $data['message'];
 		if(isset($data['approval_status'])) 		$request3['approval_status'] 		= $data['approval_status'];
 		if(isset($data['reject_reason'])) 			$request3['reject_reason'] 			= implode(',', $data['reject_reason']);
