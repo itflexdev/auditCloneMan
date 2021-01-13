@@ -127,9 +127,10 @@ class Documentsletters_Model extends CC_Model
 		$idarray				= 	[];
 		$datetime				= 	date('Y-m-d H:i:s');
 		
-		if(isset($data['description'])) $request['description'] = $data['description'];
-		if(isset($data['file1'])) $request['file'] 			= $data['file1'];
-		if(isset($data['companyid'])) $request['user_id'] = $data['companyid'];
+		if(isset($data['description'])) $request['description'] 	= $data['description'];
+		if(isset($data['file1'])) 		$request['file'] 			= $data['file1'];
+		if(isset($data['companyid'])) 	$request['user_id'] 		= $data['companyid'];
+		if(isset($data['docmenttype'])) $request['document_type'] 	= $data['docmenttype'];
 		
 		if(isset($request)){	
 			$documentsid	= 	$data['documentsid'];			
