@@ -14,7 +14,7 @@ class Index extends CC_Controller
 	public function index()
 	{
 		$userid		= 	$this->getUserID();
-		$result		= 	$this->Company_Model->getList('row', ['id' => $userid, 'type' => '4', 'status' => ['0','1']], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress']);
+		$result		= 	$this->Company_Model->getList('row', ['id' => $userid, 'type' => '4', 'status' => ['0','1']], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress', 'billingaddress']);
 		//die;
 		
 		if(!$result){
@@ -57,14 +57,36 @@ class Index extends CC_Controller
 		$pagedata['notification'] 		= $this->getNotification();
 		$pagedata['province'] 			= $this->getProvinceList();
 		$pagedata['worktype'] 			= $this->config->item('worktype');
+		$pagedata['worktype1'] 			= $this->config->item('worktype1');
 		$pagedata['specialization']		= $this->config->item('specialization');
 		$pagedata['pagetype'] 			= 'registration';
 		$pagedata['roletype'] 			= $this->config->item('rolecompany');
 		$pagedata['result'] 			= $result;
+		$pagedata['declaration'] 		= $this->config->item('declaration');
+		$pagedata['registerprocedure'] 	= $this->config->item('registerprocedure');
+		$pagedata['acknowledgement'] 	= $this->config->item('acknowledgement');
+		$pagedata['codeofconduct'] 		= $this->config->item('codeofconduct');
 		
-		$pagedata['commoncompany'] 		= $this->load->view('common/company/company', (isset($pagedata) ? $pagedata : ''), true);
+		// $pagedata['commoncompany'] 		= $this->load->view('common/company/company', (isset($pagedata) ? $pagedata : ''), true);
 		$data['plugins']				= ['sweetalert', 'validation', 'datepicker', 'inputmask', 'select2'];
 		$data['content'] 				= $this->load->view('company/registration/index', (isset($pagedata) ? $pagedata : ''), true);
 		$this->layout2($data);
+	}
+
+	public function ajaxregistration()
+	{
+		$post 				= $this->input->post();
+		// echo "<pre>";print_r($post);die;
+		$post['user_id'] 	= $this->getUserID();
+		$post['formstatus'] = '0';
+		$result 			= $this->Company_Model->action($post);
+		
+		if($result){
+			$json = ['status' => '1', 'result' => $result];
+		}else{
+			$json = ['status' => '0'];
+		}
+		
+		echo json_encode($json);
 	}
 }
