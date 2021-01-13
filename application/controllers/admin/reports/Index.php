@@ -81,7 +81,9 @@ class Index extends CC_Controller
 										<a href="javascript:void(0);" data-id="'.$result['id'].'" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
 									</div>';
 					}else{
-						$action = '';
+						$action = '<div class="table-action">
+										<a href="javascript:void(0)" id="executequery" data-id="'.$result['id'].'" data-reportname="'.$result['report_name'].'" data-toggle="tooltip" data-placement="top" title="Execute"><i class="fa fa-exclamation-circle"></i></a>
+									</div>';
 					}
 							
 				$stockcount = 0;

@@ -1,8 +1,8 @@
 <?php
-$id = isset($result['id']) ? $result['id'] : '';
-$report_name = isset($result['report_name']) ? $result['report_name'] : '';
-$short_description = isset($result['short_description']) ? $result['short_description'] : '';
-$query = isset($result['result_query']) ? $result['result_query'] : '';
+$id 				= isset($result['id']) ? $result['id'] : '';
+$report_name 		= isset($result['report_name']) ? $result['report_name'] : '';
+$short_description 	= isset($result['short_description']) ? $result['short_description'] : '';
+$query 				= isset($result['result_query']) ? $result['result_query'] : '';
 ?>
 <div class="row page-titles">
 	<div class="col-md-5 align-self-center">
@@ -52,9 +52,13 @@ $query = isset($result['result_query']) ? $result['result_query'] : '';
 							<div class="col-md-12 text-right">
 								<input type="hidden" id="id" name="id" value="<?php echo $id; ?>">
 								<input type="hidden" id="executeid" name="executeid" value="">
-								<button type="button" id="create" class="btn btn-primary">Create</button>
 								<button type="button" name="triggerbtn" data-toggle="modal" data-target="#reportdata" class="btn btn-primary triggerbtn displaynone">hidden</button>
-								<button type="button" id="save" name="save" class="btn btn-primary">Save</button>
+
+								<?php if($checkpermission){ ?>
+									<button type="button" id="create" class="btn btn-primary">Create</button>
+									<button type="button" id="save" name="save" class="btn btn-primary">Save</button>
+								<?php } ?>
+								
 								<button type="submit" id="hidensubmit" name="hidensubmit" class="btn btn-primary displaynone">hidensubmit</button>
 
 								<input type="hidden" id="hiddenreportname" name="hiddenreportname" value="">
