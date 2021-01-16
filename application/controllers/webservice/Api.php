@@ -1380,11 +1380,11 @@ class Api extends CC_Controller
 				}
 				if (isset($post['file1']) && $post['file1'] !='') {
 					$data = $this->fileupload(['files' => $post['file1'], 'file_name' => $post['file1_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
-				$post['file1'] = $data[0];
+				$post['paper_file1'] = $data[0];
 				}
 				if (isset($post['file2']) && $post['file2'] != '') {
 					$data = $this->fileupload(['files' => $post['file2'], 'file_name' => $post['file2_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
-				$post['file2'] = $data[0];
+				$post['ins_file2'] = $data[0];
 				}
 				
 
@@ -1404,9 +1404,9 @@ class Api extends CC_Controller
 				if(isset($post['installationtype'])) 	$request['installationtype'] 		= implode(',', $post['installationtype']);
 				if(isset($post['specialisations'])) 	$request['specialisations'] 		= implode(',', $post['specialisations']);
 				if(isset($post['installation_detail'])) $request['installation_detail'] 	= $post['installation_detail'];
-				if(isset($post['file1'])) 				$request['file1'] 					= $post['file1'];
+				if(isset($post['paper_file1'])) 		$request['file1'] 					= $post['paper_file1'];
 				if(isset($post['agreement'])) 			$request['agreement'] 				= $post['agreement'];
-				if(isset($post['file2'])) 				$request['file2'] 					= $post['file2'];	
+				if(isset($post['ins_file2'])) 			$request['ins_file2'] 				= $post['ins_file2'];	
 				if(isset($post['company_details'])) 	$request['company_details'] 		= $post['company_details'];
 				if(isset($post['ncnotice'])) 			$request['ncnotice'] 				= $post['ncnotice'];
 				if(isset($post['ncemail'])) 			$request['ncemail'] 				= $post['ncemail'];
@@ -1512,11 +1512,11 @@ class Api extends CC_Controller
 
 				if (isset($post['file1']) && $post['file1'] != '') {
 					$data = $this->fileupload(['files' => $post['file1'], 'file_name' => $post['file1_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
-				$post['file1'] = $data[0];
+				$post['paper_file1'] = $data[0];
 				}
 				if (isset($post['file2']) && $post['file2'] != '') {
 					$data = $this->fileupload(['files' => $post['file2'], 'file_name' => $post['file2_name'], 'user_id' => $plumberID, 'page' => 'plumber_logcoc']);
-				$post['file2'] = $data[0];
+				$post['ins_file2'] = $data[0];
 				}
 				
 
@@ -1536,9 +1536,9 @@ class Api extends CC_Controller
 				if(isset($post['installationtype'])) 	$request['installationtype'] 		= implode(',', $post['installationtype']);
 				if(isset($post['specialisations'])) 	$request['specialisations'] 		= implode(',', $post['specialisations']);
 				if(isset($post['installation_detail'])) $request['installation_detail'] 	= $post['installation_detail'];
-				if(isset($post['file1'])) 				$request['file1'] 					= $post['file1'];
+				if(isset($post['paper_file1'])) 		$request['paper_file1'] 			= $post['paper_file1'];
 				if(isset($post['agreement'])) 			$request['agreement'] 				= $post['agreement'];
-				if(isset($post['file2'])) 				$request['file2'] 					= $post['file2'];	
+				if(isset($post['ins_file2'])) 			$request['file2'] 					= $post['ins_file2'];	
 				if(isset($post['company_details'])) 	$request['company_details'] 		= $post['company_details'];
 				if(isset($post['ncnotice'])) 			$request['ncnotice'] 				= $post['ncnotice'];
 				if(isset($post['ncemail'])) 			$request['ncemail'] 				= $post['ncemail'];
