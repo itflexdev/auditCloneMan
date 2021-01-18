@@ -77,6 +77,7 @@ if(isset($result) && $result){
 	$vat_percentage 				= (set_value('vat_percentage')) ? set_value('vat_percentage') : $result['vat_percentage'];
 	$vat_percentage 				= (set_value('vat_percentage')) ? set_value('vat_percentage') : $result['vat_percentage'];
 	$email 							= (set_value('email')) ? set_value('email') : $result['email'];
+	$exportemail 					= (set_value('export_email')) ? set_value('export_email') : $result['export_email'];
 	$work_phone 					= (set_value('work_phone')) ? set_value('work_phone') : $result['work_phone'];
 	$plumber_certificate 			= (set_value('plumber_certificate')) ? set_value('plumber_certificate') : $result['plumber_certificate'];
 	$reseller_certificate 			= (set_value('reseller_certificate')) ? set_value('reseller_certificate') : $result['reseller_certificate'];
@@ -147,6 +148,7 @@ if(isset($result) && $result){
 	$account_type				= set_value('account_type');
 	$vat_percentage				= set_value('vat_percentage');
 	$email						= set_value('email');
+	$exportemail 				= set_value('export_email');
 	$work_phone					= set_value('work_phone');
 	$plumber_certificate		= set_value('plumber_certificate');
 	$reseller_certificate		= set_value('reseller_certificate');
@@ -364,6 +366,10 @@ if(isset($result) && $result){
 								<div class="form-group col-md-6">
 									<label for="otp">OTP Status</label>
 									<?php echo form_dropdown("otp", $status, $otp, ['id' => 'otp', 'class' => 'form-control']); ?>
+								</div>
+								<div class="form-group col-md-6">
+									<label for="export_email">Export Email Address</label>
+									<input type="text" class="form-control" id="export_email" name="export_email" placeholder="Enter Eport Email Address *" value="<?php echo $exportemail; ?>">
 								</div>
 							</div>
 						</div>
