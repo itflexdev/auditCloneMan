@@ -946,24 +946,30 @@ class Index extends CC_Controller
 		$this->layout2($data);		
 	}
 
-	public function exportcard($id){
+	public function exportcard(){
+		$post 						= $this->input->post();
+		$id 						= $post['id'];
 		$data['company'] 			= $this->getCompanyList();
 		$data['designation2'] 		= $this->config->item('designation3');
 		$data['specialisations'] 	= $this->config->item('specialisations');
 		$data['settings'] 			= $this->Systemsettings_Model->getList('row');
+		$save 						= FCPATH.'assets/uploads/temp/Card Export '.$id.'.pdf';
+			
 		
 		$data['result'] = $this->Plumber_Model->getList('row', ['id' => $id], ['users', 'usersdetail', 'usersplumber', 'company']);
-
-	
-		// $front = $this->load->view('api/card/card_front', $data, true);
-		$html = $this->load->view('common/card_export', $data, true);
-		echo $html;die;
+		
+		$notificationdata = 'Card export for plumber '.$data['result']['registration_no'];
+		$body = '';
+		$html = $this->load->view('common/card_export', (isset($data) ? $data : ''), true);
+		
 		$this->pdf->loadHtml($html);
-		$this->pdf->setPaper('A4', 'portrait');
+		$this->pdf->setPaper('A3', 'portrait');
 		$this->pdf->render();
 		$output = $this->pdf->output();
-		$this->pdf->stream('Card Export '.$id);
-		// $this->plumberprofile($id, ['roletype' => $this->config->item('roleadmin'), 'pagetype' => 'applications'], ['redirect' => 'admin/plumber/index']);
+		file_put_contents($save, $output);
+		$this->CC_Model->sentMail($data['settings']['export_email'], $notificationdata, $body, $save);
+		if(file_exists($save)) unlink($save);
+		echo "1";
 	}
 }
 
