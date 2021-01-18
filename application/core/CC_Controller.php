@@ -40,7 +40,8 @@ class CC_Controller extends CI_Controller
 		
 		$currenturl = current_url();
 		$paymentarray = [
-			base_url().'plumber/purchasecoc/index/paymentnotify'
+			base_url().'plumber/purchasecoc/index/paymentnotify',
+			base_url().'company/purchasecoc/index/paymentnotify'
 		];
 		
 		$segment1 = $this->uri->segment(1);
