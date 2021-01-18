@@ -390,6 +390,10 @@
 						if($roletype=='1' || ($roletype=='3' && $approval_status=='1')){ 
 							echo $card; 
 						}
+						if($roletype=='1'){ ?>
+							<a href='javascript:void(0)' class="active_link_btn exportcard-class">Export Card</a><br>
+							<div class="modalloader"></div>
+						<?php }
 					 ?>
 
 					<div class="accordion add_top_value" id="plumberaccordion">
@@ -1039,6 +1043,29 @@ $(function(){
 			skills(skilldata);
 		})
 	}
+
+	$('.exportcard-class').click(function(){
+			var id = '<?php echo $userid; ?>';
+			var form_data = new FormData();
+			form_data.append("id", id);
+			$.ajax({
+				data: form_data,
+		        type: 'POST',
+		        url: '<?php echo base_url().'admin/plumber/index/exportcard'; ?>',
+		        contentType: false,  
+	            cache: false,  
+	            processData:false,
+	             beforeSend:function(){
+			          $('.modalloader').html('<img src="<?php echo base_url().'assets/images/ajax-loader.gif'; ?>" height="50" width="50"/>');
+			        },
+		            success:function(data)
+			        {
+			        	$('.modalloader').hide();
+			        	sweetalertautoclose('Card Exported Sucessfully.');
+
+			        }
+			});
+		});
 	
 	validation(
 		'.form2',
