@@ -58,6 +58,7 @@ class Systemsettings_Model extends CC_Model
 		if(isset($data['penalty'])) 				$request1['penalty'] 					= $data['penalty'];
 		if(isset($data['expired'])) 				$request1['expired']				 	= $data['expired'];
 		if(isset($data['otp'])) 					$request1['otp']				 		= $data['otp'];
+		if(isset($data['export_email'])) 			$request1['export_email']				= $data['export_email'];
 
 
 		if(isset($data['address1'][1]['address'])) 			$physical['address']				= $data['address1'][1]['address'];
