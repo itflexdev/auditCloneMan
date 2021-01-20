@@ -59,6 +59,7 @@ class Cron extends CC_Controller {
 	}
 	
 	public function monthlycpdtype(){
+		//
 		$fileName 	= base_url().'common/cron/monthlycpdtype';
 		$starttime 	= date('Y-m-d H:i:s');
 
