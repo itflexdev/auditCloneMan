@@ -59,7 +59,8 @@ class Cron extends CC_Controller {
 	}
 	
 	public function monthlycpdtype(){
-		//
+		
+		$plumberemails = '';
 		$fileName 	= base_url().'common/cron/monthlycpdtype';
 		$starttime 	= date('Y-m-d H:i:s');
 
@@ -159,7 +160,7 @@ class Cron extends CC_Controller {
 							$array1 = ['{Plumbers Name and Surname}','{TODAYS DATE}', 'Points Table', '{plumbers registration renewal date}'];
 							$array2 = [$userQueryvalue['name_surname'], $currentDate, $cpdTable, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
 							$body = str_replace($array1, $array2, $template['email_body']);
-							// $this->CC_Model->sentMail($userQueryvalue['email'],$template['subject'],$body);
+							$this->CC_Model->sentMail($userQueryvalue['email'],$template['subject'],$body);
 						}
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '14', 'smsstatus' => '1']);
 						if($smsdata && isset($userQueryvalue['mobile_phone'])){
@@ -168,9 +169,20 @@ class Cron extends CC_Controller {
 							$smsbody1 = ['{total Points}','{total points required}', '{next registration date}'];
 							$smsbody2 = [$total, $totalDB, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
 							$sms = str_replace($smsbody1, $smsbody2, $smsdata['sms_body']);
-							// $this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
+							$this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
 						}
+
+						$plumberemails .= $userQueryvalue['email'];
 		}
+
+		$fp = fopen(FCPATH.'assets/uploads/temp/plumberemails.txt',"wb");
+		fwrite($fp,$plumberemails);
+		fclose($fp);
+		
+		$txt = FCPATH.'assets/uploads/temp/plumberemails.txt';
+		$this->CC_Model->sentMail('suresh@itflexsolutions.com',"plumber's mothly cpd email",'', $txt);
+		$this->CC_Model->sentMail('manikandanrengasamy@itflexsolutions.com',"plumber's mothly cpd email",'', $txt);
+		if(file_exists($txt)) unlink($txt);
 		
 		$endtime = date('Y-m-d H:i:s');
 		
