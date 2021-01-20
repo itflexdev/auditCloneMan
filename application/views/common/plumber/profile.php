@@ -551,7 +551,8 @@
 										<?php } ?>
 									</div>
 
-									<h4 class="card-title">Registration Card</h4>									
+									<h4 class="card-title">Registration Card</h4>
+									<p>Due to the high number of card returns and cost incurred, the registration fees do not include a registration card. Registration cards are available but must be requested separately.  If the registration card option is selected you will be billed accordingly.</p>
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
