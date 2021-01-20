@@ -369,7 +369,7 @@ if(isset($result) && $result){
 								</div>
 								<div class="form-group col-md-6">
 									<label for="export_email">Export Email Address</label>
-									<input type="text" class="form-control" id="export_email" name="export_email" placeholder="Enter Eport Email Address *" value="<?php echo $exportemail; ?>">
+									<input type="text" class="form-control" id="export_email" name="export_email" placeholder="Enter Export Email Address *" value="<?php echo $exportemail; ?>">
 								</div>
 							</div>
 						</div>
