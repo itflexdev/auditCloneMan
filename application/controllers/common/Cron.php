@@ -160,8 +160,8 @@ class Cron extends CC_Controller {
 							$body = str_replace($array1, $array2, $template['email_body']);
 							$this->CC_Model->sentMail($userQueryvalue['email'],$template['subject'],$body);
 						}
-						if($smsdata && isset($userQueryvalue['mobile_phone'])){
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '14', 'smsstatus' => '1']);
+						if($smsdata && isset($userQueryvalue['mobile_phone'])){
 							if(isset($smsbody1)) unset($smsbody1);
 							if(isset($smsbody2)) unset($smsbody2);
 							$smsbody1 = ['{total Points}','{total points required}', '{next registration date}'];
