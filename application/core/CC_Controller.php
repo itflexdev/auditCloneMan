@@ -486,6 +486,24 @@ class CC_Controller extends CI_Controller
 						}
 					}	
 				}
+
+				if(isset($requestData['plumberstatus']) && $requestData['plumberstatus']!=$result['plumberstatus']){
+					$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '24', 'emailstatus' => '1']);
+				
+					if($notificationdata){
+						$body 	= str_replace(['{Plumbers Name and Surname}'], [$result['name'].' '.$result['surname']], $notificationdata['email_body']);
+						$this->CC_Model->sentMail($result['email'], $notificationdata['subject'], $body);
+					}
+					
+					if($settingsdetail && $settingsdetail['otp']=='1'){
+						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '24', 'smsstatus' => '1']);
+			
+						if($smsdata){
+							$sms = $smsdata['sms_body'];
+							$this->sms(['no' => $result['mobile_phone'], 'msg' => $sms]);
+						}
+					}	
+				}
 				
 				if(isset($requestData['submit']) && $requestData['submit']!='approvalsubmit'){
 					$diaryparam = ($extras['roletype']=='1') ? ['adminid' => $this->getUserID(), 'type' => '1'] : ['type' => '2'];
