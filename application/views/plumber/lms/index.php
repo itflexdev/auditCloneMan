@@ -29,6 +29,11 @@ $lms_status 			= isset($result['lms_status']) ? $result['lms_status'] : '';
 		<div class="card">
 			<div class="card-body">
 				<div class="row">
+					<h4 class="card-title">Register on IOPSA's LMS system</h4>
+					<p>Note: The E-Learning management system is a platform and marketplace that enables anyone to create and share relevant educational courses, be it for free or paid. Here you will find the PIRB’s mandatory induction programme, Continuous Professional Development (CPD) courses and so much more.</p>
+				</div>
+				
+				<div class="row">
 					<div class="col-md-6">
 						<?php if ($lms_status =='0' && $lms_registration =='1') { ?>
 						<div class="row">
