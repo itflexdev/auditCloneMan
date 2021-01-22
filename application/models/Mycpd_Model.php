@@ -4,6 +4,26 @@ class Mycpd_Model extends CC_Model
 {
 	public function getQueueList($type, $requestdata=[])
 	{
+		$year            = date('Y');
+		$current_date    = date('Y-m-d');
+		$current_datestr = strtotime($current_date);
+		$renewal_date = date("Y-m-d", strtotime($requestdata['dbexpirydate']));
+
+		$renewal_datestr = strtotime($renewal_date);
+
+		$plusoneyearstr = strtotime('1 year', strtotime($current_date));
+
+		if ($renewal_datestr >= $plusoneyearstr) {
+		    $end_date = date('Y-m-d', strtotime('-1 year', strtotime($renewal_date)));			    
+		    $start_date = date('Y-m-d', strtotime('-1 year', strtotime($end_date)));
+		} elseif ($renewal_datestr >= $current_datestr) {
+		    $end_date = $renewal_date;			    
+		    $start_date = date('Y-m-d', strtotime('-1 year', strtotime($end_date)));
+		} elseif ($renewal_datestr <= $current_datestr) {
+		    $end_date   = date('m-d', strtotime($renewal_date));
+    		$end_date   = $year . "-" . $end_date;			    
+		    $start_date = date('Y-m-d', strtotime('-1 year', strtotime($end_date)));
+		}
 		
 		$datetime = date('Y-m-d H:i:s');
 		// $datetime = '2020-10-22 00:00:00.000000';
@@ -12,7 +32,7 @@ class Mycpd_Model extends CC_Model
 			$this->db->from('cpd_activity_form t1');
 			$this->db->join('users t2', 't2.id = t1.user_id', 'left');
 
-			if(isset($requestdata['user_id'][0])) $this->db->where('t1.user_id', $requestdata['user_id'][0]);
+			/*if(isset($requestdata['user_id'][0])) $this->db->where('t1.user_id', $requestdata['user_id'][0]);
 			if(isset($requestdata['id'])) $this->db->where('t1.id', $requestdata['id']);
 
 			if(isset($requestdata['user_id'][0])) $this->db->where('t2.id', $requestdata['user_id'][0]);
@@ -29,11 +49,12 @@ class Mycpd_Model extends CC_Model
 				$queryDate = $minusoneyear;
 			}else{
 				$queryDate = $datetime;
-			}
+			}*/
 
 			// $this->db->where('t2.expirydate>=','t1.created_at', false);
 			// $this->db->where('t1.created_at >=', $queryDate);
-			$this->db->where('t1.cpd_start_date >=', $queryDate);
+			/*$this->db->where('t1.cpd_start_date >=', $queryDate);*/
+			$this->db->where('t1.cpd_start_date BETWEEN "' . $start_date . '" and "' . $end_date . '"');
 
 		}elseif ($requestdata['pagestatus'] == '0') {
 			$this->db->select('t1.*, if(t1.status="2", 0, t1.points) as custompoint, t2.renewal_date, t2.expirydate');
@@ -44,7 +65,7 @@ class Mycpd_Model extends CC_Model
 			if(isset($requestdata['user_id'][0])) $this->db->where('t2.id', $requestdata['user_id'][0]);
 			if(isset($requestdata['id'])) $this->db->where('t1.id', $requestdata['id']);
 
-			$dbexpirydate = $requestdata['dbexpirydate'];
+			/*$dbexpirydate = $requestdata['dbexpirydate'];
 			$minusoneyear = date('Y-m-d H:i:s', strtotime('-1 year', strtotime($dbexpirydate)));
 
 			$minusoneyearTotime = date('Y-m-d H:i:s', strtotime($minusoneyear));
@@ -56,11 +77,12 @@ class Mycpd_Model extends CC_Model
 				$queryDate = $minusoneyear;
 			}else{
 				$queryDate = $datetime;
-			}
+			}*/
 
 			// $this->db->where('t2.expirydate<=','t1.created_at', false);
 			// $this->db->where('t1.created_at <', $queryDate);
-			$this->db->where('t1.cpd_start_date <', $queryDate);
+			/*$this->db->where('t1.cpd_start_date <', $queryDate);*/
+			$this->db->where('t1.cpd_start_date <', $start_date);
 		}
 
 
