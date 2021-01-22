@@ -99,13 +99,13 @@ class index extends CC_Controller
 		$post 			= $this->input->post();
 		$userdetails 	= $this->getUserDetails();
 		
-		// $dbexpirydate = $userdetails['expirydate'];
-		$dbexpirydate = $userdetails['renewal_date'];
+		$dbexpirydate = $userdetails['expirydate'];
+		// $dbexpirydate = $userdetails['renewal_date'];
 
-		/*$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
-		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);*/
-		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['renewal_date']]+$post);
-		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['renewal_date']]+$post);
+		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
+		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
+		/*$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['renewal_date']]+$post);
+		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['renewal_date']]+$post);*/
 
 		// print_r($this->getUserDetails());die;
 		$totalrecord 	= [];
