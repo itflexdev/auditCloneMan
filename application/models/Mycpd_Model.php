@@ -24,7 +24,8 @@ class Mycpd_Model extends CC_Model
     		$end_date   = $year . "-" . $end_date;			    
 		    $start_date = date('Y-m-d', strtotime('-1 year', strtotime($end_date)));
 		}
-		
+		$start_date = $start_date . " 00:00:00";
+		$end_date   = $end_date . " 23:59:59";		
 		$datetime = date('Y-m-d H:i:s');
 		// $datetime = '2020-10-22 00:00:00.000000';
 		if ($requestdata['pagestatus'] == '1') {
