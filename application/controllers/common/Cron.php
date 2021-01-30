@@ -230,13 +230,13 @@ class Cron extends CC_Controller {
 		
 		foreach($result as $data)
 		{
-			$inv_type = '1';
+			//$inv_type = '1';
 			$userid = $data['id'];
-			$checkinv_result = $this->Renewal_Model->checkinv($userid);					
+			// $checkinv_result = $this->Renewal_Model->checkinv($userid);					
 
-			if(count($checkinv_result) > 0){
-				continue;
-			}else{
+			// if(count($checkinv_result) > 0){
+			// 	continue;
+			// }else{
 				$designation 		= $data['designation'];
 				$renewal_date1 		= $data['expirydate'];
 				$rdate 				= strtotime($renewal_date1);
@@ -287,7 +287,7 @@ class Cron extends CC_Controller {
 
 				}			 
 
-			}
+			// }
 			
 		}
 		
