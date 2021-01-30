@@ -256,10 +256,10 @@
 							</div>
 						</div>
 						
-						</div>
 						<div class="row add_top_value">
 							<div class="col-md-6">
 								<h4 class="card-title">Identity Document *</h4>
+								<p>Due to the high number of card returns and cost incurred, the registration fees do not include a registration card. Registration cards are available but must be requested separately.  If the registration card option is selected you will be billed accordingly.</p>
 								<div class="form-group">
 									<div>
 										<a href="<?php echo $identityurl; ?>" target="_blank"><img src="<?php echo $identityimg; ?>" class="document_image" width="100"></a>
