@@ -23,7 +23,8 @@ class Api extends CC_Controller
 			'http://diyesh.com',
 			'http://localhost',
 			'https://audit-it.co.za',
-			'https://staging.audit-it.co.za'
+			'https://staging.audit-it.co.za',
+			'http://new.plumbertools.co.za/'
 		];
 		
 		if (in_array($http_origin, $website))
@@ -68,6 +69,7 @@ class Api extends CC_Controller
 		$this->load->model('Reportlisting_Model');
 		$this->load->model('Api_Model');
 		$this->load->model('Noncompliancelisting_Model');
+		$this->load->model('Cpdtypesetup_Model');
 	}
 
 	public function login(){
@@ -196,7 +198,8 @@ class Api extends CC_Controller
 	public function email_validation(){
 		if ($this->input->post()) {
 			$post['email'] 	= $this->input->post('email');
-			$post['id'] 	= '';
+			$post['id'] 	= $this->input->post('id');
+			$post['type'] 	= $this->input->post('type');
 	        $result 		= $this->Users_Model->emailvalidation($post);
 	        if ($result == 'true') {
 	        	$jsonArray = array("status"=>'1', "message"=>'Email Verified.', 'result' => $post);
@@ -1047,11 +1050,27 @@ class Api extends CC_Controller
 			$card 				= $this->plumbercard_api(['id' => $userid, 'type' => $cardtype]);
 			$jsonData['card'] 	= $card;
 			echo $jsonData['card'];die;
-			$jsonArray = array("status"=>'1', "message"=>'Plumber PIRB registration card', 'result' => $jsonData);
+			$jsonArray = array("status"=>'1', "message"=>'Plumber PIRB registration card', 'result' => $jsonData);*/
 		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
 		}
-		echo json_encode($jsonArray);
+		// echo json_encode($jsonArray);
+	}
+
+	public function cardexport_api($id){
+
+		$data['designation2'] 		= $this->config->item('designation3');
+		$data['specialisations'] 	= $this->config->item('specialisations');
+		$data['settings'] 			= $this->Systemsettings_Model->getList('row');
+
+		$data['result'] = $this->Plumber_Model->getList('row', ['id' => $id], ['users', 'usersdetail', 'usersplumber', 'company']);
+		$html = $this->load->view('api/card/card_export', (isset($data) ? $data : ''), true);
+
+		$this->pdf->loadHtml($html);
+		$this->pdf->setPaper('A4', 'portrait');
+		$this->pdf->render();
+		$output = $this->pdf->output();
+		$this->pdf->stream('Card Export '.$id);
 	}
 	public function plumbercard_api($requestdata = []){
 
@@ -1406,7 +1425,7 @@ class Api extends CC_Controller
 				if(isset($post['installation_detail'])) $request['installation_detail'] 	= $post['installation_detail'];
 				if(isset($post['paper_file1'])) 		$request['file1'] 					= $post['paper_file1'];
 				if(isset($post['agreement'])) 			$request['agreement'] 				= $post['agreement'];
-				if(isset($post['ins_file2'])) 			$request['ins_file2'] 				= $post['ins_file2'];	
+				if(isset($post['ins_file2'])) 			$request['file2'] 					= $post['ins_file2'];	
 				if(isset($post['company_details'])) 	$request['company_details'] 		= $post['company_details'];
 				if(isset($post['ncnotice'])) 			$request['ncnotice'] 				= $post['ncnotice'];
 				if(isset($post['ncemail'])) 			$request['ncemail'] 				= $post['ncemail'];
@@ -1536,7 +1555,7 @@ class Api extends CC_Controller
 				if(isset($post['installationtype'])) 	$request['installationtype'] 		= implode(',', $post['installationtype']);
 				if(isset($post['specialisations'])) 	$request['specialisations'] 		= implode(',', $post['specialisations']);
 				if(isset($post['installation_detail'])) $request['installation_detail'] 	= $post['installation_detail'];
-				if(isset($post['paper_file1'])) 		$request['paper_file1'] 			= $post['paper_file1'];
+				if(isset($post['paper_file1'])) 		$request['file1'] 					= $post['paper_file1'];
 				if(isset($post['agreement'])) 			$request['agreement'] 				= $post['agreement'];
 				if(isset($post['ins_file2'])) 			$request['file2'] 					= $post['ins_file2'];	
 				if(isset($post['company_details'])) 	$request['company_details'] 		= $post['company_details'];
@@ -1676,6 +1695,9 @@ class Api extends CC_Controller
 			$jsonData['keywords'][] = $keywords;
 
 			foreach ($results as $key => $value) {
+
+				$chats 	= $this->Api_Model->ChatgetList('count', ['cocid' => $value['id'], 'viewed' => $value['user_id']]);
+
 				if ($value['u_status'] =='1') {
 					$colorcode = '#ade33d';
 				}elseif($value['u_status'] =='2'){
@@ -1688,7 +1710,7 @@ class Api extends CC_Controller
 					$colorcode = '#87d0ef';
 				}
 				$jsonData['results'][] = [
-					'coc_number' => $value['id'], 'auditstatus' => $this->config->item('auditstatus')[$value['u_status']], 'colorcode' => $colorcode, 'consumername' => $value['cl_name'], 'auditorname' => $value['auditorname'], 'address' => $value['cl_address'], 'audit_allocation_date' => $value['audit_allocation_date'], 
+					'coc_number' => $value['id'], 'auditstatus' => $this->config->item('auditstatus')[$value['u_status']], 'colorcode' => $colorcode, 'consumername' => $value['cl_name'], 'auditorname' => $value['auditorname'], 'address' => $value['cl_address'], 'audit_allocation_date' => $value['audit_allocation_date'], 'chats' => $chats, 'auditorid' => $value['auditorid'],
 				];
 			}
 			$jsonData['totalcount'] = $totalcount;
@@ -1745,8 +1767,11 @@ class Api extends CC_Controller
 			$post 			= $this->input->post();
 			$totalcount 	= $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => ''], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails']+$post);
 			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => ''], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'usersdetail', 'usersplumber', 'auditordetails']+$post);
-			
+
 			foreach ($results as $key => $value) {
+
+				$chats 	= $this->Api_Model->ChatgetList('count', ['cocid' => $value['id'], 'viewed' => $value['user_id']]);
+
 				if ($value['u_status'] =='1') {
 					$colorcode = '#ade33d';
 				}elseif($value['u_status'] =='2'){
@@ -1759,7 +1784,7 @@ class Api extends CC_Controller
 					$colorcode = '#87d0ef';
 				}
 				$jsonData['results'][] = [
-					'coc_number' => $value['id'], 'auditstatus' => $this->config->item('auditstatus')[$value['u_status']], 'colorcode' => $colorcode, 'consumername' => $value['cl_name'], 'auditorname' => $value['auditorname'], 'address' => $value['cl_address'], 'audit_allocation_date' => $value['audit_allocation_date'], 
+					'coc_number' => $value['id'], 'auditstatus' => $this->config->item('auditstatus')[$value['u_status']], 'colorcode' => $colorcode, 'consumername' => $value['cl_name'], 'auditorname' => $value['auditorname'], 'address' => $value['cl_address'], 'audit_allocation_date' => $value['audit_allocation_date'], 'chats' => $chats, 'auditorid' => $value['auditorid'],
 				];
 			}
 			$jsonData['totalcount'] = $totalcount;
@@ -2028,10 +2053,11 @@ class Api extends CC_Controller
 
 		if ($this->input->post()) {
 
-			$jsonData 			= [];
+			$jsonData 	= [];
 			$cocid 		= $this->input->post('cocid');  
 			$fromto 	= $this->input->post('userid');   // fromto = userid
 			$data 		= $this->chat_sync(['cocid' => $cocid, 'fromto' => $fromto]);
+
 
 			$jsonArray = ['status' => '1', "message"=>'Chat History', 'result' => $data];
 		
@@ -2067,6 +2093,7 @@ class Api extends CC_Controller
 			}else{
 				$post['type'] 		= '1'; //[type] => 1
 			}
+			$post['state2'] = '0';
 
 			$result = $this->Chat_Model->action($post);
 			if ($result) {
@@ -2099,7 +2126,7 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 	public function chat_sync($data = []){
-		$result 			= $this->Chat_Model->getList('all', $data);
+		$result 			= $this->Api_Model->ChatgetList('all', $data);
 		if(count($result)){
 			foreach ($result as $key => $value) {
 				if ($value['attachment'] !='') {
@@ -2107,11 +2134,46 @@ class Api extends CC_Controller
 				}else{
 					$attachment = '';
 				}
-				$jsonData['chatdata'][] = [ 'id' => $value['id'], 'coc_id' => $value['coc_id'], 'from_id' => $value['from_id'], 'to_id' => $value['to_id'], 'quote' => $value['quote'], 'message' => $value['message'], 'attachment' => $attachment, 'name' => $value['name'], 'chatdate' => date('d-m-Y', strtotime($value['created_at']))
+				$jsonData['chatdata'][] = [ 'id' => $value['id'], 'coc_id' => $value['coc_id'], 'from_id' => $value['from_id'], 'to_id' => $value['to_id'], 'quote' => $value['quote'], 'message' => $value['message'], 'attachment' => $attachment, 'name' => $value['name'], 'chatdate' => date('d-m-Y', strtotime($value['created_at'])), 'state1' => $value['state1'], 'state2' => $value['state2'],
 				];
+
+				if ($value['to_id'] == $data['fromto']) {
+					$request['state2'] = '1';
+					$request1['viewed'] = '1';
+					$this->db->update('chat', $request, ['id' => $value['id']]);
+					$this->db->update('chat', $request1, ['id' => $value['id']]);
+				}
 			}
 		}
-		return $jsonData;
+		return isset($jsonData) ? $jsonData : '';
+	}
+
+	public function chatcount_sync(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			
+			$jsonData 		= [];
+			$userid 		= $this->input->post('user_id');
+			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => ''], ['coclog', 'usersdetail']);
+			if (count($results) > 0) {
+				foreach ($results as $key => $value) {
+					$chats 	= $this->Api_Model->ChatgetList('count', ['cocid' => $value['id'], 'viewed' => $value['user_id']]);
+					if ($chats > 0) {
+						$jsonData[] 	= [
+							'coc_id' 	=> $value['id'],
+							'chats' 	=> $chats,
+						];
+					}
+				}
+			}
+			
+			$jsonArray = array("status"=>'1', "message"=>'CoC Chat Details', "result"=> isset($jsonData) ? $jsonData : []);
+			
+		}else{
+
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+		}
+
+		echo json_encode($jsonArray);
 	}
 
 	public function mycpd_current_year(){
@@ -2227,11 +2289,11 @@ class Api extends CC_Controller
 
 			$user_id 		= $this->input->post('user_id');
 			$pagestatus 	= '0';
-			// $post['pagestatus'] = $pagestatus;
+			$post['pagestatus'] = $pagestatus;
 			$userdata		= $this->Plumber_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'usersplumber', 'company']);
 
-			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => $pagestatus, 'user_id' => $user_id, 'dbexpirydate' => $userdata['expirydate']]);
-			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => $pagestatus, 'user_id' => $user_id, 'dbexpirydate' => $userdata['expirydate']]);
+			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => $pagestatus, 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
+			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => $pagestatus, 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]+$post);
 			
 			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further decalre that I understadn that I must keep verifiable evidence of all the CPD activities for at least 2 years and the PRIB may conduct a random audit of my activity(s) which would require me to submit the evidence to the PIRB', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points'
 			];
@@ -2246,9 +2308,6 @@ class Api extends CC_Controller
 					$statusicons = '';
 				}elseif($value['status'] == '2'){
 					$status = 'Reject';
-					$statusicons = '';
-				}elseif($value['status'] == '3'){
-					$status = 'Not Submitted';
 					$statusicons = '';
 				}
 				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id']
@@ -2421,6 +2480,7 @@ class Api extends CC_Controller
 		}
 		echo json_encode($jsonArray);
 	}
+
 	public function cpdproductcode(){
 		if ($this->input->post() && $this->input->post('productcode')) {
 			$post = $this->input->post();
@@ -2660,6 +2720,171 @@ class Api extends CC_Controller
 	}
 
 	// Auditor API
+
+	public function auditorprofile_api(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$id 	= $this->input->post('user_id');
+			$result = $this->Api_Model->AuditorgetList('row', ['id' => $id, 'status' => ['0','1']]);
+
+			$areas 		= isset($result['areas']) ? explode('@-@', $result['areas']) : [];
+			if (count(array_filter($areas))) {
+				foreach ($areas as $areaskey => $areasvalue) {
+					$areaxplode = explode('@@@', $areasvalue);
+					$areasarray[] = [
+						'areaid' 			=> $areaxplode[0],
+						'areaprovince' 		=> $areaxplode[1],
+						'areaprovinceid' 	=> $areaxplode[4],
+						'areaprovince' 		=> $areaxplode[4],
+						'areacityid' 		=> $areaxplode[2],
+						'areacity' 			=> $areaxplode[5],
+						'areasuburbid' 		=> $areaxplode[3],
+						'areasuburb' 		=> $areaxplode[6],
+					];
+				}
+			}else{
+				$areas = [];
+			}
+
+			$getprovince 	= $this->getProvinceList()[$result['province']];
+			$getcity 		= $this->Managearea_Model->getListCity('row', ['id' => $result['city'], 'status' => ['1']]);
+			$getsuburb 		= $this->Managearea_Model->getListSuburb('row', ['id' => $result['suburb'],'status' => ['1']]);
+
+			if ($result['file1'] !='') $file1 = base_url().'assets/uploads/auditor/'.$result['file1'].'';
+				else $file1 = '';
+
+			if ($result['file2'] !='') $file2 = base_url().'assets/uploads/auditor/'.$result['file2'].'';
+				else $file2 = '';
+
+			if($result['vat_vendor'] !='0') $vat_vendor = $this->config->item('yesno')[$result['vat_vendor']];
+			
+			$jsonData 	= [
+				'user_id' 				=> $result['id'],
+				'email' 				=> $result['email'],
+				'type' 					=> $result['type'],
+				'usstatus' 				=> $result['usstatus'],
+				'password' 				=> $result['password_raw'],
+				'userdetailid' 			=> $result['userdetailid'],
+				'name' 					=> $result['name'],
+				'surname' 				=> $result['surname'],
+				'company_name' 			=> $result['company_name'],
+				'reg_no' 				=> $result['reg_no'],
+				'vat_no' 				=> $result['vat_no'],
+				'vat_vendor' 			=> isset($vat_vendor) ? $vat_vendor : '',
+				'billing_email' 		=> $result['billing_email'],
+				'billing_contact' 		=> $result['billing_contact'],
+				'mobile_phone' 			=> $result['mobile_phone'],
+				'work_phone' 			=> $result['work_phone'],
+				'identity_no' 			=> $result['identity_no'],
+				'useraddressid' 		=> $result['useraddressid'],
+				'address' 				=> $result['address'],
+				'postal_code' 			=> $result['postal_code'],
+				'auditoravaid' 			=> $result['available'],
+				'available' 			=> $result['available'],
+				'allocation_allowed' 	=> $result['allocation_allowed'],
+				'status' 				=> $result['status'],
+				'userbankid' 			=> $result['userbankid'],
+				'bank_name' 			=> $result['bank_name'],
+				'branch_code' 			=> $result['branch_code'],
+				'account_name' 			=> $result['account_name'],
+				'account_no' 			=> $result['account_no'],
+				'account_type' 			=> $result['account_type'],
+				'provinceid' 			=> $result['province'],
+				'cityid' 				=> $result['city'],
+				'suburbid' 				=> $result['suburb'],
+				'file1' 				=> $file1,
+				'file2' 				=> $file2,
+				'provincename' 			=> $getprovince,
+				'cityname' 				=> $getcity['name'],
+				'suburbname' 			=> $getsuburb['name'],
+				'areas' 				=> $areasarray,
+			];
+
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Profile', "result"=>$jsonData);
+
+		}else{
+				$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+			}
+		echo json_encode($jsonArray);
+	}
+
+	public function auditorprofile_action(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			if(isset($flag)) unset($flag);
+			$post 			= 	$this->input->post();
+			$result 		= 	$this->Api_Model->AuditorgetList('row', ['id' => $post['user_id'], 'status' => ['0','1']]);
+
+			if (isset($post['auditor_picture']) && $post['auditor_picture'] != '') {
+				$data = $this->fileupload(['files' => $post['auditor_picture'], 'file_name' => $post['file_name1'], 'user_id' => '', 'page' => 'auditorprofile']);
+				$post['file1'] = $data[0];
+			}
+			if (isset($post['comp_photo']) && $post['comp_photo'] != '') {
+				$data = $this->fileupload(['files' => $post['comp_photo'], 'file_name' => $post['file_name2'], 'user_id' => '', 'page' => 'auditorprofile']);
+				$post['file2'] = $data[0];
+			}
+
+			$data 			=  	$this->Api_Model->auditorAction($post);
+
+			if (($result['email'] != $post['email']) || ($result['password_raw'] != $post['password'])) {
+				$this->CC_Model->diaryactivity([ 'auditorid' => $post['user_id'], 'action' => '16', 'type' => '4']);
+				$flag = '1';
+			}
+
+			if ($result['status'] != $post['auditstatus']) {
+				if ($post['auditstatus'] =='1') {
+					$auditaction = '17';
+				}elseif($post['auditstatus'] =='2'){
+					$auditaction = '18';
+				}
+				$this->CC_Model->diaryactivity([ 'auditorid' => $post['user_id'], 'action' => $auditaction, 'type' => '4']);
+				$flag = '1';
+			}
+			if (!isset($flag)) {
+				$this->CC_Model->diaryactivity([ 'auditorid' => $post['user_id'], 'action' => '19', 'type' => '4']);
+			}
+
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Profile Updated Successfully', "result"=>$post);
+
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+			}
+		echo json_encode($jsonArray);
+	}
+
+	public function auditorarea_action(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$post 			= $this->input->post();
+			$area 			= $this->Api_Model->AuditorAreagetList('count', ['userid' => $post['user_id'], 'province' => $post['area'][0]['province'], 'city' => $post['area'][0]['city'], 'suburb' => $post['area'][0]['suburb']]);
+
+			if ($area == 0) {
+				$data 			= $this->Api_Model->AreaAction($post);
+				$status 	= '1';
+				$message 	= 'Auditor Area Inserted Successfully';
+			}else{
+				$status 	= '0';
+				$message 	= 'Area Already Exists';
+			}
+			
+			$jsonArray 		= array("status"=>$status, "message"=>$message, "result"=>$post);
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+			}
+		echo json_encode($jsonArray);
+	}
+
+	public function auditorarea_delete(){
+		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('area_id')) {
+			$post 			= $this->input->post();
+			$data 			= $this->Api_Model->deleteAuditorArea($post);
+
+			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Area Deleted Successfully', "result"=>$post);
+
+		}else{
+			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
+			}
+		echo json_encode($jsonArray);
+	}
+
+
 	public function myreport_listing(){
 
 		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('pagetype') =='view') {
@@ -2714,7 +2939,7 @@ class Api extends CC_Controller
 		}elseif($this->input->post() && $this->input->post('user_id') && $this->input->post('pagetype') =='get_reportlists'){
 			if ($this->input->post('request_type') !='' && $this->input->post('request_type') =='list') {
 				$results = $this->Auditor_Reportlisting_Model->getList('all', ['user_id' => $this->input->post('user_id'), 'status' => ['0','1']]);
-
+				// print_r($results);die;
 				if (count($results) > 0) {
 					foreach ($results as $key => $value) {
 						if ($value['status'] =='1') {
@@ -2725,7 +2950,8 @@ class Api extends CC_Controller
 					$get_installationtype 	= $this->getInstallationTypeList_api(['id' => $value['installationtype_id']]);
 					$get_subtype 			= $this->getSubTypeList_api(['id' => $value['subtype_id']]);
 					$get_statement 			= $this->getreportlisting_api(['id' => $value['statement_id']]);
-					$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' =>isset($get_installationtype[0]['name']) ? $get_installationtype[0]['name'] : '', 'subtype_id' => $value['subtype_id'], 'subtype' => isset($get_subtype[0]['name']) ? $get_subtype[0]['name'] : '', 'comments' => $value['comments'], 'statusicon' => $this->config->item('statusicon')[$value['status']], 'favourname' => $value['favour_name'], 'statement_id' => $value['statement_id'], 'statementname' => $get_statement, 'colorcode' => $colorcode, 'status' => $value['status']];
+					// print_r($get_subtype);die;
+					$jsonData['report_list'][] = ['id' => $value['id'], 'installationtype_id' => $value['installationtype_id'], 'isntallation_type' => isset($get_installationtype[0]['name']) ? $get_installationtype[0]['name'] : '', 'subtype_id' => $value['subtype_id'], 'subtype' => isset($get_subtype[0]['name']) ? $get_subtype[0]['name'] : '', 'comments' => $value['comments'], 'statusicon' => $this->config->item('statusicon')[$value['status']], 'favourname' => $value['favour_name'], 'statement_id' => $value['statement_id'], 'statementname' => $get_statement, 'colorcode' => $colorcode, 'status' => $value['status']];
 					}
 				}
 				$message = 'My Report Listing';
@@ -2871,7 +3097,7 @@ class Api extends CC_Controller
 						// $newDate = date("d-m-Y", strtotime($originalDate));
 						if($result['status'] == '0'){
 							$status = "Unpaid";
-							$action = '';
+							$action = base_url().'assets/inv_pdf/'.$result['inv_id'].'.pdf';
 						}elseif($result['status'] == '1'){
 							$status = "Paid";
 							$action = base_url().'assets/inv_pdf/'.$result['inv_id'].'.pdf';
@@ -2950,7 +3176,7 @@ class Api extends CC_Controller
 			$inv_id 		= $this->input->post('inv_id');
 			// $result 		= $this->Auditor_Model->getInvoiceList('row', $userid);
 			// $auditordetail 	= $this->Auditor_Model->getAuditorList('row',$userid);
-			$result 		= $this->Auditor_Model->getInvoiceList('row', ['user_id' => $userid]);
+			$result 		= $this->Auditor_Model->getInvoiceList('row', ['user_id' => $userid, 'id' => $inv_id]);
 			$auditordetail 	= $this->Auditor_Model->getAuditorList('row',['id' => $userid]);
 			$settings		= $this->Systemsettings_Model->getList('row');
 			$dbVat 			= $settings['vat_percentage'];
@@ -3053,12 +3279,27 @@ class Api extends CC_Controller
 				if(isset($request2)){	
 					$userdata = $this->db->update('coc_orders', $request2, ['inv_id' => $id]);	
 				}
+				if ($userdata) {
+					$this->generatepdf_api($id);
+				}
 			}
 			$jsonArray 		= array("status"=>'1', "message"=>'Auditor Invoice Added Sucessfully', "result"=>$post);
 		}else{
 			$jsonArray 		= array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
 		echo json_encode($jsonArray);
+	}
+	public function generatepdf_api($inv_id)
+	{
+		$rowData = $this->Coc_Model->getListPDF('row', ['id' => $inv_id, 'status' => ['0','1']]);
+		$designation =	$this->config->item('designation2')[$rowData['designation']];					
+		$cocreport = $this->cocreport($inv_id, 'PDF Invoice Auditor', [
+			'description' => $rowData['description'], 
+			'type' => '2', 
+			'logo' => base_url()."assets/uploads/auditor/".$rowData["file2"],
+			'sublogo' => base_url()."assets/images/unpaid.png",
+			'terms' => "30 Days"
+		]);
 	}
 	// 3 Tabs
 	public function audit_review(){
@@ -3808,9 +4049,10 @@ class Api extends CC_Controller
 
 		if (!isset($data['id']) && !isset($data['type'])) {
 			$reportlistresult = $this->Reportlisting_Model->getList('all', ['status' => ['1'], 'installationtypeid' => $data['installationtypeid'], 'subtypeid' => $data['subtypeid']]);
+			// print_r($reportlistresult);die;
 			if(count($reportlistresult) > 0){
 				foreach ($reportlistresult as $key => $value) {
-					$arraydata[] = ['id' => $value['id'], 'statementname' => $value['statement'], 'regulation' => $value['regulation'], 'installationtypeid' => $value['installationtype_id'], 'installationname' => $value['insname'], 'subtypeid' => $value['subtype_id'], 'subtypename' => $value['name']];
+					$arraydata[] = ['id' => $value['id'], 'statementname' => $value['statement'], 'regulation' => $value['regulation'], 'installationtypeid' => $value['installation_id'], 'installationname' => $value['insname'], 'subtypeid' => $value['subtype_id'], 'subtypename' => $value['name']];
 				}
 			}else{
 				$arraydata[] = [];
@@ -3832,16 +4074,17 @@ class Api extends CC_Controller
 	public function ajaxreportlisting_api($data =[]){
 		$post = $this->input->post();
 		$result = $this->Noncompliancelisting_Model->getList('row', $post+['status' => ['1']]);
-		if(count($result) > 0){
+		if($result){
 				// foreach ($result as $key => $value) {
 					$arraydata[] = ['id' => $result['id'], 'statementid' => $result['statement'], 'regulation' => $result['reference'], 'ncn_details' => $result['details'], 'pub_remedial_ac' => $result['action'], 'installationtypeid' => $result['installationtype'], 'installationname' => $result['installationname'], 'subtypeid' => $result['subtype'], 'subtypename' => $result['subtypename']];
+					$message = 'Non Compliance';
 				// }
 			}else{
 				$arraydata[] = [];
+				$message = 'Non Compliance Not Found';
 			}
-		$jsonArray 		= array("status"=>'1', "message"=>'Non Compliance', "result"=>$arraydata);
+		$jsonArray 		= array("status"=>'1', "message"=>$message, "result"=>$arraydata);
 		echo json_encode($jsonArray);
-
 	}
 	public function getreportlisting_api($data =[]){
 
@@ -3880,11 +4123,10 @@ class Api extends CC_Controller
 	public function pdfelectroniccocreport_api($id, $userid){
 
 		$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber', 'coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'coclogcompany']);
-
 		$pagedata['userdata']	 		= $userdata;
 		$pagedata['specialisations']	= explode(',', $pagedata['userdata']['specialisations']);
 		$pagedata['result']		    	= $this->Coc_Model->getCOCList('row', ['id' => $id], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'coclogcompany', 'users', 'usersdetail']);
-		
+
 		$pagedata['designation2'] 		= $this->config->item('designation2');
 		$specialisations 				= explode(',', $userdata['specialisations']);
 		$pagedata['installationtype']	= $this->getInstallationTypeList();
@@ -4017,6 +4259,12 @@ class Api extends CC_Controller
 			$path = FCPATH.'assets/uploads/cpdqueue/';
 		}elseif($page == 'plumberlogcoc'){
 			$path = FCPATH.'assets/uploads/cpdqueue/';
+		}elseif($page == 'auditorprofile'){
+			$path = FCPATH.'assets/uploads/auditor/';
+
+			if(!is_dir($path)){
+				mkdir($directory.'/assets/uploads/auditor', 0755, true);
+			}
 		}elseif($page == 'auditorreview'){
 			$path = FCPATH.'assets/uploads/auditor/statement/';
 
@@ -4579,12 +4827,13 @@ class Api extends CC_Controller
 		// echo json_encode($jsonData);
 	}
 
+	/* App plumber PIRB verification */
+
 	public function pirbverification(){
 		if ($this->input->post() && $this->input->post('email') && $this->input->post('password')) {
 			$post 			= $this->input->post();
 			$post['type'] 	= '3';
 			$userdata 		= $this->Api_Model->checkusers($post);
-			// print_r($this->db->last_query());die;
 			if ($userdata['status'] =='1' || $userdata['status'] =='2' || $userdata['status'] =='3') {
 				$status 	= $userdata['status'];
 				$message 	= $userdata['message'];
@@ -4600,5 +4849,4 @@ class Api extends CC_Controller
 		}
 		echo json_encode($jsonData);
 	}
-
 }
