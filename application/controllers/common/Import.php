@@ -1186,6 +1186,31 @@ class Import extends CC_Controller {
 		foreach($results as $result){
 			$this->db->delete('invoice', ['inv_id' => $result['inv_id']]);
 			$this->db->delete('coc_orders', ['inv_id' => $result['inv_id']]);
+			unlink('./assets/inv_pdf/'.$result['inv_id'].'.pdf'); 
+		}
+	}
+	
+	public function newrenewalextrafield($type='')
+	{
+		$this->db->select('i.inv_id,i.inv_type,u.id,u.expirydate');		
+		$this->db->from('invoice i');
+		$this->db->join('users as u', 'u.id=i.user_id', 'inner');
+		$this->db->where_in('i.inv_type', ['2','3','4']);	
+		$this->db->group_by('i.user_id');	
+		$results = $this->db->get()->result_array();	
+		
+		if($type==1){
+			echo $this->db->last_query().'<br>';
+			echo count($results).'<br>';
+			echo '<pre>';print_r($results);die;
+		}
+		
+		foreach($results as $result){
+			$id = $result['id'];
+			$invoiceid = $result['inv_id'];
+			$expirystatus = $result['inv_type']-1;
+			
+			$this->db->update('users', ['expiryinvoiceid' => $invoiceid, 'expirystatus' => $expirystatus], ['id' => $id]);
 		}
 	}
 	
