@@ -68,22 +68,22 @@ class Renewal_Model extends CC_Model
 	{
 		$this->db->select('us.id, us.expirydate, up.designation');		
 		$this->db->from('users us');
-		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'left');
-		$this->db->where(['us.type' => '3', 'us.status' => '1', 'DATE(us.expirydate)' => date('Y-m-d',strtotime('+30 days'))]);
+		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0', 'DATE_SUB(DATE(us.expirydate), INTERVAL 30 DAY) <=' => date('Y-m-d'), 'DATE(us.expirydate) >=' => date('Y-m-d')]);
 		$this->db->group_by('us.id');
 		$result = $this->db->get()->result_array();		
-		
+		echo $this->db->last_query();die;
 		return $result;
 	}
 
-	public function getUserids_alert2()
+	public function getUserids_alert2() 
 	{	
 		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid');	
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
-		$this->db->join('invoice inv', 'inv.user_id=us.id', 'inner');
+		$this->db->join('invoice inv', 'inv.user_id=us.expiryinvoiceid', 'inner');
 		$this->db->join('coc_orders coc', 'coc.inv_id=inv.inv_id', 'inner');
-		$this->db->where(['us.type' => '3', 'us.status' => '1', 'DATE(us.expirydate)' => date('Y-m-d'), 'inv.inv_type' => '2', 'inv.status' => '0']);
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '1', 'DATE(us.expirydate)' => date('Y-m-d'), 'inv.inv_type' => '2', 'inv.status' => '0']);
 		$this->db->group_by('us.id');
 		$result = $this->db->get()->result_array();			
 		
@@ -92,14 +92,13 @@ class Renewal_Model extends CC_Model
 
 	public function getUserids_alert3()
 	{
-		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid, DATE_ADD(us.expirydate, INTERVAL 1 DAY) as intervaldate');		
+		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid');		
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
-		$this->db->join('invoice inv', 'inv.user_id=us.id', 'inner');
+		$this->db->join('invoice inv', 'inv.user_id=us.expiryinvoiceid', 'inner');
 		$this->db->join('coc_orders coc', 'coc.inv_id=inv.inv_id', 'inner');
-		$this->db->where(['us.type' => '3', 'us.status' => '1', 'inv.inv_type' => '3', 'inv.status' => '0']);
-		$this->db->group_by('us.id');
-		$this->db->having("DATE(intervaldate)", date('Y-m-d'));	
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '2', 'DATE_ADD(DATE(us.expirydate), INTERVAL 1 DAY)' => date('Y-m-d'), 'inv.inv_type' => '3', 'inv.status' => '0']);
+		$this->db->group_by('us.id');	
 		$result = $this->db->get()->result_array();	
 		
 		return $result;
@@ -111,8 +110,8 @@ class Renewal_Model extends CC_Model
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->join('users_detail as ud', 'ud.user_id=us.id', 'inner');
-		$this->db->join('invoice inv', 'inv.user_id=us.id', 'inner');
-		$this->db->where(['us.type' => '3', 'us.status' => '1', 'inv.inv_type' => '4', 'inv.status' => '0']);
+		$this->db->join('invoice inv', 'inv.user_id=us.expiryinvoiceid', 'inner');
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '3', 'inv.inv_type' => '4', 'inv.status' => '0']);
 		$result = $this->db->get()->result_array();		 	
 		
 		return $result;
@@ -140,6 +139,8 @@ class Renewal_Model extends CC_Model
 
 	public function updatedata($userid,$designation,$inv_type,$invoice_id='',$cocid='',$otherfee=[])
 	{
+		$currentdate = date('Y-m-d h:i:s');	
+		
 		$this->db->select('amount');
 		$this->db->from('rates');
 		if($designation == '1')		$this->db->where('id', $this->config->item('learner'));
@@ -149,7 +150,6 @@ class Renewal_Model extends CC_Model
 		elseif($designation == '5')	$this->db->where('id', $this->config->item('qualified'));
 		elseif($designation == '6')	$this->db->where('id', $this->config->item('master'));
 		else 						$this->db->where('supplyitem', 'Registration Rates');
-		
 		$rates = $this->db->get()->row_array(); 
 		$rate = $rates['amount'];
 
@@ -179,79 +179,62 @@ class Renewal_Model extends CC_Model
 		$vat_amount = round($vat_amount,2);
 		$total = $vat_amount + $rate;
 
-		$currentdate = date('Y-m-d h:i:s');		
-		$request['description'] = 'Renewal Fee';
-		$request['user_id'] = $userid;
-		$request['status'] = '0';
-		$request['inv_type'] = $inv_type;
-		$request['coc_type'] = '0';
-		$request['delivery_type'] = '2';		
-		$request['created_at'] = $currentdate;
+		$result['invoice_id'] 	= $invoice_id;
+		$result['cocorder_id']  = $cocid;	
+		
+		$request['description'] 	= 'Renewal Fee';
+		$request['user_id'] 		= $userid;
+		$request['status'] 			= '0';
+		$request['inv_type'] 		= $inv_type;
+		$request['coc_type'] 		= '0';
+		$request['delivery_type'] 	= '2';		
+		$request['created_at'] 		= $currentdate;			
+		$request['total_cost'] 		= $rate;
+		$request['vat'] 			= $vat_amount;
 
-		/*if($inv_type == '2'){
-			$this->db->insert('invoice', ['description' => "Renewal Fee", 'user_id' => $userid, 'status' => '0', 'inv_type' => $inv_type,  'coc_type' => '0',  'delivery_type' => '2', 'total_cost' => $rate, 'vat'=>$vat_amount, 'created_at' => $currentdate]) ;
-			$result['invoice_id'] = $this->db->insert_id();
-		}*/
 		if($inv_type == '2'){
-			$this->db->select('inv.*');
-			$this->db->from('invoice inv');
-			$this->db->where('inv.user_id', $userid);
-			$this->db->where('inv.inv_type', $inv_type);
-			$this->db->where('inv.status', '0');
-			$invquery 	= $this->db->get();
-			$invresult 	= $invquery->row_array();
-
-			if ($invresult =='') {
-				$this->db->insert('invoice', ['description' => "Renewal Fee", 'user_id' => $userid, 'status' => '0', 'inv_type' => $inv_type,  'coc_type' => '0',  'delivery_type' => '2', 'total_cost' => $rate, 'vat'=>$vat_amount, 'created_at' => $currentdate]) ;
-				$result['invoice_id'] = $this->db->insert_id();
-			}else{
-				$request['total_cost'] 	= $rate;
-				$request['vat'] 		= $vat_amount;
-				$result['invoice_id'] 	= $invresult['id'];
-				$this->db->update('invoice', $request, ['inv_id' => $invresult['id']]);
-			}
-			
-		}
-		elseif($inv_type == '4'){			
+			$this->db->insert('invoice', $request);
+			$result['invoice_id'] = $this->db->insert_id();
+		}elseif($inv_type == '4'){			
 			$request['total_cost'] = $rate1;
 			$request['vat'] = $vat_amount1;
-			$result['invoice_id'] = $invoice_id;
-		}
-		else{			
-			$request['total_cost'] = $rate;
-			$request['vat'] = $vat_amount;
-			$result['invoice_id'] = $invoice_id;
-		}
-		
-		$this->db->update('invoice', $request, ['inv_id' => $invoice_id]);
-		
-		if($inv_type == '2'){
-			$this->db->insert('coc_orders', ['user_id' => $userid, 'description' => "Renewal Fee",'quantity' => '1', 'status' => '0',  'cost_value' => $rate, 'coc_type' => '0',  'delivery_type' => '2', 'total_due' => $total, 'vat'=>$vat_amount, 'inv_id' => $result['invoice_id'], 'created_at' => $currentdate, 'created_by' => $userid]);
-			$result['cocorder_id']  = $this->db->insert_id();
-		}
-		else{
-			$request1['description'] = 'Renewal Fee';
-			$request1['user_id'] = $userid;
-			$request1['quantity'] = '1';
-			$request1['status'] = '0';
-			$request1['cost_value'] = $rate;
-			$request1['coc_type'] = '0';
-			$request1['delivery_type'] = '2';
-			$request1['total_due'] = $total;	
-			$request1['vat'] = $vat_amount;
-			$request1['inv_id'] = $invoice_id;			
-			$request1['created_at'] = $currentdate;
-			$request1['created_by'] = $userid;
-			$this->db->update('coc_orders', $request1, ['id' => $cocid]);
-			$result['cocorder_id']  = $cocid;
-		}
-
-		if($inv_type == '4'){
-			$this->db->insert('coc_orders', ['user_id' => $userid, 'description' => "Late Penalty Fee",'quantity' => '1', 'status' => '0',  'cost_value' => $lateamount, 'coc_type' => '0',  'delivery_type' => '2', 'total_due' => $total_lateamount, 'vat'=>$vat_lateamount, 'inv_id' => $result['invoice_id'], 'created_at' => $currentdate, 'created_by' => $userid]);
-			$result['cocorder_id2']  = $this->db->insert_id();
 		}
 		
 		$invoice_id = $result['invoice_id'];
+		$this->db->update('invoice', $request, ['inv_id' => $invoice_id]);
+		$this->db->update('users', ['expiryinvoiceid' => $invoice_id, 'expirystatus' => ($inv_type-1)], ['id' => $userid]);
+		
+		$request1['description'] 	= 'Renewal Fee';
+		$request1['user_id'] 		= $userid;
+		$request1['quantity'] 		= '1';
+		$request1['status'] 		= '0';
+		$request1['cost_value'] 	= $rate;
+		$request1['coc_type'] 		= '0';
+		$request1['delivery_type'] 	= '2';
+		$request1['total_due'] 		= $total;	
+		$request1['vat'] 			= $vat_amount;
+		$request1['inv_id'] 		= $invoice_id;			
+		$request1['created_at'] 	= $currentdate;
+		$request1['created_by'] 	= $userid;
+		
+		if($inv_type == '2'){
+			$this->db->insert('coc_orders', $request1);
+			$result['cocorder_id']  = $this->db->insert_id();
+		}
+		
+		$cocid = $result['cocorder_id'];
+		$this->db->update('coc_orders', $request1, ['id' => $cocid]);
+		
+		if($inv_type == '4'){
+			$request1['description'] 	= 'Late Penalty Fee';
+			$request1['cost_value'] 	= $lateamount;
+			$request1['total_due'] 		= $total_lateamount;
+			$request1['vat'] 			= $vat_lateamount;
+			
+			$this->db->insert('coc_orders', $request1);
+			$result['cocorder_id2']  = $this->db->insert_id();
+		}
+		
 		if(count($otherfee) > 0){
 			$this->db->delete('coc_orders', array('inv_id' => $invoice_id, 'otherfee' => '1'));
 			
@@ -301,7 +284,6 @@ class Renewal_Model extends CC_Model
 		
 		
 		return $result;
-
 	}
 	
 	public function getPermissions($type1)
