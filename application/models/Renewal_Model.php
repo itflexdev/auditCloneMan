@@ -72,7 +72,7 @@ class Renewal_Model extends CC_Model
 		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0', 'DATE_SUB(DATE(us.expirydate), INTERVAL 30 DAY) <=' => date('Y-m-d'), 'DATE(us.expirydate) >=' => date('Y-m-d')]);
 		$this->db->group_by('us.id');
 		$result = $this->db->get()->result_array();		
-		echo $this->db->last_query();die;
+		echo $this->db->last_query();
 		return $result;
 	}
 
@@ -139,7 +139,7 @@ class Renewal_Model extends CC_Model
 
 	public function updatedata($userid,$designation,$inv_type,$invoice_id='',$cocid='',$otherfee=[])
 	{
-		$currentdate = date('Y-m-d h:i:s');	
+		$currentdate = date('Y-m-d H:i:s');	
 		
 		$this->db->select('amount');
 		$this->db->from('rates');
