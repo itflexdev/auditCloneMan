@@ -1045,16 +1045,19 @@ class Api extends CC_Controller
 	public function card(){
 
 		if ($this->input->post() && $this->input->post('user_id')) {
-			$userid 			= $this->input->post('user_id');
+			$post = $this->input->post();
+			//$this->cardexport_api($post['user_id']);
+			$cardurl 			= base_url().'webservice/api/cardexport_api/'.$post['user_id'].'';
+			/*$userid 			= $this->input->post('user_id');
 			$cardtype 			= $this->input->post('cardtype');
 			$card 				= $this->plumbercard_api(['id' => $userid, 'type' => $cardtype]);
 			$jsonData['card'] 	= $card;
-			echo $jsonData['card'];die;
-			$jsonArray = array("status"=>'1', "message"=>'Plumber PIRB registration card', 'result' => $jsonData);*/
+			echo $jsonData['card'];die;*/
+			$jsonArray = array("status"=>'1', "message"=>'Plumber PIRB registration card', 'result' => $cardurl);
 		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
 		}
-		// echo json_encode($jsonArray);
+		echo json_encode($jsonArray);
 	}
 
 	public function cardexport_api($id){
@@ -2149,14 +2152,20 @@ class Api extends CC_Controller
 	}
 
 	public function chatcount_sync(){
-		if ($this->input->post() && $this->input->post('user_id')) {
+		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('type')) {
 			
 			$jsonData 		= [];
 			$userid 		= $this->input->post('user_id');
-			$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => ''], ['coclog', 'usersdetail']);
+			$type 			= $this->input->post('type');
+			if ($type == 'plumber') {
+				$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'user_id' => $userid, 'noaudit' => ''], ['coclog', 'usersdetail']);
+			}elseif ($type == 'auditor') {
+				$results 		= $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'auditorid' => $userid, 'noaudit' => ''], ['coclog', 'usersdetail']);
+			}
+			
 			if (count($results) > 0) {
 				foreach ($results as $key => $value) {
-					$chats 	= $this->Api_Model->ChatgetList('count', ['cocid' => $value['id'], 'viewed' => $value['user_id']]);
+					$chats 	= $this->Api_Model->ChatgetList('count', ['cocid' => $value['id'], 'checkto' => $userid]);
 					if ($chats > 0) {
 						$jsonData[] 	= [
 							'coc_id' 	=> $value['id'],
