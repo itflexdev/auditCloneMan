@@ -300,8 +300,8 @@
 								</thead>
 								<tbody>
 									<tr>
-										<td style="padding: 10px;   font-size: 14px; text-align: center;"><?php echo $rowData1['reg_no']; ?></td>
-										<td style="padding: 10px;   font-size: 14px; text-align: center;"><?php echo $rowData1['vat_no']; ?></td>
+										<td style="padding: 10px;   font-size: 14px; text-align: center;"><?php echo $rowData['reg_no']; ?></td>
+										<td style="padding: 10px;   font-size: 14px; text-align: center;"><?php echo $rowData['vat_no']; ?></td>
 										<td style="padding: 10px;   font-size: 14px; text-align: center;"><?php echo $invoiceDate; ?></td>
 									</tr>
 								</tbody>
