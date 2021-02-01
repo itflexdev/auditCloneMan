@@ -78,9 +78,9 @@ class Api extends CC_Controller
 		if($this->input->post("appversion") =='1.0')
 		{
 			$data = [
-				'status' 	= '1',
-				'message' 	= 'Please Update your app',
-				'link' 		= 'https://play.google.com/store/apps/details?id=com.app.auditor',
+				'status' 	=> '1',
+				'message' 	=> 'Please Update your app',
+				'link' 		=> 'https://play.google.com/store/apps/details?id=com.app.auditor',
 			];
 		}
 		echo json_encode($data);
