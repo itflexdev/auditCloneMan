@@ -72,6 +72,20 @@ class Api extends CC_Controller
 		$this->load->model('Cpdtypesetup_Model');
 	}
 
+	public function Update_API()
+	{
+		$data = [];
+		if($this->input->post("appversion") =='1.0')
+		{
+			$data = [
+				'status' 	= '1',
+				'message' 	= 'Please Update your app',
+				'link' 		= 'https://play.google.com/store/apps/details?id=com.app.auditor',
+			];
+		}
+		echo json_encode($data);
+	}
+
 	public function login(){
 		if ($this->input->post()) {
 			if ($this->input->post('submit') == 'login') {
