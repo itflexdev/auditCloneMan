@@ -33,12 +33,12 @@ class Mycpd_Model extends CC_Model
 			$this->db->from('cpd_activity_form t1');
 			$this->db->join('users t2', 't2.id = t1.user_id', 'left');
 
-			/*if(isset($requestdata['user_id'][0])) $this->db->where('t1.user_id', $requestdata['user_id'][0]);
+			if(isset($requestdata['user_id'][0])) $this->db->where('t1.user_id', $requestdata['user_id'][0]);
 			if(isset($requestdata['id'])) $this->db->where('t1.id', $requestdata['id']);
 
 			if(isset($requestdata['user_id'][0])) $this->db->where('t2.id', $requestdata['user_id'][0]);
 
-			$dbexpirydate = $requestdata['dbexpirydate'];
+			/*$dbexpirydate = $requestdata['dbexpirydate'];
 			$minusoneyear = date('Y-m-d H:i:s', strtotime('-1 year', strtotime($dbexpirydate)));
 
 			$minusoneyearTotime = date('Y-m-d H:i:s', strtotime($minusoneyear));
