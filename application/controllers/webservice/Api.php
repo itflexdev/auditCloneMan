@@ -75,7 +75,7 @@ class Api extends CC_Controller
 	public function Update_API()
 	{
 		$data = [];
-		if($this->input->post("appversion") =='1.0')
+		if($this->input->post("appversion") =='0.9')
 		{
 			$data = [
 				'status' 	=> '1',
