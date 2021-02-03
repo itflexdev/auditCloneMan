@@ -210,6 +210,8 @@ if ($id !='') {
 								</div>
 							</div>
 						</div>
+					<?php }else{ ?>
+						<p class="resellersuspend_msg" style="color: red;">"You are not able to allocate COCs as you are suspended".</p>
 					<?php } ?>
 
 				<?php }?>
