@@ -399,7 +399,10 @@ class Api extends CC_Controller
 			$this->form_validation->set_rules('address[3][postal_code]','Postal code','trim|required');	
 
 			if ($this->form_validation->run()==FALSE) {
-				$errorMsg =  validation_errors();
+				$findtext 		= ['<div class="form_error">', "</div>"];
+				$replacetext 	= ['', ''];
+				$errorMsg 		= str_replace($findtext, $replacetext, validation_errors());
+				// $errorMsg =  validation_errors();
 				$jsonArray = array("status"=>'0', "message"=>$errorMsg, 'result' => []);
 			}else{
 				$post 				= $this->input->post();
