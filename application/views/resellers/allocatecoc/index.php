@@ -6,6 +6,7 @@ $surname = isset($result['surname']) ? $result['surname'] : '';
 $mobilephone = isset($result['mobile_phone']) ? $result['mobile_phone'] : '';
 $designationtemp = isset($result['designation']) ? $result['designation'] : '';
 $designation = "";
+$resellerstatus = isset($userdetails['status']) ? $userdetails['status'] : '';
 if(isset($designationtemp) && $designationtemp > 0) {
 	$designation	=	$this->config->item('designation2')[$designationtemp];
 }
@@ -200,13 +201,16 @@ if ($id !='') {
 						</div>
 					</div>
 
-					<div class="row">
-						<div class="col-md-5">
-							<div class="form-group">
-								<button type="submit" id="submit2" name="submit2" value="submit2" class="btn btn-primary">Allocate Certificates</button>
+					<?php
+					if ($resellerstatus !='' && $resellerstatus =='1') { ?>
+						<div class="row">
+							<div class="col-md-5">
+								<div class="form-group">
+									<button type="submit" id="submit2" name="submit2" value="submit2" class="btn btn-primary">Allocate Certificates</button>
+								</div>
 							</div>
 						</div>
-					</div>
+					<?php } ?>
 
 				<?php }?>
 

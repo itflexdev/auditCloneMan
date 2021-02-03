@@ -69,6 +69,7 @@ class Index extends CC_Controller
 		$pagedata['designation2'] 		= $this->config->item('designation2');
 		$pagedata['specialisations'] 	= $this->config->item('specialisations');
 		$pagedata['userid'] 			= $this->getUserID();
+		$pagedata['userdetails'] 		= $this->getUserDetails();
 
 		$data['plugins']			= ['datatables', 'datatablesresponsive', 'sweetalert', 'datepicker', 'inputmask', 'validation'];
 		$data['content'] 			= $this->load->view('resellers/allocatecoc/index', (isset($pagedata) ? $pagedata : ''), true);
