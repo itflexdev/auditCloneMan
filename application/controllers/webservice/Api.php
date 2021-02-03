@@ -930,17 +930,30 @@ class Api extends CC_Controller
 			$auditorratio						= $this->Auditor_Model->getAuditorRatio('row', ['userid' => $id]);
 			$auditorratio 						= ($auditorratio) ? $auditorratio['audit'].'%' : '0%';
 			// country rangking
+
+			if (isset($physicaladdress[5])) {
+				$myprovinceperformancestatus 		= $this->userperformancestatus(['province' => $physicaladdress[5]], $id);
+			}
+
+			if (isset($physicaladdress[4])) {
+				$mycityperformancestatus 			= $this->userperformancestatus(['city' => $physicaladdress[4]], $id);
+			}
+
+			if (isset($physicaladdress[5])) {
+				$provinceperformancestatus 			= $this->userperformancestatus(['province' => $physicaladdress[5], 'limit' => '3']);
+			}
+
 			$overallperformancestatus 			= $this->userperformancestatus(['overall' => '1']);
-			$myprovinceperformancestatus 		= $this->userperformancestatus(['province' => $physicaladdress[5]], $id);
+			// $myprovinceperformancestatus 		= $this->userperformancestatus(['province' => $physicaladdress[5]], $id);
 			$performancestatus 					= $this->userperformancestatus(['userid' => $id]);
-			$mycityperformancestatus 			= $this->userperformancestatus(['city' => $physicaladdress[4]], $id);
-			$provinceperformancestatus 			= $this->userperformancestatus(['province' => $physicaladdress[5], 'limit' => '3']);
+			// $mycityperformancestatus 			= $this->userperformancestatus(['city' => $physicaladdress[4]], $id);
+			// $provinceperformancestatus 			= $this->userperformancestatus(['province' => $physicaladdress[5], 'limit' => '3']);
 
 			$countryranking 	= $this->ranking(['id' => $id, 'type' => 'country']);
 			$regionalranking 	= $this->ranking(['id' => $id, 'type' => 'province']);
 			$countryrank  = 0;
 			$regionalrank = 0;
-
+			
 			// country and industry
 			foreach ($countryranking as $key1 => $user_country_ranking) {
 				if ($user_country_ranking['userid'] == $id) {
@@ -948,11 +961,14 @@ class Api extends CC_Controller
 				}
 			}
 			// province
-			foreach ($regionalranking as $key1 => $user_province_ranking) {
-				if ($user_province_ranking['userid'] == $id) {
-					$regionalrank = $key1+1;
+			if ($regionalranking) {
+				foreach ($regionalranking as $key1 => $user_province_ranking) {
+					if ($user_province_ranking['userid'] == $id) {
+						$regionalrank = $key1+1;
+					}
 				}
 			}
+			
 
 			// $jsonData['cityperformancestatus'] 			= $this->userperformancestatus(['city' => $userdata['city'], 'limit' => '3'],$id);
 
@@ -991,10 +1007,10 @@ class Api extends CC_Controller
 					'overallperformancestatus' 		=> $overallperformancestatus,
 					'myprovinceperformancestatus' 	=> $regionalrank,
 					'performancestatus' 			=> $performancestatus,
-					'mycityperformancestatus' 		=> $mycityperformancestatus,
+					'mycityperformancestatus' 		=> isset($mycityperformancestatus) ? $mycityperformancestatus : '',
 					'industryranking' 				=> $countryrank,
 					'countryranking' 				=> $countryrank,
-					'provinceperformancestatus' 	=> $provinceperformancestatus[0]['point'],
+					'provinceperformancestatus' 	=> isset($provinceperformancestatus) ? $provinceperformancestatus[0]['point'] : '',
 					'cpdpoints' 					=> $mycpd
 					
 
@@ -4198,14 +4214,22 @@ class Api extends CC_Controller
 			$physicaladdress 		= isset($userdetails['physicaladdress']) ? explode('@-@', $userdetails['physicaladdress']) : [];
 			$province1 				= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';
 
-			$province 		= $this->Managearea_Model->getListProvince('row', ['id' => $physicaladdress[5]]);
-			$rollingavg 	= $this->getRollingAverage();
-			$date			= date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
-			$ranking 		= $this->Plumber_Model->performancestatus('all', ['date' => $date, 'archive' => '0', 'province' => $physicaladdress[5]]);
+			if (isset($physicaladdress[5])) {
+				$province 		= $this->Managearea_Model->getListProvince('row', ['id' => $physicaladdress[5]]);
+				$rollingavg 	= $this->getRollingAverage();
+				$date			= date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
+				$ranking 		= $this->Plumber_Model->performancestatus('all', ['date' => $date, 'archive' => '0', 'province' => $physicaladdress[5]]);
+			}else{
+				$province 		= '';
+				$rollingavg 	= '';
+				$date			= '';
+				$ranking 		= '';
+			}
+			
 		}else{
 			$rollingavg 	 = $this->getRollingAverage();
 			$date			 = date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
-			$ranking  = $this->Plumber_Model->performancestatus('all', ['date' => $date, 'archive' => '0', 'overall' => '1']);
+			$ranking  		 = $this->Plumber_Model->performancestatus('all', ['date' => $date, 'archive' => '0', 'overall' => '1']);
 		}
 		return $ranking;
 	}
