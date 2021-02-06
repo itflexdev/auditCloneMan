@@ -7,6 +7,7 @@ $mobilephone = isset($result['mobile_phone']) ? $result['mobile_phone'] : '';
 $designationtemp = isset($result['designation']) ? $result['designation'] : '';
 $designation = "";
 $resellerstatus = isset($userdetails['status']) ? $userdetails['status'] : '';
+$plumberemail = isset($result['email']) ? $result['email'] : '';
 if(isset($designationtemp) && $designationtemp > 0) {
 	$designation	=	$this->config->item('designation2')[$designationtemp];
 }
@@ -343,7 +344,7 @@ $(function(){
 	});
 
 	function ajaxotp(){
-		ajax('<?php echo base_url().'ajax/index/ajaxotp'; ?>', { 'mobile' : '<?php echo $mobilephone; ?>' }, '', { 
+		ajax('<?php echo base_url().'ajax/index/ajaxotp'; ?>', { 'mobile' : '<?php echo $mobilephone; ?>', 'plumberemail' : '<?php echo $plumberemail; ?>', 'plumberid' : '<?php echo $id; ?>', 'pagetype' : 'reseller_allocation' }, '', { 
 			success:function(data){
 				if(data!=''){
 					$('#sampleOtp').removeClass('displaynone').val(data);
@@ -355,7 +356,7 @@ $(function(){
 	$('.verify').on('click',function(){
 		var otpver = $('#otpnumber').val();
 		
-		ajax('<?php echo base_url().'ajax/index/ajaxotpverification'; ?>', {otp: otpver}, '', { 
+		ajax('<?php echo base_url().'ajax/index/ajaxotpverification'; ?>', {otp: otpver, 'plumberid' : '<?php echo $id; ?>', 'pagetype' : 'reseller_allocation'}, '', { 
 			success:function(data){
 				if (data == 0) {
 					$('.invalidOTP').show();
