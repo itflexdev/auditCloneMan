@@ -254,10 +254,10 @@ class Services extends CC_Controller
 				
 				$settingsdetail = $this->Systemsettings_Model->getList('row');
 				if($settingsdetail && $settingsdetail['otp']=='1'){
-					$this->sms(['no' => $mobile, 'otpcode' => $otp, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdetails['id'], 'email' => $userdetails['email'], 'smsenable' => '1']);
+					$this->sms(['no' => $mobile, 'otpcode' => $otp, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdetails['id'], 'email' => $userdetails['email'], 'smsenable' => '1', 'usertype' => $userdetails['type']]);
 					$otpstatus = '1';
 				}else{
-					$this->sms(['no' => $mobile, 'otpcode' => $otp, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdetails['id'], 'email' => $userdetails['email'], 'smsenable' => '0']);
+					$this->sms(['no' => $mobile, 'otpcode' => $otp, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdetails['id'], 'email' => $userdetails['email'], 'smsenable' => '0', 'usertype' => $userdetails['type']]);
 					$otpstatus = '0';
 				}
 				
