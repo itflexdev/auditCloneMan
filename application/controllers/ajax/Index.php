@@ -366,7 +366,7 @@ class Index extends CC_Controller
 	}
 	
 	
-	public function ajaxotp(){
+	/*public function ajaxotp(){
 		$post		= $this->input->post();
 		$userdata 	= $this->getUserDetails();
 		$userid 	= $userdata['id'];
@@ -388,11 +388,58 @@ class Index extends CC_Controller
 			$this->sms(['no' => $mobile, 'otpcode' => $otp, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdata['id'], 'email' => $userdata['email'], 'smsenable' => '1']);
 			echo '';
 		}
+	}*/
+
+	public function ajaxotp(){
+		$post		= $this->input->post();
+
+		if (isset($post['pagetype']) && $post['pagetype'] =='reseller_allocation') {
+			$userid 	= $post['plumberid'];
+			$userdata 	= $this->getUserDetails($userid);
+		}else{
+			$userdata 	= $this->getUserDetails();
+			$userid 	= $userdata['id'];
+		}
+		
+		$mobile 	= str_replace([' ', '(', ')', '-'], ['', '', '', ''], trim(isset($post['mobile']) ? $post['mobile'] : $userdata['mobile_phone']));
+		$otp		= rand (10000, 99999);
+		
+		$query = $this->db->get_where('otp', ['user_id' => $userid]);
+		if ($query->num_rows() == 1) {
+			$this->db->update('otp', ['otp' => $otp, 'mobile' => $mobile], ['user_id' => $userid]);
+		}else{
+			$this->db->insert('otp', ['otp' => $otp, 'mobile' => $mobile, 'user_id' => $userid]);
+		}		
+		
+		$settingsdetail = $this->Systemsettings_Model->getList('row');
+		if($settingsdetail && $settingsdetail['otp']=='0'){
+			echo $otp;
+			$this->sms(['no' => $mobile, 'otpcode' => $otp, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdata['id'], 'email' => $userdata['email'], 'smsenable' => '0']);
+		}else{
+			$this->sms(['no' => $mobile, 'otpcode' => $otp, 'msg' => 'One Time Password is '.$otp, 'userid' => $userdata['id'], 'email' => $userdata['email'], 'smsenable' => '1']);
+			echo '';
+		}
 	}
 
-	public function ajaxotpverification(){
+	/*public function ajaxotpverification(){
 		$requestdata 	= $this->input->post();
 		$userid 		= $this->getUserID();
+		
+		$result = $this->db->from('otp')->where(['otp' => $requestdata['otp'], 'user_id' => $userid])->get()->row_array();
+		
+		if ($result) {
+			echo '1';
+		}else{
+			echo '0';
+		}
+	}*/
+	public function ajaxotpverification(){
+		$requestdata 	= $this->input->post();
+		if (isset($post['pagetype']) && $post['pagetype'] =='reseller_allocation') {
+			$userid 	= $post['plumberid'];
+		}else{
+			$userid 		= $this->getUserID();
+		}
 		
 		$result = $this->db->from('otp')->where(['otp' => $requestdata['otp'], 'user_id' => $userid])->get()->row_array();
 		
