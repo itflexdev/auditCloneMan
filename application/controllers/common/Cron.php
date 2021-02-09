@@ -172,7 +172,7 @@ class Cron extends CC_Controller {
 							$this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
 						}
 
-						$plumberemails .= $userQueryvalue['email'];
+						$plumberemails .= $userQueryvalue['email'].',';
 		}
 
 		$fp = fopen(FCPATH.'assets/uploads/temp/plumberemails.txt',"wb");
