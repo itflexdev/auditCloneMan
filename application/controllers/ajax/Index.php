@@ -435,12 +435,12 @@ class Index extends CC_Controller
 	}*/
 	public function ajaxotpverification(){
 		$requestdata 	= $this->input->post();
-		if (isset($post['pagetype']) && $post['pagetype'] =='reseller_allocation') {
-			$userid 	= $post['plumberid'];
+		if (isset($requestdata['pagetype']) && $requestdata['pagetype'] =='reseller_allocation') {
+			$userid 	= $requestdata['plumberid'];
 		}else{
 			$userid 		= $this->getUserID();
 		}
-		
+			
 		$result = $this->db->from('otp')->where(['otp' => $requestdata['otp'], 'user_id' => $userid])->get()->row_array();
 		
 		if ($result) {
