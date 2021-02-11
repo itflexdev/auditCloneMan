@@ -3538,7 +3538,7 @@ class Api extends CC_Controller
 				$settingsdetail =  $this->Systemsettings_Model->getList('row');
 				$extraparam['auditorid'] = $auditorid;
 				// $extras['plumberid'] = $plumberid;	
-				$result		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam);	
+				$result		= $this->Coc_Model->getCOCList('row', ['id' => $cocid, 'coc_status' => ['2']]+$extraparam, ['coclog', 'users', 'usersdetail', 'usersplumber', 'auditordetails', 'auditorstatement']);	
 
 				if($this->input->post('id') !=''){$id = $this->input->post('id');}else{$id = '';} // audit revreview id (as_id)
 				$datetime 	=  date('Y-m-d H:i:s');
