@@ -1520,7 +1520,7 @@ class Api extends CC_Controller
 			$this->form_validation->set_rules('contact_no','Contact mobile','trim|required');
 			$this->form_validation->set_rules('agreement','Agreement','trim|required');
 			$this->form_validation->set_rules('installationtype[]','Instalaltion type','trim|required');
-			$this->form_validation->set_rules('specialisations[]','Specialisations','trim|required');
+			//$this->form_validation->set_rules('specialisations[]','Specialisations','trim|required');
 			$this->form_validation->set_rules('installation_detail','Instalaltion details','trim|required');
 			$this->form_validation->set_rules('ncnotice','non compliance notice','required');
 			
