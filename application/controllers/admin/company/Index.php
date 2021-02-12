@@ -373,7 +373,7 @@ class Index extends CC_Controller
             redirect('admin/company/index/perfomacerating/'.$user_id.'');
         }
 
-        $totalpoints = $this->Companyperformancedetails_Model->getList('all', ['user_id' => $user_id, 'status' => ['1']]);
+        $totalpoints = $this->Companyperformancedetails_Model->getList('all', ['user_id' => $user_id, 'status' => ['1'], 'date' => date("Y-m-d")]);
 
         $points = 0;
         foreach ($totalpoints as $totalpoint) {
