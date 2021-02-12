@@ -351,4 +351,88 @@ class Company_Model extends CC_Model
 		}
 
 	}
+
+	public function getInvoiceList($type, $requestdata=[])
+	{		
+        $query=$this->db->select('
+			t1.*,
+        	t2.inv_id as inv_id2, sum(t2.total_due) as total_due, sum(t2.quantity) as quantity, sum(t2.cost_value) as cost_value, sum(t2.delivery_cost) as delivery_cost,
+			t3.reg_no, t3.id, t3.name name, t3.surname surname, t3.company company, t3.company_name company_name,t3.vat_no vat_no, t3.email2, t3.home_phone,
+			t4.type,t4.address,t4.province, t4.suburb, t4.city,
+			c1.name as orderstatusname
+		');
+        $this->db->from('invoice t1');
+        $this->db->join('coc_orders t2','t2.inv_id = t1.inv_id', 'left');
+        $this->db->join('users_detail t3', 't3.user_id = t1.user_id', 'left');
+        $this->db->join('users_address t4', 't4.user_id = t1.user_id AND t4.type=1', 'left');
+		$this->db->join('users_company t5', 't5.user_id = t1.user_id', 'left');
+		$this->db->join('users u', 'u.id=t1.user_id', 'inner');
+		$this->db->join('custom c1', 'c1.c_id=t1.order_status and c1.type="7"', 'left');
+		$this->db->where('u.type', '4');
+		
+		if(isset($requestdata['id'])) 		$this->db->where('t1.inv_id', $requestdata['id']);
+		if(isset($requestdata['user_id'])) 	$this->db->where('t1.user_id', $requestdata['user_id']);
+		
+		if($type!=='count' && isset($requestdata['start']) && isset($requestdata['length'])){
+			$this->db->limit($requestdata['length'], $requestdata['start']);
+		}
+		if(isset($requestdata['order']['0']['column']) && isset($requestdata['order']['0']['dir'])){
+			if(isset($requestdata['page'])){
+				$page = $requestdata['page'];
+				if($page=='companyaccount'){
+					$column = ['t1.description', 't1.inv_id', 't1.created_at', 't2.total_due', 't1.status'];
+				}
+			}else{
+				$column = ['inv_id', 'created_at', 'company_name', 'reg_no', 'description', 'total_cost', 'internal_inv'];
+			}			
+			
+			$this->db->order_by($column[$requestdata['order']['0']['column']], $requestdata['order']['0']['dir']);
+		}
+
+		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){
+			$searchvalue = strtolower(trim($requestdata['search']['value']));
+			$this->db->group_start();			
+			if($searchvalue=='paid'){
+				$this->db->where('t1.status', '1');
+			}
+			else if($searchvalue=='not paid' || $searchvalue=='unpaid'){
+				$this->db->where('t1.status', '0');
+			}
+			else{					
+				if(isset($requestdata['page'])){
+					$page = $requestdata['page'];
+					if($page=='companyaccount'){
+						$this->db->like('t1.description', $searchvalue);
+						$this->db->or_like('t1.inv_id', $searchvalue);
+						$this->db->or_like('DATE_FORMAT(t1.created_at,"%d-%m-%Y")', $searchvalue);
+						$this->db->or_like('t2.total_due', $searchvalue);
+						$this->db->or_like('t1.status', $searchvalue);
+					}
+				}else{
+					$this->db->like('t1.inv_id', $searchvalue);
+					$this->db->or_like('t1.description', $searchvalue);
+					$this->db->or_like('DATE_FORMAT(t1.created_at,"%d-%m-%Y")', $searchvalue);
+					$this->db->or_like('t1.total_cost', $searchvalue);
+					$this->db->or_like('t1.internal_inv', $searchvalue);
+					$this->db->or_like('t3.company_name', $searchvalue);
+					$this->db->or_like('t3.company', $searchvalue);
+					$this->db->or_like('t3.reg_no', $searchvalue);
+				}			
+			}
+			$this->db->group_end();
+		}
+		
+		$this->db->group_by('t1.inv_id');
+		
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+   
+		return $result;
+	}
 }
