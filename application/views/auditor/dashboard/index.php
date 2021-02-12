@@ -136,29 +136,29 @@ $noauditpercentage 			= ($noaudit!=0) ? round(($noaudit/$total)*100,2).'%' : '0%
 					</div>
 				</div>
 				
-				<div class="row">
+				<!-- <div class="row">
 					<div class="col-md-8">
 						<div class="col-md-12 message_sec">
 							<div class="cus_msg">
 								<p>My Pirb Messages</p>
 								<?php 
-									$data 	= $this->db->where("groups='3' AND status='1'")->get('messages')->result_array();
-									$msg 	= "";
-									foreach ($data as $key => $value) {
-										$currentDate = date('Y-m-d');
-										$startdate   = date('Y-m-d',strtotime($value['startdate']));
-										$enddate = date('Y-m-d',strtotime($value['enddate']));
-										if ($currentDate>= $startdate && $currentDate<=$enddate){
-											$msg = $msg.$value['message'].'</br></br>'; 
-										}
-									}
+									// $data 	= $this->db->where("groups='3' AND status='1'")->get('messages')->result_array();
+									// $msg 	= "";
+									// foreach ($data as $key => $value) {
+										// $currentDate = date('Y-m-d');
+										// $startdate   = date('Y-m-d',strtotime($value['startdate']));
+										// $enddate = date('Y-m-d',strtotime($value['enddate']));
+										// if ($currentDate>= $startdate && $currentDate<=$enddate){
+											// $msg = $msg.$value['message'].'</br></br>'; 
+										// }
+									// }
 									
-									echo '<div class="col-md-12">'.$msg.'</div>';
+									// echo '<div class="col-md-12">'.$msg.'</div>';
 								?>
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</div>
