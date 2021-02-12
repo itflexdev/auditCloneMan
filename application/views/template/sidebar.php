@@ -82,6 +82,8 @@ if(count($permission) > 0){
 									<li><a href="<?php echo base_url().'admin/systemsetup/message/message'; ?>">Messages</a></li>
 								<?php } if($menu=='1' || ($menu=='2' && (in_array('14', $readpermission) || in_array('14', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/systemsetup/performancesettings/plumberperformance'; ?>">Plumber Performance Types</a></li>
+								<?php }	if($menu=='1' || ($menu=='2' && (in_array('33', $readpermission) || in_array('33', $writepermission)))){ ?>
+									<li><a href="<?php echo base_url().'admin/systemsetup/performancesettings/companyperformance'; ?>">Company Performance Types</a></li>
 								<?php } if($menu=='1' || ($menu=='2' && (in_array('15', $readpermission) || in_array('15', $writepermission)))){ ?>
 									<li><a href="<?php echo base_url().'admin/systemsetup/performancesettings/globalperformance'; ?>">Global Performance Settings</a></li>
 								<?php } ?>
