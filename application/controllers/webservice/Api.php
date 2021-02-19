@@ -1254,8 +1254,8 @@ class Api extends CC_Controller
 
 			$userid 				= $this->input->post('user_id');
 
-			$totalcount 			 = $this->Api_Model->getCOCList('count', ['user_id' => $userid, 'coc_status' => ['2','4','5','7']], ['coclog']);
-			$results	 			= $this->Api_Model->getCOCList('all', ['user_id' => $userid, 'coc_status' => ['2','4','5','7'], 'api_data' => 'plumber_coc_statement_api'], ['coclog']);
+			$totalcount 			 = $this->Api_Model->getCOCList('count', ['user_id' => $userid, 'coc_status' => ['2','4','5']], ['coclog']);
+			$results	 			= $this->Api_Model->getCOCList('all', ['user_id' => $userid, 'coc_status' => ['2','4','5'], 'api_data' => 'plumber_coc_statement_api'], ['coclog']);
 
 			foreach ($results as $key => $value) {
 				
@@ -1277,8 +1277,8 @@ class Api extends CC_Controller
 			$userid 		= $this->input->post('user_id');
 			$post 			= $this->input->post();
 
-			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
-			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
+			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
+			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
 			$jsonData['keywords'][] = $keywords;
 
 			foreach ($results as $key => $value) {
@@ -2257,12 +2257,25 @@ class Api extends CC_Controller
 	}
 	public function cpd_search_activity(){
 		if ($this->input->post() && $this->input->post('user_id')) {
-			$jsonData 	= [];
-			$userid 	= $this->input->post('user_id');
-			$keyword 	= $this->input->post('keyword');
+			$jsonData 					= [];
+			$userid 					= $this->input->post('user_id');
+			$keyword 					= $this->input->post('keyword');
+
+			$postData['userid'] 		= $userid;
+			$postData['search_keyword'] = $keyword;
 
 			if ($keyword != '') {
-				$data 		=   $this->Mycpd_Model->autosearchActivity(['search_keyword' => $keyword]);
+				$cpdverify = $this->Mycpd_Model->cpdverification($postData);
+
+				if (count($cpdverify) > 0) {
+					foreach ($cpdverify as $cpdverifykey => $cpdverifyvalue) {
+						if ($cpdverifyvalue['cpdtype_id']!='0') {
+							$cpdidarray[] = $cpdverifyvalue['cpdtype_id'];
+						}
+					}
+				}
+
+				$data 		=   $this->Mycpd_Model->autosearchActivity(['search_keyword' => $keyword, 'cpdidarray' => $cpdidarray, 'pagetype' => 'plumbercpd']);
 				foreach ($data as $key => $value) {
 					$jsonData['cpd_data'][] = [ 'actid' =>$value['id'], 'activityname' => $value['activity'], 'streamid' => $value['cpdstream'], 'points' => $value['points'], 'startdate' => date('m-d-Y', strtotime($value['startdate'])), 'plumberid' => $userid
 					];
@@ -2274,6 +2287,16 @@ class Api extends CC_Controller
 				}
 			}else{
 
+				$cpdverify = $this->Mycpd_Model->cpdverification($postData);
+
+				if (count($cpdverify) > 0) {
+					foreach ($cpdverify as $cpdverifykey => $cpdverifyvalue) {
+						if ($cpdverifyvalue['cpdtype_id']!='0') {
+							$cpdidarray[] = $cpdverifyvalue['cpdtype_id'];
+						}
+					}
+				}
+
 				$currentDate = date('Y-m-d H:i:s');
 
 				$this->db->select('cp1.id, cp1.activity, cp1.startdate, cp1.points, cp1.cpdstream');
@@ -2282,6 +2305,8 @@ class Api extends CC_Controller
 				$this->db->where('cp1.status="1"');
 				$this->db->where('cp1.startdate<="'.$currentDate.'"');
 				$this->db->where('cp1.enddate>"'.$currentDate.'"');
+				$this->db->where_not_in('cp1.id', $cpdidarray);
+				$this->db->where('cp1.hidden', '0');
 				
 				$this->db->group_by("cp1.id");		
 				$query = $this->db->get();
