@@ -1049,7 +1049,18 @@ class Api extends CC_Controller
 			$history			= $this->Auditor_Model->getReviewHistoryCount(['auditorid' => $id]);	
 			$unread_chat		= $this->Chat_Model->getList('count',['viewed' => $id]);
 
-			$jsonData['auditor_data'][] = ['id' => $userdata['id'], 'namesurname' => $userdata['name'], 'total' => $history['total'], 'noaudit' => $history['noaudit'], 'cautionary' => $history['cautionary'], 'refixincomplete' => $history['refixincomplete'], 'refixcomplete' => $history['refixcomplete'], 'compliment' => $history['compliment'], 'openaudits' => $history['openaudits'], 'unread_chat' => $unread_chat];
+			$data 	= $this->db->where("groups='3' AND status='1'")->get('messages')->result_array();
+			$msg 	= "";
+			foreach ($data as $datakey => $datavalue) {
+				$currentDate = date('Y-m-d');
+				$startdate   = date('Y-m-d',strtotime($datavalue['startdate']));
+				$enddate = date('Y-m-d',strtotime($datavalue['enddate']));
+				if ($currentDate>= $startdate && $currentDate<=$enddate){
+					$msg = $msg.$datavalue['message'].'</br></br>'; 
+				}
+			}
+
+			$jsonData['auditor_data'][] = ['id' => $userdata['id'], 'namesurname' => $userdata['name'], 'total' => $history['total'], 'noaudit' => $history['noaudit'], 'cautionary' => $history['cautionary'], 'refixincomplete' => $history['refixincomplete'], 'refixcomplete' => $history['refixcomplete'], 'compliment' => $history['compliment'], 'openaudits' => $history['openaudits'], 'unread_chat' => $unread_chat, 'pirb_message' => $msg];
 			$jsonArray = array("status"=>'1', "message"=>'Auditor Dashboard Details', "result"=>$jsonData);
 		}else{
 
