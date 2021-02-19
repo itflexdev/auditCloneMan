@@ -455,6 +455,78 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
+	public function gettitle(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$post = $this->input->post();
+			$data = $this->config->item('titlesign');
+			$jsonArray = array("status"=>'1', "message"=>'Title Sign', "result"=>$data);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function getgender(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$post = $this->input->post();
+			$data = $this->config->item('gender');
+			$jsonArray = array("status"=>'1', "message"=>'Gender', "result"=>$data);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function getracial(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$post = $this->input->post();
+			$data = $this->config->item('racial');
+			$jsonArray = array("status"=>'1', "message"=>'Racial Status', "result"=>$data);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function getnationality(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$post = $this->input->post();
+			if($post['type'] == 'othernationality'){
+				$data = $this->config->item('othernationality');
+				$message = 'Other Nationality';
+			}elseif($post['type'] == 'homelanguage'){
+				$data = $this->config->item('homelanguage');
+				$message = 'Home Nationality';
+			}
+			$jsonArray = array("status"=>'1', "message"=>$message, "result"=>$data);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function getdisability(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$post = $this->input->post();
+			$data = $this->config->item('disability');
+			$jsonArray = array("status"=>'1', "message"=>'Disability', "result"=>$data);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function getcitizen(){
+		if ($this->input->post() && $this->input->post('user_id')) {
+			$post = $this->input->post();
+			$data = $this->config->item('citizen');
+			$jsonArray = array("status"=>'1', "message"=>'Citizen', "result"=>$data);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
     public function plumber_registration_index(){
     	$jsonData = [];
 
@@ -823,7 +895,7 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 	public function yes_no_api(){
-		$jsonData['racial'][] = $this->config->item('yesno');
+		$jsonData = $this->config->item('yesno');
 		$jsonArray = array("status"=>'1', "message"=>'yesno', 'result' => $jsonData);
 		echo json_encode($jsonArray);
 	}
