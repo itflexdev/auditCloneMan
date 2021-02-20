@@ -81,9 +81,9 @@ class Renewal_Model extends CC_Model
 		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid');	
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
-		$this->db->join('invoice inv', 'inv.user_id=us.expiryinvoiceid', 'inner');
+		$this->db->join('invoice inv', 'inv.inv_id=us.expiryinvoiceid', 'inner');
 		$this->db->join('coc_orders coc', 'coc.inv_id=inv.inv_id', 'inner');
-		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '1', 'DATE(us.expirydate)' => date('Y-m-d'), 'inv.inv_type' => '2', 'inv.status' => '0']);
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '1', 'DATE(us.expirydate) <=' => date('Y-m-d'), 'inv.inv_type' => '2', 'inv.status' => '0']);
 		$this->db->group_by('us.id');
 		$result = $this->db->get()->result_array();			
 		
@@ -95,9 +95,9 @@ class Renewal_Model extends CC_Model
 		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid');		
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
-		$this->db->join('invoice inv', 'inv.user_id=us.expiryinvoiceid', 'inner');
+		$this->db->join('invoice inv', 'inv.inv_id=us.expiryinvoiceid', 'inner');
 		$this->db->join('coc_orders coc', 'coc.inv_id=inv.inv_id', 'inner');
-		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '2', 'DATE_ADD(DATE(us.expirydate), INTERVAL 1 DAY)' => date('Y-m-d'), 'inv.inv_type' => '3', 'inv.status' => '0']);
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '2', 'DATE_ADD(DATE(us.expirydate), INTERVAL 1 DAY) <=' => date('Y-m-d'), 'inv.inv_type' => '3', 'inv.status' => '0']);
 		$this->db->group_by('us.id');	
 		$result = $this->db->get()->result_array();	
 		
@@ -110,7 +110,7 @@ class Renewal_Model extends CC_Model
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->join('users_detail as ud', 'ud.user_id=us.id', 'inner');
-		$this->db->join('invoice inv', 'inv.user_id=us.expiryinvoiceid', 'inner');
+		$this->db->join('invoice inv', 'inv.inv_id=us.expiryinvoiceid', 'inner');
 		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '3', 'inv.inv_type' => '4', 'inv.status' => '0']);
 		$result = $this->db->get()->result_array();		 	
 		
