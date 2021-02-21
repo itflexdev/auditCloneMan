@@ -1591,4 +1591,26 @@ class Api_Model extends CC_Model
 		$result['message'] 	= $message;
 		return $result;
 	}
+
+	public function idcardValidator($type, $requestdata = []){
+
+		$userid = isset($requestdata['user_id']) ? $requestdata['user_id'] : '';
+		$idcard = $requestdata['idcard'];
+
+		$this->db->select('up.id, up.idcard');
+		$this->db->from('users_plumber as up');
+
+		if($userid!='') $this->db->where('up.user_id !=', $userid);
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		
+		return $result;
+	}
 }

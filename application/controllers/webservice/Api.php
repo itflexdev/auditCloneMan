@@ -455,6 +455,26 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
+	public function idnumber_validator(){
+		if ($this->input->post() && $this->input->post('user_id') && $this->input->post('idcard')) {
+			$post = $this->input->post();
+			$data = $this->Api_Model->idcardValidator('count', ['user_id' => $post['user_id'], 'idcard' => $post['idcard']]);
+
+			if ($data =='0') {
+				$status 	= '1';
+				$message 	= 'ID Number not exists';
+			}else{
+				$status 	= '0';
+				$message 	= 'ID Number already exists';
+			}
+
+			$jsonArray = array("status"=>$status, "message"=>$message, "result"=>$data);
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+		echo json_encode($jsonArray);
+	}
+
 	public function gettitle(){
 		if ($this->input->post() && $this->input->post('user_id')) {
 			$post = $this->input->post();
