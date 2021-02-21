@@ -2082,6 +2082,25 @@ class Api extends CC_Controller
 						];
 			}
 
+			if ($result['cl_file1'] !='') {
+				if(strpos($result['cl_file1'], ',') !== false){
+					$imgarray = explode(",",$result['cl_file1']);
+					foreach ($imgarray as $key => $images) {
+						$jsonData['papercoc_images'][] = [
+							'file' 		=> base_url().'assets/uploads/plumber/'.$userid.'/log/'.$images 
+						];
+					}
+				}else{
+					$jsonData['papercoc_images'][] = [
+							'file' 		=> base_url().'assets/uploads/plumber/'.$userid.'/log/'.$result['cl_file1'] 
+						];
+				}
+			}else{
+				$jsonData['papercoc_images'][] = [
+							'file' 		=> '' 
+						];
+			}
+
 			if ($result['type'] =='1' && $logdate!='') {
 				//$electroniccocreport = base_url().'plumber/auditstatement/index/electroniccocreport/'.$cocID.'/'.$cocID;
 				$electroniccocreport = base_url().'webservice/api/pdfelectroniccocreport_api/'.$cocID.'/'.$userid;
