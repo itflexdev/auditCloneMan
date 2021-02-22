@@ -1599,6 +1599,7 @@ class Api_Model extends CC_Model
 
 		$this->db->select('up.id, up.idcard');
 		$this->db->from('users_plumber as up');
+		$this->db->where('up.idcard', $idcard);
 
 		if($userid!='') $this->db->where('up.user_id !=', $userid);
 
