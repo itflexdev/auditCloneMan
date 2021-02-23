@@ -229,24 +229,61 @@
 								<label>Company Name *</label>
 								<input type="text" class="form-control" id="name" name="name" value="<?php echo $company; ?>">
 							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="custom-control custom-radio">
+
+							<div class="form-group">
+								<label>Website URL</label>
+								<input type="text" class="form-control" id="websiteurl" name="websiteurl" value="<?php echo $websiteurl; ?>">
+							</div>
+
+							<div class="form-group">
+								<label>Primary Contact Person *</label>
+								<input type="text" class="form-control" id="contact_person" name="contact_person" value="<?php echo $contact_person; ?>">
+								</div>
+
+								<div class="form-group">
+									<label>Company description</label>
+							<textarea class="form-control" rows="5" name="companydescription" <?php echo $disabled2; ?>><?php echo $description; ?></textarea>
+
+								</div>
+
+								<div class="custom-control custom-radio cust_btmsp">
 								<input type="checkbox" name="includeprofile" id="includeprofile" class="custom-control-input" value="1" <?php if($includeprofile =='1'){ echo 'checked="checked"'; } if($result['formstatus'] == '1'){ echo "disabled"; } ?>>
 								<label class="custom-control-label" for="includeprofile">Include profile in PIRB company listings <a href="javascript:void(0)" id="executequery" data-toggle="tooltip" data-placement="top" title='kindly replace the new content on "inclue profile in PIRB " popup When enabled, your company will appear on www.pirb.co.za's Company Search Engine'><i class="fa fa-exclamation-circle"></i></a></label>
 								
 							</div>
 						</div>
-					</div>
-					<div class="row">
 						<div class="col-md-6">
+							<!-- <div class="custom-control custom-radio">
+								<input type="checkbox" name="includeprofile" id="includeprofile" class="custom-control-input" value="1" <?php if($includeprofile =='1'){ echo 'checked="checked"'; } if($result['formstatus'] == '1'){ echo "disabled"; } ?>>
+								<label class="custom-control-label" for="includeprofile">Include profile in PIRB company listings <a href="javascript:void(0)" id="executequery" data-toggle="tooltip" data-placement="top" title='kindly replace the new content on "inclue profile in PIRB " popup When enabled, your company will appear on www.pirb.co.za's Company Search Engine'><i class="fa fa-exclamation-circle"></i></a></label>
+								
+							</div> -->
+
+							<div class="img-sectn">
+
+								<h4 class="card-title">Company Image</h4>
 							<div class="form-group">
-								<label>Company Registration Number *</label>
-								<input type="text" class="form-control" id="reg_no" name="reg_no" value="<?php echo $reg_no; ?>">
+								<div>
+									<a href="<?php echo $photoidurl; ?>" target="_blank"><img src="<?php echo $photoidimg; ?>" class="photo_image" width="100"></a>
+								</div>
+								<input type="file" id="file_2" class="photo_file">
+								<label for="file_2" class="choose_file">Choose File</label>
+								<input type="hidden" name="image2" class="photo percentageslide" value="<?php echo $file1; ?>">
+								<p>(Image/File Size Smaller than 5mb)</p>
 							</div>
 						</div>
 
-						<div class="col-md-3">
+						</div>
+					</div>
+					<!-- <div class="row"> -->
+						<!-- <div class="col-md-6">
+							<div class="form-group">
+								<label>Company Registration Number *</label>
+								<input type="text" class="form-control" id="reg_no" name="reg_no" value="<?php // echo $reg_no; ?>">
+							</div>
+						</div> -->
+
+						<!-- <div class="col-md-3">
 							<h4 class="card-title">Company Image</h4>
 							<div class="form-group">
 								<div>
@@ -258,13 +295,13 @@
 								<p>(Image/File Size Smaller than 5mb)</p>
 							</div>
 						</div>
-					</div>
+					</div> -->
 					<div class="row">
 						<div class="col-md-6">
-							<div class="form-group">
+							<!-- <div class="form-group">
 								<label>Website URL</label>
 								<input type="text" class="form-control" id="websiteurl" name="websiteurl" value="<?php echo $websiteurl; ?>">
-							</div>
+							</div> -->
 						</div>
 						<!-- <div class="col-md-6">
 							<div class="form-group">
@@ -275,16 +312,16 @@
 					</div>
 					<div class="row">
 						<div class="col-md-6">
-							<div class="form-group">
+							<!-- <div class="form-group">
 								<label>Primary Contact Person *</label>
 								<input type="text" class="form-control" id="contact_person" name="contact_person" value="<?php echo $contact_person; ?>">
-								</div>
+								</div> -->
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-6">
-							<label>Company description</label>
-							<textarea class="form-control" rows="5" name="companydescription" <?php echo $disabled2; ?>><?php echo $description; ?></textarea>
+							<!-- <label>Company description</label>
+							<textarea class="form-control" rows="5" name="companydescription" <?php echo $disabled2; ?>><?php echo $description; ?></textarea> -->
 						</div>
 					</div>
 					<div class="row">
@@ -458,10 +495,10 @@
 					<div class="row">
 						<div class="col-md-6">
 							<h4 class="card-title">Company Categories of Service</h4>
-							<div class="col-md-6">
+							<div class="col-md-6 cus_wd">
 							<?php foreach ($worktype1 as $key => $value) {?>
-								<input type="checkbox" name="worktype[]" value="<?php echo $key ?>"<?php echo (in_array($key, $work_type)) ? 'checked="checked"' : ''; ?> > <?php echo $value ?><br>
-							<?php };?>
+								<div class="ord_div"><input type="checkbox" name="worktype[]" value="<?php echo $key ?>"<?php echo (in_array($key, $work_type)) ? 'checked="checked"' : ''; ?> > <?php echo $value ?><br>
+							</div><?php };?>
 							</div>
 						</div>
 					</div>				
@@ -469,10 +506,10 @@
 						<!-- <h4 class="card-title">Company Categories</h4> -->
 						<div class="col-md-6">
 							<h5 class="card-title">Company Specialisations</h5>
-							<div class="col-md-6">
+							<div class="col-md-6 cus_wd">
 							<?php foreach ($specialization as $key => $value) { 
 								?>
-								<input type="checkbox" name="specilisations[]" value="<?php echo $key ?>"<?php echo (in_array($key, $specialisations)) ? 'checked="checked"' : ''; ?>> <?php echo $value ?><br>
+								<div class="ord_div_sep"><input type="checkbox" name="specilisations[]" value="<?php echo $key ?>"<?php echo (in_array($key, $specialisations)) ? 'checked="checked"' : ''; ?>> <?php echo $value ?><br></div>
 							<?php }; ?>
 								
 							</div>
@@ -488,6 +525,7 @@
 							</div>
 						<?php }
 						 } ?>
+						 <input type="hidden" name="vatvendor" id="vatvendor-fr2">
 				</form>
 				</div>
 				<div class="steps displaynone" data-id="3">
@@ -631,8 +669,9 @@
 								<input type="hidden" name="application_received" value="<?php echo date('Y-m-d'); ?>">
 								<input type="hidden" name="usersdetailid" id="usersdetailid" value="<?php echo $usersdetailid; ?>">
 								<input type="hidden" name="userscompanyid" id="userscompanyid" value="<?php echo $userscompanyid; ?>">
+								<input type="hidden" name="vatvendor" id="vatvendor-fr3">
 								<button type="button" name="submit" value="submit" id="submit" class="btn btn-primary">Submit Application</button>
-								<input type="submit" id="completeapplication" class="displaynone">
+								<input type="submit" name="completeapplication" value="submit" id="completeapplication" class="displaynone">
 							</div>
 						</div>
 					</form>
@@ -703,6 +742,24 @@ $(function(){
 		// 	var otpver = $('#otpnumber').val();
 		// 	ajaxOTPVerify(otpver);
 		// });
+
+	$('#vatvendor').on('click',function(){
+		if($('#vatvendor').is(':checked')){
+			$('#vatvendor-fr2').val('1');
+			$('#vatvendor-fr3').val('1');
+		}else{
+			$('#vatvendor-fr2').val('');
+			$('#vatvendor-fr3').val('');
+		}
+	});
+
+	if($('#vatvendor').is(':checked')){
+		$('#vatvendor-fr2').val('1');
+		$('#vatvendor-fr3').val('1');
+	}else{
+		$('#vatvendor-fr2').val('');
+		$('#vatvendor-fr3').val('');
+	}
 
 	select2('#province1, #city1, #suburb1, #province2, #city2, #suburb2, #province3, #city3, #suburb3');
 	inputmask('#work_phone, #mobile_phone,#home_phone,#secondary_phone,#billing_contact', 1);
@@ -970,7 +1027,7 @@ $(function(){
 })
 	$('#submit2,#submit3,#submit4,#submit5').click(function(){
 		var _this 	= $(this);
-		var data 	= _this.parents('form').serialize()+'&'+$.param({ 'usersdetailid': $('#usersdetailid').val(), 'userscompanyid': $('#userscompanyid').val() });
+		var data 	= _this.parents('form').serialize()+'&'+$.param({ 'usersdetailid': $('#usersdetailid').val(), 'userscompanyid': $('#userscompanyid').val(), 'vatvendor' : $('#vatvendor-fr2').val() });
 		ajax('<?php echo base_url()."company/registration/index/ajaxregistration"; ?>', data, registration, { beforesend : function(){ _this.attr('disabled','disabled') }, complete : function(){ _this.removeAttr('disabled'); sweetalertautoclose('Successfully Saved.'); } });
 	})
 
@@ -987,7 +1044,7 @@ $('#submit').click(function(e){
 	
 	if(formvalid==0){		
 		for(var i=2; i<=5; i++){
-			var data = $('#submit'+i).parents('form').serialize()+'&'+$.param({ 'usersdetailid': $('#usersdetailid').val(), 'userscompanyid': $('#userscompanyid').val() });
+			var data = $('#submit'+i).parents('form').serialize()+'&'+$.param({ 'usersdetailid': $('#usersdetailid').val(), 'userscompanyid': $('#userscompanyid').val(), 'vatvendor' : $('#vatvendor-fr2').val() });
 			ajax('<?php echo base_url()."company/registration/index/ajaxregistration"; ?>', data, registration, { asynchronous : 1 });				
 		}
 		
@@ -1071,13 +1128,15 @@ $('#previous').click(function(){
 })
 
 function registration(data){
+	console.log(data);
 	if(data.status=='0'){
 		alert('Try Later');
 	}else{
-		if(data.result.usersdetailid) $('#usersdetailid').val(data.result.usersdetailid);
-		if(data.result.usersplumberid) $('#usersplumberid').val(data.result.usersplumberid);
-		if(data.result.usersaddressinsertid){
-			$.each(data.result.usersaddressinsertid, function(i, v){
+		if(data.result.usersdetailinsertid) $('#usersdetailid').val(data.result.usersdetailinsertid);
+		if(data.result.userscompanyinsertid) $('#userscompany').val(data.result.userscompanyinsertid);
+		if(data.result.usersaddressinsertids){
+			$.each(data.result.usersaddressinsertids, function(i, v){
+				console.log(v);
 				$('input[name="address['+i+'][id]"]').val(v);
 			});
 		}
