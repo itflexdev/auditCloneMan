@@ -9,14 +9,19 @@ class Index extends CC_Controller
 
         $this->load->model('Companyperformancedetails_Model');
         $this->load->model('CC_Model');
-        $this->load->model('Plumber_Model');
+        $this->load->model('Company_Model');
 
         //$this->checkUserPermission('16', '1');
     }
 
     public function index($id = '')
     {
-        $user_id = $this->getUserID();
+        $user_id        = $this->getUserID();
+        $results        = $this->Company_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'userscompany']);
+        $companystatus1 = $this->config->item('companystatus');
+
+        $pagedata['companystatus'] = $companystatus1[$results['companystatus']];
+
         if ($id != '') {
             //$this->checkUserPermission('16', '2', '1');
 
@@ -69,25 +74,36 @@ class Index extends CC_Controller
         $company_performance = $this->config->item('company_performance');
 
         $document_type_list = array();
-        foreach ($company_performance as $key => $value) {
-            $document_types = $this->Companyperformancedetails_Model->GetDate_of_Renewal(['user_id' => $user_id, 'status' => ['1'], 'date_of_renewal' => $today, 'document_type' => $key]);
-            if (!$document_types) {
-                $document_type_list[$key] = $value;
+        if ($id == '') {
+            foreach ($company_performance as $key => $value) {
+                $document_types = $this->Companyperformancedetails_Model->GetDate_of_Renewal(['user_id' => $user_id, 'status' => ['1'], 'date_of_renewal' => $today, 'document_type' => $key]);
+                if (!$document_types) {
+                    $document_type_list[$key] = $value;
+                }
             }
+        } else {
+            $document_type_list = $company_performance;
         }
+
         $pagedata['document_type_list'] = $document_type_list;
         $pagedata['userid']             = $this->getUserID();
-        $data['plugins']                = ['datatables', 'datatablesresponsive', 'sweetalert', 'validation', 'datepicker'];
-        $data['content']                = $this->load->view('company/performancedetails/index', (isset($pagedata) ? $pagedata : ''), true);
+
+        $data['plugins'] = ['datatables', 'datatablesresponsive', 'sweetalert', 'validation', 'datepicker'];
+        $data['content'] = $this->load->view('company/performancedetails/index', (isset($pagedata) ? $pagedata : ''), true);
         $this->layout2($data);
     }
 
     public function DTCompanyperformancedetails()
     {
-        $userid     = $this->getUserID();
+        $user_id        = $this->getUserID();
+        $statusresults  = $this->Company_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'userscompany']);
+        $companystatus1 = $this->config->item('companystatus');
+
+        $companystatus = $companystatus1[$statusresults['companystatus']];
+
         $post       = $this->input->post();
-        $totalcount = $this->Companyperformancedetails_Model->getList('count', ['user_id' => $userid, 'status' => ['1']] + $post);
-        $results    = $this->Companyperformancedetails_Model->getList('all', ['user_id' => $userid, 'status' => ['1']] + $post);
+        $totalcount = $this->Companyperformancedetails_Model->getList('count', ['user_id' => $user_id, 'status' => ['1']] + $post);
+        $results    = $this->Companyperformancedetails_Model->getList('all', ['user_id' => $user_id, 'status' => ['1']] + $post);
 
         //$checkpermission = $this->checkUserPermission('16', '2');
 
@@ -97,7 +113,7 @@ class Index extends CC_Controller
                 $profileimg  = base_url() . 'assets/images/profile.jpg';
                 $pdfimg      = base_url() . 'assets/images/pdf.png';
                 $attachments = isset($result['attachments']) ? $result['attachments'] : '';
-                $filepath    = base_url() . 'assets/uploads/company/documents/' . $userid . '/';
+                $filepath    = base_url() . 'assets/uploads/company/documents/' . $user_id . '/';
                 $filepath1   = (isset($result['attachments']) && $result['attachments'] != '') ? $filepath . $result['attachments'] : base_url() . 'assets/uploads/cpdqueue/profile.jpg';
                 if ($attachments != '') {
                     $explodefile2 = explode('.', $attachments);
@@ -111,14 +127,29 @@ class Index extends CC_Controller
 
                 $files = '<a href="' . $photoidurl . '" target="_blank"><img src="' . $photoidimg . '" width="80"></a>';
 
-                $points = $this->Companyperformancedetails_Model->getList('row', ['user_id' => $userid, 'document_type' => $result['document_type']]);
+                $points = $this->Companyperformancedetails_Model->getList('row', ['user_id' => $user_id, 'document_type' => $result['document_type']]);
                 $points = $points['points'];
 
                 // if ($checkpermission) {
-                $action = '<div class="table-action">
-                                <a href="' . base_url() . 'company/performancedetails/index/index/' . $result['id'] . '" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
-                                <a href="javascript:void(0);" data-id="' . $result['id'] . '" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
+                if ($result['date_of_renewal'] >= date("Y-m-d")) {
+                    $action = '<div class="table-action">
+                                <a href="' . base_url() . 'company/performancedetails/index/index/' . $result['id'] . '" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>';
+                    if ($companystatus == 'Active') {
+                        $action .= '   <a href="javascript:void(0);" data-id="' . $result['id'] . '" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
                                 </div>';
+                    }
+                } else {
+                    if ($companystatus == 'Active') {
+                        $action = '   <a href="javascript:void(0);" data-id="' . $result['id'] . '" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
+                                </div>';
+                    }
+                }
+                /*$action = '<div class="table-action">
+                                <a href="' . base_url() . 'company/performancedetails/index/index/' . $result['id'] . '" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>';
+                if ($companystatus == 'Active') {
+                    $action .= '   <a href="javascript:void(0);" data-id="' . $result['id'] . '" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
+                                </div>';
+                }*/
                 // } else {
                 // $action = '';
                 // }
