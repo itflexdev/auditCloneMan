@@ -16,7 +16,7 @@ class Company_Model extends CC_Model
 		
 		if(in_array('usersdetail', $querydata)){
 			$usersdetail 	= 	[ 
-									'ud.id as usersdetailid','ud.company','ud.reg_no','ud.vat_no','ud.contact_person','ud.work_phone','ud.mobile_phone','ud.specialisations','ud.email2','ud.mobile_phone2','ud.home_phone','ud.status as companystatus', 'ud.file1 as file1','ud.billing_email','ud.billing_contact', 'ud.vat_vendor', 'ud.coc_purchase_limit'
+									'ud.id as usersdetailid','ud.company','ud.reg_no','ud.vat_no','ud.contact_person','ud.work_phone','ud.mobile_phone','ud.specialisations','ud.email2','ud.mobile_phone2','ud.home_phone','ud.status as companystatus', 'ud.file1 as file1','ud.billing_email','ud.billing_contact', 'ud.vat_vendor', 'ud.coc_purchase_limit, ud.company_name'
 								];
 			
 			$select[] 		= 	implode(',', $usersdetail);
@@ -118,7 +118,7 @@ class Company_Model extends CC_Model
 	// COMPANY EmpList
 	public function getEmpList($type, $requestdata=[])
 	{
-		 $this->db->select('t1.registration_no,t1.designation,t1.id,t1.user_id,t2.name,t2.surname,t2.mobile_phone,t3.email,t3.status,t2.file2,t2.specialisations');
+		 $this->db->select('t1.registration_no,t1.designation,t1.id,t1.user_id,t2.name,t2.surname,t2.mobile_phone,t3.email,t3.status,t2.file2,t2.specialisations, t1.coc_electronic');
 		 $this->db->from('users t3');
         $this->db->join('users_plumber t1', 't3.id = t1.user_id', 'LEFT');
         $this->db->join('users_detail t2', 't2.user_id = t1.user_id', 'LEFT');        
@@ -198,6 +198,7 @@ class Company_Model extends CC_Model
 		
 		$userid			= 	$this->getUserID();
 		$datetime		= 	date('Y-m-d H:i:s');
+		$idarray 		= 	[];
 				
 		if(isset($data['name'])) 				$request1['company'] 			= $data['name'];
 		if(isset($data['reg_no'])) 				$request1['reg_no'] 			= $data['reg_no'];
@@ -208,10 +209,16 @@ class Company_Model extends CC_Model
 		if(isset($data['image2'])) 				$request1['file1'] 				= $data['image2'];
 		if(isset($data['billing_email'])) 		$request1['billing_email'] 		= $data['billing_email'];
 		if(isset($data['billing_contact'])) 	$request1['billing_contact'] 	= $data['billing_contact'];
-		if(isset($data['company_name'])) 		$request1['company'] 			= $data['company_name'];
+		// if(isset($data['company_name'])) 		$request1['company'] 			= $data['company_name'];
+		if(isset($data['company_name'])) 		$request1['company_name'] 		= $data['company_name'];
 		if(isset($data['reg_no1'])) 			$request1['reg_no'] 			= $data['reg_no1'];
 		// if(isset($data['vat_no'])) 				$request1['vat_no'] 			= $data['vat_no'];
-		$request1['vat_vendor'] 				= isset($data['vat_vendor']) ? $data['vat_vendor'] : '0';
+		if (isset($data['vatvendor']) && $data['vatvendor'] !='') {
+			$request1['vat_vendor'] 		= '1';
+		}else{
+			$request1['vat_vendor'] 		= '0';
+		}
+		
 		if(isset($data['coc_purchase_limit'])) 	$request1['coc_purchase_limit']	= $data['coc_purchase_limit'];
 
 		if(isset($data['home_phone'])) 			$request1['home_phone'] 		= $data['home_phone'];
@@ -236,9 +243,12 @@ class Company_Model extends CC_Model
 			
 			if($usersdetailid==''){
 				$usersdetail = $this->db->insert('users_detail', $request1);
+				$usersdetailinsertid = $this->db->insert_id();
 			}else{
 				$usersdetail = $this->db->update('users_detail', $request1, ['id' => $usersdetailid]);
+				$usersdetailinsertid = $usersdetailid;
 			}
+			$idarray['usersdetailinsertid'] = $usersdetailinsertid;
 		}
 		
 		if(isset($data['address']) && count($data['address'])){
@@ -253,6 +263,7 @@ class Company_Model extends CC_Model
 					$usersaddressinsertids[$request2['type']] = $request2['id'];
 				}
 			}
+			$idarray['usersaddressinsertids'] = $usersaddressinsertids;
 		}
 		
 		if(isset($data['worktype'])) 				$request3['work_type'] 				= implode(',', $data['worktype']);
@@ -271,9 +282,12 @@ class Company_Model extends CC_Model
 			
 			if($userscompanyid==''){
 				$usersdetail = $this->db->insert('users_company', $request3);
+				$userscompanyinsertids = $this->db->insert_id();
 			}else{
 				$usersdetail = $this->db->update('users_company', $request3, ['id' => $userscompanyid]);
+				$userscompanyinsertids = $userscompanyid;
 			}
+			$idarray['userscompanyinsertid'] = $userscompanyinsertids;
 		}
 		
 		if(isset($data['formstatus'])) 		$request4['formstatus'] 	= $data['formstatus'];
@@ -299,7 +313,7 @@ class Company_Model extends CC_Model
 		else
 		{
 			$this->db->trans_commit();
-			return true;
+			return $idarray;
 		}
 	}
 
