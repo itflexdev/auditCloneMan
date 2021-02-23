@@ -281,23 +281,40 @@
 												<label>Company Name *</label>
 												<input type="text" class="form-control" id="name" name="name" value="<?php echo $company; ?>">
 											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="custom-control custom-radio">
+
+											<div class="form-group">
+												<label>Website URL</label>
+												<input type="text" class="form-control" id="websiteurl" name="websiteurl" value="<?php echo $websiteurl; ?>">
+											</div>
+
+											<div class="form-group">
+												<label>Primary Contact Person *</label>
+												<input type="text" class="form-control" id="contact_person" name="contact_person" value="<?php echo $contact_person; ?>">
+												</div>
+
+												<div class="form-group">
+													<label>Company description</label>
+											<textarea class="form-control" rows="5" name="companydescription" <?php //echo $disabled2; ?>><?php echo $description; ?></textarea>
+												</div>
+
+												<div class="custom-control custom-radio cust_btmsp">
 												<input type="checkbox" name="includeprofile" id="includeprofile" class="custom-control-input" value="1" <?php if($includeprofile =='1'){ echo 'checked="checked"'; }  ?>>
 												<label class="custom-control-label" for="includeprofile">Include profile in PIRB company listings <a href="javascript:void(0)" id="executequery" data-toggle="tooltip" data-placement="top" title='kindly replace the new content on "inclue profile in PIRB " popup When enabled, your company will appear on www.pirb.co.za's Company Search Engine'><i class="fa fa-exclamation-circle"></i></a></label>
 											</div>
 										</div>
-									</div>
-									<div class="row">
 										<div class="col-md-6">
+											<!-- <div class="custom-control custom-radio">
+												<input type="checkbox" name="includeprofile" id="includeprofile" class="custom-control-input" value="1" <?php if($includeprofile =='1'){ echo 'checked="checked"'; }  ?>>
+												<label class="custom-control-label" for="includeprofile">Include profile in PIRB company listings <a href="javascript:void(0)" id="executequery" data-toggle="tooltip" data-placement="top" title='kindly replace the new content on "inclue profile in PIRB " popup When enabled, your company will appear on www.pirb.co.za's Company Search Engine'><i class="fa fa-exclamation-circle"></i></a></label>
+											</div> -->
+											<div class="row img-sectn">
+										<!-- <div class="col-md-6">
 											<div class="form-group">
 												<label>Company Registration Number *</label>
-												<input type="text" class="form-control" id="reg_no" name="reg_no" value="<?php echo $reg_no; ?>">
+												<input type="text" class="form-control" id="reg_no" name="reg_no" value="<?php //echo $reg_no; ?>">
 											</div>
-										</div>
+										</div> -->
 
-										<div class="col-md-3">
 											<h4 class="card-title">Company Image</h4>
 											<div class="form-group">
 												<div>
@@ -308,18 +325,20 @@
 												<input type="hidden" name="image2" class="photo percentageslide" value="<?php echo $file1; ?>">
 												<p>(Image/File Size Smaller than 5mb)</p>
 											</div>
-										</div>
-										<div class="col-md-3">
+										<div class="nub_coc">
 											<label>Number of CoC's Able to purchase:</label>
 											<input type="number" class="form-control coc_purchase_limit" name="coc_purchase_limit" value="<?php echo $cocpurchaselimit; ?>" <?php echo $disabled1.$disabled2; ?>>
 										</div>
 									</div>
+										</div>
+									</div>
+									
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group">
+											<!-- <div class="form-group">
 												<label>Website URL</label>
 												<input type="text" class="form-control" id="websiteurl" name="websiteurl" value="<?php echo $websiteurl; ?>">
-											</div>
+											</div> -->
 										</div>
 										<!-- <div class="col-md-6">
 											<div class="form-group">
@@ -330,16 +349,16 @@
 									</div>
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group">
+											<!-- <div class="form-group">
 												<label>Primary Contact Person *</label>
 												<input type="text" class="form-control" id="contact_person" name="contact_person" value="<?php echo $contact_person; ?>">
-												</div>
+												</div> -->
 										</div>
 									</div>
 									<div class="row">
 										<div class="col-md-6">
-											<label>Company description</label>
-											<textarea class="form-control" rows="5" name="companydescription" <?php //echo $disabled2; ?>><?php echo $description; ?></textarea>
+											<!-- <label>Company description</label>
+											<textarea class="form-control" rows="5" name="companydescription" <?php //echo $disabled2; ?>><?php echo $description; ?></textarea> -->
 										</div>
 									</div>
 									<div class="row">
@@ -529,7 +548,7 @@
 										<div class="col-md-4">
 											<div class="form-group">
 												<label>Billing Name *</label>
-												<input type="text" class="form-control percentageslide" name="company_name" value="<?php echo $company; ?>">
+												<input type="text" class="form-control percentageslide" name="company_name" value="<?php echo $companyname; ?>">
 											</div>
 										</div>
 										<div class="col-md-4">
@@ -547,7 +566,7 @@
 										<div class="col-md-4">
 											<div class="form-group">
 												<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">	
-													<input type="checkbox" class="custom-control-input" <?php echo ($vat_vendor =='1') ? 'checked="checked"' : ''; ?> value="1" name="vat_vendor" id="vatvendor">
+													<input type="checkbox" class="custom-control-input" <?php echo ($vat_vendor =='1') ? 'checked="checked"' : ''; ?> value="1" name="vatvendor" id="vatvendor">
 													<label class="custom-control-label" for="vatvendor">VAT Vendor</label>
 												</div>
 											</div>
@@ -642,9 +661,9 @@
 									<div class="row">
 									<div class="col-md-6">
 										<h4 class="card-title">Specialisations and Categories</h4>
-										<div class="col-md-6">
+										<div class="col-md-6 cus_wd">
 										<?php foreach ($worktype1 as $key => $value) {?>
-											<input type="checkbox" name="worktype[]" value="<?php echo $key ?>"<?php echo (in_array($key, $work_type)) ? 'checked="checked"' : ''; ?> > <?php echo $value ?><br>
+											<div class="ord_div"><input type="checkbox" name="worktype[]" value="<?php echo $key ?>"<?php echo (in_array($key, $work_type)) ? 'checked="checked"' : ''; ?> > <?php echo $value ?><br></div>
 										<?php };?>
 										</div>
 									</div>
@@ -653,10 +672,10 @@
 									<!-- <h4 class="card-title">Company Categories</h4> -->
 									<div class="col-md-6">
 										<h5 class="card-title">Company Specialisations</h5>
-										<div class="col-md-6">
+										<div class="col-md-6 cus_wd rm_pad">
 										<?php foreach ($specialization as $key => $value) { 
 											?>
-											<input type="checkbox" name="specilisations[]" value="<?php echo $key ?>"<?php echo (in_array($key, $specialisations)) ? 'checked="checked"' : ''; ?>> <?php echo $value ?><br>
+											<div class="ord_div_sep"><input type="checkbox" name="specilisations[]" value="<?php echo $key ?>"<?php echo (in_array($key, $specialisations)) ? 'checked="checked"' : ''; ?>> <?php echo $value ?><br></div>
 										<?php }; ?>
 											
 										</div>
