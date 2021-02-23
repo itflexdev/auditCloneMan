@@ -266,10 +266,10 @@ class Index extends CC_Controller
             foreach($results as $result){
                 //echo date('Y-m-d', strtotime($result['updated_at']))!='0001-30-0001 00:00:00';die;
                 $created_at = strtotime($result['created_at']);
-                $upload_date = date('d-F-Y H:i:s', $created_at);
+                $upload_date = date('d-m-Y H:i:s', $created_at);
                 if ($result['updated_at']!='') {
                     $updated_at = strtotime($result['updated_at']);
-                    $update_date = date('d-F-Y H:i:s', $updated_at);
+                    $update_date = date('d-m-Y H:i:s', $updated_at);
 
                     $full_date = $upload_date.' / '.$update_date;
                  }else{
@@ -444,11 +444,24 @@ class Index extends CC_Controller
                 $points = $this->Companyperformancedetails_Model->getList('row', ['user_id' => $user_id, 'document_type' => $result['document_type']]);
                 $points = $points['points'];
 
-                $action = '<div class="table-action">
+                /*$action = '<div class="table-action">
                                 <a href="' . base_url() . 'admin/company/index/perfomacerating/'.$user_id.'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>';
                 if ($companystatus == 'Active') {
                     $action .= '   <a href="javascript:void(0);" data-id="' . $result['id'] . '" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
                                 </div>';
+                }*/
+                if ($result['date_of_renewal'] >= date("Y-m-d")) {
+                    $action = '<div class="table-action">
+                                <a href="' . base_url() . 'admin/company/index/perfomacerating/'.$user_id.'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>';
+                    if ($companystatus == 'Active') {
+                        $action .= '   <a href="javascript:void(0);" data-id="' . $result['id'] . '" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
+                                </div>';
+                    }
+                } else {
+                    if ($companystatus == 'Active') {
+                        $action = '   <a href="javascript:void(0);" data-id="' . $result['id'] . '" class="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>
+                                </div>';
+                    }
                 }
 
                 $totalrecord[] = [
