@@ -40,7 +40,7 @@
 			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 		<![endif]-->
-		<link href="<?php echo base_url().'assets/css/custom.css?version=3.0'; ?>" rel="stylesheet">
+		<link href="<?php echo base_url().'assets/css/custom.css?version=4.0'; ?>" rel="stylesheet">
 		<script src="<?php echo base_url().'assets/plugins/jquery/jquery-3.2.1.min.js?version=5.0'; ?>"></script>
 	</head>
 
