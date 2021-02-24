@@ -3527,3 +3527,50 @@ tr.dynmci---icns {
 		height: auto !important;
 	}
 }
+
+.row.add_top_value {
+    margin-bottom: 22px !important;
+}
+
+div#plumberaccordion {
+    margin-top: 20px !important;
+}
+
+a.active_link_btn.exportcard-class {
+    padding: 10px !important;
+}
+
+.cus_wd {
+    max-width: 100% !important;
+    margin-bottom: 10px;
+    padding-left: 0 !important;
+}
+
+.cus_wd.rm_pad{
+    padding: 0 !important;
+}
+
+.ord_div_sep {
+    width: 49%;
+    display: inline-block;
+    position: relative;
+}
+
+.ord_div_sep:nth-child(2) {
+    width: 50%;
+}
+
+.ord_div {
+    width: 49%;
+    display: inline-block;
+    position: relative;
+}
+
+.img-sectn {
+    margin-top: 0px;
+    margin-left: 10px;
+}
+
+.cust_btmsp{
+    margin-bottom: 14px;
+}
