@@ -536,7 +536,7 @@
 							<div class="col-md-4">
 								<div class="form-group">
 									<label>Billing Name *</label>
-									<input type="text" class="form-control percentageslide" name="company_name" value="<?php echo $company; ?>">
+									<input type="text" class="form-control percentageslide" name="company_name" value="<?php echo $companyname; ?>">
 								</div>
 							</div>
 							<div class="col-md-4">
