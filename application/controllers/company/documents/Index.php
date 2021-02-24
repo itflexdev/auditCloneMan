@@ -22,7 +22,7 @@ class Index extends CC_Controller
             }else{
                 $this->session->set_flashdata('error', 'No Record Found.');
                 if($extras['redirect']) redirect($extras['redirect']); 
-                else redirect('admin/company/index'); 
+                else redirect('company/profile/index'); 
             }
         }
         
