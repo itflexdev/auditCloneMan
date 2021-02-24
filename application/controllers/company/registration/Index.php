@@ -27,30 +27,39 @@ class Index extends CC_Controller
 		
 		if($this->input->post()){
 			$requestData 				= 	$this->input->post();
-			if (isset($requestData['save1'])) {
-				$requestData['formstatus'] 	= 	'0';
-				$mark ="Application saved.";
-			}else{
-				$requestData['formstatus'] 	= 	'1';
-				$mark ="Thanks for submitting the application.";
+			// if (isset($requestData['save1'])) {
+			// 	$requestData['formstatus'] 	= 	'0';
+			// 	$mark ="Application saved.";
+			// }else{
+			// 	$requestData['formstatus'] 	= 	'1';
+			// 	$mark ="Thanks for submitting the application.";
+			// }
+
+			// $requestData['user_id']	 	= 	$userid;
+			
+			// $requestData['status'] 		= 	'1';
+			// $data 						=  	$this->Company_Model->action($requestData);
+
+			if (isset($requestData['completeapplication']) && $requestData['completeapplication'] =='submit') {
+				$request1['formstatus'] 	= 	'1';
+				$users = $this->db->update('users', $request1, ['id' => $userid]);
+				$this->CC_Model->diaryactivity(['companyid' => $userid, 'action' => '1', 'type' => '3']);
+				redirect('company/profile/index');
 			}
 
-			$requestData['user_id']	 	= 	$userid;
 			
-			$requestData['status'] 		= 	'1';
-			$data 						=  	$this->Company_Model->action($requestData);
-			
-			if(isset($data)){
-				$this->CC_Model->diaryactivity(['companyid' => $userid, 'action' => '1', 'type' => '3']);
-				$this->session->set_flashdata('success', $mark);
-			}else{
-				$this->session->set_flashdata('error', 'Try Later.');
-			}
-			if ($mark =="Application saved.") {
-				redirect('company/registration/index');
-			}else{
-				redirect('company/profile/index'); 
-			}			
+			// if(isset($data)){
+			// 	// $this->CC_Model->diaryactivity(['companyid' => $userid, 'action' => '1', 'type' => '3']);
+			// 	$this->session->set_flashdata('success', $mark);
+			// }else{
+			// 	$this->session->set_flashdata('error', 'Try Later.');
+			// }
+			// if ($mark =="Application saved.") {
+			// 	redirect('company/registration/index');
+			// }else{
+			// 	$this->CC_Model->diaryactivity(['companyid' => $userid, 'action' => '1', 'type' => '3']);
+			// 	redirect('company/profile/index'); 
+			// }			
 		}
 		
 	
@@ -78,7 +87,6 @@ class Index extends CC_Controller
 		$post 				= $this->input->post();
 		// echo "<pre>";print_r($post);die;
 		$post['user_id'] 	= $this->getUserID();
-		$post['formstatus'] = '0';
 		$result 			= $this->Company_Model->action($post);
 		
 		if($result){
