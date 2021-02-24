@@ -413,6 +413,11 @@ class Api extends CC_Controller
 				$post['usersdetailid'] 	= 	$userdata['usersdetailid'];
 				$post['usersplumberid'] = 	$userdata['usersplumberid'];
 
+				if (isset($post['plumber_photoid']) && $post['plumber_photoid'] != '') {
+					$data = $this->fileupload(['files' => $post['plumber_photoid'], 'file_name' => $post['plumber_photoid_name'], 'user_id' => $plumberID, 'page' => 'plumber_reg']);
+					$post['image2'] = $data[0];
+				}
+
 				isset($post['coc_electronic']) ? $post['coc_electronic'] : '0';
 
 				if ((isset($post['address'][1]['id']) && $post['address'][1]['id'] !='') && (isset($post['address'][1]['type']) && $post['address'][1]['type'] !='')) {
