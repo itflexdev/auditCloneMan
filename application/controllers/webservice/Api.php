@@ -3875,7 +3875,7 @@ class Api extends CC_Controller
 				$jsonData['review_details'][] = [ 'reviewid' => $reviewlist['id'], 'reviewtype' => $this->config->item('reviewtype')[$reviewlist['reviewtype']], 'statementname' => $reviewlist['statementname'], 'installationtypename' =>$reviewlist['installationtypename'], 'subtypename' =>$reviewlist['subtypename'], 'colorcode' => $colorcode, 'cocid' => $reviewlist['coc_id'], 'reference' => $reviewlist['reference'], 'comments' => $reviewlist['comments'], 'performancepoint' => $reviewlist['point'], 'knowledgelink' => $reviewlist['link'], 'review_images' => $review_images, 'status' => $reviewlist['status']
 				];
 			}
-			$jsonArray = array("status"=>'1', "message"=>'Review Deatils', "result"=>$jsonData);
+			$jsonArray = array("status"=> isset($jsonData) ? '1' : '0', "message"=>'Review Deatils', "result"=> isset($jsonData) ? $jsonData : []);
 		}else{
 			$jsonArray = array("status"=>'0', "message"=>'invalid request', "result"=>[]);
 		}
