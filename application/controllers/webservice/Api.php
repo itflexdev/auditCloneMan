@@ -3923,7 +3923,7 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id') && $this->input->post('plumberid')) {
 			if ($this->input->post('type') !='' && $this->input->post('type') == 'action') {
 				$this->form_validation->set_rules('reviewtype','Review Type','trim|required');
-				$this->form_validation->set_rules('favourites','Favourites','trim|required');
+				// $this->form_validation->set_rules('favourites','Favourites','trim|required');
 				$this->form_validation->set_rules('installationtype','Installation Type','trim|required');
 				$this->form_validation->set_rules('subtype','Subtype','trim|required');
 				$this->form_validation->set_rules('statement','Statement','trim|required');
