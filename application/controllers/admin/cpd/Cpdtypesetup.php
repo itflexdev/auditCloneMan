@@ -370,7 +370,7 @@ class Cpdtypesetup extends CC_Controller
 				
 
 				$totalrecord[] = 	[
-					'date' 					=> 	date('m-d-Y',strtotime($result['cpd_start_date'])),
+					'date' 					=> 	date('d-m-Y',strtotime($result['cpd_start_date'])),
 					'namesurname' 			=> 	$result['name_surname'],
 					'reg_number' 			=> 	$result['reg_number'],
 					'acivity' 				=> 	$result['cpd_activity'],
