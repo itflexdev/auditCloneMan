@@ -40,7 +40,7 @@ class Index extends CC_Controller
 		$allocateArray_Result			= 	array_count_values($allocateArray);
 				
 		for($i = 1; $i <= 6; $i++){
-			$monthvalue					=	date('m')-$i;
+			$monthvalue					=	abs(date('m')-$i);
 			if($monthvalue < 10){
 				$monthvalue 			=  	'0'.$monthvalue; 
 			}
