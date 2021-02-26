@@ -43,17 +43,19 @@ class Index extends CC_Controller
 					}
 				}
 
-				$resultid['user_id'] = $pagedata['result']['id'];						
-				$pagedata['array_orderqty']	=  $this->Resellers_allocatecoc_Model->getqty('row',$resultid);
+				if (isset($pagedata['result'])) {
+					$resultid['user_id'] = $pagedata['result']['id'];						
+					$pagedata['array_orderqty']	=  $this->Resellers_allocatecoc_Model->getqty('row',$resultid);
 
-				$Array_rangeData['coc_status']=['3'];
-			 	$Array_rangeData['coctype']=['2'];			 	
-			 	$Array_rangeData['user_id'] = $this->getUserID();
+					$Array_rangeData['coc_status']=['3'];
+				 	$Array_rangeData['coctype']=['2'];			 	
+				 	$Array_rangeData['user_id'] = $this->getUserID();
 
-				$pagedata['array_range'] =  $this->Coc_Model->getCOCList('all',$Array_rangeData);				
-				$pagedata['rangedata']= ['' => 'Select Range']+array_column($pagedata['array_range'], 'id', 'id');
+					$pagedata['array_range'] =  $this->Coc_Model->getCOCList('all',$Array_rangeData);				
+					$pagedata['rangedata']= ['' => 'Select Range']+array_column($pagedata['array_range'], 'id', 'id');
 
-				$pagedata['card'] 	= $this->plumbercard($resultid['user_id']);
+					$pagedata['card'] 	= $this->plumbercard($resultid['user_id']);
+				}
 			}
 
 			if(isset($requestData['plumberid']) > 0){
