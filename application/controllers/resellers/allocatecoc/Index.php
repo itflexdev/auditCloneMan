@@ -38,7 +38,7 @@ class Index extends CC_Controller
 					else
 						$pagedata['emptyvalue'] = 1;
 
-					if ($pagedata['result']['plumberstatus'] !='1' && $pagedata['result']['plumberstatus'] !='') {
+					if (isset($pagedata['result']['plumberstatus']) && ($pagedata['result']['plumberstatus'] !='1' && $pagedata['result']['plumberstatus'] !='')) {
 						$this->session->set_flashdata('error', 'Plumber cannot purchase COCs as plumber is '.$this->config->item('plumberstatus')[$pagedata['result']['plumberstatus']].'');
 					}
 				}
