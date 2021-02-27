@@ -470,6 +470,7 @@ class Api_Model extends CC_Model
 		}
 		if (isset($requestdata['api_data']) && $requestdata['api_data'] =='plumber_coc_statement_api') {
 			$this->db->order_by('sm.coc_status', 'DESC');
+			$this->db->order_by('sm.id', 'DESC');
 		}
 		
 		$this->db->group_by('sm.id');
