@@ -1363,6 +1363,8 @@ class Api extends CC_Controller
 
 			$userid 				= $this->input->post('user_id');
 
+			// $totalcount 			 = $this->Api_Model->getCOCList('count', ['user_id' => $userid, 'coc_status' => ['2','4','5','7']], ['coclog']);
+			// $results	 			= $this->Api_Model->getCOCList('all', ['user_id' => $userid, 'coc_status' => ['2','4','5','7'], 'api_data' => 'plumber_coc_statement_api'], ['coclog']);
 			$totalcount 			 = $this->Api_Model->getCOCList('count', ['user_id' => $userid, 'coc_status' => ['2','4','5']], ['coclog']);
 			$results	 			= $this->Api_Model->getCOCList('all', ['user_id' => $userid, 'coc_status' => ['2','4','5'], 'api_data' => 'plumber_coc_statement_api'], ['coclog']);
 
@@ -1386,6 +1388,8 @@ class Api extends CC_Controller
 			$userid 		= $this->input->post('user_id');
 			$post 			= $this->input->post();
 
+			// $totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
+			// $results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5','7'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
 			$totalcount 	= $this->Api_Model->getCOCList('count', ['coc_status' => ['2','4','5'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
 			$results 		= $this->Api_Model->getCOCList('all', ['coc_status' => ['2','4','5'], 'user_id' => $userid, 'search' => ['value' => $keywords], 'page' => 'plumbercocstatement'], ['coclog', 'coclogcompany']);
 			$jsonData['keywords'][] = $keywords;
