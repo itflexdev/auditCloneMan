@@ -2925,7 +2925,7 @@ class Api extends CC_Controller
 					];
 				}
 			}else{
-				$areas = [];
+				$areasarray = [];
 			}
 
 			$getprovince 	= $this->getProvinceList()[$result['province']];
