@@ -2437,7 +2437,7 @@ class Api extends CC_Controller
 				$this->db->where('cp1.status="1"');
 				$this->db->where('cp1.startdate<="'.$currentDate.'"');
 				$this->db->where('cp1.enddate>"'.$currentDate.'"');
-				$this->db->where_not_in('cp1.id', $cpdidarray);
+				if (isset($cpdidarray)) $this->db->where_not_in('cp1.id', $cpdidarray);
 				$this->db->where('cp1.hidden', '0');
 				
 				$this->db->group_by("cp1.id");		
