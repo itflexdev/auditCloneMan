@@ -4115,7 +4115,7 @@ class Api extends CC_Controller
 		echo json_encode($jsonArray);
 	}
 
-	public function auditor_diarycomments(){
+	public function auditor_diarycomments(){ //
 		if ($this->input->post() && $this->input->post('coc_id') && $this->input->post('user_id')) {
 			$auditorid['auditorid']	= $this->input->post('user_id');
 			$result					= $this->Coc_Model->getCOCList('row', ['id' => $this->input->post('coc_id'), 'coc_status' => ['2']], ['auditorstatement']+$auditorid);
