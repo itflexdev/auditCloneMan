@@ -10,6 +10,7 @@ class Index extends CC_Controller
 	
 	public function index()
 	{
+		// Dashboard
 		$pagedata['totalplumber'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2']], ['users', 'usersplumber']);
 		
 		$pagedata['statusactive'] 		= $this->Plumber_Model->getList('count', ['type' => '3', 'approvalstatus' => ['0','1'], 'status' => ['1', '2'], 'plumberstatus' => ['1']], ['users', 'usersdetail', 'usersplumber']);
