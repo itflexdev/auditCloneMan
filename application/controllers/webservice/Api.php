@@ -3737,7 +3737,7 @@ class Api extends CC_Controller
 					$inspectionrate = $this->currencyconvertor($this->getRates($this->config->item('inspection')));
 					$invoicedata = [
 						'description' 	=> 'Audit undertaken for '.$result['u_name'].' on COC '.$result['id'].'. Date of Review Submission '.date('d-m-Y', strtotime($datetime)),
-						'user_id'		=> (isset($extras['auditorid'])) ? $extras['auditorid'] : '',
+						'user_id'		=> (isset($extraparam['auditorid'])) ? $extraparam['auditorid'] : '',
 						'total_cost'	=> $inspectionrate,
 						'status'		=> '2',
 						'created_at'	=> $datetime
