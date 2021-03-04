@@ -533,6 +533,22 @@ class Coc_Model extends CC_Model
 			}elseif($recall=='2'){
 				$getstock	= $this->db->get_where('stock_management', ['id' => $cocid])->row_array();
 				$auditorid 	= $getstock['auditorid'];
+
+				// Update CoC Count table after CoC Cancel
+				$stockcheck = $this->getCOCCount('row', ['user_id' => $stockuserid]);
+				if($stockcheck['count'] > 0){
+					$this->db->set('count', 'count + 1', FALSE); 
+					$this->db->where('user_id', $stockuserid); 
+					$this->db->update('coc_count'); 
+					
+					$this->db->set('count', 'count - 1', FALSE); 
+					$this->db->where('user_id', $data['userid']); 
+					$this->db->update('coc_count'); 
+					
+					$this->db->update('stock_management', ['user_id' => $data['userid'], 'coc_status' => $cocstatus, 'coc_orders_status' => '8'], ['id' => $cocid]);
+					$this->db->delete('plumberallocate', ['stockid' => $cocid]);
+				}
+				
 				if($auditorid!='0'){
 					$auditor = $this->db->get_where('users', ['id' => $auditorid])->row_array();
 					$this->db->delete('auditor_statement', ['coc_id' => $cocid]);
