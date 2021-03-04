@@ -2013,7 +2013,7 @@ class Api extends CC_Controller
 						$colorcode = '#50c6f2';
 					}
 
-					$jsonData['review_details'][] = [ 'reviewid' => $value['id'], 'reviewtype' => $this->config->item('reviewtype')[$value['reviewtype']], 'statementname' => $value['statementname'], 'colorcode' => $colorcode
+					$jsonData['review_details'][] = [ 'reviewid' => $value['id'], 'reviewtype' => $this->config->item('reviewtype')[$value['reviewtype']], 'statementname' => $value['statementname'], 'comments' => $value['comments'], 'colorcode' => $colorcode
 					];
 				}
 				$message 	= 'CoC Details';
