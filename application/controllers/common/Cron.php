@@ -562,9 +562,34 @@ class Cron extends CC_Controller {
 		}
 	}
 	
+	// public function invoiceotherfee($userdata1){
+	// 	$otherfee = [];
+	// 	if($userdata1['registration_card']=='1'){
+	// 		$otherfee['cardfee'] = $this->getRates($this->config->item('cardfee'));
+			/*if($userdata1['delivery_card']=='1'){
+				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('postage'));
+				$otherfee['deliverycard'] 	= '1';
+			}elseif($userdata1['delivery_card']=='2'){
+				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('couriour'));
+				$otherfee['deliverycard'] 	= '2';
+			}*/
+	// 	}
+	// 	$specialisations = array_filter(explode(',', $userdata1['specialisations']));
+	// 	if(count($specialisations) > 0){
+	// 		$otherfee['specialisationsfee'] = $this->getRates($this->config->item('specializationfee'));
+	// 		$otherfee['specialisationsqty'] = count($specialisations);
+	// 	}
+		
+	// 	return $otherfee;
+	// }
+
 	public function invoiceotherfee($userdata1){
-		$otherfee = [];
-		if($userdata1['registration_card']=='1'){
+		$otherfee 		= [];
+		$settings 		= $this->Systemsettings_Model->getList('row');
+		$designation 	= explode(',', $settings['renewal_card']);
+
+		// if($userdata1['registration_card']=='1' && $settings['renewal_card'] =='1'){
+		if($userdata1['registration_card']=='1' && in_array($userdata1['designation'], $designation)){
 			$otherfee['cardfee'] = $this->getRates($this->config->item('cardfee'));
 			/*if($userdata1['delivery_card']=='1'){
 				$otherfee['deliveryfee'] 	= $this->getRates($this->config->item('postage'));
@@ -575,7 +600,7 @@ class Cron extends CC_Controller {
 			}*/
 		}
 		$specialisations = array_filter(explode(',', $userdata1['specialisations']));
-		if(count($specialisations) > 0){
+		if((count($specialisations) > 0) && $settings['renewal_specialization'] =='1'){
 			$otherfee['specialisationsfee'] = $this->getRates($this->config->item('specializationfee'));
 			$otherfee['specialisationsqty'] = count($specialisations);
 		}

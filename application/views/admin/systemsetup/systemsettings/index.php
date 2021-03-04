@@ -86,6 +86,9 @@ if(isset($result) && $result){
 	$penalty 						= (set_value('penalty')) ? set_value('penalty') : $result['penalty'];
 	$expired 						= (set_value('expired')) ? set_value('expired') : $result['expired'];
 	$otp 							= (set_value('otp')) ? set_value('otp') : $result['otp'];
+	$renewal_specialization 		= (set_value('renewal_specialization')) ? set_value('renewal_specialization') : $result['renewal_specialization'];
+	// $renewal_card 					= (set_value('renewal_card')) ? set_value('renewal_card') : $result['renewal_card'];
+	$renewal_card 					= array_filter(explode(',', $result['renewal_card']));
 
 	
 	
@@ -157,9 +160,12 @@ if(isset($result) && $result){
 	$penalty					= set_value('penalty');
 	$expired					= set_value('expired');
 	$otp						= set_value('otp');
+	$renewal_specialization 	= set_value('renewal_specialization');
+	// $renewal_card 				= set_value('renewal_card');
 
 	$physical_province			= set_value('physical_province');
 	$postal_province			= set_value('postal_province');
+	$renewal_card 				= [];
 	
 
 	$heading					= 'Add';
@@ -370,6 +376,28 @@ if(isset($result) && $result){
 								<div class="form-group col-md-6">
 									<label for="export_email">Export Email Address</label>
 									<input type="text" class="form-control" id="export_email" name="export_email" placeholder="Enter Export Email Address *" value="<?php echo $exportemail; ?>">
+								</div>
+								<div class="form-group col-md-6">
+									<label for="otp">Renewal Specialization Fee Status</label>
+									<?php echo form_dropdown("renewal_specialization", $status, $renewal_specialization, ['id' => 'renewal_specialization', 'class' => 'form-control']); ?>
+								</div>
+								<!-- <div class="form-group col-md-6">
+									<label for="otp">Renewal Card Fee Status</label>
+									<?php// echo form_dropdown("renewal_card", $status, $renewal_card, ['id' => 'renewal_card', 'class' => 'form-control']); ?>
+								</div> -->
+
+								<div class="form-group col-md-6">
+									<label for="otp">Renewal Card Fee Status</label>
+									<?php
+									foreach ($designation2 as $key => $value) {
+									?>
+										<div class='custom-control custom-checkbox'>
+											<input type='checkbox' class='custom-control-input' name='renewal_card[]' id='<?php echo $key.'-'.$value; ?>' value='<?php echo $key; ?>' <?php echo (in_array($key, $renewal_card)) ? 'checked="checked"' : ''; ?>>
+											<label class='custom-control-label' for='<?php echo $key.'-'.$value; ?>'><?php echo $value; ?></label>
+										</div>
+								<?php
+									}
+								?>
 								</div>
 							</div>
 						</div>

@@ -59,6 +59,14 @@ class Systemsettings_Model extends CC_Model
 		if(isset($data['expired'])) 				$request1['expired']				 	= $data['expired'];
 		if(isset($data['otp'])) 					$request1['otp']				 		= $data['otp'];
 		if(isset($data['export_email'])) 			$request1['export_email']				= $data['export_email'];
+		if(isset($data['renewal_specialization'])) 	$request1['renewal_specialization']		= $data['renewal_specialization'];
+		// if(isset($data['renewal_card'])) 			$request1['renewal_card']				= $data['renewal_card'];
+		if(isset($data['renewal_card'])){
+			$request1['renewal_card']				= implode(',', $data['renewal_card']);
+		}else{
+			$request1['renewal_card']				= '0';
+		}
+		
 
 
 		if(isset($data['address1'][1]['address'])) 			$physical['address']				= $data['address1'][1]['address'];

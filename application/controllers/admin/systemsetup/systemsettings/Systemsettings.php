@@ -29,6 +29,7 @@ class Systemsettings extends CC_Controller
 		$pagedata['provinceList'] 			= $this->getProvinceList();
 		$pagedata['checkpermission'] 		= $this->checkUserPermission('11', '2');
 		$pagedata['cpdstream']	 			= $this->config->item('cpdstream');
+		$pagedata['designation2'] 			= $this->config->item('designation2');
 		$pagedata['status']	 				= $this->config->item('status2');
 		$pagedata['result']	 				= $this->Systemsettings_Model->getList('row');
 		$data['plugins']					= ['datatables', 'datatablesresponsive', 'sweetalert', 'validation'];
