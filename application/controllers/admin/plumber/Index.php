@@ -273,6 +273,9 @@ class Index extends CC_Controller
 		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
 		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
 		//print_r($results);die;
+
+		if ($post['pagestatus'] =='0') $pagestatus = '2';
+			else $pagestatus = '1';
 		
 		$totalrecord 	= [];
 		if(count($results) > 0){
@@ -284,7 +287,7 @@ class Index extends CC_Controller
 					$awardPts 	= '';
 					$action 	= '
 					<div class="table-action">
-					<a href="'.base_url().'admin/plumber/mycpd/index/index/'.$post['user_id'].'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
+					<a href="'.base_url().'admin/plumber/mycpd/index/index/'.$post['user_id'].'/'.$result['id'].'/'.$pagestatus.'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
 					</div>
 					';
 				}			
@@ -292,13 +295,17 @@ class Index extends CC_Controller
 					$statuz 	= $this->config->item('approvalstatus')[$result['status']];
 					if ($statuz!='Rejected') {
 						$awardPts 	= $result['points'];
+						$addclass 	= '<i class="fa fa-pencil-alt"></i>';
+						$classtitle = 'Edit';
 					}else{
 						$awardPts 	= 0;
+						$addclass 	= '<i class="fa fa-eye"></i>';
+						$classtitle = 'View';
 					}
 					
 					$action 	= '
 					<div class="table-action">
-					<a href="'.base_url().'admin/plumber/mycpd/index/index/'.$post['user_id'].'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></a>
+					<a href="'.base_url().'admin/plumber/mycpd/index/index/'.$post['user_id'].'/'.$result['id'].'/'.$pagestatus.'" data-toggle="tooltip" data-placement="top" title="'.$classtitle.'">'.$addclass.'</a>
 					</div>
 					';
 				}

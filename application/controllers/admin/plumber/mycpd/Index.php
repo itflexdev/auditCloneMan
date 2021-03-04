@@ -12,14 +12,18 @@ class index extends CC_Controller
 		
 	}
 	
-	public function index($plumber_id='',$id='')
+	public function index($plumber_id='',$id='', $pagestatus ='')
 	{
 		
 		$userid = $this->getUserID();
 		if($id!=''){
 			$userdetails 				= $this->getUserDetails($plumber_id);
 			$dbexpirydate 				= $userdetails['expirydate'];
-			$result = $this->Mycpd_Model->getQueueList('row', ['id' => $id, 'pagestatus' => '1', 'dbexpirydate' => $dbexpirydate]);
+
+			if ($pagestatus =='2') $pagestatuz = '0';
+			else $pagestatuz = '1';
+			
+			$result = $this->Mycpd_Model->getQueueList('row', ['id' => $id, 'pagestatus' => $pagestatuz, 'dbexpirydate' => $dbexpirydate]);
 			if($result){
 				$pagedata['result'] = $result;
 			}else{
