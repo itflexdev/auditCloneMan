@@ -448,16 +448,19 @@ if (in_array($plumberstatus, $plumber_status)) {
 	function calc(){
 		var coc_cost 		= parseFloat($('#coc_cost').val());
 		var costdelivery 	= ($('.coc_type:checked').val()=='1') ? '0' : parseFloat($('#cost_f_delivery').val());
-		var total = vat1 + coc_cost + parseInt(costdelivery);
-	      /*console.log(coc_cost);
+		var vat 	= parseFloat($('#dbvat').val());
+	      /*test 
+		  console.log(coc_cost);
 	      console.log(costdelivery);
-	      console.log(vat);
+		console.log(vat);	      		  
 	      console.log(vat1);
-	      console.log(total);*/
+		  console.log(total);
 
+		  */
+	      
 
 		var vat1 = parseFloat(removelastchr(((costdelivery + coc_cost ) * vat) / 100));
-		var total = vat1 + coc_cost + costdelivery;
+		var total = vat1 + coc_cost + parseInt(costdelivery);
 
 		$('#vat').val(vat1);
 		$('#totaldue').val(currencyconvertor(total));
