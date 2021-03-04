@@ -3323,7 +3323,7 @@ class Api extends CC_Controller
 						// $newDate = date("d-m-Y", strtotime($originalDate));
 						if($result['status'] == '0'){
 							$status = "Unpaid";
-							$action = '';
+							$action = base_url().'assets/inv_pdf/'.$result['inv_id'].'.pdf';
 						}elseif($result['status'] == '1'){
 							$status = "Paid";
 							$action = base_url().'assets/inv_pdf/'.$result['inv_id'].'.pdf';
