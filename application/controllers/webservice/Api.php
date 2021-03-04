@@ -4122,7 +4122,7 @@ class Api extends CC_Controller
 			$comments				= $this->Auditor_Comment_Model->getList('all', ['coc_id' => $this->input->post('coc_id')]);	
 			$diary					= $this->diaryactivity(['cocid' => $this->input->post('coc_id')]+$auditorid);
 			if (isset($diary) || $diary !='') {
-				$findtext 			= ['<p>Diary of Activities</p>', '<div class="row">', '<div class="col-12 diarybar">', '<div>', '</div>'];
+				$findtext 			= ['<p>Diary of Activities</p>', '<div class="row">', '<div class="col-12 diarybar">' , '<div class="col-12">', '<div>', '</div>'];
 				$replacetext 		= ['', ''];
 				$diaryodactvites 	= str_replace($findtext, $replacetext, $diary);
 			}
