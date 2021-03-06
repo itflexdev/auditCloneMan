@@ -425,7 +425,7 @@ class Api extends CC_Controller
 					$post['address'][1]['type'] = $post['address'][1]['type'];
 				}else{
 					$post['address'][1]['id'] 	= '';
-					$post['address'][1]['type'] = '';
+					$post['address'][1]['type'] = $post['address'][1]['type'];
 				}
 
 				if ((isset($post['address'][2]['id']) && $post['address'][2]['id'] !='') && (isset($post['address'][2]['type']) && $post['address'][2]['type'] !='')) {
@@ -433,7 +433,7 @@ class Api extends CC_Controller
 					$post['address'][2]['type'] = $post['address'][2]['type'];
 				}else{
 					$post['address'][2]['id'] 	= '';
-					$post['address'][2]['type'] = '';
+					$post['address'][2]['type'] = $post['address'][2]['type'];
 				}
 
 				if ((isset($post['address'][3]['id']) && $post['address'][3]['id'] !='') && (isset($post['address'][3]['type']) && $post['address'][3]['type'] !='')) {
@@ -441,7 +441,7 @@ class Api extends CC_Controller
 					$post['address'][3]['type'] = $post['address'][3]['type'];
 				}else{
 					$post['address'][3]['id'] 	= '';
-					$post['address'][3]['type'] = '';
+					$post['address'][3]['type'] = $post['address'][3]['type'];
 				}
 				$data 				=  	$this->Plumber_Model->action($post);
 
