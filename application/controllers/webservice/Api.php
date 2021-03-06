@@ -2068,10 +2068,18 @@ class Api extends CC_Controller
 
 			$jsonData['noncompliance']		= [];
 			foreach($noncompliance as $compliance){
+				if ($compliance['file'] !=''){
+					$compliancefileArray = explode(',', $compliance['file']);
+					foreach ($compliancefileArray as $compliancefileArraykey => $compliancefileArrayvalue) {
+						$compliancefile[] = base_url().'assets/uploads/plumber/'.$userid.'/log/'.$compliancefileArrayvalue;
+					}
+					
+				}
+
 				$jsonData['noncompliance'][] = [
 					'id' 		=> $compliance['id'],
 					'details' 	=> $this->parsestring($compliance['details']),
-					'file' 		=> isset($compliance['file']) ? base_url().'assets/uploads/plumber/'.$userid.'/log/'.$compliance['file'] : '' 
+					'file' 		=> isset($compliancefile) ? $compliancefile : []
 				];
 			}
 
