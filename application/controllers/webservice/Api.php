@@ -122,7 +122,13 @@ class Api extends CC_Controller
 									$jsonArray = array('status' => '1', "message"=>$message, 'result' => $jsonData);
 								}else{
 									if ($result['mailstatus'] =='1') {
-									$jsonData['userdetails'] = [ 'userid' => $result['id'], 'roletype' => $result['type'], 'role' => $this->config->item('usertype2')[$result['type']], 'formstatus' => $result['formstatus'], 'mobilenumber' => $userdata['mobile_phone']
+									$jsonData['userdetails'] = [
+										'userid' 				=> $result['id'],
+										'roletype' 				=> $result['type'],
+										'role' 					=> $this->config->item('usertype2')[$result['type']],
+										'formstatus' 			=> $result['formstatus'],
+										'mobilenumber' 			=> $userdata['mobile_phone'],
+										'approval_status' 		=> $userdata['approval_status']
 								 	];
 								 	$message = 'Login sucessfully';
 								 	$status = '1';
