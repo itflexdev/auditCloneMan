@@ -2071,7 +2071,7 @@ class Api extends CC_Controller
 				$jsonData['noncompliance'][] = [
 					'id' 		=> $compliance['id'],
 					'details' 	=> $this->parsestring($compliance['details']),
-					'file' 		=> base_url().'assets/uploads/plumber/'.$userid.'/log/'.$compliance['file'] 
+					'file' 		=> isset($compliance['file']) ? base_url().'assets/uploads/plumber/'.$userid.'/log/'.$compliance['file'] : '' 
 				];
 			}
 
