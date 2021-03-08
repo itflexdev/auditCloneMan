@@ -2922,7 +2922,7 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('user_id')) {
 			$id 	= $this->input->post('user_id');
 			$result = $this->Api_Model->AuditorgetList('row', ['id' => $id, 'status' => ['0','1']]);
-
+			
 			$areas 		= isset($result['areas']) ? explode('@-@', $result['areas']) : [];
 			if (count(array_filter($areas))) {
 				foreach ($areas as $areaskey => $areasvalue) {
@@ -2942,9 +2942,14 @@ class Api extends CC_Controller
 				$areasarray = [];
 			}
 
-			$getprovince 	= $this->getProvinceList()[$result['province']];
-			$getcity 		= $this->Managearea_Model->getListCity('row', ['id' => $result['city'], 'status' => ['1']]);
-			$getsuburb 		= $this->Managearea_Model->getListSuburb('row', ['id' => $result['suburb'],'status' => ['1']]);
+			if ($result['province'] !='0') $getprovince 	= $this->getProvinceList()[$result['province']];
+				else $getprovince 	= '';
+
+			if ($result['city'] !='') $getcity 		= $this->Managearea_Model->getListCity('row', ['id' => $result['city'], 'status' => ['1']]);
+				else $getcity 		= '';
+
+			if ($result['suburb'] !='') $getsuburb 		= $this->Managearea_Model->getListSuburb('row', ['id' => $result['suburb'],'status' => ['1']]);
+				else $getsuburb 	= '';
 
 			if ($result['file1'] !='') $file1 = base_url().'assets/uploads/auditor/'.$result['file1'].'';
 				else $file1 = '';
@@ -2991,8 +2996,8 @@ class Api extends CC_Controller
 				'file1' 				=> $file1,
 				'file2' 				=> $file2,
 				'provincename' 			=> $getprovince,
-				'cityname' 				=> $getcity['name'],
-				'suburbname' 			=> $getsuburb['name'],
+				'cityname' 				=> isset($getcity['name']) ? $getcity['name'] : '',
+				'suburbname' 			=> isset($getsuburb['name']) ? $getsuburb['name'] : '',
 				'areas' 				=> $areasarray,
 			];
 
