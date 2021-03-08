@@ -95,7 +95,7 @@ class Cron extends CC_Controller {
 		foreach ($userQuery as $userQuerykey => $userQueryvalue) {
 			if(isset($settingsplumberDetails)) unset($settingsplumberDetails);
 			$designationDB = $this->config->item('designation2')[$userQueryvalue['designation']];
-			echo $designationDB;
+			echo $designationDB.'<br>';
 
 			if ($designationDB == 'Learner Plumber') {
 				$designation = 'learner';
