@@ -89,12 +89,13 @@ class Cron extends CC_Controller {
 		$this->db->group_by('t1.user_id');
 		
 		$userQuery = $this->db->get()->result_array();
-		echo "<pre>";print_r($userQuery);die;
+		// echo "<pre>";print_r($userQuery);die;
 		$settingsCPD = $this->db->select('*')->from('settings_cpd')->get()->result_array();
 		$template 	= $this->db->select('*')->from('email_notification')->where('id','14')->where('email_active','1')->get()->row_array();	
 		foreach ($userQuery as $userQuerykey => $userQueryvalue) {
 			if(isset($settingsplumberDetails)) unset($settingsplumberDetails);
 			$designationDB = $this->config->item('designation2')[$userQueryvalue['designation']];
+			echo $designationDB;
 
 			if ($designationDB == 'Learner Plumber') {
 				$designation = 'learner';
@@ -160,7 +161,7 @@ class Cron extends CC_Controller {
 							$array1 = ['{Plumbers Name and Surname}','{TODAYS DATE}', 'Points Table', '{plumbers registration renewal date}'];
 							$array2 = [$userQueryvalue['name_surname'], $currentDate, $cpdTable, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
 							$body = str_replace($array1, $array2, $template['email_body']);
-							$this->CC_Model->sentMail($userQueryvalue['email'],$template['subject'],$body);
+							// $this->CC_Model->sentMail($userQueryvalue['email'],$template['subject'],$body);
 						}
 						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '14', 'smsstatus' => '1']);
 						if($smsdata && isset($userQueryvalue['mobile_phone'])){
@@ -169,7 +170,7 @@ class Cron extends CC_Controller {
 							$smsbody1 = ['{total Points}','{total points required}', '{next registration date}'];
 							$smsbody2 = [$total, $totalDB, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
 							$sms = str_replace($smsbody1, $smsbody2, $smsdata['sms_body']);
-							$this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
+							// $this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
 						}
 
 						$plumberemails .= $userQueryvalue['email'].',';
