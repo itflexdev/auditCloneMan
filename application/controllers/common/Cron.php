@@ -91,7 +91,7 @@ class Cron extends CC_Controller {
 		$userQuery = $this->db->get()->result_array();
 		// echo "<pre>";print_r($userQuery);die;
 		$settingsCPD = $this->db->select('*')->from('settings_cpd')->get()->result_array();
-		$template 	= $this->db->select('*')->from('email_notification')->where('id','14')->where('sms_active','1')->get()->row_array();	
+		$template 	= $this->db->select('*')->from('email_notification')->where('id','14')->where('email_active','1')->get()->row_array();	
 		foreach ($userQuery as $userQuerykey => $userQueryvalue) {
 			if(isset($settingsplumberDetails)) unset($settingsplumberDetails);
 			$designationDB = $this->config->item('designation2')[$userQueryvalue['designation']];
@@ -154,7 +154,7 @@ class Cron extends CC_Controller {
 						</tr>
 						</table>';
 						
-						if ($template['email_active'] == '1') {
+						if (isset($template['email_active']) && $template['email_active'] == '1') {
 							if(isset($array1)) unset($array1);
 							if(isset($array2)) unset($array2);
 							$array1 = ['{Plumbers Name and Surname}','{TODAYS DATE}', 'Points Table', '{plumbers registration renewal date}'];
