@@ -89,7 +89,7 @@ class Cron extends CC_Controller {
 		$this->db->group_by('t1.user_id');
 		
 		$userQuery = $this->db->get()->result_array();
-		// echo "<pre>";print_r($userQuery);die;
+		echo "<pre>";print_r($userQuery);die;
 		$settingsCPD = $this->db->select('*')->from('settings_cpd')->get()->result_array();
 		$template 	= $this->db->select('*')->from('email_notification')->where('id','14')->where('email_active','1')->get()->row_array();	
 		foreach ($userQuery as $userQuerykey => $userQueryvalue) {
