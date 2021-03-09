@@ -73,7 +73,7 @@ class Cron extends CC_Controller {
 		$total 					= '';
 		$totalDB 				= '';
 
-		$this->db->select('t1.id as t1id, t1.name_surname, t2.id as plumberid, t3.designation, t2.renewal_date, t2.expirydate, t4.mobile_phone, t2.email');
+		$this->db->select('t1.id as t1id, t1.user_id, t1.name_surname, t2.id as plumberid, t3.designation, t2.renewal_date, t2.expirydate, t4.mobile_phone, t2.email');
 		// $this->db->select('group_concat(concat_ws("@@@", t1.user_id, t1.name_surname,t1.cpd_stream,t1.points) separator "@-@") as cpddata');
 		$this->db->from('users t2');
 		$this->db->join('users_plumber t3', 't3.user_id=t1.user_id','left');
