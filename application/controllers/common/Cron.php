@@ -75,10 +75,10 @@ class Cron extends CC_Controller {
 
 		$this->db->select('t1.id as t1id, t1.name_surname, t2.id as plumberid, t3.designation, t2.renewal_date, t2.expirydate, t4.mobile_phone, t2.email');
 		// $this->db->select('group_concat(concat_ws("@@@", t1.user_id, t1.name_surname,t1.cpd_stream,t1.points) separator "@-@") as cpddata');
-		$this->db->from('users t2', 't2.id=t1.user_id','left');
+		$this->db->from('users t2');
 		$this->db->join('users_plumber t3', 't3.user_id=t1.user_id','left');
 		$this->db->join('users_detail t4', 't4.user_id=t1.user_id','left');
-		$this->db->join('cpd_activity_form t1');
+		$this->db->join('cpd_activity_form t1', 't1.user_id=t2.id','left');
 		$this->db->where('t2.type', '3');
 		$this->db->where('t2.status', '1');
 		// $this->db->where('MONTH(t1.cpd_start_date) = MONTH(CURDATE() - INTERVAL 1 MONTH)');
