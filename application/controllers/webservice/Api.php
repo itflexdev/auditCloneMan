@@ -3651,7 +3651,7 @@ class Api extends CC_Controller
 				}
 				if ($data) {
 					if($post['submit']=='save' && isset($post['hold'])){
-					$this->db->update('stock_management', ['audit_status' => '5', 'notification' => '1'], ['id' => $cocid]);
+						$this->db->update('stock_management', ['audit_status' => '5', 'notification' => '1'], ['id' => $cocid]);
 					}elseif($post['submit']=='save' && !isset($post['hold']) && $post['auditstatus']=='0'){
 						$this->db->update('stock_management', ['audit_status' => '3', 'notification' => '1'], ['id' => $cocid]);
 					}elseif($post['submit']=='save' && !isset($post['hold']) && $post['auditstatus']=='1'){
