@@ -3574,6 +3574,8 @@ class Api extends CC_Controller
 				'as_hold' 					=> $result['as_hold'],
 				'as_reason' 				=> $result['as_reason'],
 				'as_auditcomplete' 			=> $result['as_auditcomplete'],
+				'audit_status' 				=> $result['audit_status'],
+				'audit_status_str' 			=> $this->config->item('auditstatus')[$result['audit_status']],
 				'auditorid' 				=> $result['auditorid'],
 				'refix_period' 				=> $settings['refix_period'],
 				'currentdatetime' 			=> $datetime,
