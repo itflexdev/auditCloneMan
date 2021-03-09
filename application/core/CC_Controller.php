@@ -1287,8 +1287,8 @@ class CC_Controller extends CI_Controller
 	
 	public function mycptindex($pagestatus='',$id='',$userid='')
 	{
+		$userdetails 	= $this->getUserDetails();
 		if($id!=''){
-			$userdetails 	= $this->getUserDetails();
 			$dbexpirydate = $userdetails['expirydate'];
 			$result = $this->Mycpd_Model->getQueueList('row', ['id' => $id, 'pagestatus' => $pagestatus, 'dbexpirydate' => $userdetails['expirydate']]);
 			if($result){
@@ -1321,10 +1321,24 @@ class CC_Controller extends CI_Controller
 			else $this->session->set_flashdata('error', 'Try Later.');
 			
 			redirect('plumber/mycpd/index'); 
-		}		
-		
-		$pagedata['mycpd'] 			= $this->userperformancestatus(['performancestatus' => '1', 'auditorstatement' => '1']);
-		
+		}
+		if ($pagestatus =='' || $pagestatus =='1') $pagestatuz = '1';
+		else $pagestatuz = '0';
+
+		$developmental 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagestatuz, 'plumberid' => $userid, 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userdetails['expirydate']]);
+		$individual 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagestatuz, 'plumberid' => $userid, 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userdetails['expirydate']]);
+		$workbased 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagestatuz, 'plumberid' => $userid, 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userdetails['expirydate']]);
+
+		if (count($developmental) > 0) $developmental = array_sum(array_column($developmental, 'points')); 
+		else $developmental = 0;
+		if (count($individual) > 0) $individual = array_sum(array_column($individual, 'points')); 
+		else $individual = 0;
+		if (count($workbased) > 0) $workbased = array_sum(array_column($workbased, 'points')); 
+		else $workbased = 0;
+		$totalcpd = $developmental+$individual+$workbased;
+
+		// $pagedata['mycpd'] 			= $this->userperformancestatus(['performancestatus' => '1', 'auditorstatement' => '1']);
+		$pagedata['mycpd'] 			= $totalcpd;
 		$userdata1					= $this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber']);
 		$pagedata['notification'] 	= $this->getNotification();
 		$pagedata['cpdstreamID'] 	= $this->config->item('cpdstream');
