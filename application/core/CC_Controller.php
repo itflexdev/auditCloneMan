@@ -1505,7 +1505,7 @@ class CC_Controller extends CI_Controller
 				Please do not reply to this email, as it will not be responded to.
 				';
 			$this->CC_Model->sentMail($data['email'], 'OTP Verification', $body);
-			$this->CC_Model->sentMail('suresh@itflexsolutions.com', 'Test OTP Verification', $body);
+			// $this->CC_Model->sentMail('suresh@itflexsolutions.com', 'Test OTP Verification', $body);
 		}
 		
 		$url = 'http://www.mymobileapi.com/api5/http5.aspx';
