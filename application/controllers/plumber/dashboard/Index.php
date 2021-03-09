@@ -16,8 +16,21 @@ class Index extends CC_Controller
 	{
 		$id 										= $this->getUserID();
 		$userdata 									= $this->getUserDetails();
+
+		$developmental 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userdata['expirydate']]);
+		$individual 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userdata['expirydate']]);
+		$workbased 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userdata['expirydate']]);
+
+		if (count($developmental) > 0) $developmental = array_sum(array_column($developmental, 'points')); 
+		else $developmental = 0;
+		if (count($individual) > 0) $individual = array_sum(array_column($individual, 'points')); 
+		else $individual = 0;
+		if (count($workbased) > 0) $workbased = array_sum(array_column($workbased, 'points')); 
+		else $workbased = 0;
+		$totalcpd = $developmental+$individual+$workbased;
 		
-		$pagedata['mycpd'] 							= $this->userperformancestatus(['performancestatus' => '1', 'auditorstatement' => '1']);
+		// $pagedata['mycpd'] 							= $this->userperformancestatus(['performancestatus' => '1', 'auditorstatement' => '1']);
+		$pagedata['mycpd'] 							= $totalcpd;
 		$pagedata['nonlogcoc']						= $this->Coc_Model->getCOCList('count', ['user_id' => $id, 'coc_status' => ['4','5']]);
 		$adminstock 								= $this->Coc_Ordermodel->getCocorderList('all', ['admin_status' => '0', 'userid' => $id]);
 		$pagedata['adminstock']						= array_sum(array_column($adminstock, 'quantity'));
