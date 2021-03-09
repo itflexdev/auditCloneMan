@@ -75,10 +75,10 @@ class Cron extends CC_Controller {
 
 		$this->db->select('t1.id as t1id, t1.name_surname, t2.id as plumberid, t3.designation, t2.renewal_date, t2.expirydate, t4.mobile_phone, t2.email');
 		// $this->db->select('group_concat(concat_ws("@@@", t1.user_id, t1.name_surname,t1.cpd_stream,t1.points) separator "@-@") as cpddata');
-		$this->db->from('cpd_activity_form t1');
-		$this->db->join('users t2', 't2.id=t1.user_id','left');
+		$this->db->from('users t2', 't2.id=t1.user_id','left');
 		$this->db->join('users_plumber t3', 't3.user_id=t1.user_id','left');
 		$this->db->join('users_detail t4', 't4.user_id=t1.user_id','left');
+		$this->db->join('cpd_activity_form t1');
 		$this->db->where('t2.type', '3');
 		$this->db->where('t2.status', '1');
 		// $this->db->where('MONTH(t1.cpd_start_date) = MONTH(CURDATE() - INTERVAL 1 MONTH)');
@@ -127,9 +127,9 @@ class Cron extends CC_Controller {
 
 				$workbasedpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 
-				$developmental 	= array_sum(array_column($developmentalpts, 'points')); 
-				$individual 	= array_sum(array_column($individualpts, 'points')); 
-				$workbased 		= array_sum(array_column($workbasedpts, 'points')); 
+				$developmental 	= isset($developmentalpts['points']) ? array_sum(array_column($developmentalpts, 'points')) : 0; 
+				$individual 	= isset($individualpts['points']) ? array_sum(array_column($individualpts, 'points')) : 0; 
+				$workbased 		= isset($individualpts['points']) ? array_sum(array_column($workbasedpts, 'points')) : 0; 
 				$total 			= $developmental+$individual+$workbased;
 				$cpdTable = '<table style="width:40%; border-collapse:collapse;" class="tablcpd">
 							<tr>
@@ -159,23 +159,25 @@ class Cron extends CC_Controller {
 							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$totalDB.'</td>
 							</tr>
 							</table>';
+							echo $userQueryvalue['email'].'<br>';
+							echo $cpdTable;
 							
-							if (isset($template['email_active']) && $template['email_active'] == '1') {
+							if ((isset($template['email_active']) && $template['email_active'] == '1') && $totalDB !='0') {
 								if(isset($array1)) unset($array1);
 								if(isset($array2)) unset($array2);
 								$array1 = ['{Plumbers Name and Surname}','{TODAYS DATE}', 'Points Table', '{plumbers registration renewal date}'];
 								$array2 = [$userQueryvalue['name_surname'], $currentDate, $cpdTable, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
 								$body = str_replace($array1, $array2, $template['email_body']);
-								$this->CC_Model->sentMail($userQueryvalue['email'],$template['subject'],$body);
+								// $this->CC_Model->sentMail($userQueryvalue['email'],$template['subject'],$body);
 							}
 							$smsdata 	= $this->Communication_Model->getList('row', ['id' => '14', 'smsstatus' => '1']);
-							if($smsdata && isset($userQueryvalue['mobile_phone'])){
+							if(($smsdata && isset($userQueryvalue['mobile_phone'])) && $totalDB !='0'){
 								if(isset($smsbody1)) unset($smsbody1);
 								if(isset($smsbody2)) unset($smsbody2);
 								$smsbody1 = ['{total Points}','{total points required}', '{next registration date}'];
 								$smsbody2 = [$total, $totalDB, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
 								$sms = str_replace($smsbody1, $smsbody2, $smsdata['sms_body']);
-								$this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
+								// $this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
 							}
 
 							$plumberemails .= $userQueryvalue['email'].',';
