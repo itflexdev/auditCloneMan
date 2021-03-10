@@ -267,7 +267,7 @@ class Coc_Model extends CC_Model
 	}
 	public function getListPDF($type, $requestdata=[]){
         $query=$this->db->select('t1.*,t1.status,t1.created_at,
-        	t2.inv_id, t2.total_due, t2.quantity, t2.cost_value,t2.vat, t2.delivery_cost, t2.total_due, t3.reg_no, t3.id, t3.name username, t3.surname surname, t3.company_name company_name, t3.vat_no vat_no, t3.email2, t3.home_phone, t3.file2, t4.address, t4.suburb, t4.city,t4.province,t4.postal_code, t5.id, t5.name as province,t6.id, t6.province_id, t6.name as city,t7.id, t7.province_id, t7.city_id, t7.name as suburb,t8.registration_no, t8.designation,ub.bank_name, ub.branch_code, ub.account_name, ub.account_no, ub.account_type, t9.type as usertype, t3.billing_email as billingemail, t3.billing_contact as billingcontact');
+        	t2.inv_id, t2.total_due, t2.quantity, t2.cost_value,t2.vat, t2.delivery_cost, t2.total_due, t3.reg_no, t3.id, t3.name username, t3.surname surname, t3.company company, t3.company_name company_name, t3.vat_no vat_no, t3.email2, t3.home_phone, t3.file2, t4.address, t4.suburb, t4.city,t4.province,t4.postal_code, t5.id, t5.name as province,t6.id, t6.province_id, t6.name as city,t7.id, t7.province_id, t7.city_id, t7.name as suburb,t8.registration_no, t8.designation,ub.bank_name, ub.branch_code, ub.account_name, ub.account_no, ub.account_type, t9.type as usertype, t3.billing_email as billingemail, t3.billing_contact as billingcontact');
 		$this->db->select('
 			group_concat(concat_ws("@@@", t4.id, t4.suburb, t4.city,t4.province, t5.name, t6.name, t7.name) separator "@-@") as areas'
 		);
@@ -728,6 +728,7 @@ class Coc_Model extends CC_Model
 			$requestData2['delivery_cost']	= 	$requestData['delivery_cost'];
 			$requestData2['vat']			= 	$requestData['vat'];
 			$requestData2['total_due']		= 	$requestData['total_due'];
+			$requestData2['payment_date']	= 	date('Y-m-d');
 			
 			$log .= 'Order - '.json_encode($requestData2).PHP_EOL;
 			$this->db->insert('coc_orders',$requestData2);
@@ -829,5 +830,174 @@ class Coc_Model extends CC_Model
 		$file = fopen("assets/payment/payment.txt","a");
 		fwrite($file,json_encode($result). PHP_EOL);
 		fclose($file);
+	}
+
+	public function purchasecocCompany($result)
+	{
+		$invoicecheck 	= 	$this->db->get_where('invoice', ['payment_id' => $result['pf_payment_id']])->row_array();
+		$settings 		= 	$this->Systemsettings_Model->getList('row');
+		$requestData 	= 	json_decode(stripslashes($result['custom_str1']), true);
+		$userid 		=	$requestData['userid'];
+		
+		$checkdata		= 	'0';
+		
+		if($userid=='7146'){
+			$checkdata = '1';
+		}elseif(!$invoicecheck){
+			$checkdata = '1';
+		}
+		
+		if($checkdata=='1' && $result['payment_status']=='COMPLETE'){
+			if ($requestData['coc_type'] == '1') {
+				$cocname = 'Electronic';
+			}elseif($requestData['coc_type'] == '2'){
+				$cocname = 'Paper-Based';
+			}
+			
+			$requestData1['description'] 	= 	'Purchase of '.$requestData['quantity'].' '.$cocname.' Certificate(s) of Compliance';
+			$requestData1['user_id']		= 	$userid;
+			$requestData1['vat']			= 	$requestData['vat'];
+			$requestData1['delivery_type'] 	= 	'0';
+			$requestData1['total_cost'] 	= 	$requestData['total_due'];
+			$requestData1['created_at']		= 	date('Y-m-d H:i:s');
+			$requestData1['inv_type']		= 	1;
+			$requestData1['coc_type']		= 	$requestData['coc_type'];
+			$requestData1['payment_id']		= 	$result['pf_payment_id'];
+			$requestData1['payment_date']	= 	date('Y-m-d');
+			if($requestData['coc_type']=='1') $requestData1['order_status'] = '1';
+			
+			$log = 'Invoice - '.json_encode($requestData1).PHP_EOL;
+			$this->db->insert('invoice',$requestData1);
+			$inv_id 		= $this->db->insert_id();
+
+			$this->CC_Model->diaryactivity(['companyid' => $userid, 'action' => '5', 'type' => '2']);
+				
+			$requestData2['description'] 	= 	'Purchase of '.$requestData['quantity'].' '.$cocname.' Certificate(s) of Compliance';
+			$requestData2['user_id']		= 	$userid;
+			$requestData2['created_by']		= 	$userid;
+			$requestData2['created_at']		= 	date('Y-m-d H:i:s');
+			$requestData2['updated_at']		=	$requestData2['created_at'];
+			$requestData2['status']			= 	'0';
+			$requestData2['inv_id']			= 	$inv_id;
+			$requestData2['coc_type']		= 	$requestData['coc_type'];
+			$requestData2['delivery_type'] 	= 	'0';
+			$requestData2['cost_value']		= 	$requestData['cost_value'];
+			$requestData2['quantity']		= 	$requestData['quantity'];
+			// $requestData2['delivery_cost']	= 	0.00;
+			$requestData2['delivery_cost']	= 	'0.00';
+			$requestData2['vat']			= 	$requestData['vat'];
+			$requestData2['total_due']		= 	$requestData['total_due'];
+			$requestData2['payment_date']	= 	date('Y-m-d');
+			
+			$log .= 'Order - '.json_encode($requestData2).PHP_EOL;
+			$this->db->insert('coc_orders',$requestData2);
+			$coc_order_id 	= $this->db->insert_id();
+
+			$requestData0['count'] 			= 	$requestData['permittedcoc'] - $requestData['quantity'];
+			$requestData0['user_id']		= 	$userid;
+			$requestData0['created_by']		= 	$userid;
+			$requestData0['created_at']		= 	date('Y-m-d H:i:s');
+			
+			$log .= 'Coc Count - '.json_encode($requestData0).PHP_EOL;
+			$this->db->update('coc_count', $requestData0, ['user_id' => $userid]);
+				
+			$insert_id 				= 	$this->db->select('id,inv_id')->from('coc_orders')->order_by('id','desc')->get()->row_array();
+			$userdata1				= 	$this->Company_Model->getList('row', ['id' => $userid], ['users', 'usersdetail']);
+			$request['status'] 		= 	'1';
+			
+			if ($insert_id) {
+				$partialdescription = '';
+				
+				if($requestData['coc_type']=='1'){
+					$stocks = [];
+					$log .= 'Electronic COC'.PHP_EOL;
+					for($m=1;$m<=$requestData['quantity'];$m++){
+						$stockmanagement = $this->db->get_where('stock_management', ['user_id' => '0', 'coc_status' => '1', 'coc_orders_status' => '6', 'type' => '1'])->row_array();
+						
+						$cocrequestdata = [
+							'coc_status' 				=> '9',
+							'type' 						=> $requestData['coc_type'],
+							'coc_orders_status' 		=> null,
+							'user_id' 					=> $userid,
+							'inv_id' 					=> $inv_id
+						];
+						
+						if($stockmanagement){
+							$this->db->update('stock_management', $cocrequestdata, ['id' => $stockmanagement['id']]);
+							$cocinsertid = $stockmanagement['id'];
+						}else{
+							$checklastid = $this->db->order_by('id', 'desc')->get('stock_management')->row_array();
+							if($checklastid && $checklastid['id'] < $this->config->item('customstockno')) $cocrequestdata['id'] = $this->config->item('customstockno');
+								
+							$this->db->insert('stock_management', $cocrequestdata);
+							$cocinsertid = $this->db->insert_id();
+						}
+						$stocks[] = $cocinsertid;
+						$log .= $cocinsertid.PHP_EOL;
+						$this->diaryactivity(['adminid' => '1', 'companyid' => $userid, 'cocid' => $cocinsertid, 'action' => '6', 'type' => '1']);		
+					}	
+					$partialdescription 		= $this->stockformat($stocks);
+					$request['admin_status']	= '1';
+					$request['description']		= 'Purchase of '.$requestData['quantity'].' '.$cocname.' Certificate(s) of Compliance '.$partialdescription;
+				}
+
+
+				$inid 			= $coc_order_id;				
+				$result_order 	= $this->db->update('coc_orders', $request, ['id' => $inid,'user_id' => $userid ]);
+
+				if(isset($request['admin_status'])) unset($request['admin_status']);
+
+				$result_invoice = $this->db->update('invoice', $request, ['inv_id' => $inv_id,'user_id' => $userid]);
+
+				$template 	= $this->db->select('id,email_active,category_id,email_body,subject')->from('email_notification')->where(['email_active' => '1', 'id' => '17'])->get()->row_array();
+				$orders 	= $this->db->select('*')->from('coc_orders')->where(['user_id' => $userid])->order_by('id','desc')->get()->row_array();
+				$currency   = $this->config->item('currency');
+				$cocreport 	= $this->cocreport($inv_id, 'PDF Invoice Company COC', ['partialdescription' => $partialdescription]);					
+				$cocTypes 	= $orders['coc_type'];
+				$mail_date 	= date("d-m-Y", strtotime($orders['created_at']));
+				
+				$array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}'];		
+				$array2 = [$userdata1['company'], $mail_date, $orders['quantity'], $this->config->item('coctype')[$cocTypes]];
+				$body 	= str_replace($array1, $array2, $template['email_body']);
+
+				if ($template['email_active'] == '1') {
+					$this->CC_Model->sentMail($userdata1['email'],$template['subject'],$body,$cocreport);
+
+					if($settings && $settings['otp']=='1'){
+						$smsdata 	= $this->Communication_Model->getList('row', ['id' => '17', 'smsstatus' => '1']);
+						
+						if($smsdata){
+							$sms = str_replace(['{number of COC}'], [$orders['quantity']], $smsdata['sms_body']);
+							$this->sms(['no' => $userdata1['mobile_phone'], 'msg' => $sms]);
+						}
+					}
+				}
+			}
+			
+			$successfile = fopen("assets/payment/paymentsuccess.txt","a");
+			fwrite($successfile,$log);
+			fwrite($successfile,'Payment - '.json_encode($result).PHP_EOL);
+			fwrite($successfile,PHP_EOL);
+			fwrite($successfile,PHP_EOL);
+			fclose($successfile);
+		}else{
+			$failurefile = fopen("assets/payment/paymentfailure.txt","a");
+			fwrite($failurefile,json_encode($result). PHP_EOL);
+			fclose($failurefile);
+		}
+		
+		$file = fopen("assets/payment/payment.txt","a");
+		fwrite($file,json_encode($result). PHP_EOL);
+		fclose($file);
+	}
+
+	public function custompayments($result){
+		// $requestData 	= 	json_decode(stripslashes($result['custom_str1']), true);
+
+		$data['requestData'] = 'ssss';
+		$data['result'] = 'ssss';
+		$this->db->insert('payments',$data);
+
+		
 	}
 }

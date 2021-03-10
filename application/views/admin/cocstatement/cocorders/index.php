@@ -25,7 +25,7 @@ $status 				= isset($result['status']) ? $result['status'] : '';
 $paymentdate 			= isset($result['payment_date']) ?  date('d-m-Y', strtotime($result['payment_date'])) : date('d-m-Y');
 
 $type 					= isset($result['type']) ? $result['type'] : '';
-$full_name				= isset($result['name']) && isset($result['surname']) ? $result['name'].' '.$result['surname'] : '';
+$full_name 				= isset($full_name) ? $full_name : '';
 $user_id				= isset($result['user_id']) ? $result['user_id'] : '';
 $count					= isset($result['count']) ? $result['count'] : '';
 
@@ -109,6 +109,12 @@ $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' 
 				                        <label class="custom-control-label" for="reseller">Reseller</label>
 				                    </div>
 				                </div>
+				                <div class="col-md-3">
+				                    <div class="custom-control custom-radio">
+				                        <input type="radio" id="company" name="purchase_type" class="custom-control-input" value="4" <?php if($type=='4'){ echo 'checked="checked"'; } if($id!=''){ echo 'disabled'; } ?>>
+				                        <label class="custom-control-label" for="company">Company</label>
+				                    </div>
+				                </div>
 			            	</div>
 						</div>
 					</div>
@@ -166,13 +172,15 @@ $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' 
 													
 													if($key==1){
 														$class = "electronic";
+														$radio = "electronic_radio";
 													} else {
-														$class = "paper";														
+														$class = "paper";
+														$radio = "paper_radio";														
 													}
 											?>
 													<div class="col-md-5 <?php echo $class; ?>">
 														<div class="custom-control custom-radio">
-															<input type="radio" name="coc_type" id="<?php echo $key.'-'.$value; ?>" class="custom-control-input coc_type <?php if($key=='1'){ echo 'electronic_radio';} ?>" value="<?php echo $key; ?>" <?php if($coc_type==$key){ echo 'checked="checked"'; } ?>>
+															<input type="radio" name="coc_type" id="<?php echo $key.'-'.$value; ?>" class="custom-control-input coc_type <?php echo $radio; ?>" value="<?php echo $key; ?>" <?php if($coc_type==$key){ echo 'checked="checked"'; } ?>>
 															<label class="custom-control-label" for="<?php echo $key.'-'.$value; ?>"><?php echo $value; ?></label>
 														</div>
 													</div>
@@ -327,7 +335,7 @@ $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' 
 									<th>Date of order</th>
 									<th>Payment Status</th>
 									<th>Internal Inv Number</th>
-									<th>Plumber Name and Surname/Reseller</th>
+									<th>Plumber Name and Surname/Reseller/Company</th>
 									<th>COC Type</th>
 									<th>Total COC</th>
 									<th>Delivery Method</th>
@@ -466,7 +474,8 @@ $(function(){
 	allocation_show();
 	cert_range_show();
 	coc_type_show();
-
+	paymentdateaction($('input[name="status"]:checked').val());
+	
 	$("input[name='purchase_type']").click(function(){
 		coc_type_show();
 	});
@@ -477,19 +486,30 @@ function coc_type_show(){
 	purchase_type_val = $('input[name="purchase_type"]:checked').val();
 	if(purchase_type_val==6){
 		$('.electronic input').prop("checked",false);	
-		$('.electronic input').attr('disabled',true);
-	} else {
+		$('.electronic input').attr('disabled',true);	
+		$('.paper input').removeAttr('disabled');		
+	}else if(purchase_type_val==4) {
+		$('.paper input').prop("checked",false);	
+		$('.paper input').attr('disabled',true);	
 		$('.electronic input').removeAttr('disabled');		
+	}else {
+		$('.electronic input').removeAttr('disabled');		
+		$('.paper input').removeAttr('disabled');		
 	}
 }
 
-$("#plumber, #reseller").click(function(){
+$("#plumber, #reseller, #company").click(function(){
 	userwrapper($(this).val())
 });
 
-// $('input[name="status"]').click(function(){
-// 	allocation_show();
-// })
+$('input[name="status"]').click(function(){
+	paymentdateaction($(this).val());
+})
+
+function paymentdateaction(value){
+	if(value=='1') $('.payment_date').prop('disabled', false);
+	else $('.payment_date').prop('disabled', true);
+}
 
 // $('input[name="coc_type"]').click(function(){
 // 	cert_range_show();
@@ -512,7 +532,17 @@ function allocation_show(){
 }
 
 function userwrapper(value){
-	var title = (value==3) ? 'Plumber' : 'Reseller'; 
+	$('.electronic_radio').parent().parent().show();	
+	$('.paper_radio').parent().parent().show();
+	if(value == 3){
+		title = 'Plumber';
+	}else if (value == 6) {
+		title = 'Reseller';
+	}else{
+		title = 'Company';
+		deliverytype(1);
+	}
+	//var title = (value==3) ? 'Plumber' : 'Reseller'; 
 	$(".user_wrapper").removeClass('displaynone').find('label').text(title);
 	$("#user_search, #user_id").val('');
 }
@@ -537,8 +567,16 @@ function custom_user_select(name, id, limit, electronic) {
 	$("#user_limit").val(limit);
 	$('#quantity').attr('max', limit);
 	
-	if(electronic=='1') $('.electronic_radio').parent().parent().show();
-	else $('.electronic_radio').parent().parent().hide();
+	if(electronic=='1'){
+		$('.electronic_radio').parent().parent().show();	
+		$('.paper_radio').parent().parent().show();
+	}else if(electronic=='2') {
+		$('.paper_radio').parent().parent().hide();
+		$('.electronic_radio').parent().parent().show();		
+	}else if(electronic=='0') {
+		$('.electronic_radio').parent().parent().hide();
+		$('.paper_radio').parent().parent().show();
+	}
 }
 
 

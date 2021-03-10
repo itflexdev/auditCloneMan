@@ -272,6 +272,8 @@ class Index extends CC_Controller
 			$data 	=   $this->Coc_Ordermodel->autosearchReseller($post);
 		}else if($post['type']== 5){
 			$data 	=   $this->Coc_Ordermodel->autosearchAuditor($post);
+		}else if ($post['type'] == 4) {
+		    $data   =   $this->Coc_Ordermodel->autosearchCompany($post);
 		}
 
 		

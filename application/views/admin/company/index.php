@@ -24,7 +24,7 @@
 								<th>Company Name</th>
 								<th>Status</th>
 								<th>Number of Employed Licensed and Master Plumbers</th>
-								<th>Number of Employed Learner,Technical Assistants,Technical Operators and Qualified Plumbers</th>
+								<th>Number of Employed Learner,Technical Assistants,Technical Operators and Registered Plumbers</th>
 								<th>Action</th>
 							</tr>
 						</thead>
@@ -51,7 +51,7 @@
 						],
 			target 	: [5],
 			sort 	: '0',
-			order 	: [['2', 'asc']]
+			order 	: [['2', 'desc']]
 		};
 		
 		ajaxdatatables('.datatables', options);

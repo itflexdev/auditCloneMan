@@ -160,7 +160,15 @@ class Coc_Ordermodel extends CC_Model
 				$this->db->where('user_id', $data['user_id']); 
 				$decrease_count = $this->db->update('coc_count'); 
 
-				$userdata1				= 	$this->Plumber_Model->getList('row', ['id' => $requestdata['user_id'], 'type' => '3'], ['users', 'usersdetail']);
+				if ($data['purchase_type'] == '4') {
+					$userdata1	= 	$this->Company_Model->getList('row', ['id' => $requestdata['user_id'], 'type' => '4'], ['users', 'usersdetail']);					
+                    $pdf_title = 'PDF Invoice Company COC';
+                    $pdf_title1 = $userdata1['company_name'];
+				} else {
+					$userdata1	= 	$this->Plumber_Model->getList('row', ['id' => $requestdata['user_id'], 'type' => '3'], ['users', 'usersdetail']);
+                   	$pdf_title = 'PDF Invoice Plumber COC';
+                    $pdf_title1 = $userdata1['name']." ".$userdata1['surname'];
+				}
 
 				//$request['status'] 		= 	'1';
 				 if ($inv_id && $userdata1) {
@@ -172,7 +180,7 @@ class Coc_Ordermodel extends CC_Model
 				 	$orders = $this->db->select('*')->from('coc_orders')->where(['user_id' => $requestdata['user_id']])->order_by('id','desc')->get()->row_array();
 				// invoice PDF
 						
-					$cocreport = $this->cocreport($inv_id, 'PDF Invoice Plumber COC');
+					$cocreport = $this->cocreport($inv_id, $pdf_title);
 						
 					 $cocTypes = $orders['coc_type'];
 					 $mail_date = date("d-m-Y", strtotime($orders['created_at']));
@@ -181,7 +189,7 @@ class Coc_Ordermodel extends CC_Model
 				 	 $array1 = ['{Plumbers Name and Surname}','{date of purchase}', '{Number of COC}','{COC Type}'];
 					 
 
-					$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype')[$cocTypes]];
+					$array2 = [$pdf_title1, $mail_date, $orders['quantity'], $this->config->item('coctype')[$cocTypes]];
 
 					$body = str_replace($array1, $array2, $template['email_body']);
 
@@ -249,6 +257,36 @@ class Coc_Ordermodel extends CC_Model
 		return $result_new;
 	}
 
+	public function autosearchCompany($postData){		
+		$this->db->select('ud.status, concat(ud.company, " (", ud.reg_no, ")") as name,cc.count,u.id, "2" as coc_electronic');
+		//$this->db->select('ud.status, concat(ud.company, " (", ud.reg_no, ")") as name,u.id, "2" as coc_electronic');
+		$this->db->from('users_detail ud');
+		$this->db->join('users u', 'u.id=ud.user_id','inner');
+		$this->db->join('coc_count cc', 'cc.user_id=ud.user_id','inner');
+		$this->db->where(['ud.status' => '1', 'u.type' => '4']);
+		
+		$this->db->group_start();
+			$this->db->like('ud.company',$postData['search_keyword']);
+		$this->db->group_end();
+		
+		$this->db->group_by("ud.id");
+		
+		$query = $this->db->get();
+		$result = $query->result_array();
+
+		// echo $this->db->last_query();
+		// exit();
+
+		$result_new = array();
+		foreach ($result as $key => $value) {
+			if($value['name']!='' && $value['status']==1){
+				$result_new[] = $value;
+			}
+		}
+		
+		return $result_new;
+	}
+	
 	public function autosearchAuditor($postData){
 
 		$currentdate = date('Y-m-d');

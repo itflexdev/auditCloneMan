@@ -138,6 +138,7 @@
 								<th>CPD Status</th>
 								<th>Performance Status</th>
 								<th>Overall Industry Rating</th>
+								<th>Number of COC's Permitted to be allocated to the Plumber</th>
 								<th>Action</th>
 							</tr>
 						</thead>
@@ -329,7 +330,7 @@
 	    	}
 			
 
-		}, 1000);
+		}, 2000);
 
 		
 		
@@ -344,6 +345,7 @@
 							{ "data": "cpdstatus" },
 							{ "data": "perstatus" },
 							{ "data": "rating" },
+							{ "data": "nococ" },
 							{ "data": "action" }
 						],
 						

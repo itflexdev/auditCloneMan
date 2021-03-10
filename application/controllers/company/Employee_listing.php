@@ -9,6 +9,7 @@ class Employee_listing extends CC_Controller
 		$this->load->model('CC_Model');
 		$this->load->model('Company_Model');
 		$this->load->model('Communication_Model');
+		$this->load->model('Company_allocatecoc_Model');
 	}
 	
 	public function index($userID='')
@@ -55,6 +56,7 @@ class Employee_listing extends CC_Controller
         $post = $this->input->post();
         $totalcount     = $this->Company_Model->getEmpList('count', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post);
         $results        = $this->Company_Model->getEmpList('all', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post);
+       
         $companystatus  = $this->config->item('companystatus');
         $rollingavg                 = $this->getRollingAverage();
         $date                       = date('Y-m-d', strtotime(date('Y-m-d').'+'.$rollingavg.' months'));
@@ -62,21 +64,26 @@ class Employee_listing extends CC_Controller
         $totalrecord = [];
         if (count($results) > 0) {
             foreach ($results as $result) {
-              $desigcount     = $this->Company_Model->getdesignationCount(['designation' => $result['designation']]);
+            	// $array_orderqty = [];
+                $userdatacoc_count = $this->Coc_Model->COCcount(['user_id' => $result['user_id']]);
+                $desigcount     = $this->Company_Model->getdesignationCount(['designation' => $result['designation']]);
                 //print_r($desigcount);
-                $performance = $this->Plumber_Model->performancestatus('all', ['plumberid' => $result['user_id'], 'archive' => '0', 'date' => $date]);     
+                $performance = $this->Plumber_Model->performancestatus('all', ['plumberid' => $result['user_id'], 'archive' => '0', 'date' => $date]);
+
+                $array_orderqty = $this->Company_allocatecoc_Model->getqty('row', ['user_id' => $result['user_id']]);
+        		$balace_coc 	= $array_orderqty['sumqty'];
 
                 $per_points = array_sum(array_column($performance, 'point'));
                 // print_r($performance);die;
                 $points     = $this->Company_Model->cpdPoints($result['user_id']);
 
                 if ($points[0]['cpd']!=''){
-                     $points         = $points[0]['cpd'];
+                     $points         = round($points[0]['cpd'],2);
                 }else{
                     $points         = '0';
                 } 
                 if( $per_points!=''){
-                    $performance    = $per_points;
+                    $performance    = round($per_points,2);
                 }else{
                     
                     $performance    = '0';
@@ -88,19 +95,24 @@ class Employee_listing extends CC_Controller
                 }
                 $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);
                 $companystatus1 = isset($companystatus[$result['status']]) ? $companystatus[$result['status']] : '';
+
+                $action = '<div class="table-action">
+                            <a href="' . base_url() . 'company/employee_listing/index/' . $result['id'] . '" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></a>';
+
+                if ($result['coc_electronic'] == 1 && $userdatacoc_count['count'] > 0) {
+                    $action .= '<a href="' . base_url() . 'company/allocatecoc/index/index/' . $result['user_id'] . '" data-toggle="tooltip" data-placement="top" title="Allocate"><i class="fa fa-file-text"></i></a>';
+                }
+                
                 $totalrecord[] = [
-                                    'reg'           => $result['registration_no'],
-                                    'designation'   => $this->config->item('designation2')[$result['designation']],
-                                    'status'        => $this->config->item('plumberstatus')[$result['status']],
-                                    'namesurname'   => $result['name'].' '.$result['surname'],
-                                    'cpdstatus'     => $points,
-                                    'perstatus'     => $performance,
-                                    'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
-                                    'action'        => '
-                                                            <div class="table-action">
-                                                                <a href="' . base_url() . 'company/employee_listing/index/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></a>
-                                                            </div>
-                                                        ',
+                    'reg'           => $result['registration_no'],
+                    'designation'   => $this->config->item('designation2')[$result['designation']],
+                    'status'        => $this->config->item('plumberstatus')[$result['status']],
+                    'namesurname'   => $result['name'].' '.$result['surname'],
+                    'cpdstatus'     => $points,
+                    'perstatus'     => $performance,
+                    'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
+                    'nococ'     	=> $balace_coc,
+                    'action'        => $action,
                 ];
             }
         }

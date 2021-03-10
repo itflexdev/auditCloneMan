@@ -25,9 +25,9 @@ class Index extends CC_Controller
     public function DTcompanylist()
     {
         $post = $this->input->post();
-        $totalcount     = $this->Company_Model->getList('count', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany']);
-        $results        = $this->Company_Model->getList('all', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany', 'lttqcount', 'lmcount']);
-        $companystatus  = $this->config->item('companystatus');
+        $totalcount 	= $this->Company_Model->getList('count', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany']);
+        $results 		= $this->Company_Model->getList('all', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']] + $post, ['users', 'usersdetail', 'userscompany', 'lttqcount', 'lmcount']);
+        $companystatus	= $this->config->item('companystatus');
 
         $checkpermission = $this->checkUserPermission('20', '2');
         
@@ -43,14 +43,14 @@ class Index extends CC_Controller
                     $action = '';
                 }
 
-                $companystatus1 = isset($companystatus[$result['companystatus']]) ? $companystatus[$result['companystatus']] : '';
+				$companystatus1 = isset($companystatus[$result['companystatus']]) ? $companystatus[$result['companystatus']] : '';
                 $totalrecord[] = [
-                                    'id'            => $result['id'],
-                                    'company'       => $result['company'],
-                                    'status'        => $companystatus1,
-                                    'lmcount'       => $result['lmcount'],
-                                    'lttqcount'     => $result['lttqcount'],
-                                    'action'        =>  $action,
+									'id' 			=> $result['id'],
+									'company' 		=> $result['company'],
+									'status' 		=> $companystatus1,
+									'lmcount' 		=> $result['lmcount'],
+									'lttqcount' 	=> $result['lttqcount'],
+									'action' 		=>  $action,
                 ];
             }
         }
@@ -135,8 +135,8 @@ class Index extends CC_Controller
     {
        $this->employee(['compid' => $compid, 'id' => $id], ['roletype' => $this->config->item('roleadmin'), 'pagetype' => 'adminempdetails'], ['redirect' => 'admin/company/company/employee_listing']);
     }
-    
-    public function action($id)
+	
+	public function action($id)
     {
         $this->companyprofile($id, ['roletype' => $this->config->item('roleadmin'), 'pagetype' => 'adminprofile'], ['redirect' => 'admin/company/index']);
     }
@@ -170,9 +170,9 @@ class Index extends CC_Controller
             foreach ($results as $result) {
 
                 if ($checkpermission) {
-                    $action =   '<div class="table-action">
-                                    <a href="' . base_url() . 'admin/company/index/action/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
-                                </div>';
+                    $action = 	'<div class="table-action">
+									<a href="' . base_url() . 'admin/company/index/action/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
+								</div>';
                 }else{
                     $action = '';
                 }
@@ -208,10 +208,72 @@ class Index extends CC_Controller
     public function emplist($id){
          $this->employee($id, ['roletype' => $this->config->item('roleadmin'),'redirect' => 'admin/company/index/index']);
     }
-    
-     public function diary($id){
+	
+	 public function diary($id){
         //print_r($id);die;
         $this->companydiary($id, ['roletype' => $this->config->item('roleadmin'),'redirect' => 'admin/company/index/index']);
+    }
+
+        // Accounts
+    public function accounts($compId)
+    {
+        $userdata1                = $this->Company_Model->getList('row', ['id' => $compId], ['users', 'usersdetail']);
+        $pagedata['user_details'] = $userdata1;
+        $pagedata['roletype']     = $this->config->item('roleadmin');
+        $pagedata['notification'] = $this->getNotification();
+        $pagedata['companyid']    = $compId;
+        $pagedata['menu']         = $this->load->view('common/company/menu', ['id' => $compId], true);
+        $data['plugins']          = ['datatables', 'datatablesresponsive'];
+        $data['content']          = $this->load->view('admin/company/accounts', (isset($pagedata) ? $pagedata : ''), true);
+        $this->layout2($data);
+    }
+
+    public function DTAccounts()
+    {
+        $post = $this->input->post();
+        
+        $totalcount = $this->Company_Model->getInvoiceList('count', $post);
+        $results    = $this->Company_Model->getInvoiceList('all', $post);
+            
+        // echo $this->db->last_query();
+        // exit();
+
+        $totalrecord = [];
+        if (count($results) > 0) {
+            foreach ($results as $result) {
+                $invoicestatus = isset($this->config->item('payment_status2')[$result['status']]) ? $this->config->item('payment_status2')[$result['status']] : '';
+
+                $originalDate = $result['created_at'];
+                $newDate      = date("d-m-Y H:i:s", strtotime($originalDate));
+
+                // $date=date("d-m-Y",);
+                if ($result['total_due'] != '') {
+                    $amt = $this->config->item('currency') . ' ' . $result['total_due'];
+                } else {
+                    $amt = $this->config->item('currency').' '.$result['total_due'];
+                }
+
+                $totalrecord[] = [
+                    'description'   => $result['description'],
+                    'inv_id'        => $result['inv_id'],
+                    'created_at'    => $newDate,
+                    'total_cost'    => $amt,
+                    'invoicestatus' => $invoicestatus,
+                    'action'        => '<div class="col-md-6">
+                                            <a  href="' . base_url() . 'assets/inv_pdf/' . $result['inv_id'] . '.pdf" target="_blank" ><img src="' . base_url() . 'assets/images/pdf.png" height="50" width="50"></a>
+                                        </div>',
+                ];
+            }
+        }
+
+        $json = array(
+            "draw"            => intval($post['draw']),
+            "recordsTotal"    => intval($totalcount),
+            "recordsFiltered" => intval($totalcount),
+            "data"            => $totalrecord,
+        );
+
+        echo json_encode($json);
     }
 
     // Document Letters
@@ -266,10 +328,10 @@ class Index extends CC_Controller
             foreach($results as $result){
                 //echo date('Y-m-d', strtotime($result['updated_at']))!='0001-30-0001 00:00:00';die;
                 $created_at = strtotime($result['created_at']);
-                $upload_date = date('d-m-Y H:i:s', $created_at);
+                $upload_date = date("d-m-Y H:i:s", $created_at);
                 if ($result['updated_at']!='') {
                     $updated_at = strtotime($result['updated_at']);
-                    $update_date = date('d-m-Y H:i:s', $updated_at);
+                    $update_date = date("d-m-Y H:i:s", $updated_at);
 
                     $full_date = $upload_date.' / '.$update_date;
                  }else{
@@ -497,6 +559,206 @@ class Index extends CC_Controller
             $this->session->set_flashdata('error', 'Try Later.');
         }
         redirect('admin/company/index/perfomacerating/'.$post['userid'].'');
+    }
+
+    // COC Statement
+    public function cocstatement($compId)
+    {
+        $pagedata['usersid'] = $this->getUserID();
+
+        $coc_purchase               = $this->Coc_Model->COCcount(['user_id' => $compId]);
+        $pagedata['userorderstock'] = $this->Coc_Model->getCOCList('count', ['allocated_id' => $compId]);
+        $pagedata['coc_purchase']   = $coc_purchase['count'];
+
+        $userdata1                = $this->Company_Model->getList('row', ['id' => $compId], ['users', 'usersdetail']);
+        $pagedata['user_details'] = $userdata1;
+        $pagedata['roletype']     = $this->config->item('roleadmin');
+        $pagedata['notification'] = $this->getNotification();
+        $pagedata['companyid']    = $compId;
+        $pagedata['menu']         = $this->load->view('common/company/menu', ['id' => $compId], true);
+        $data['plugins']          = ['datatables', 'datatablesresponsive'];
+        $data['content']          = $this->load->view('admin/company/cocstatement', (isset($pagedata) ? $pagedata : ''), true);
+        $this->layout2($data);
+    }
+
+    public function ajaxdtcompany()
+    {
+        $post       = $this->input->post();
+        $totalcount = $this->Company_Model->getstockList('count', $post);
+        $results    = $this->Company_Model->getstockList('all', $post);
+
+        // echo "<pre>";
+        // print_r($this->db->last_query());
+        // exit();
+        $totalrecord = [];
+        if (count($results) > 0) {
+            foreach ($results as $result) {
+                if ($result['allocatedby'] > 0) {
+                    $name      = $result['name'] . " " . $result['surname'];
+                    $timestamp = strtotime($result['allocation_date']);
+                    $newDate   = date('d-F-Y H:i:s', $timestamp);
+                } else {
+                    $name    = "";
+                    $newDate = "";
+                }
+
+                if ($result['coc_status'] == '8') {
+                    $cocstatus = "In Stock";
+                } else if ($result['coc_status'] == '2') {
+                    $cocstatus = "Logged";
+                } else if ($result['coc_status'] == '4') {
+                    $cocstatus = "Non Logged";
+                }
+
+                if ($result['cl_address'] != '') {
+                    $address = $result['cl_address'];
+                } else {
+                    $address = $result['cl_street'] . '<br>' . $result['cl_suburb_name'] . '<br>' . $result['cl_city_name'] . '<br>' . $result['cl_province_name'];
+                }
+
+                if ($result['coc_status'] == '2') {
+                    $action = '<a href="' . base_url() . 'admin/company/index/view/' . $result['id'] . '/' . $result['user_id'] . '" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></a>';
+                } else {
+                    $action = '';
+                }
+
+                $stockcount    = 0;
+                $totalrecord[] = [
+                    'cocno'    => $result['id'],
+                    'status'   => $cocstatus,
+                    'datetime' => $newDate,
+                    'name'     => $name,
+                    'customer' => $result['cl_name'],
+                    'address'  => $address,
+                    'action'   => $action,
+                ];
+            }
+        }
+
+        $json = array(
+            "recordsTotal"    => intval($totalcount),
+            "recordsFiltered" => intval($totalcount),
+            "data"            => $totalrecord,
+        );
+
+        echo json_encode($json);
+    }
+
+    public function view($id, $user_id)
+    {
+        $this->coclogaction(
+            $id,
+            ['pagetype' => 'view', 'roletype' => $this->config->item('roleplumber'), 'electroniccocreport' => 'admin/company/index/electroniccocreport/' . $id . '/' . $user_id, 'noncompliancereport' => 'admin/company/index/noncompliancereport/' . $id . '/' . $user_id],
+            ['redirect' => 'admin/company/index/cocstatement', 'userid' => $user_id]
+        );
+    }
+
+    public function electroniccocreport($id, $user_id)
+    {
+        $this->pdfelectroniccocreport($id, $user_id);
+    }
+
+    public function noncompliancereport($id, $user_id)
+    {
+        $this->pdfnoncompliancereport($id, $user_id);
+    }
+
+    // Audit Statement
+    public function audit($compId)
+    {
+        $pagedata['usersid']      = $this->getUserID();
+        $userdata1                = $this->Company_Model->getList('row', ['id' => $compId], ['users', 'usersdetail']);
+        $pagedata['user_details'] = $userdata1;
+        $pagedata['roletype']     = $this->config->item('roleadmin');
+        $pagedata['notification'] = $this->getNotification();
+        $pagedata['companyid']    = $compId;
+        $pagedata['menu']         = $this->load->view('common/company/menu', ['id' => $compId], true);
+        $data['plugins']          = ['datatables', 'datatablesresponsive'];
+        $data['content']          = $this->load->view('admin/company/audit', (isset($pagedata) ? $pagedata : ''), true);
+        $this->layout2($data);
+    }
+
+    public function DTaudit()
+    {
+        $userid = $this->input->post('companyid');
+
+        $post       = $this->input->post();
+        $totalcount = $this->Coc_Model->getCOCList('count', ['coc_status' => ['2'], 'allocated_id' => $userid, 'noaudit' => ''] + $post, ['coclog', 'auditordetails', 'auditorstatement']);
+        $results    = $this->Coc_Model->getCOCList('all', ['coc_status' => ['2'], 'allocated_id' => $userid, 'noaudit' => ''] + $post, ['coclog', 'auditordetails', 'auditorstatement']);
+
+        // echo $this->db->last_query(); exit();
+
+        $time = strtotime("-1 year", time());
+        $date = date("Y-m-d", $time);
+
+        $totalrecord = [];
+        if (count($results) > 0) {
+            foreach ($results as $result) {
+                $auditstatus = isset($this->config->item('auditstatus')[$result['audit_status']]) ? $this->config->item('auditstatus')[$result['audit_status']] : '';
+                $action      = '<a href="' . base_url() . 'admin/company/index/viewaudit/' . $result['id'] . '/' . $result['user_id'] . '" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></a>';
+
+                $refixdate = ($result['ar1_refix_date'] != '') ? '<p class="' . (($date > date('Y-m-d', strtotime($result['ar1_refix_date']))) && $result['as_refixcompletedate'] == '' ? "tagline" : "") . '">' . date('d-m-Y', strtotime($result['ar1_refix_date'])) . '</p>' : '';
+
+                $totalrecord[] = [
+                    'cocno'     => $result['id'],
+                    'status'    => $auditstatus,
+                    'consumer'  => $result['cl_name'],
+                    'address'   => $result['cl_address'],
+                    'refixdate' => $refixdate,
+                    'auditor'   => $result['auditorname'],
+                    'action'    => '<div class="table-action">' . $action . '</div>',
+                ];
+            }
+        }
+
+        $json = array(
+            "draw"            => intval($post['draw']),
+            "recordsTotal"    => intval($totalcount),
+            "recordsFiltered" => intval($totalcount),
+            "data"            => $totalrecord,
+        );
+
+        echo json_encode($json);
+    }
+
+    public function viewaudit($id, $user_id)
+    {
+        $this->getauditreview($id, ['pagetype' => 'view', 'viewcoc' => 'admin/company/index/viewcoc', 'downloadattachment' => 'admin/company/index/downloadattachment', 'seperatechat' => 'admin/company/index/seperatechat/' . $id . '/view', 'auditreport' => 'admin/company/index/auditreport/' . $id, 'roletype' => $this->config->item('roleplumber')], ['redirect' => 'admin/company/index', 'plumberid' => $user_id, 'notification' => '1']);
+    }
+
+    public function viewcoc($id, $plumberid)
+    {
+        $this->coclogaction(
+            $id,
+            ['pagetype' => 'view', 'roletype' => $this->config->item('roleplumber'), 'electroniccocreport' => 'admin/company/index/auditelectroniccocreport/' . $id . '/' . $plumberid, 'noncompliancereport' => 'admin/company/index/auditnoncompliancereport/' . $id . '/' . $plumberid],
+            ['redirect' => 'admin/company/index', 'userid' => $plumberid]
+        );
+    }
+
+    public function seperatechat($id, $pagetype)
+    {
+        $this->getchat($id, ['roletype' => $this->config->item('roleplumber'), 'pagetype' => $pagetype], ['redirect' => 'admin/company/index']);
+    }
+
+    public function auditreport($id)
+    {
+        $this->pdfauditreport($id);
+    }
+
+    public function auditelectroniccocreport($id, $userid)
+    {
+        $this->pdfelectroniccocreport($id, $userid);
+    }
+
+    public function auditnoncompliancereport($id, $userid)
+    {
+        $this->pdfnoncompliancereport($id, $userid);
+    }
+
+    public function downloadattachment($cocid, $file)
+    {
+        $file = './assets/uploads/chat/' . $cocid . '/' . $file;
+        $this->downloadfile($file);
     }
 
 }

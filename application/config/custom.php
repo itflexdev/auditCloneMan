@@ -585,7 +585,8 @@ $config['cocstatus'] 			=		[
 											'4'	=>	'Allocated (Plumber)',
 											'5'	=>	'Non-Logged Allocated (Customer)',
 											'6'	=>	'Recalled (unallocated)',
-											'7' => 	'Cancelled'
+											'7' => 	'Cancelled',
+											'9' =>  'Allocated (Company)'
 										];
 								
 $config['cocrecall'] 			=		[

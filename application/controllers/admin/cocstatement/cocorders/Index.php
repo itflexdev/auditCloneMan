@@ -14,6 +14,7 @@ class Index extends CC_Controller
 		$this->load->model('Coc_Model');
 		$this->load->model('Ordercomments_Model');
 		$this->load->model('Stock_Model');
+		$this->load->model('Company_Model');
 
 		$this->checkUserPermission('7', '1');
 	}
@@ -41,6 +42,12 @@ class Index extends CC_Controller
 			}
 			
 			if($result){
+				if ($result['type'] == '4') {
+                    $pagedata['full_name'] = $result['company'];
+                } else {
+                    $pagedata['full_name'] = $result['name'] . ' ' . $result['surname'];
+                }
+
 				$pagedata['result'] = $result;
 			}else{
 				$this->session->set_flashdata('error', 'No Record Found.');
@@ -76,7 +83,17 @@ class Index extends CC_Controller
 					$settingsdetail = $this->Systemsettings_Model->getList('row');
 					
 					if ($inv_id) {
-						$cocreport = $this->cocreport($inv_id['inv_id'], 'PDF Invoice Plumber COC', ['partialdescription' => $data]);
+						 if ($requestData['type'] == '4') {
+                            $userdata1  = $this->Company_Model->getList('row', ['id' => $requestData['user_id'], 'type' => '4'], ['users', 'usersdetail']);
+                            $pdf_title  = 'PDF Invoice Company COC';
+                            $pdf_title1 = $userdata1['company_name'];
+                        } else {
+                            $userdata1  = $this->Plumber_Model->getList('row', ['id' => $requestData['user_id'], 'type' => '3'], ['users', 'usersdetail']);
+                            $pdf_title  = 'PDF Invoice Plumber COC';
+                            $pdf_title1 = $userdata1['name'] . " " . $userdata1['surname'];
+                        }
+
+						$cocreport = $this->cocreport($inv_id['inv_id'], $pdf_title, ['partialdescription' => $data]);
 						$this->db->update('invoice', ['order_status' => '1', 'description' => $inv_id['description'].' '.$data], ['inv_id' => $inv_id['inv_id']]);
 						$this->db->update('coc_orders', ['description' => $inv_id['description'].' '.$data], ['id' => $requestData['order_id']]);
 						
@@ -86,7 +103,7 @@ class Index extends CC_Controller
 								$notificationdata 	= $this->Communication_Model->getList('row', ['id' => '8', 'emailstatus' => '1']);
 						
 								if($notificationdata){
-									$body 	= str_replace(['{Plumbers Name and Surname}', '{order type}', '{method of delivery}', '{tracking number}'], [$userdata1['name'].' '.$userdata1['surname'], $coctype[$invoicedata['coc_type']],  $deliverycard[$invoicedata['delivery_type']], $invoicedata['tracking_no']], $notificationdata['email_body']);
+									$body 	= str_replace(['{Plumbers Name and Surname}', '{order type}', '{method of delivery}', '{tracking number}'], [$pdf_title1, $coctype[$invoicedata['coc_type']],  $deliverycard[$invoicedata['delivery_type']], $invoicedata['tracking_no']], $notificationdata['email_body']);
 									$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body);
 								}
 							}	
@@ -173,7 +190,7 @@ class Index extends CC_Controller
 
 		$totalcount 	= $this->Coc_Ordermodel->getCocorderList('count', ['status' => [$post['admin_status']]]+$post);
 		$results 		= $this->Coc_Ordermodel->getCocorderList('all', ['status' => [$post['admin_status']]]+$post);
-
+		// print_r($this->db->last_query());die;
 		$checkpermission	=	$this->checkUserPermission('7', '2');
 
 		$totalrecord 	= [];
@@ -183,7 +200,7 @@ class Index extends CC_Controller
 				$payment_status_1 = isset($this->config->item('payment_status')[$result['status']]) ? $this->config->item('payment_status')[$result['status']] : '';				
 				$coctype = isset($this->config->item('coctype')[$result['coc_type']]) ? $this->config->item('coctype')[$result['coc_type']] : '';
 				$deliverytype = isset($this->config->item('purchasecocdelivery')[$result['delivery_type']]) ? $this->config->item('purchasecocdelivery')[$result['delivery_type']] : '';
-				if($result['type']=='6'){
+				if($result['type']=='6' || $result['type'] == '4'){
 					$name = $result['company'];
 				} else {
 					$name = $result['name']." ".$result['surname'];					
