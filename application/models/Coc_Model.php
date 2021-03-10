@@ -545,7 +545,7 @@ class Coc_Model extends CC_Model
 					$this->db->where('user_id', $data['userid']); 
 					$this->db->update('coc_count'); 
 					
-					$this->db->update('stock_management', ['user_id' => $data['userid'], 'coc_status' => $cocstatus, 'coc_orders_status' => '8'], ['id' => $cocid]);
+					$this->db->update('stock_management', ['user_id' => $stockuserid, 'coc_status' => $cocstatus, 'coc_orders_status' => '8'], ['id' => $cocid]);
 					$this->db->delete('plumberallocate', ['stockid' => $cocid]);
 				}
 				
