@@ -1024,7 +1024,21 @@ class Api extends CC_Controller
 			
 			//$jsonData['id'] 								= $id;
 			//$jsonData['userdata'] 						= $this->getUserDetails($id);
-			$mycpd 								= $this->userperformancestatus(['performancestatus' => '1', 'auditorstatement' => '1', 'userid' => $id]);
+			$developmental 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userdetails['expirydate']]);
+			$individual 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userdetails['expirydate']]);
+			$workbased 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $id, 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userdetails['expirydate']]);
+
+			if (count($developmental) > 0) $developmental = array_sum(array_column($developmental, 'points')); 
+			else $developmental = 0;
+			if (count($individual) > 0) $individual = array_sum(array_column($individual, 'points')); 
+			else $individual = 0;
+			if (count($workbased) > 0) $workbased = array_sum(array_column($workbased, 'points')); 
+			else $workbased = 0;
+			$totalcpd = $developmental+$individual+$workbased;
+
+
+			// $mycpd 								= $this->userperformancestatus(['performancestatus' => '1', 'auditorstatement' => '1', 'userid' => $id]);
+			$mycpd 								= $totalcpd;
 			$nonlogcoc 							= $this->Coc_Model->getCOCList('count', ['user_id' => $id, 'coc_status' => ['4','5']]);
 			$adminstock 			 			= $this->Coc_Ordermodel->getCocorderList('all', ['admin_status' => '0', 'userid' => $id]);
 			$adminstock 						= array_sum(array_column($adminstock, 'quantity'));
@@ -2176,6 +2190,7 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('review_id')) {
 			$id 			= $this->input->post('review_id');
 			$reviewlists	= $this->Auditor_Model->getReviewList('row', ['id' => $id]);
+			print_r($reviewlists);die;
 
 			if (isset($review_images)) unset($review_images);
 			if ($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Cautionary') {
