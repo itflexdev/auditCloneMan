@@ -2213,7 +2213,7 @@ class Api extends CC_Controller
 			}else{
 				$review_images[] = '';
 			}
-			if ($reviewlists['auditor_id'] !='' && ($reviewlists['favourites'] !='' || $reviewlists['favourites'] !='0')) {
+			if ($reviewlists['auditor_id'] !='' && $reviewlists['favourites'] !='' && $reviewlists['favourites'] !='0') {
 				$favourites = $this->getfavourites(['auditorid' => $reviewlists['auditor_id'], 'favid' => $reviewlists['favourites']]);
 				$favouritesname = $favourites['favour_name'];
 			}
