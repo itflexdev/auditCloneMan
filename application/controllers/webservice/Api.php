@@ -2190,7 +2190,6 @@ class Api extends CC_Controller
 		if ($this->input->post() && $this->input->post('review_id')) {
 			$id 			= $this->input->post('review_id');
 			$reviewlists	= $this->Auditor_Model->getReviewList('row', ['id' => $id]);
-			print_r($reviewlists);die;
 
 			if (isset($review_images)) unset($review_images);
 			if ($this->config->item('reviewtype')[$reviewlists['reviewtype']] == 'Cautionary') {
@@ -2214,7 +2213,7 @@ class Api extends CC_Controller
 			}else{
 				$review_images[] = '';
 			}
-			if ($reviewlists['auditor_id'] !='' && $reviewlists['favourites'] !='') {
+			if ($reviewlists['auditor_id'] !='' && ($reviewlists['favourites'] !='' || $reviewlists['favourites'] !='0')) {
 				$favourites = $this->getfavourites(['auditorid' => $reviewlists['auditor_id'], 'favid' => $reviewlists['favourites']]);
 				$favouritesname = $favourites['favour_name'];
 			}
