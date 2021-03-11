@@ -2376,7 +2376,21 @@ class Api extends CC_Controller
 
 			$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['pagestatus' => $pagestatus, 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]);
 			$results 		= $this->Mycpd_Model->getQueueList('all', ['pagestatus' => $pagestatus, 'user_id' => [$user_id], 'dbexpirydate' => $userdata['expirydate']]);
-			$mycpd 			= $this->userperformancestatus(['userid' => $user_id, 'performancestatus' => '1', 'auditorstatement' => '1']);
+
+			$developmental 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagestatus, 'plumberid' => $user_id, 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userdata['expirydate']]);
+			$individual 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => $pagestatus, 'plumberid' => $user_id, 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userdata['expirydate']]);
+			$workbased 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $user_id, 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userdata['expirydate']]);
+
+			if (count($developmental) > 0) $developmental = array_sum(array_column($developmental, 'points')); 
+			else $developmental = 0;
+			if (count($individual) > 0) $individual = array_sum(array_column($individual, 'points')); 
+			else $individual = 0;
+			if (count($workbased) > 0) $workbased = array_sum(array_column($workbased, 'points')); 
+			else $workbased = 0;
+			$totalcpd = $developmental+$individual+$workbased;
+			$mycpd 								= $totalcpd;
+
+			// $mycpd 			= $this->userperformancestatus(['userid' => $user_id, 'performancestatus' => '1', 'auditorstatement' => '1']);
 			
 
 			$jsonData['page_lables'] = [ 'mycpd' => 'My CPD points', 'logcpd' => 'Log your CPD points', 'activity' => 'PIRB CPD Activity', 'date' => 'The Date', 'comments' => 'Comments', 'documents' => 'Supporting Documents', 'files' => 'Choose Files', 'declaration' => 'I declare that the information contained in this CPD Activity form is complete, accurate and true. I further declare that I understand that I must keep verifiable evidence of all my CPD Activities for at least two years, as the PIRB may conduct a random audit of my activities, which would require me to submit the evidence to the PIRB.', 'or' => 'OR', 'previouscpd' => 'Your Previous CPD Points'
