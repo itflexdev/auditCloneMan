@@ -9,7 +9,9 @@ $VAT 					= $settings["vat_percentage"];
 $coc_purchase_limit   	= $username["coc_purchase_limit"]=='' ? '0' : $username["coc_purchase_limit"];
 $electronic_coc_log   	= 1;
 
-$coc_counts 			= $coc_count['count']=='' ? '0' : $coc_count['count'];
+// $coc_counts 			= $coc_count['count']=='' ? '0' : $coc_count['count'];
+
+$coc_counts 			= isset($coc_count['count']) ? $coc_count['count'] : '0';
 
 $cocpaperwork 			= $cocpaperwork["amount"];
 $cocelectronic 			= $cocelectronic["amount"]; 

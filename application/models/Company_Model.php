@@ -449,4 +449,104 @@ class Company_Model extends CC_Model
    
 		return $result;
 	}
+
+	public function getstockList($type, $requestdata=[]){ 		
+
+		$this->db->select('sm.*,ud.name as name,ud.surname as surname,up.registration_no as registration_no,pa.invoiceno as invoiceno,pd.company as company,cl.address cl_address,cl.name cl_name,cl.street cl_street,s.name as cl_suburb_name,c.name as cl_city_name,p.name as cl_province_name');
+		$this->db->from('stock_management sm');
+		$this->db->join('plumberallocate_company pa', 'pa.coc_id=sm.id','left');
+		$this->db->join('users_detail ud', 'ud.user_id=sm.user_id','left');
+		$this->db->join('users_plumber up', 'up.user_id=sm.user_id','left');
+		$this->db->join('users_detail pd', 'pd.user_id=pa.company_details', 'left');
+		$this->db->join('coc_log cl', 'cl.coc_id=sm.id', 'left'); // Coc Log		
+		$this->db->join('province p', 'p.id=cl.province', 'left'); // Coc Log Province
+		$this->db->join('city c', 'c.id=cl.city', 'left'); // Coc Log City
+		$this->db->join('suburb s', 's.id=cl.suburb', 'left'); // Coc Log Suburb
+		$this->db->join('users_detail cd1', 'cd1.user_id=cl.company_details', 'left'); // 
+
+		if((isset($requestdata['search']['value']) && $requestdata['search']['value']!='') || (isset($requestdata['order']['0']['column']) && $requestdata['order']['0']['column']!='' && isset($requestdata['order']['0']['dir']) && $requestdata['order']['0']['dir']!='')){
+			$this->db->join('custom c1', 'c1.c_id=sm.coc_status and c1.type="1"', 'left');
+			$this->db->join('custom c2', 'c2.c_id=sm.audit_status and c2.type="2"', 'left');
+			$this->db->join('custom c3', 'c3.c_id=sm.type and c3.type="3"', 'left');
+		}
+
+		$this->db->where('sm.type', '1');
+		$this->db->where('sm.coc_status', '9');
+
+		if(isset($requestdata['roletype']) && $requestdata['roletype']=='6'){
+			$this->db->where('sm.user_id',$requestdata['user_id']);
+			$this->db->or_where('sm.allocatedby',$requestdata['user_id']);
+		}
+
+		if(isset($requestdata['roletype']) && $requestdata['roletype']=='8'){
+			$this->db->where('sm.user_id',$requestdata['user_id']);
+			$this->db->where('sm.allocatedby IS NULL');
+		}				
+
+		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){
+			$searchvalue = strtolower((trim($requestdata['search']['value'])));			
+
+			if(isset($requestdata['page'])){
+				$page = $requestdata['page'];
+				$this->db->group_start();
+					if($page=='companycocstatement'){					
+						$this->db->like('sm.id', $searchvalue, 'both');
+						$this->db->or_like('c1.name', $searchvalue, 'both');
+						$this->db->or_like('DATE_FORMAT(sm.allocation_date,"%d-%m-%Y")', $searchvalue, 'both');	
+						$this->db->or_like('ud.name', $searchvalue, 'both');											
+						$this->db->or_like('cl.name', $searchvalue, 'both');
+						$this->db->or_like('cl.address', $searchvalue, 'both');																
+					}
+				$this->db->group_end();
+			}
+			else
+			{
+				if($searchvalue === 'allocated'){
+					$this->db->where('sm.allocatedby',$requestdata['user_id']);
+				}
+				elseif($searchvalue === 'in stock'){
+					$this->db->where('sm.user_id',$requestdata['user_id']);
+				}
+				else{
+					$this->db->group_start();			
+						$this->db->like('sm.id', $searchvalue);
+						$this->db->or_like('pa.invoiceno', $searchvalue);
+						$this->db->or_like('ud.name', $searchvalue);
+						$this->db->or_like('ud.surname', $searchvalue);
+						$this->db->or_like('up.registration_no', $searchvalue);
+						$this->db->or_like('pd.company_name', $searchvalue);
+					$this->db->group_end();
+				}
+			}
+		}			
+
+		if(isset($requestdata['order']['0']['column']) && isset($requestdata['order']['0']['dir'])){		
+			if(isset($requestdata['page'])){
+				$page = $requestdata['page'];				
+				if($page=='companycocstatement'){
+					$column = ['sm.id', 'c1.name', 'sm.allocation_date', 'ud.name', 'cl.name', 'cl.address'];
+				}
+			}else
+			{
+				$column = ['sm.id','sm.id','sm.id','sm.id','sm.id','sm.id'];
+			}
+			$this->db->order_by($column[$requestdata['order']['0']['column']], $requestdata['order']['0']['dir']);
+		}	
+
+		if($type!=='count' && isset($requestdata['start']) && isset($requestdata['length'])){
+			$this->db->limit($requestdata['length'], $requestdata['start']);
+		}
+		
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}		
+
+		return $result;
+
+	}
 }
