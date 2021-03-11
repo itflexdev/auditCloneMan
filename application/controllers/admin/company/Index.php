@@ -568,7 +568,7 @@ class Index extends CC_Controller
 
         $coc_purchase               = $this->Coc_Model->COCcount(['user_id' => $compId]);
         $pagedata['userorderstock'] = $this->Coc_Model->getCOCList('count', ['allocated_id' => $compId]);
-        $pagedata['coc_purchase']   = $coc_purchase['count'];
+        $pagedata['coc_purchase']   = isset($coc_purchase['count']) ? $coc_purchase['count'] : '0';
 
         $userdata1                = $this->Company_Model->getList('row', ['id' => $compId], ['users', 'usersdetail']);
         $pagedata['user_details'] = $userdata1;
