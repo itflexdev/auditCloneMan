@@ -19,7 +19,7 @@ class Index extends CC_Controller
         $pagedata['coc_not_assigned'] = $this->getNotification();
         $coc_purchase                 = $this->Coc_Model->COCcount(['user_id' => $user_id]);
         $pagedata['userorderstock']   = $this->Coc_Model->getCOCList('count', ['allocated_id' => $user_id]);
-        $pagedata['coc_purchase']     = $coc_purchase['count'];
+        $pagedata['coc_purchase']     = isset($coc_purchase['count']) ? $coc_purchase['count'] : '0';
 
         $pagedata['result']  = $this->Company_Model->getList('row', ['id' => $user_id], ['users', 'usersdetail', 'userscompany']);
         $pagedata['usersid'] = $user_id;
