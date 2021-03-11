@@ -62,7 +62,7 @@
     }elseif($designation2[$designation2id] == 'Licensed Plumber'){
         $plumber_icon = 'assets/images/card/licensed plumber.png';
 
-    }elseif($designation2[$designation2id] == 'Qualified Plumber'){
+    }elseif($designation2[$designation2id] == 'Registered Plumber'){
         $plumber_icon = 'assets/images/card/licensed plumber';
 
     }elseif($designation2[$designation2id] == 'Master Plumber'){

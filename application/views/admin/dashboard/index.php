@@ -149,7 +149,7 @@ $noaudit 			= $history['noaudit'];
 								<div class="col-md-2">
 									<div class="form-group coc_pur_sec">
 									<div class="a_round text-white" style="background-color: rgb(192,0,0);"><?php echo $designationqp;?></div>
-									<label class="a_label">Qualified Plumber</label>
+									<label class="a_label">Registered Plumber</label>
 									</div>
 								</div>
 								<div class="col-md-2">

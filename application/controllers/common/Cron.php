@@ -110,7 +110,7 @@ class Cron extends CC_Controller {
 					$designation = 'operating';
 				}elseif($designationDB == 'Licensed Plumber'){
 					$designation = 'licensed';
-				}elseif($designationDB == 'Qualified Plumber'){ // Registered Plumber
+				}elseif($designationDB == 'Registered Plumber'){ //Qualified Plumber
 					$designation = 'qualified';
 				}elseif($designationDB == 'Master Plumber'){
 					$designation = 'master';				

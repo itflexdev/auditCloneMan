@@ -70,7 +70,7 @@ if (!function_exists('imageconversion')) {
     }elseif($designation2[$designation2id] == 'Licensed Plumber'){
         $plumber_icon = imageconversion(base_url()."assets/images/card/licensed_plumber.png");
 
-    }elseif($designation2[$designation2id] == 'Qualified Plumber'){
+    }elseif($designation2[$designation2id] == 'Registered Plumber'){
         $plumber_icon = imageconversion(base_url()."assets/images/card/licensed_plumber.png");
 
     }elseif($designation2[$designation2id] == 'Master Plumber'){

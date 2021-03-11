@@ -29,7 +29,7 @@ $config['roleresellers']	 		= 	'6';
 $config['learner']	 				= 	'23';
 $config['assistant']	 			= 	'3';
 $config['operator']	 				= 	'4';
-$config['qualified']	 			= 	'5';
+$config['qualified']	 			= 	'5'; // registred plumber
 $config['licensed']	 				= 	'6';
 $config['master']	 				= 	'7';
 
@@ -254,8 +254,8 @@ $config['designation1'] 			= 	[
 														<p>The following designation requirements must be met to hold and/or maintain a Learner Plumber designation;</p>
 														<ul>
 															<li>Completion of the PIRB induction course;</li>
-															<li>Must preferably be employed and must work under the supervision and/or mentorship of a Licensed or Qualified Plumber;</li>
-															<li>Provide details of the PIRB Licensed/Qualified Plumber under whose adequate supervision and/or mentorship you will be doing your plumbing training;</li>
+															<li>Must preferably be employed and must work under the supervision and/or mentorship of a Licensed or Registered Plumber;</li>
+															<li>Provide details of the PIRB Licensed/Registered Plumber under whose adequate supervision and/or mentorship you will be doing your plumbing training;</li>
 															<li>Obtain 10 CPD points over 12-month cycle</li>
 															<li>Re-register every 12 months.</li>
 														</ul>
@@ -316,7 +316,7 @@ $config['designation2'] 			= 	[
 											'2' => 'Technical Assistant Practitioner',
 											'3' => 'Technical Operator Practitioner',
 											'4' => 'Licensed Plumber',
-											'5' => 'Qualified Plumber',
+											'5' => 'Registered Plumber',
 											'6' => 'Master Plumber'
 										];
 				
@@ -325,7 +325,7 @@ $config['designation3'] 			= 	[
 											'2' => 'Technical Assistant',
 											'3' => 'Technical Operator',
 											'4' => 'Licensed Plumber',
-											'5' => 'Qualified Plumber',
+											'5' => 'Registered Plumber',
 											'6' => 'Master Plumber'
 										];
 				
@@ -438,7 +438,7 @@ $config['qualificationtype'] 		= 	[
 											'2' => 'Technical Assistant',
 											'3' => 'Technical Operator',
 											'4' => 'Licensed Plumber',
-											'5' => 'Qualified Plumber',
+											'5' => 'Registered Plumber',
 											'6' => 'Master Plumber',
 											'7' => 'Solar',
 											'8' => 'Gas',
