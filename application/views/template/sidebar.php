@@ -1,16 +1,17 @@
 <?php 
-$userid 		= $userdata['id'];
-$username 		= $userdata['name'];
-$designation 	= $userdata['designation'];
-$approvalstatus = $userdata['approvalstatus'];
-$type 		 	= $userdata['type']; 
-$formstatus  	= $userdata['formstatus']; 
-$file1  		= $userdata['file1']; 
-$file2  		= $userdata['file2']; 
-$registrationno = $userdata['registration_no']; 
-$expirydate 	= $userdata['expirydate']; 
-$mobile_phone	= $userdata['mobile_phone'];
-$status  		= $userdata['status']; 
+$userid 		  = $userdata['id'];
+$username 		  = $userdata['name'];
+$designation 	  = $userdata['designation'];
+$approvalstatus   = $userdata['approvalstatus'];
+$type 		 	  = $userdata['type']; 
+$formstatus  	  = $userdata['formstatus']; 
+$file1  		  = $userdata['file1']; 
+$file2  		  = $userdata['file2']; 
+$registrationno   = $userdata['registration_no']; 
+$expirydate 	  = $userdata['expirydate']; 
+$mobile_phone	  = $userdata['mobile_phone'];
+$status  		  = $userdata['status']; 
+$company_approval = $userdata['c_approvalstatus'];
 
 if(count($permission) > 0){
 	$readpermission 	= explode(',', $permission['readpermission']);
