@@ -2398,29 +2398,28 @@ class Api extends CC_Controller
 			$jsonData['total_cpd_point'] 	= $mycpd;
 			$jsonData['renewal_cpd_point'] 	= '';
 			$jsonData['plumber_details'][] 	= ['registration_no' => $userdata['registration_no'], 'name_surname' => $userdata['name'].' '.$userdata['surname']];
-			foreach ($results as $key => $value) {
-
-				if ($value['status'] == '0') {
-					$status = 'Pending';
-					$statusicons = base_url().'assets/images/icons/clock.png';
-				}elseif($value['status'] == '1'){
-					$status = 'Approve';
-					$statusicons = base_url().'assets/images/icons/Green_tick.png';
-				}elseif($value['status'] == '2'){
-					$status = 'Reject';
-					$statusicons = base_url().'assets/images/icons/Red_cross.png';
-				}elseif($value['status'] == '3'){
-					$status = 'Not Submitted';
-					$statusicons = base_url().'assets/images/icons/clock.png';
-				}
-				$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $value['status'], 'status_words' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id'], 
-				];
-			}
-
 			if (count($results) > 0) {
+				foreach ($results as $key => $value) {
+
+					if ($value['status'] == '0') {
+						$status = 'Pending';
+						$statusicons = base_url().'assets/images/icons/clock.png';
+					}elseif($value['status'] == '1'){
+						$status = 'Approve';
+						$statusicons = base_url().'assets/images/icons/Green_tick.png';
+					}elseif($value['status'] == '2'){
+						$status = 'Reject';
+						$statusicons = base_url().'assets/images/icons/Red_cross.png';
+					}elseif($value['status'] == '3'){
+						$status = 'Not Submitted';
+						$statusicons = base_url().'assets/images/icons/clock.png';
+					}
+					$jsonData['results'][] = [ 'dateofactivity' => date('d/m/Y', strtotime($value['cpd_start_date'])), 'activity' => $value['cpd_activity'], 'status' => $value['status'], 'status_words' => $status, 'stausicons' => $statusicons, 'cpdpoints' => $value['points'], 'userid' => $value['user_id'], 'cpdid' => $value['id'], 
+					];
+				}
 				$jsonArray 	= array("status"=>'1', "message"=>'My CPD', "result"=>$jsonData);
 			}else{
-				$jsonArray 	= array("status"=>'0', "message"=>'No Record Found', "result"=>[]);
+				$jsonArray 	= array("status"=>'0', "message"=>'No Record Found', "result"=>$jsonData);
 			}
 
 			
