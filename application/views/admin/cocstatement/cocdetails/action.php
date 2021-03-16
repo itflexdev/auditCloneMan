@@ -248,7 +248,10 @@
 								echo '<label>Document</label><p><a href="' .$imgpath.'" target="_blank"><img src="'.$imgpath.'" width="100"></a></p>';
 							?>
 							<input type="hidden" value="revoked" name="revoked">
-							<button type="submit" name="submit" value="details" class="btn btn-primary">Revoke</button>
+							<?php if ($coctypeid=='2') { ?>
+								<button type="submit" name="submit" value="details" class="btn btn-primary">Revoke</button>
+							<?php } ?>
+							
 						<?php } else{ ?>
 							<div class="row">				
 								<div class="col-md-12">
