@@ -232,7 +232,8 @@
 					</form>
 				</div>
 				
-				<?php if(($cocstatusid=='3' && $allocationdate=='') || ($cocstatusid=='4' && $allocationdate=='') || ($cocstatusid=='4' && $cocallocatedby!='') || (($cocstatusid=='2' || $cocstatusid=='5') && $coctypeid=='2') || ($cocstatusid=='7')){ ?>
+				<?php //if(($cocstatusid=='3' && $allocationdate=='') || ($cocstatusid=='4' && $allocationdate=='') || ($cocstatusid=='4' && $cocallocatedby!='') || (($cocstatusid=='2' || $cocstatusid=='5') && $coctypeid=='2') || ($cocstatusid=='7')){
+				 if(($cocstatusid=='3' && $allocationdate=='') || ($cocstatusid=='4' && $allocationdate=='') || ($cocstatusid=='4' && $cocallocatedby!='') || (($cocstatusid=='2' || $cocstatusid=='5')) || ($cocstatusid=='7')){ ?>
 					<h4 class="card-title">Recalled/Reallocate/Cancel a COC</h4>
 					<form action="" method="post" class="form2">
 						<?php if($cocstatusid=='7'){ ?>
@@ -251,7 +252,7 @@
 							<?php if ($coctypeid=='2') { ?>
 								<button type="submit" name="submit" value="details" class="btn btn-primary">Revoke</button>
 							<?php } ?>
-							
+
 						<?php } else{ ?>
 							<div class="row">				
 								<div class="col-md-12">
@@ -259,7 +260,8 @@
 										<div class="row">
 											<?php
 												foreach($cocrecall as $key => $value){
-													if($coctypeid=='1' && $key=='2') continue; 
+													// if($coctypeid=='1' && $key=='2') continue; 
+													if($coctypeid=='1' && in_array($key, ['1','3'])) continue; 
 													if(($cocstatusid=='2' || $cocstatusid=='5') && $coctypeid=='2' && in_array($key, ['1','3'])) continue; 
 											?>
 													<div class="col-md-2">
