@@ -501,6 +501,7 @@ class Coc_Model extends CC_Model
 		
 		if(isset($data['revoked'])){
 			$this->db->update('stock_management', ['coc_status' => '4', 'coc_orders_status' => null], ['id' => $cocid]);
+			$this->db->delete('coc_cancel_log', ['coc_id' => $cocid]);
 			$return = '1';
 		}else{
 			$recall			=	$data['recall'];
@@ -560,6 +561,13 @@ class Coc_Model extends CC_Model
 					$body 		= 'Hi,<br>your coc number '.$cocid.' has been cancelled by admin';
 					$this->sentMail($auditor['email'], $body, $subject);
 				}
+				$logdata['coc_id'] 		= $cocid;
+				$logdata['plumber_id'] 	= $stockuserid;
+				$logdata['auditor_id'] 	= $auditorid;
+				$logdata['coc_status'] 	= $getstock['coc_status'];
+				$logdata['created_by'] 	= $userid;
+				$logdata['created_at'] 	= $datetime;
+				$this->db->insert('coc_cancel_log', $logdata);
 				
 				$this->db->update('stock_management', ['coc_status' => '7', 'coc_orders_status' => '7', 'auditorid' => '0', 'audit_status' => null, 'audit_allocation_date' => null], ['id' => $cocid]);
 				$return = '2';
