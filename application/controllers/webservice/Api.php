@@ -1443,6 +1443,7 @@ class Api extends CC_Controller
 		if ($this->input->post('user_id') && $this->input->post('type') == 'list') {
 			$userid 				= $this->input->post('user_id');
 			$extra['page'] 			= 'plumberaccount';
+			$extra['order'] 		= [ '0' => ['column' => 0, 'dir' => 'asc'] ];
 			$results 				= $this->Accounts_Model->getList('all', ['user_id' => $userid]+$extra);
 
 			if(count($results) > 0){
