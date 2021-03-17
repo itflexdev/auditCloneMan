@@ -1471,7 +1471,7 @@ class Api extends CC_Controller
 					];
 				}
 			}
-			$jsonArray = array("status"=>'1', "message"=>'My Accounts', "result"=>$jsonData);
+			$jsonArray = array("status"=>'1', "message"=>'My Accounts', "result"=> isset($jsonData) ? $jsonData : []);
 
 		}elseif($this->input->post('user_id') && $this->input->post('type') == 'search'  && $this->input->post('keywords')){
 			$keywords 		= $this->input->post('keywords');
@@ -1507,7 +1507,7 @@ class Api extends CC_Controller
 					];
 				}
 			}
-			$jsonArray = array("status"=>'1', "message"=>'My Accounts', "result"=>$jsonData);
+			$jsonArray = array("status"=>'1', "message"=>'My Accounts', "result"=> isset($jsonData) ? $jsonData : []);
 
 		}else{
 
