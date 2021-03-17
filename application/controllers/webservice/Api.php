@@ -1436,6 +1436,86 @@ class Api extends CC_Controller
 
 		echo json_encode($jsonArray);
 	}
+
+	// Plumber Myaccounts
+	public function plumberaccounts(){
+		if ($this->input->post('user_id') && $this->input->post('type') == 'list') {
+			$userid 				= $this->input->post('user_id');
+			$extra['page'] 			= 'plumberaccount';
+			$results 				= $this->Accounts_Model->getList('all', ['user_id' => $userid]+$extra);
+
+			if(count($results) > 0){
+			foreach($results as $result){
+				$invoicestatus = 	isset($this->config->item('payment_status2')[$result['status']]) ? $this->config->item('payment_status2')[$result['status']] : '';
+
+				if($result['status']=='0' && $result['coc_type']=='0'){
+					$payment = 	'<i class="fa fa-credit-card payfastpayment"></i>';
+				}else{
+					$payment = 	'';	
+				}
+
+				if ($result['total_cost']!='') {
+					$amt = $this->config->item('currency').' '.$result['total_due'];
+				}else{
+					$amt = $this->config->item('currency').' '.$result['total_due'];
+				}
+				$jsonData[] = [
+					'description' 	=> 	$result['description'],
+					'invoiceno' 	=> 	$result['inv_id'],
+					'invoicedate' 	=> 	date('d-m-Y', strtotime($result['created_at'])),
+					'invoicevalue' 	=> 	$amt,
+					'invoicestatus' => 	$invoicestatus,
+					'orderstatus' 	=> 	$result['orderstatusname'],			
+		     		'pdf'	    	=> 	base_url().'assets/inv_pdf/'.$result['inv_id'].'.pdf',
+		     		'payment'	    => 	$payment
+					];
+				}
+			}
+			$jsonArray = array("status"=>'1', "message"=>'My Accounts', "result"=>$jsonData);
+
+		}elseif($this->input->post('user_id') && $this->input->post('type') == 'search'  && $this->input->post('keywords')){
+			$keywords 		= $this->input->post('keywords');
+			$userid 		= $this->input->post('user_id');
+			$post 			= $this->input->post();
+			$extra['page'] 	= 'plumberaccount';
+			$results 		= $this->Accounts_Model->getList('all', ['user_id' => $userid, 'search' => ['value' => $keywords]]+$extra);
+
+			if(count($results) > 0){
+			foreach($results as $result){
+				$invoicestatus = 	isset($this->config->item('payment_status2')[$result['status']]) ? $this->config->item('payment_status2')[$result['status']] : '';
+
+				if($result['status']=='0' && $result['coc_type']=='0'){
+					$payment = 	'<i class="fa fa-credit-card payfastpayment"></i>';
+				}else{
+					$payment = 	'';	
+				}
+
+				if ($result['total_cost']!='') {
+					$amt = $this->config->item('currency').' '.$result['total_due'];
+				}else{
+					$amt = $this->config->item('currency').' '.$result['total_due'];
+				}
+				$jsonData[] = [
+					'description' 	=> 	$result['description'],
+					'invoiceno' 	=> 	$result['inv_id'],
+					'invoicedate' 	=> 	date('d-m-Y', strtotime($result['created_at'])),
+					'invoicevalue' 	=> 	$amt,
+					'invoicestatus' => 	$invoicestatus,
+					'orderstatus' 	=> 	$result['orderstatusname'],			
+		     		'pdf'	    	=> 	base_url().'assets/inv_pdf/'.$result['inv_id'].'.pdf',
+		     		'payment'	    => 	$payment
+					];
+				}
+			}
+			$jsonArray = array("status"=>'1', "message"=>'My Accounts', "result"=>$jsonData);
+
+		}else{
+
+			$jsonArray = array("status"=>'0', "message"=>'invalid request', 'result' => []);
+		}
+
+		echo json_encode($jsonArray);
+	}
 	// Log CoC View:
 	public function logcoc_view(){
 
