@@ -3380,8 +3380,8 @@ class Api extends CC_Controller
 							}
 						}
 						$jsonData['accounts_results'][] = 	[      
-							'inv_id' 		=> 	$internal_inv,
-							'invoicenumber' => 	$result['invoice_no'],
+							'inv_id' 		=> 	$result['inv_id'],
+							'invoicenumber' => 	$internal_inv,
 							'created_at'    =>  $originalDate,
 							'description'   =>  $result['description'],
 							'total_cost'    => 	$this->config->item('currency').' '.$result['total_cost'],
