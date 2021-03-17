@@ -709,6 +709,12 @@ class Index extends CC_Controller
 				}
 
 			}
+			$log = [
+				'plumber_id' 	=> $userid,
+				'admin_id' 		=> $adminid,
+				'crated_at' 	=> $datetime
+			];
+			$this->db->insert('trigger_renewal_log', $log)
 
 		}
 		echo "1";
