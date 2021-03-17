@@ -714,7 +714,7 @@ class Index extends CC_Controller
 				'admin_id' 		=> $adminid,
 				'created_at' 	=> $datetime
 			];
-			$this->db->insert('trigger_renewal_log', $log)
+			$this->db->insert('trigger_renewal_log', $log);
 
 		}
 		echo "1";
