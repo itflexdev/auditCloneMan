@@ -70,6 +70,7 @@ class Api extends CC_Controller
 		$this->load->model('Api_Model');
 		$this->load->model('Noncompliancelisting_Model');
 		$this->load->model('Cpdtypesetup_Model');
+		$this->load->model('Accounts_Model');
 	}
 
 	public function Update_API()
