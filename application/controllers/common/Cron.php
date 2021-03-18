@@ -283,6 +283,14 @@ class Cron extends CC_Controller {
 						$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes],$renewal_date];
 						$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 						$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+
+						$log = [
+							'plumber_id' 	=> $userid,
+							'type' 			=> '2',
+							'url' 			=> $fileName,
+							'created_at' 	=> $starttime
+						];
+						$this->db->insert('trigger_renewal_log', $log);
 					}
 					
 					if($settings && $settings['otp']=='1'){
@@ -303,13 +311,6 @@ class Cron extends CC_Controller {
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
-
-			$log = [
-				'type' 			=> '2',
-				'url' 			=> $fileName,
-				'created_at' 	=> $endtime
-			];
-			$this->db->insert('trigger_renewal_log', $log);
 		}
 
 		$file = fopen("assets/payment/renewalreminder.txt","a");
@@ -368,6 +369,14 @@ class Cron extends CC_Controller {
 					$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes]];
 					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+
+					$log = [
+							'plumber_id' 	=> $userid,
+							'type' 			=> '2',
+							'url' 			=> $fileName,
+							'created_at' 	=> $starttime
+						];
+						$this->db->insert('trigger_renewal_log', $log);
 				}
 				
 				if($settings && $settings['otp']=='1'){
@@ -385,13 +394,6 @@ class Cron extends CC_Controller {
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
-
-			$log = [
-				'type' 			=> '2',
-				'url' 			=> $fileName,
-				'created_at' 	=> $endtime
-			];
-			$this->db->insert('trigger_renewal_log', $log);
 		}
 		
 		$file = fopen("assets/payment/renewalreminder.txt","a");
@@ -454,6 +456,14 @@ class Cron extends CC_Controller {
 					$array2 = [$userdata1['name']." ".$userdata1['surname'], $mail_date, $orders['quantity'], $this->config->item('coctype2')[$cocTypes]];
 					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
+
+					$log = [
+							'plumber_id' 	=> $userid,
+							'type' 			=> '2',
+							'url' 			=> $fileName,
+							'created_at' 	=> $starttime
+						];
+						$this->db->insert('trigger_renewal_log', $log);
 				}
 				
 				if($settings && $settings['otp']=='1'){
@@ -472,13 +482,6 @@ class Cron extends CC_Controller {
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
-
-			$log = [
-				'type' 			=> '2',
-				'url' 			=> $fileName,
-				'created_at' 	=> $endtime
-			];
-			$this->db->insert('trigger_renewal_log', $log);
 		}
 		
 		$file = fopen("assets/payment/renewalreminder.txt","a");
@@ -509,18 +512,19 @@ class Cron extends CC_Controller {
 			$this->db->update('users', $request1, ['id' => $userid]);
 			
 			$log	.= $userid.PHP_EOL;
+
+			$log = [
+							'plumber_id' 	=> $userid,
+							'type' 			=> '2',
+							'url' 			=> $fileName,
+							'created_at' 	=> $starttime
+						];
+						$this->db->insert('trigger_renewal_log', $log);
 		}
 		
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
-
-			$log = [
-				'type' 			=> '2',
-				'url' 			=> $fileName,
-				'created_at' 	=> $endtime
-			];
-			$this->db->insert('trigger_renewal_log', $log);
 		}
 		
 		$file = fopen("assets/payment/renewalreminder.txt","a");
