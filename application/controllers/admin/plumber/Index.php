@@ -656,6 +656,9 @@ class Index extends CC_Controller
 		$result		= $this->Accounts_Model->getDetails($post['id']);
 		$settings 	= $this->Systemsettings_Model->getList('row');
 		$userid 	= $post['id'];
+		$adminid 	= $this->getUserID();
+		$datetime 	= date('Y-m-d H:i:s');
+		$fileName 	= base_url().'admin/plumber/index/triggerrenewal';
 		
 		foreach($result as $data)
 		{
@@ -712,6 +715,8 @@ class Index extends CC_Controller
 			$log = [
 				'plumber_id' 	=> $userid,
 				'admin_id' 		=> $adminid,
+				'type' 			=> '1',
+				'url' 			=> $fileName,
 				'created_at' 	=> $datetime
 			];
 			$this->db->insert('trigger_renewal_log', $log);

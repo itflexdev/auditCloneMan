@@ -303,6 +303,13 @@ class Cron extends CC_Controller {
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
+
+			$log = [
+				'type' 			=> '2',
+				'url' 			=> $fileName,
+				'created_at' 	=> $endtime
+			];
+			$this->db->insert('trigger_renewal_log', $log);
 		}
 
 		$file = fopen("assets/payment/renewalreminder.txt","a");
@@ -378,6 +385,13 @@ class Cron extends CC_Controller {
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
+
+			$log = [
+				'type' 			=> '2',
+				'url' 			=> $fileName,
+				'created_at' 	=> $endtime
+			];
+			$this->db->insert('trigger_renewal_log', $log);
 		}
 		
 		$file = fopen("assets/payment/renewalreminder.txt","a");
@@ -458,6 +472,13 @@ class Cron extends CC_Controller {
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
+
+			$log = [
+				'type' 			=> '2',
+				'url' 			=> $fileName,
+				'created_at' 	=> $endtime
+			];
+			$this->db->insert('trigger_renewal_log', $log);
 		}
 		
 		$file = fopen("assets/payment/renewalreminder.txt","a");
@@ -493,6 +514,13 @@ class Cron extends CC_Controller {
 		$endtime = date('Y-m-d H:i:s');
 		if ($starttime && $endtime) {
 			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
+
+			$log = [
+				'type' 			=> '2',
+				'url' 			=> $fileName,
+				'created_at' 	=> $endtime
+			];
+			$this->db->insert('trigger_renewal_log', $log);
 		}
 		
 		$file = fopen("assets/payment/renewalreminder.txt","a");
