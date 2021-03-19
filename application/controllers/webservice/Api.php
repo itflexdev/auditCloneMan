@@ -1665,6 +1665,7 @@ class Api extends CC_Controller
 				if(isset($post['ncnotice'])) 			$request['ncnotice'] 				= $post['ncnotice'];
 				if(isset($post['ncemail'])) 			$request['ncemail'] 				= $post['ncemail'];
 				if(isset($post['ncreason'])) 			$request['ncreason'] 				= $post['ncreason'];
+				$request['device_type'] 				= '2';
 				
 				
 				// $request['file2'] 					= (isset($post['file2'])) ? $post['file2'] : '';
@@ -1672,9 +1673,16 @@ class Api extends CC_Controller
 				if($id==''){
 					$request['created_at'] = $datetime;
 					$request['created_by'] = $plumberID;
-					$this->db->insert('coc_log', $request);
-					// $insertid = $this->db->insert_id();
-					$jsonData['insertid'] 			= $this->db->insert_id();
+					// rectify duplicate entries
+					$cocData = $this->cocLogCheck('row', ['coc_id' => $cocId]);
+					if ($cocData !='') {
+						$this->db->insert('coc_log', $request);
+						$jsonData['insertid'] 			= $this->db->insert_id();
+					}else{
+						$this->db->update('coc_log', $request, ['id' => $cocData['id']]);
+						$jsonData['insertid'] 			= $cocData['id'];
+					}
+
 				}else{
 					$request['updated_at'] = $datetime;
 					$request['updated_by'] = $plumberID;
@@ -1798,6 +1806,7 @@ class Api extends CC_Controller
 				if(isset($post['ncemail'])) 			$request['ncemail'] 				= $post['ncemail'];
 				if(isset($post['ncreason'])) 			$request['ncreason'] 				= $post['ncreason'];
 				$request['log_date'] = date('Y-m-d H:i:s');
+				$request['device_type'] 				= '2';
 				
 				
 				// $request['file2'] 					= (isset($post['file2'])) ? $post['file2'] : '';
@@ -1805,8 +1814,16 @@ class Api extends CC_Controller
 				if($id==''){
 					$request['created_at'] = $datetime;
 					$request['created_by'] = $plumberID;
-					$actiondata = $this->db->insert('coc_log', $request);
-					$jsonData['insertid'] 			= $this->db->insert_id();
+					// rectify duplicate entries
+					$cocData = $this->cocLogCheck('row', ['coc_id' => $cocId]);
+					if ($cocData !='') {
+						$actiondata = $this->db->insert('coc_log', $request);
+						$jsonData['insertid'] 			= $this->db->insert_id();
+					}else{
+						$this->db->update('coc_log', $request, ['id' => $cocData['id']]);
+						$jsonData['insertid'] 			= $cocData['id'];
+					}
+
 				}else{
 					$request['updated_at'] = $datetime;
 					$request['updated_by'] = $plumberID;
@@ -1914,6 +1931,24 @@ class Api extends CC_Controller
 		}
 
 		echo json_encode($jsonArray);
+	}
+
+	public function cocLogCheck($type, $data =[]){
+		$this->db->select('cl.*');
+		$this->db->from('coc_log as cl');
+
+		if(isset($requestdata['coc_id'])) 				$this->db->where('cl.coc_id', $data['coc_id']);
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		
+		return $result;
 	}
 
 	// Audit Statement:

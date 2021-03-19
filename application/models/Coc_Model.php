@@ -430,7 +430,15 @@ class Coc_Model extends CC_Model
 		if($id==''){
 			$request['created_at'] = $datetime;
 			$request['created_by'] = $userid;
-			$this->db->insert('coc_log', $request);
+
+			// rectify duplicate entries
+			$cocData = $this->cocLogCheck('row', ['coc_id' => $cocId]);
+			if ($cocData !='') {
+				$this->db->insert('coc_log', $request);
+			}else{
+				$this->db->update('coc_log', $request, ['id' => $cocData['id']]);
+			}
+			// $this->db->insert('coc_log', $request);
 		}else{
 			$this->db->update('coc_log', $request, ['id' => $id]);
 		}
@@ -465,6 +473,24 @@ class Coc_Model extends CC_Model
 			$this->db->trans_commit();
 			return true;
 		}
+	}
+
+	public function cocLogCheck($type, $data =[]){
+		$this->db->select('cl.*');
+		$this->db->from('coc_log as cl');
+
+		if(isset($requestdata['coc_id'])) 				$this->db->where('cl.coc_id', $data['coc_id']);
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		
+		return $result;
 	}
 	
 	// Coc Details
