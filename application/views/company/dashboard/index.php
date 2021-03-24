@@ -1,7 +1,6 @@
 <?php 
 	$pdfimg 				= base_url().'assets/images/pdf.png';
 	$profileimg 			= base_url().'assets/images/profile.jpg';
-	echo "<pre>";print_r($overallperformancestatuslimit);die;
 ?>
 <div class="row page-titles">
 	<div class="col-md-5 align-self-center">
@@ -229,7 +228,7 @@
 														<img src="<?php echo $photoidimg; ?>" class="bar_profil">
 														<span class="ver_name<?php echo $key+1; ?>"><?php echo $performance['name']; ?></span>
 														<img src="<?php echo base_url().'assets/images/bar'.($key+1).'.png'; ?>" class="bar_3d cus_pirb<?php echo $key+1; ?>">
-														<span class="bar_bot"><?php echo $performance['point']; ?></span>
+														<span class="bar_bot"><?php echo round(($performance['point']), 2); ?></span>
 													</div>
 												</div>
 										<?php } ?>
@@ -260,7 +259,7 @@
 														<img src="<?php echo $photoidimg; ?>" class="bar_profil">
 														<span class="ver_name<?php echo $key+1; ?>"><?php echo $performance['name']; ?></span>
 														<img src="<?php echo base_url().'assets/images/bar'.($key+1).'.png'; ?>" class="bar_3d cus_pirb<?php echo $key+1; ?>">
-														<span class="bar_bot"><?php echo $performance['point']; ?></span>
+														<span class="bar_bot"><?php echo round(($performance['point']), 2); ?></span>
 													</div>
 												</div>
 										<?php } ?>
