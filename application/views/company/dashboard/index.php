@@ -47,8 +47,8 @@
 			}
 
 			span.ver_name3 {
-    			left: -64px;
-    			top: 12px;
+    			left: -64px !important;
+    			top: 12px !important;
 			}
 
 			.message_sec {
