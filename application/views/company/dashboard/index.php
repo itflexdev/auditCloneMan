@@ -33,7 +33,7 @@
 
 			span.ver_name1 {
     			left: -64px !important;
-    			top: 120px;
+    			top: 120px !important;
 			}
 
 			span.bar_bot {
@@ -43,7 +43,7 @@
 
 			span.ver_name2 {
     			left: -64px !important;
-    			top: 60px;
+    			top: 60px !important;
 			}
 
 			span.ver_name3 {
@@ -87,12 +87,12 @@
 
 			span.ver_name2 {
     			left: -54px !important;
-    			top: 70px;
+    			top: 70px !important;
 			}
 
 			span.ver_name3 {
     			left: -54px !important;
-    			top: 20px;
+    			top: 20px !important;
 			}
 
 			}
