@@ -204,7 +204,7 @@
 						</div>
 				
 						<div class="row">
-							<div class="col-md-6 cus_reg_sec">
+							<div class="col-md-6 cus_reg_sec displaynone">
 								<div class="cus_regt">
 									<p class="reg_he">Current Top 3 Regional Ranking (Country)</p>
 									<div class="row reg_grap">
