@@ -32,7 +32,7 @@
             }
 
 			span.ver_name1 {
-    			left: -64px;
+    			left: -64px !important;
     			top: 120px;
 			}
 
@@ -42,7 +42,7 @@
 			}
 
 			span.ver_name2 {
-    			left: -64px;
+    			left: -64px !important;
     			top: 60px;
 			}
 
@@ -81,17 +81,17 @@
 			}
 
 			span.ver_name1 {
-    			left: -54px;
+    			left: -54px !important;
     			top: 130px;
 			}
 
 			span.ver_name2 {
-    			left: -54px;
+    			left: -54px !important;
     			top: 70px;
 			}
 
 			span.ver_name3 {
-    			left: -54px;
+    			left: -54px !important;
     			top: 20px;
 			}
 
