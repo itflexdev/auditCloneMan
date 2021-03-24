@@ -29,8 +29,11 @@
 					 		<tbody>
 					 			<?php 
 									$company_performance = $this->config->item('company_performance'); 
-									
+									$i =0;
 									foreach ($result as $key => $value) {
+										if ($i>6) {
+											break;
+										}
 									?>
 								<tr>									
 									<td class="key1"> <?php echo $company_performance[$value['document_type']]; ?>	</td>
@@ -38,9 +41,24 @@
 										<input type="number" required size="3" min="1" name="points[<?php echo $value['id']; ?>]" value="<?php echo $value['points']; ?>" style="margin: 0px 20px;width: 10%;">
 									</td>									
 								</tr>
-								<?php } ?>
+								<?php $i++;} ?>
 							</tbody>
-					    </table>
+					    </table><br>
+						<h4 class="card-title">Plumber Performance Factors</h4>
+					    <div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="installationtype_id">NON Licensed Plumber</label>
+									<input type="number" class="form-control" id="licensed" name="points[8]" value="<?php echo $result[7]['points']; ?>">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="name">Licensed Plumbers and Above</label>
+									<input type="number" class="form-control" id="nonlicensed" name="points[9]" value="<?php echo $result[8]['points']; ?>">
+								</div>
+							</div>
+						</div>
 					    <div class="row">
 							<div class="col-md-12 text-right">								
 								<button type="submit" name="submit" value="submit" class="btn btn-primary">Update</button>		
