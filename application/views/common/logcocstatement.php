@@ -746,6 +746,7 @@ function installationdefaultimage(){
 }
 
 $(document).on('click', '.savecocbtn', function(){
+	$('.savecocbtn').attr("disabled", true);
 	$('.form').data("validator").cancelSubmit = true;
 	$('#submitbtn').attr('value', 'save').click();
 })
@@ -781,6 +782,7 @@ $(document).on('click', '.verifyotp', function(){
 			if (data == 0) {
 				$('#otp').parent().append('<p class="tagline error_otp">Incorrect OTP</p>');
 			}else{
+				$('.verifyotp').attr("disabled", true);
 				$('#submitbtn').attr('value', 'log').click();
 			}
 		}
