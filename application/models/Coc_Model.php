@@ -432,8 +432,8 @@ class Coc_Model extends CC_Model
 			$request['created_by'] = $userid;
 
 			// rectify duplicate entries
-			$cocData = $this->cocLogCheck('row', ['coc_id' => $cocId]);
-			if ($cocData !='') {
+			$cocData = $this->cocLogCheck('row', ['coc_id' => $data['coc_id']]);
+			if ($cocData =='') {
 				$this->db->insert('coc_log', $request);
 			}else{
 				$this->db->update('coc_log', $request, ['id' => $cocData['id']]);
@@ -479,7 +479,7 @@ class Coc_Model extends CC_Model
 		$this->db->select('cl.*');
 		$this->db->from('coc_log as cl');
 
-		if(isset($requestdata['coc_id'])) 				$this->db->where('cl.coc_id', $data['coc_id']);
+		if(isset($data['coc_id'])) 				$this->db->where('cl.coc_id', $data['coc_id']);
 
 		if($type=='count'){
 			$result = $this->db->count_all_results();

@@ -1937,7 +1937,7 @@ class Api extends CC_Controller
 		$this->db->select('cl.*');
 		$this->db->from('coc_log as cl');
 
-		if(isset($requestdata['coc_id'])) 				$this->db->where('cl.coc_id', $data['coc_id']);
+		if(isset($data['coc_id'])) 				$this->db->where('cl.coc_id', $data['coc_id']);
 
 		if($type=='count'){
 			$result = $this->db->count_all_results();
