@@ -1675,7 +1675,7 @@ class Api extends CC_Controller
 					$request['created_by'] = $plumberID;
 					// rectify duplicate entries
 					$cocData = $this->cocLogCheck('row', ['coc_id' => $cocId]);
-					if ($cocData !='') {
+					if ($cocData =='') {
 						$this->db->insert('coc_log', $request);
 						$jsonData['insertid'] 			= $this->db->insert_id();
 					}else{
