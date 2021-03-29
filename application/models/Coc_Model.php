@@ -1034,4 +1034,13 @@ class Coc_Model extends CC_Model
 
 		
 	}
+
+	public function SalesReport($data = []){
+	$monthArray 	=	explode('-', $data['monthArray']);
+
+	$query = $this->db->query('Select sum(quantity) AS Sales FROM coc_orders AS C INNER JOIN invoice AS I ON C.inv_id = I.inv_id WHERE C.admin_status = "1" AND EXTRACT(MONTH from CURRENT_TIMESTAMP) - EXTRACT(MONTH from C.payment_date) < "6" AND (EXTRACT(YEAR from CURRENT_TIMESTAMP) = EXTRACT(YEAR from C.payment_date) OR EXTRACT(YEAR from CURRENT_TIMESTAMP) - 1 = EXTRACT(YEAR from C.payment_date)) AND MONTH(C.payment_date) = '.$monthArray[1].' and C.coc_type="'.$data['coctype'].'"');
+	$result = $query->row_array();
+	return $result;
+		
+	}
 }

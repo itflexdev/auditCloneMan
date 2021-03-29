@@ -44,13 +44,32 @@ class Index extends CC_Controller
 		$pagedata['history']			= $this->Auditor_Model->getReviewHistoryCount();
 		
 		$sixmonthgraph = [];
-		for($i = 0; $i <= 5; $i++){
+		/*for($i = 0; $i <= 5; $i++){
 			$sixmonthgraph[] = [
 				'month' => date('F', strtotime('-'.$i.' months')), 
 				'electronic' => $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['1'], 'monthArray' => date('Y-m', strtotime('-'.$i.' months')), 'monthrange' => '1'], ['invoice']),
 				'paper' => $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['2'], 'monthArray' => date('Y-m', strtotime('-'.$i.' months')), 'monthrange' => '1'], ['invoice'])
 			];
-		}	
+		}*/
+		for($i = 0; $i <= 5; $i++){
+
+			$dateFlag = date('Y-m', strtotime('-'.$i.' months'));
+			if (($i == 0 && $dateFlag == '2021-03') || ($i > 0 && $dateFlag != '2021-03')) {
+				$Yearmonth 	= $dateFlag;
+				$month 		= explode('-', $Yearmonth);
+			}else{
+				$Yearmonth 	= date('Y').'-02';
+				$month 		= explode('-', $Yearmonth);
+			}
+			$elec = $this->Coc_Model->SalesReport(['coctype' => '1', 'monthArray' => $Yearmonth]);
+			$paper = $this->Coc_Model->SalesReport(['coctype' => '2', 'monthArray' => $Yearmonth]);
+			
+			$sixmonthgraph[] = [
+				'month' 		=> date("F", mktime(0, 0, 0, $month[1], 10)), 
+				'electronic' 	=> isset($elec['Sales']) ? $elec['Sales'] : '0',
+				'paper' 		=> isset($paper['Sales']) ? $paper['Sales'] : '0',
+			];
+		}
 		$pagedata['sixmonthgraph']	= array_reverse($sixmonthgraph);
 		
 		$data['plugins'] = ['knob', 'echarts'];
