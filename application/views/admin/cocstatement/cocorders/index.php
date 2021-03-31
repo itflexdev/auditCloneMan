@@ -37,7 +37,7 @@ if(!empty($comments)){
 }
 
 $stock = (isset($stock)) ? $stock : '';
-$allocate_button_disbled = (($coc_type==2 && $stock=='') || $stock=='') ? 'disabled' : '';
+$allocate_button_disbled = (($coc_type==2 && $stock=='')) ? 'disabled' : '';
 
 
 $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' : '';
