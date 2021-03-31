@@ -163,6 +163,7 @@ class Index extends CC_Controller
 		$userdata					= 	$this->getUserDetails();	
 		$pagedata['notification'] 	= 	$this->getNotification();
 		$pagedata['province'] 		= 	$this->getProvinceList();
+		$pagedata['adminstock'] 	= 	$this->Stock_Model->Stock_Model();
 		$pagedata['checkpermission'] = $this->checkUserPermission('7', '2');
 		
 		$pagedata['userid']			= 	$userid;
