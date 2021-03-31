@@ -12,37 +12,41 @@ class Stock_Model extends CC_Model
 		$ids 		= '';
 		$checkarray = [];
 		
-		if(count($result) > 0){
-			for($i=0; $i<$quantity; $i++){
-				if($i==0){
-					$ids .= $result[$i]['id'];
-				}else{
-					if($i==($quantity-1)){		
-						if(($result[$i]['id']-$result[$i-1]['id'])=='1'){
-							$ids .= '-'.$result[$i]['id'];
-						}else{
-							$ids .= ','.$result[$i]['id'];
-						}			
+		if (count($result) >= $quantity) {
+			if(count($result) > 0){
+				for($i=0; $i<$quantity; $i++){
+					if($i==0){
+						$ids .= $result[$i]['id'];
 					}else{
-						if(isset($result[$i+1]['id'])){
-							$currentprevious 	= abs($result[$i]['id']-$result[$i-1]['id']);
-							$currentnext 		= abs($result[$i]['id']-$result[$i+1]['id']);
-							
-							if(($currentprevious!='1' || $currentnext!='1') && !in_array($result[$i]['id'], $checkarray)){
-								if($currentprevious!='1'){
-									$ids .= ','.$result[$i]['id'];
-								}elseif($currentnext!='1'){
-									$ids .= '-'.$result[$i]['id'];
-									$checkarray[] = $result[$i+1]['id'];
-								}
-							}elseif(in_array($result[$i]['id'], $checkarray)){
+						if($i==($quantity-1)){		
+							if(($result[$i]['id']-$result[$i-1]['id'])=='1'){
+								$ids .= '-'.$result[$i]['id'];
+							}else{
 								$ids .= ','.$result[$i]['id'];
+							}			
+						}else{
+							if(isset($result[$i+1]['id'])){
+								$currentprevious 	= abs($result[$i]['id']-$result[$i-1]['id']);
+								$currentnext 		= abs($result[$i]['id']-$result[$i+1]['id']);
+								
+								if(($currentprevious!='1' || $currentnext!='1') && !in_array($result[$i]['id'], $checkarray)){
+									if($currentprevious!='1'){
+										$ids .= ','.$result[$i]['id'];
+									}elseif($currentnext!='1'){
+										$ids .= '-'.$result[$i]['id'];
+										$checkarray[] = $result[$i+1]['id'];
+									}
+								}elseif(in_array($result[$i]['id'], $checkarray)){
+									$ids .= ','.$result[$i]['id'];
+								}
 							}
 						}
 					}
+					
 				}
-				
 			}
+		}else{
+			$ids = '';
 		}
 		
 		return $ids;
@@ -123,6 +127,9 @@ class Stock_Model extends CC_Model
 		else if($data['type']=='6'){
 			$requestdata['coc_status'] 		= '3';	
 		}
+		else if($data['type']=='4'){
+			$requestdata['coc_status'] 		= '8';	
+		}
 		
 		if(isset($data['coc_type'])) $requestdata['type']	= $data['coc_type'];
 		if(isset($data['user_id'])) $requestdata['user_id']	= $data['user_id'];
@@ -178,6 +185,15 @@ class Stock_Model extends CC_Model
 		
 		$result = $this->stockformat($stocks);
 		return $result;
+	}
+
+	public function Stock_Model(){
+		$this->db->select('*');
+		$this->db->from('stock_management');
+		$this->db->where(["user_id" => "0", "type" => "2"]);
+		$result = $this->db->get()->result_array();
+
+		return count($result);
 	}
 
 }

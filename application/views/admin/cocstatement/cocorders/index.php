@@ -37,7 +37,7 @@ if(!empty($comments)){
 }
 
 $stock = (isset($stock)) ? $stock : '';
-$allocate_button_disbled = ($coc_type==2 && $stock=='') ? 'disabled' : '';
+$allocate_button_disbled = (($coc_type==2 && $stock=='') || $stock=='') ? 'disabled' : '';
 
 
 $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' : '';
@@ -142,8 +142,9 @@ $tracking_display = ($delivery_type=='' || $delivery_type=='1') ? 'displaynone' 
 						<div class="col-md-6">
 							<div class="form-group">
 								<label>Number Of COC's Requested</label>
-								<input type="number" id="quantity" class="form-control" min="<?php echo $quantity; ?>" value="<?php echo $quantity; ?>" name="quantity" for="quantity" <?php if($id > 0){ ?>readonly="true"<?php } ?>>							  
+								<input type="number" id="quantity" class="form-control" min="<?php echo $quantity; ?>" value="<?php echo $quantity; ?>" name="quantity" for="quantity" <?php if($id > 0){ ?>readonly="true"<?php } ?>>				
 							</div>
+							<p class="adminstock displaynone">Admin Stock : <?php echo $adminstock; ?></p>
 						</div>
 					</div>
 						
@@ -564,8 +565,22 @@ $('#user_search').keyup(function(){
 })
 
 function custom_user_select(name, id, limit, electronic) {
-	$("#user_limit").val(limit);
-	$('#quantity').attr('max', limit);
+	var adminstock = '<?php echo $adminstock; ?>';
+
+	if($('.paper_radio').is(":checked")){
+		if (parseInt(limit) >= parseInt(adminstock)) {
+		$('#quantity').attr('max', adminstock);
+		$('.adminstock').removeClass('displaynone');
+		}else if(parseInt(limit) <= parseInt(adminstock)){
+			$('#quantity').attr('max', limit);
+			$('.adminstock').addClass('displaynone');
+		}
+	}else{
+		$('#quantity').attr('max', limit);
+		$("#user_limit").val(limit);
+	}
+	
+	
 	
 	if(electronic=='1'){
 		$('.electronic_radio').parent().parent().show();	
@@ -613,7 +628,18 @@ $(".coc_type").click(function(){
 });
 
 function deliverytype(value){
+	var adminstock = '<?php echo $adminstock; ?>';
 	if(value==2){
+		var userLimit = $("#user_limit").val();
+
+		if (parseInt(userLimit) >= parseInt(adminstock)) {
+			$('#quantity').attr('max', adminstock);
+			$('.adminstock').removeClass('displaynone');
+		}else if(parseInt(userLimit) <= parseInt(adminstock)){
+			$('#quantity').attr('max', userLimit);
+			$('.adminstock').addClass('displaynone');
+		}
+
 		$('.delivery_type_wrapper').removeClass('displaynone');
 	}else{
 		$('.delivery_type_wrapper').addClass('displaynone');
