@@ -1883,7 +1883,7 @@ class Api extends CC_Controller
 					if(isset($post['email']) && $post['email']!='' && $notificationdata){
 						
 						$subject 	= str_replace(['{Customer Name}', '{Complex Name}', '{Street}', '{Number}', '{Suburb}', '{City}', '{Province}'], $nc_data, $notificationdata['subject']);
-						$body 		= str_replace(['{Customer Name}', '{Plumber Name}', '{plumbers company name}', '{company contact number}'], [$post[0], $userdata['name'].' '.$userdata['surname'], $userdata['companyname'], $userdata['companymobile']], $notificationdata['email_body']);
+						$body 		= str_replace(['{Customer Name}', '{Plumber Name}', '{plumbers company name}', '{company contact number}'], [$post[0], $userdata['name'].' '.$userdata['surname'], $userdata['companyname'], $userdata['cwork_phone']], $notificationdata['email_body']);
 						
 						$pdf 		= FCPATH.'assets/uploads/temp/'.$cocId.'.pdf';
 						$this->pdfnoncompliancereport($cocId, $plumberID, $pdf);

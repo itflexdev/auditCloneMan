@@ -891,7 +891,7 @@ class CC_Controller extends CI_Controller
 						if(isset($requestData['email']) && $requestData['email']!='' && $notificationdata){
 							
 							$subject 	= str_replace(['{Customer Name}', '{Complex Name}', '{Street}', '{Number}', '{Suburb}', '{City}', '{Province}'], $replacetext, $notificationdata['subject']);
-							$body 		= str_replace(['{Customer Name}', '{Plumber Name}', '{plumbers company name}', '{company contact number}'], [$replacetext[0], $userdata['name'].' '.$userdata['surname'], $userdata['companyname'], $userdata['companymobile']], $notificationdata['email_body']);
+							$body 		= str_replace(['{Customer Name}', '{Plumber Name}', '{plumbers company name}', '{company contact number}'], [$replacetext[0], $userdata['name'].' '.$userdata['surname'], $userdata['companyname'], $userdata['cwork_phone']], $notificationdata['email_body']);
 							
 							$pdf 		= FCPATH.'assets/uploads/temp/'.$requestData['coc_id'].'.pdf';
 							$this->pdfnoncompliancereport($requestData['coc_id'], $userid, $pdf);
@@ -1218,7 +1218,9 @@ class CC_Controller extends CI_Controller
 	public function pdfnoncompliancereport($id, $userid, $save='')
 	{		
 		$pagedata['result']			= $this->Coc_Model->getCOCList('row', ['id' => $id, 'coc_status' => ['2']], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'coclogcompany', 'users', 'usersdetail']);
-		$pagedata['noncompliance'] 	= $this->Noncompliance_Model->getList('all', ['coc_id' => $id, 'user_id' => $userid]);	
+		$pagedata['noncompliance'] 	= $this->Noncompliance_Model->getList('all', ['coc_id' => $id, 'user_id' => $userid]);
+		$userdata				 	= $this->Plumber_Model->getList('row', ['id' => $userid], ['users', 'usersdetail', 'usersplumber', 'company']);
+		$pagedata['cwork_phone'] 	= $userdata['cwork_phone'];	
 
 		$html = $this->load->view('pdf/noncompliancereport', (isset($pagedata) ? $pagedata : ''), true);
 		$this->pdf->loadHtml($html);

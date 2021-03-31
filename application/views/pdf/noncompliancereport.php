@@ -222,7 +222,7 @@ $logoimg = base64conversion(base_url().'assets/images/pitrb-logo.png');
 						<tr>
 							<td style="padding: 0; padding-left:5px"><span class = "nc-td-cls"><?php echo $plumbername; ?></span></td>
 							<td style="padding-left: 5px"><span class = "nc-td-cls"><?php echo $plumbercompany; ?></span></td>
-							<td style="padding-left: 5px"><span class = "nc-td-cls"><?php echo $plumberwork; ?></span></td>
+							<td style="padding-left: 5px"><span class = "nc-td-cls"><?php echo $cwork_phone; ?></span></td>
 						</tr>
 					</tbody>
 				</table>
