@@ -10,6 +10,7 @@ class Index extends CC_Controller
         $this->load->model('Companyperformancedetails_Model');
         $this->load->model('CC_Model');
         $this->load->model('Company_Model');
+        $this->load->model('Companyperformance_Model');
 
         //$this->checkUserPermission('16', '1');
     }
@@ -40,6 +41,12 @@ class Index extends CC_Controller
             $requestData = $this->input->post();
 
             if ($requestData['submit'] == 'submit') {
+                
+                if ($requestData['id'] =='') {
+                    $points = $this->getPoints(['id' => $requestData['document_type']]);
+                    $requestData['points'] = $points['points'];
+                }
+
                 $data = $this->Companyperformancedetails_Model->action($requestData);
                 if ($data) {
                     $message = 'Performance Details ' . (($id == '') ? 'created' : 'updated') . ' successfully.';
@@ -91,6 +98,11 @@ class Index extends CC_Controller
         $data['plugins'] = ['datatables', 'datatablesresponsive', 'sweetalert', 'validation', 'datepicker'];
         $data['content'] = $this->load->view('company/performancedetails/index', (isset($pagedata) ? $pagedata : ''), true);
         $this->layout2($data);
+    }
+
+    public function getPoints($data = []){
+        $data = $this->Companyperformance_Model->getList('row', ['id'=> $data['id']]);
+        return $data;
     }
 
     public function DTCompanyperformancedetails()
@@ -158,7 +170,7 @@ class Index extends CC_Controller
                     'updated_at'      => date('d-m-Y H:i:s', strtotime($result['updated_at'])),
                     'date_of_renewal' => date('d-m-Y', strtotime($result['date_of_renewal'])),
                     'document_type'   => $this->config->item('company_performance')[$result['document_type']],
-                    'points'          => $points,
+                    'points'          => $result['points'],
                     'attachments'     => $files,
                     'action'          => $action,
                 ];

@@ -9,6 +9,7 @@ class Index extends CC_Controller
         $this->load->model('Company_Model');
         $this->load->model('Documentsletters_Model');
         $this->load->model('Companyperformancedetails_Model');
+        $this->load->model('Companyperformance_Model');
     }
 
     public function index()
@@ -99,8 +100,10 @@ class Index extends CC_Controller
                 }
                 if ($result['designation']=='6' || $result['designation']=='4') {
                    $divclass = 'lm';
+                   $divclass2 = 'lm2';
                 }else{
                     $divclass = 'other';
+                    $divclass2 = 'other2';
                 }
                 $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);
                 $companystatus1 = isset($companystatus[$result['status']]) ? $companystatus[$result['status']] : '';
@@ -110,7 +113,7 @@ class Index extends CC_Controller
                                     'status'        => $this->config->item('plumberstatus')[$result['status']],
                                     'namesurname'   => $result['name'].' '.$result['surname'],
                                     'cpdstatus'     => $points,
-                                    'perstatus'     => $performance,
+                                    'perstatus'     => '<input type="hidden" value="'.$performance.'" class="'.$divclass2.'">'.$performance.'',
                                     'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
                                     'action'        => '
                                                             <div class="table-action">
@@ -415,8 +418,15 @@ class Index extends CC_Controller
         if ($this->input->post()) {
 
             $requestData = $this->input->post();
-
+            
             if (isset($requestData['submit']) && $requestData['submit'] == 'submit') {
+
+                if ($requestData['id'] =='') {
+                    $points = $this->getPoints(['id' => $requestData['document_type']]);
+                    $requestData['points'] = $points['points'];
+                }
+                
+
                 $data = $this->Companyperformancedetails_Model->action($requestData);
                 if ($data) {
                     $message = 'Performance Details ' . (($id == '') ? 'created' : 'updated') . ' successfully.';
@@ -468,6 +478,11 @@ class Index extends CC_Controller
         $pagedata['menu']           = $this->load->view('common/company/menu', ['id'=>$user_id],true);
         $data['content']            = $this->load->view('common/company/performancedetails/index', (isset($pagedata) ? $pagedata : ''), true);
         $this->layout2($data);
+    }
+
+    public function getPoints($data = []){
+        $data = $this->Companyperformance_Model->getList('row', ['id'=> $data['id']]);
+        return $data;
     }
 
     public function DTCompanyperformancedetails()
@@ -530,7 +545,7 @@ class Index extends CC_Controller
                     'updated_at'      => date('d-m-Y H:i:s', strtotime($result['updated_at'])),
                     'date_of_renewal' => date('d-m-Y', strtotime($result['date_of_renewal'])),
                     'document_type'   => $this->config->item('company_performance')[$result['document_type']],
-                    'points'          => $points,
+                    'points'          => $result['points'],
                     'attachments'     => $files,
                     'action'          => $action,
                 ];

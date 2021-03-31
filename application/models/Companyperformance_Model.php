@@ -7,6 +7,8 @@ class Companyperformance_Model extends CC_Model
         $this->db->select('*');
         $this->db->from('company_performance_type');
 
+        if(isset($requestdata['id'])) $this->db->where('id', $requestdata['id']);
+
         if ($type == 'count') {
             $result = $this->db->count_all_results();
         } else {
@@ -39,6 +41,17 @@ class Companyperformance_Model extends CC_Model
                 'points'     => $v,
             ];
             $this->db->update('company_performance_type', $request, ['id' => $k]);
+        }
+
+        foreach ($point as $pointkey => $pointvalue) {
+            $request1 = [
+                'created_at'        => $datetime,
+                'admin_id'          => $userid,
+                'new_points'        => $pointvalue,
+                'system_ip'         => $_SERVER['REMOTE_ADDR'],
+                'document_type'     => $pointkey
+            ];
+            $this->db->insert('company_performance_type_log', $request1);
         }
 
         if ($this->db->trans_status() === false) {

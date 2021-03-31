@@ -4,7 +4,7 @@ class Companyperformancedetails_Model extends CC_Model
 {
 	public function getList($type, $requestdata=[])
 	{
-		$this->db->select('t1.*, t2.points as points');
+		$this->db->select('t1.*, t2.points as doc_points');
 		$this->db->from('company_performance_details t1');
 		$this->db->join('company_performance_type t2','t2.document_type = t1.document_type', 'left');
 
@@ -57,8 +57,8 @@ class Companyperformancedetails_Model extends CC_Model
 	{
 		//print_r($data);die;
 		$this->db->trans_begin();
-		$userid = isset($data['userid']) ? $data['userid'] : $this->getUserID();
-			
+		
+		$userid			= 	isset($data['userid']) ? $data['userid'] : $this->getUserID();		
 		if(isset($data['id']) ? $id = $data['id'] : $id	= '');
 		$datetime		= 	date('Y-m-d H:i:s');
 
@@ -71,7 +71,8 @@ class Companyperformancedetails_Model extends CC_Model
 			'user_id'	 		=> $userid
 		];
 									
-		if(isset($data['document_type'])) 	$request['document_type'] 	= $data['document_type'];		
+		if(isset($data['document_type'])) 	$request['document_type'] 	= $data['document_type'];
+		if(isset($data['points'])) 			$request['points'] 			= $data['points'];		
 		if(isset($data['date_of_renewal'])) $request['date_of_renewal'] = date("Y-m-d", strtotime($data['date_of_renewal']));
 		if(isset($data['image1'])) 			$request['attachments'] 	= $data['image1'];
 
