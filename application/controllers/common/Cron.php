@@ -159,10 +159,10 @@ class Cron extends CC_Controller {
 							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$totalDB.'</td>
 							</tr>
 							</table>';
-							// echo $userQueryvalue['email'].'<br>';
-							// echo $cpdTable;
+							echo $userQueryvalue['email'].'<br>';
+							echo $cpdTable;
 							
-							if ((isset($template['email_active']) && $template['email_active'] == '1') && $totalDB !='0') {
+							/*if ((isset($template['email_active']) && $template['email_active'] == '1') && $totalDB !='0') {
 								if(isset($array1)) unset($array1);
 								if(isset($array2)) unset($array2);
 								$array1 = ['{Plumbers Name and Surname}','{TODAYS DATE}', 'Points Table', '{plumbers registration renewal date}'];
@@ -178,11 +178,11 @@ class Cron extends CC_Controller {
 								$smsbody2 = [$total, $totalDB, date('m-d-Y', strtotime($userQueryvalue['expirydate']))];
 								$sms = str_replace($smsbody1, $smsbody2, $smsdata['sms_body']);
 								$this->sms(['no' => $userQueryvalue['mobile_phone'], 'msg' => $sms]);
-							}
+							}*/
 
 							$plumberemails .= $userQueryvalue['email'].',';
 			}$i++;
-		}
+		}die;
 
 		$fp = fopen(FCPATH.'assets/uploads/temp/plumberemails.txt',"wb");
 		fwrite($fp,$plumberemails);
