@@ -126,7 +126,7 @@ class Cron extends CC_Controller {
 				$individualpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 
 				$workbasedpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userQueryvalue['expirydate']]);
-				
+
 				if (count($developmentalpts) > 0) $developmental 	= array_sum(array_column($developmentalpts, 'points'));
 				else $developmental 	= 0;
 
@@ -135,13 +135,6 @@ class Cron extends CC_Controller {
 
 				if (count($workbasedpts) > 0) $workbased 	= array_sum(array_column($workbasedpts, 'points'));
 				else $workbased 	= 0;
-
-				if ($i ==784) {
-					echo "<pre>";print_r($developmental)."<br>";
-					echo "<pre>";print_r($individualpts)."<br>";
-					echo "<pre>";print_r($workbasedpts)."<br>";die;
-					echo "<pre>";print_r($developmental+$individual+$workbased);die;
-				}
 
 				$developmental 	= isset($developmentalpts['points']) ? array_sum(array_column($developmentalpts, 'points')) : 0; 
 				$individual 	= isset($individualpts['points']) ? array_sum(array_column($individualpts, 'points')) : 0; 
