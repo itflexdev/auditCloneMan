@@ -154,12 +154,12 @@ class Cron extends CC_Controller {
 							</tr>
 							<tr>
 							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Work-based</td>
-							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$individual.'</td>
+							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$workbased.'</td>
 							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$settingsplumberDetails[1].'</td>
 							</tr>
 							<tr>
 							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">Individual</td>
-							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$workbased.'</td>
+							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$individual.'</td>
 							<td style="border: 1px solid #000;padding:5px 10px;text-align:center;">'.$settingsplumberDetails[2].'</td>
 							</tr>
 							<tr>
