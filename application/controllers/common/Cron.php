@@ -124,7 +124,7 @@ class Cron extends CC_Controller {
 				$developmentalpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 				
 				if ($i ==784) {
-					echo "<pre>";print_r($this->db->last_query());die;
+					echo "<pre>";print_r($developmentalpts['points']);die;
 				}
 				$individualpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 
