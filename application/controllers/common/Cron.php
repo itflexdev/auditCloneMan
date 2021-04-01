@@ -94,9 +94,9 @@ class Cron extends CC_Controller {
 		$template 	= $this->db->select('*')->from('email_notification')->where('id','14')->where('email_active','1')->get()->row_array();
 		$i = 0;	
 		foreach ($userQuery as $userQuerykey => $userQueryvalue) {
-			/*if ($i ==1909) {
+			if ($i ==8754) {
 				echo "<pre>";print_r($userQuery[$i]);die;
-			}*/
+			}
 			if (isset($userQueryvalue['designation']) && $userQueryvalue['designation'] !='') {
 				if(isset($settingsplumberDetails)) unset($settingsplumberDetails);
 				$designationDB = $this->config->item('designation2')[$userQueryvalue['designation']];
