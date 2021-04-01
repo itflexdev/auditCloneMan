@@ -89,7 +89,7 @@ class Cron extends CC_Controller {
 		$this->db->group_by('t1.user_id');
 		
 		$userQuery = $this->db->get()->result_array();
-		echo "<pre>";print_r($userQuery);die;
+		// echo "<pre>";print_r($userQuery);die;
 		$settingsCPD = $this->db->select('*')->from('settings_cpd')->get()->result_array();
 		$template 	= $this->db->select('*')->from('email_notification')->where('id','14')->where('email_active','1')->get()->row_array();
 		$i = 0;	
@@ -122,10 +122,21 @@ class Cron extends CC_Controller {
 
 
 				$developmentalpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userQueryvalue['expirydate']]);
+				print_r($this->db->last_query());die;
 				
 				$individualpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 
 				$workbasedpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userQueryvalue['expirydate']]);
+
+				if (count($developmentalpts) > 0) {
+					$dev = array_sum(array_column($developmental, 'points')); 
+				}
+				if (count($individualpts) > 0) {
+					$indi = array_sum(array_column($individual, 'points')); 
+				}
+				if (count($workbasedpts) > 0) {
+					$workb = array_sum(array_column($workbased, 'points')); 
+				}
 
 				$developmental 	= isset($developmentalpts['points']) ? array_sum(array_column($developmentalpts, 'points')) : 0; 
 				$individual 	= isset($individualpts['points']) ? array_sum(array_column($individualpts, 'points')) : 0; 
