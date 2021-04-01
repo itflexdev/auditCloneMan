@@ -89,12 +89,12 @@ class Cron extends CC_Controller {
 		$this->db->group_by('t1.user_id');
 		
 		$userQuery = $this->db->get()->result_array();
-		echo "<pre>";print_r($userQuery);die;
+		// echo "<pre>";print_r($userQuery);die;
 		$settingsCPD = $this->db->select('*')->from('settings_cpd')->get()->result_array();
 		$template 	= $this->db->select('*')->from('email_notification')->where('id','14')->where('email_active','1')->get()->row_array();
 		$i = 0;	
 		foreach ($userQuery as $userQuerykey => $userQueryvalue) {
-			/*if ($i ==8754) {
+			/*if ($i ==784) {
 				echo "<pre>";print_r($userQuery[$i]);die;
 			}*/
 			if (isset($userQueryvalue['designation']) && $userQueryvalue['designation'] !='') {
@@ -122,7 +122,9 @@ class Cron extends CC_Controller {
 
 
 				$developmentalpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $userQueryvalue['expirydate']]);
-				
+				if ($i ==784) {
+					echo "<pre>";print_r($this->db->last_query());die;
+				}
 				$individualpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $userQueryvalue['expirydate']]);
 
 				$workbasedpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $userQueryvalue['plumberid'], 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $userQueryvalue['expirydate']]);
