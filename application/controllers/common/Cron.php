@@ -136,9 +136,9 @@ class Cron extends CC_Controller {
 				if (count($workbasedpts) > 0) $workbased 	= array_sum(array_column($workbasedpts, 'points'));
 				else $workbased 	= 0;
 
-				$developmental 	= isset($developmentalpts['points']) ? array_sum(array_column($developmentalpts, 'points')) : 0; 
+				/*$developmental 	= isset($developmentalpts['points']) ? array_sum(array_column($developmentalpts, 'points')) : 0; 
 				$individual 	= isset($individualpts['points']) ? array_sum(array_column($individualpts, 'points')) : 0; 
-				$workbased 		= isset($individualpts['points']) ? array_sum(array_column($workbasedpts, 'points')) : 0; 
+				$workbased 		= isset($individualpts['points']) ? array_sum(array_column($workbasedpts, 'points')) : 0; */
 				$total 			= $developmental+$individual+$workbased;
 				$cpdTable = '<table style="width:40%; border-collapse:collapse;" class="tablcpd">
 							<tr>
