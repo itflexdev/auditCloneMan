@@ -294,13 +294,13 @@ class Cron extends CC_Controller {
 						$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 						$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
 
-						$log = [
+						$DBlog = [
 							'plumber_id' 	=> $userid,
 							'type' 			=> '2',
 							'url' 			=> $fileName,
 							'created_at' 	=> $starttime
 						];
-						$this->db->insert('trigger_renewal_log', $log);
+						$this->db->insert('trigger_renewal_log', $DBlog);
 					}
 					
 					if($settings && $settings['otp']=='1'){
@@ -380,13 +380,13 @@ class Cron extends CC_Controller {
 					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
 
-					$log = [
+					$DBlog = [
 							'plumber_id' 	=> $userid,
 							'type' 			=> '2',
 							'url' 			=> $fileName,
 							'created_at' 	=> $starttime
 						];
-						$this->db->insert('trigger_renewal_log', $log);
+						$this->db->insert('trigger_renewal_log', $DBlog);
 				}
 				
 				if($settings && $settings['otp']=='1'){
@@ -467,13 +467,13 @@ class Cron extends CC_Controller {
 					$body 	= str_replace($array1, $array2, $notificationdata['email_body']);
 					$this->CC_Model->sentMail($userdata1['email'], $notificationdata['subject'], $body, $cocreport);
 
-					$log = [
+					$DBlog = [
 							'plumber_id' 	=> $userid,
 							'type' 			=> '2',
 							'url' 			=> $fileName,
 							'created_at' 	=> $starttime
 						];
-						$this->db->insert('trigger_renewal_log', $log);
+						$this->db->insert('trigger_renewal_log', $DBlog);
 				}
 				
 				if($settings && $settings['otp']=='1'){
@@ -523,13 +523,13 @@ class Cron extends CC_Controller {
 			
 			$log	.= $userid.PHP_EOL;
 
-			$log = [
+			$DBlog = [
 							'plumber_id' 	=> $userid,
 							'type' 			=> '2',
 							'url' 			=> $fileName,
 							'created_at' 	=> $starttime
 						];
-						$this->db->insert('trigger_renewal_log', $log);
+						$this->db->insert('trigger_renewal_log', $DBlog);
 		}
 		
 		$endtime = date('Y-m-d H:i:s');
