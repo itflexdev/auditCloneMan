@@ -51,9 +51,12 @@ class Index extends CC_Controller
 				'paper' => $this->Coc_Model->getCOCList('count', ['nococstatus' => ['1'], 'coctype' => ['2'], 'monthArray' => date('Y-m', strtotime('-'.$i.' months')), 'monthrange' => '1'], ['invoice'])
 			];
 		}*/
+		$dateStr = strtotime(date('Y-m-01'));
 		for($i = 0; $i <= 5; $i++){
 
-			$dateFlag = date('Y-m', strtotime('-'.$i.' months'));
+			$dateFlag = date("Y-m", strtotime(" -$i month", $dateStr));
+			$monthStr = explode('-', $dateFlag);
+			$datearray[] = $dateFlag;
 			if (($i == 0 && $dateFlag == '2021-03') || ($i > 0 && $dateFlag != '2021-03')) {
 				$Yearmonth 	= $dateFlag;
 				$month 		= explode('-', $Yearmonth);
@@ -61,15 +64,16 @@ class Index extends CC_Controller
 				$Yearmonth 	= date('Y').'-02';
 				$month 		= explode('-', $Yearmonth);
 			}
-			$elec = $this->Coc_Model->SalesReport(['coctype' => '1', 'monthArray' => $Yearmonth]);
-			$paper = $this->Coc_Model->SalesReport(['coctype' => '2', 'monthArray' => $Yearmonth]);
+			$elec = $this->Coc_Model->SalesReport(['coctype' => '1', 'monthArray' => $dateFlag]);
+			$paper = $this->Coc_Model->SalesReport(['coctype' => '2', 'monthArray' => $dateFlag]);
 			
 			$sixmonthgraph[] = [
-				'month' 		=> date("F", mktime(0, 0, 0, $month[1], 10)), 
+				'month' 		=> date("F", mktime(0, 0, 0, $monthStr[1], 10)), 
 				'electronic' 	=> isset($elec['Sales']) ? $elec['Sales'] : '0',
 				'paper' 		=> isset($paper['Sales']) ? $paper['Sales'] : '0',
 			];
 		}
+		// echo "<pre>";print_r($datearray);die;
 		$pagedata['sixmonthgraph']	= array_reverse($sixmonthgraph);
 		
 		$data['plugins'] = ['knob', 'echarts'];
