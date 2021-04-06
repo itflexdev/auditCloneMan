@@ -57,13 +57,13 @@ class Index extends CC_Controller
 			$dateFlag = date("Y-m", strtotime(" -$i month", $dateStr));
 			$monthStr = explode('-', $dateFlag);
 			$datearray[] = $dateFlag;
-			if (($i == 0 && $dateFlag == '2021-03') || ($i > 0 && $dateFlag != '2021-03')) {
+			/*if (($i == 0 && $dateFlag == '2021-03') || ($i > 0 && $dateFlag != '2021-03')) {
 				$Yearmonth 	= $dateFlag;
 				$month 		= explode('-', $Yearmonth);
 			}else{
 				$Yearmonth 	= date('Y').'-02';
 				$month 		= explode('-', $Yearmonth);
-			}
+			}*/
 			$elec = $this->Coc_Model->SalesReport(['coctype' => '1', 'monthArray' => $dateFlag]);
 			$paper = $this->Coc_Model->SalesReport(['coctype' => '2', 'monthArray' => $dateFlag]);
 			
@@ -73,6 +73,7 @@ class Index extends CC_Controller
 				'paper' 		=> isset($paper['Sales']) ? $paper['Sales'] : '0',
 			];
 		}
+		// echo $dateStr."<br>";
 		// echo "<pre>";print_r($datearray);die;
 		$pagedata['sixmonthgraph']	= array_reverse($sixmonthgraph);
 		
