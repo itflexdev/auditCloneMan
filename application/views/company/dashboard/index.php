@@ -140,7 +140,7 @@
 					</div>
 				</div>
 
-				<div class="col-md-6 my_perform_sec displaynone">
+				<div class="col-md-6 my_perform_sec">
 					<div class="cus_perform"> 
 						<p class="perf_hed">My Performance Status</p>
 						<div id="performancechart" style="width:100%; height:0px;"></div>

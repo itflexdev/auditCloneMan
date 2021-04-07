@@ -144,23 +144,23 @@
 						</thead>
 					</table>
 				</div>
-				<div class="row">
-						<div class="col-md-5 align-self-center">
+				<div class="row" style="padding:30px 0px;">
+					<div class="col-md-6 align-self-center">
 						<h4 class="card-title app_status">Average Industry Rating of Company Employees</h4>
-						</div>
-					</div>
-					<div class="row">
-					<div class="col-md-6">
-						<label>Licensed Plumber and above</label>
+						<label style="padding:6px 0px;">Licensed Plumber and above</label>
 						<input type="text" class="form-control" readonly id="lm_plumber" name="">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label>Non Licensed Plumbers</label>
+						<label style="padding:6px 0px;">Non Licensed Plumbers</label>
 						<input type="text" class="form-control" id="others" readonly name="">
 					</div>
+	   				<div class="col-md-6 align-self-center">
+						<h4 class="card-title app_status">Average Performance Score of Company Employees</h4>
+						<label style="padding:6px 0px;">Licensed Plumber and above</label>
+						<input type="text" class="form-control" readonly id="lm_plumber1" name="">
+						<label style="padding:6px 0px;">Non Licensed Plumbers</label>
+						<input type="text" class="form-control" id="others1" readonly name="">
+					</div>
 				</div>
+
 				<?php if (isset($employee) && $employee!='') { ?>
 
 				<div class="row">
@@ -326,6 +326,42 @@
 		    		$('#others').val('0');
 		    	}else{
 		    		$('#others').val(parseFloat(sum1/others1).toFixed(2));
+		    	}		    	
+	    	}
+			
+
+		}, 2000);
+
+
+		setTimeout(function(){
+			var lmcount =  $('.lm2').length
+			if (lmcount===0) {
+	    		$('#lm_plumber1').val('0');
+	    	}else{
+	    		var sum = 0;	
+				$('.lm2').each(function(){	
+		        	sum += Number($(this).val());
+		    	});
+		    	if (parseFloat(sum/lmcount).toFixed(2)==='0.00') {
+		    		$('#lm_plumber1').val('0');
+		    	}else{
+		    		$('#lm_plumber1').val(parseFloat(sum/lmcount).toFixed(2));
+		    	}		    	
+	    	}
+			
+
+	    	var others1 =  $('.other2').length
+	    	if (others1===0) {
+	    		$('#others1').val('0');
+	    	}else{
+	    		var sum1 = 0;	
+				$('.other2').each(function(){	
+		        	sum1 += Number($(this).val());
+		    	});
+		    	if (parseFloat(sum1/others1).toFixed(2)===0.00) {
+		    		$('#others1').val('0');
+		    	}else{
+		    		$('#others1').val(parseFloat(sum1/others1).toFixed(2));
 		    	}		    	
 	    	}
 			

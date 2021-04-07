@@ -90,8 +90,10 @@ class Employee_listing extends CC_Controller
                 }
                 if ($result['designation']=='6' || $result['designation']=='4') {
                    $divclass = 'lm';
+                   $divclass2 = 'lm2';
                 }else{
                     $divclass = 'other';
+                    $divclass2 = 'other2';
                 }
                 $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);
                 $companystatus1 = isset($companystatus[$result['status']]) ? $companystatus[$result['status']] : '';
@@ -109,7 +111,7 @@ class Employee_listing extends CC_Controller
                     'status'        => $this->config->item('plumberstatus')[$result['status']],
                     'namesurname'   => $result['name'].' '.$result['surname'],
                     'cpdstatus'     => $points,
-                    'perstatus'     => $performance,
+                    'perstatus'     => '<input type="hidden" value="'.$performance.'" class="'.$divclass2.'">'.$performance.'',
                     'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
                     'nococ'     	=> $balace_coc,
                     'action'        => $action,

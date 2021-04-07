@@ -112,7 +112,7 @@ class Index extends CC_Controller
                                     'designation'   => $this->config->item('designation2')[$result['designation']],
                                     'status'        => $this->config->item('plumberstatus')[$result['status']],
                                     'namesurname'   => $result['name'].' '.$result['surname'],
-                                    'cpdstatus'     => $points,
+                                    'cpdstatus'     => round(($points),2),
                                     'perstatus'     => '<input type="hidden" value="'.$performance.'" class="'.$divclass2.'">'.$performance.'',
                                     'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
                                     'action'        => '
