@@ -441,7 +441,7 @@ class Cpdtypesetup extends CC_Controller
 					$this->db->where('up.registration_no', $value[0]);
 					$query = $this->db->get();
 					$result = $query->row_array();
-					echo "<pre>";print_r($result);die;
+					// echo "<pre>";print_r($result);die;
 					// if ($value[1] !='') {
 					// 	$cpdpoints = $value[1];
 					// }else{
@@ -473,7 +473,7 @@ class Cpdtypesetup extends CC_Controller
 				}
 			}
 			$j = 0;
-			
+			echo "<pre>";print_r($exceldata);die;
 			if (isset($exceldata)) {
 				foreach ($exceldata as $exceldatakey => $exceldatavalue) {
 
