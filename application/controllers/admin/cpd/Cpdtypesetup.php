@@ -840,6 +840,7 @@ class Cpdtypesetup extends CC_Controller
 						'status' => '1',
 						'points' => $value[1],
 						'admin_comments' => 'Approved by '.$this->config->item('roletype')[$userdetails['roletype']].'',
+						'approved_date'		=> date('Y-m-d H:i:s'),
 						'updated_by' => $userid,
 					];
 					$this->db->update('cpd_activity_form', $updatedata, ['id' => $result['id']]);
