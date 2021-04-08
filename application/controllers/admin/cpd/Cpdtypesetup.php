@@ -441,6 +441,7 @@ class Cpdtypesetup extends CC_Controller
 					$this->db->where('up.registration_no', $value[0]);
 					$query = $this->db->get();
 					$result = $query->row_array();
+					echo "<pre>";print_r($result);die;
 					// if ($value[1] !='') {
 					// 	$cpdpoints = $value[1];
 					// }else{
@@ -482,6 +483,7 @@ class Cpdtypesetup extends CC_Controller
 					$this->db->where('cpdtype_id', $post['cpdid']);
 					$query1 = $this->db->get();
 					$result2 = $query1->row_array();
+					echo "<pre>";print_r($result2);die;
 					if ($result2) {
 						if ($result2['status'] == '1' || $result2['status'] == '0' || $result2['status'] == '1') {
 							if ($result2['status'] == '1') {
