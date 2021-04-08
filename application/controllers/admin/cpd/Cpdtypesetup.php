@@ -511,7 +511,7 @@ class Cpdtypesetup extends CC_Controller
 							$cpddata[$j][3] = $exceldatavalue[3];
 							$cpddata[$j][4] = $exceldatavalue[4];
 							$cpddata[$j][5] = '1';
-							$cpddata[$j][6] = 'Saved as draft';
+							$cpddata[$j][6] = 'Activity not submitted';
 						}
 					}else{
 						if ($exceldatavalue[4] == 'Plumber not found') {
@@ -575,7 +575,7 @@ class Cpdtypesetup extends CC_Controller
 							    <th>Error</th>
 							</tr>';
 				foreach ($datas1 as $datas1key => $datas1value) {
-					if (($datas1value[5] == "0" && $datas1value[6] == "Activity already approved") || ($datas1value[5] == "0" && $datas1value[6] == "Plumber not found")) {
+					if (($datas1value[5] == "0" && $datas1value[6] == "Activity already approved") || ($datas1value[5] == "0" && $datas1value[6] == "Plumber not found" || $datas1value[6] == "Activity not submitted")) {
 						$tabledata .= '<tr>
 								    <td>'.$datas1value[0].'</td>
 								    <td>'.$datas1value[6].'</td>
@@ -822,13 +822,13 @@ class Cpdtypesetup extends CC_Controller
 		unset($datas[0]);
 
 		foreach ($datas as $key => $value) {
-			if ($value[6] == 'Activity already approved' || $value[6] == 'Activity already pending') {
+			if ($value[6] == 'Activity already approved' || $value[6] == 'Activity already pending' || $value[6] == 'Activity not submitted') {
 				$this->db->select('*');
 				$this->db->from('cpd_activity_form');
 				$this->db->where('reg_number', $value[0]);
 				$this->db->where('cpdtype_id', $post['cpdid']);
 				$this->db->where('status', '0');
-				
+
 				$this->db->group_start();
 					$this->db->or_where('status', '3');
 				$this->db->group_end();
