@@ -510,7 +510,7 @@ class Cpdtypesetup extends CC_Controller
 							$cpddata[$j][2] = $exceldatavalue[2];
 							$cpddata[$j][3] = $exceldatavalue[3];
 							$cpddata[$j][4] = $exceldatavalue[4];
-							$cpddata[$j][5] = '1';
+							$cpddata[$j][5] = '0';
 							$cpddata[$j][6] = 'Activity not submitted';
 						}
 					}else{
@@ -788,7 +788,7 @@ class Cpdtypesetup extends CC_Controller
 			        ->setCellValue('E1','Errors'); // status
 		$k = 0;
 		foreach ($datas as $dataskey => $datasvalue) {
-			if (($datasvalue[5] == '0' && $datasvalue[6] =='Plumber not found') || ($datasvalue[5] == '0' && $datasvalue[6] =='Activity already approved')) {
+			if (($datasvalue[5] == '0' && $datasvalue[6] =='Plumber not found') || ($datasvalue[5] == '0' && $datasvalue[6] =='Activity already approved') || ($datasvalue[5] == '0' && $datasvalue[6] =='Activity not submitted')) {
 				$row = $k+2;
 					$phpExcel->setActiveSheetIndex(0)
 					         ->setCellValue('A'.$row.'',$datasvalue[0]) // reg
@@ -828,10 +828,7 @@ class Cpdtypesetup extends CC_Controller
 				$this->db->where('reg_number', $value[0]);
 				$this->db->where('cpdtype_id', $post['cpdid']);
 				$this->db->where('status', '0');
-
-				$this->db->group_start();
-					$this->db->or_where('status', '3');
-				$this->db->group_end();
+				$this->db->or_where('status', '3');
 
 				$query = $this->db->get();
 				$result = $query->row_array();
