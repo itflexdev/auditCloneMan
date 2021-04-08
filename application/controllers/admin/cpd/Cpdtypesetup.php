@@ -482,6 +482,8 @@ class Cpdtypesetup extends CC_Controller
 					$this->db->where('cpdtype_id', $post['cpdid']);
 					$query1 = $this->db->get();
 					$result2 = $query1->row_array();
+					echo "<pre>";print_r($this->db->last_query());
+					echo "<pre>";print_r($result2);die();
 					if ($result2) {
 						if ($result2['status'] == '1' || $result2['status'] == '0' || $result2['status'] == '1') {
 							if ($result2['status'] == '1') {
