@@ -504,6 +504,14 @@ class Cpdtypesetup extends CC_Controller
 							$cpddata[$j][4] = $exceldatavalue[4];
 							$cpddata[$j][5] = '1';
 							$cpddata[$j][6] = 'Activity should insert';
+						}elseif($result2['status'] == '3'){
+							$cpddata[$j][0]	= $exceldatavalue[0];
+							$cpddata[$j][1] = $exceldatavalue[1];
+							$cpddata[$j][2] = $exceldatavalue[2];
+							$cpddata[$j][3] = $exceldatavalue[3];
+							$cpddata[$j][4] = $exceldatavalue[4];
+							$cpddata[$j][5] = '1';
+							$cpddata[$j][6] = 'Saved as draft';
 						}
 					}else{
 						if ($exceldatavalue[4] == 'Plumber not found') {
@@ -820,6 +828,11 @@ class Cpdtypesetup extends CC_Controller
 				$this->db->where('reg_number', $value[0]);
 				$this->db->where('cpdtype_id', $post['cpdid']);
 				$this->db->where('status', '0');
+				
+				$this->db->group_start();
+					$this->db->or_where('status', '3');
+				$this->db->group_end();
+
 				$query = $this->db->get();
 				$result = $query->row_array();
 				if ($result && $result!='') {
