@@ -108,7 +108,8 @@ class Index extends CC_Controller
                 }else{
                     $divclass = 'other';
                 }
-                $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);
+                // $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);
+                $overall = round((($points+$performance)/($desigcount[0]['desigcount'])),2);
                 $companystatus1 = isset($companystatus[$result['status']]) ? $companystatus[$result['status']] : '';
                 
                 
@@ -195,7 +196,8 @@ class Index extends CC_Controller
                     $performance    = '0';
                 }
                 
-                $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);
+                // $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);
+                $overall = round((($points+$performance)/($desigcount[0]['desigcount'])),2);
 
                 if ($result['designation']=='6' || $result['designation']=='4') {
                     

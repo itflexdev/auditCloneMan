@@ -404,15 +404,17 @@ if(count($permission) > 0){
 				<?php }elseif($type=='4'){
 
 				 ?>
-					<li><a href="<?php echo base_url().'company/dashboard/index'; ?>">Dashboard</a></li>
+				 	<?php if ($company_approval =='1') { ?>
+						<li><a href="<?php echo base_url().'company/dashboard/index'; ?>">Dashboard</a></li>
+					<?php } ?>
 					<?php if($formstatus=='1'){ ?>
 						<li><a href="<?php echo base_url().'company/profile/index'; ?>">My Profile</a></li>
 						<?php if ($company_approval =='1') { ?>
 							<li><a href="<?php echo base_url().'company/purchasecoc/index'; ?>">Purchase COC</a></li>
 							<li><a href="<?php echo base_url().'company/cocstatement/index'; ?>">COC Statement</a></li>
 							<li><a href="<?php echo base_url().'company/auditdetails/index'; ?>">Audit Details</a></li>
+							<li><a href="<?php echo base_url().'company/employee_listing'; ?>">Employee Listing</a></li>
 						<?php } ?>
-						<li><a href="<?php echo base_url().'company/employee_listing'; ?>">Employee Listing</a></li>
 						<?php if ($company_approval =='1') { ?>
 							<li><a href="<?php echo base_url().'company/accountdetails/index'; ?>">Account Details</a></li>
 						<li><a href="<?php echo base_url().'company/performancedetails/index'; ?>">Performance Details</a></li>
