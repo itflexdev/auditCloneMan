@@ -284,7 +284,8 @@ if (in_array($plumberstatus, $plumber_status)) {
 		$('.alert-msg').hide();
 		
 		if($('#coc_purchase').attr('max')=='0'){
-			var cocmaxerror = 'Purchase limit has been exceeded. Contact our support for further assistance.';
+			// var cocmaxerror = 'Purchase limit has been exceeded. Contact our support for further assistance.';
+			var cocmaxerror = 'Your purchase limit has been exceeded. Please contact the PIRB on coc@pirb.co.za / 0861747275 for assistance.';
 		}else{
 			var cocmaxerror = 'You cannot purchase more than '+$('#coc_purchase').attr('max')+' COCs. Contact our support for further assistance.';
 		}
