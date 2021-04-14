@@ -95,7 +95,7 @@ class Employee_listing extends CC_Controller
                     $divclass = 'other';
                     $divclass2 = 'other2';
                 }
-                // $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);
+                // $overall = round((number_format($points+$performance)/$desigcount[0]['desigcount']),1);//
                 $overall = round((($points+$performance)/($desigcount[0]['desigcount'])),2);
                 $companystatus1 = isset($companystatus[$result['status']]) ? $companystatus[$result['status']] : '';
 
