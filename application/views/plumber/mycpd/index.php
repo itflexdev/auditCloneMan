@@ -187,6 +187,11 @@ $heading 				= isset($result['id']) ? 'Submit' : 'Submit';
 						</div>
 					</div>
 				<?php } ?>
+				<div class="row">
+					<div class="form-group col-md-12">
+						<b style="font-weight: 700;color: red;">Note: Your CPD activities will be sent to the PIRB for approval, this process could take up to 5 days.</b>
+					</div>
+				</div>
 
 					<div class="row">
 						<div class="form-group col-md-6">
