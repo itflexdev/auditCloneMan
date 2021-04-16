@@ -394,6 +394,15 @@ class Coc_Model extends CC_Model
 			$checkcoc = $this->db->get_where('coc_log', ['coc_id' => $data['coc_id']])->row_array();
 			if($checkcoc) return true;
 		}
+
+		$custom_log = [
+			'user_id' 			=> $userid,
+			'coc_id' 			=> $data['coc_id'],
+			'custom_statement' 	=> 'Log coc action started',
+			'created_at' 		=> $datetime,
+			'device_type' 		=> '1',
+		];
+		$this->db->insert('custom_log', $custom_log);
 		
 		$request		=	[
 			'updated_at' 		=> $datetime,
@@ -435,8 +444,25 @@ class Coc_Model extends CC_Model
 			$cocData = $this->cocLogCheck('row', ['coc_id' => $data['coc_id']]);
 			if ($cocData =='') {
 				$this->db->insert('coc_log', $request);
+
+				$custom_log2 = [
+					'user_id' 			=> $userid,
+					'coc_id' 			=> $data['coc_id'],
+					'custom_statement' 	=> 'new select executed and inserted in log table',
+					'created_at' 		=> $datetime,
+					'device_type' 		=> '1',
+				];
+				$this->db->insert('custom_log', $custom_log2);
 			}else{
 				$this->db->update('coc_log', $request, ['id' => $cocData['id']]);
+				$custom_log3 = [
+					'user_id' 			=> $userid,
+					'coc_id' 			=> $data['coc_id'],
+					'custom_statement' 	=> 'new select executed and updated in log table',
+					'created_at' 		=> $datetime,
+					'device_type' 		=> '1',
+				];
+				$this->db->insert('custom_log', $custom_log3);
 			}
 			// $this->db->insert('coc_log', $request);
 		}else{
@@ -458,9 +484,30 @@ class Coc_Model extends CC_Model
 				// 	$this->db->where('user_id', $checkreseller['resellersid']);
 				// 	$this->db->update('coc_count');
 				// }
+
+				$custom_log1 = [
+					'user_id' 			=> $userid,
+					'coc_id' 			=> $data['coc_id'],
+					'custom_statement' 	=> 'Log coc action started and changed to status 2 in stock management',
+					'created_at' 		=> $datetime,
+					'device_type' 		=> '1',
+				];
+				$this->db->insert('custom_log', $custom_log1);
 			}
 			
-			if(isset($cocstatus)) $this->db->update('stock_management', ['coc_status' => $cocstatus], ['id' => $data['coc_id']]);
+			if(isset($cocstatus)){
+
+				$this->db->update('stock_management', ['coc_status' => $cocstatus], ['id' => $data['coc_id']]);
+
+				$custom_log1 = [
+					'user_id' 			=> $userid,
+					'coc_id' 			=> $data['coc_id'],
+					'custom_statement' 	=> 'Log coc action started and changed to status 2 in stock management',
+					'created_at' 		=> $datetime,
+					'device_type' 		=> '1',
+				];
+				$this->db->insert('custom_log', $custom_log1);
+			}
 		}
 		
 		if($this->db->trans_status() === FALSE)

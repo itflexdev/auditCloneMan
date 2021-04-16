@@ -1622,6 +1622,16 @@ class Api extends CC_Controller
 				$datetime			= date('Y-m-d H:i:s');
 
 				$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $plumberID], ['users', 'usersdetail', 'usersplumber', 'company']);
+
+				$custom_log = [
+					'user_id' 			=> $plumberID,
+					'coc_id' 			=> $cocId,
+					'custom_statement' 	=> 'Log coc save action started logcoc_save end point hitted sucessfully',
+					'created_at' 		=> $datetime,
+					'device_type' 		=> '2',
+				];
+				$this->db->insert('custom_log', $custom_log);
+
 				$specialisations 				= explode(',', $userdata['specialisations']);
 				$post['company_details'] 		= 	$userdata['company_details'];
 
@@ -1678,9 +1688,26 @@ class Api extends CC_Controller
 					if ($cocData =='') {
 						$this->db->insert('coc_log', $request);
 						$jsonData['insertid'] 			= $this->db->insert_id();
+
+						$custom_log1 = [
+							'user_id' 			=> $plumberID,
+							'coc_id' 			=> $cocId,
+							'custom_statement' 	=> 'new select executed and inserted in log table save hit point',
+							'created_at' 		=> $datetime,
+							'device_type' 		=> '2',
+						];
 					}else{
 						$this->db->update('coc_log', $request, ['id' => $cocData['id']]);
 						$jsonData['insertid'] 			= $cocData['id'];
+
+						$custom_log2 = [
+							'user_id' 			=> $plumberID,
+							'coc_id' 			=> $cocId,
+							'custom_statement' 	=> 'new select executed and updated in log table save hit point',
+							'created_at' 		=> $datetime,
+							'device_type' 		=> '2',
+						];
+						$this->db->insert('custom_log', $custom_log2);
 					}
 
 				}else{
@@ -1691,7 +1718,17 @@ class Api extends CC_Controller
 				}
 				
 				$cocstatus = '5';
-				if(isset($cocstatus)) $this->db->update('stock_management', ['coc_status' => $cocstatus], ['id' => $cocId]);
+				if(isset($cocstatus)){
+					$this->db->update('stock_management', ['coc_status' => $cocstatus], ['id' => $cocId]);
+					$custom_log3 = [
+						'user_id' 			=> $plumberID,
+						'coc_id' 			=> $cocId,
+						'custom_statement' 	=> 'Log coc action started logcoc_log end point hitted sucessfully and changed to status 5 in stock management save hit point',
+						'created_at' 		=> $datetime,
+						'device_type' 		=> '2',
+					];
+					$this->db->insert('custom_log', $custom_log3);
+				}
 				
 				$result							= $this->Coc_Model->getCOCList('row', ['id' => $cocId, 'user_id' => $plumberID]);
 
@@ -1765,6 +1802,15 @@ class Api extends CC_Controller
 				$datetime			= date('Y-m-d H:i:s');
 
 				$userdata				 		= $this->Plumber_Model->getList('row', ['id' => $plumberID], ['users', 'usersdetail', 'usersplumber', 'company']);
+				$custom_log = [
+					'user_id' 			=> $plumberID,
+					'coc_id' 			=> $cocId,
+					'custom_statement' 	=> 'Log coc action started logcoc_log end point hitted sucessfully',
+					'created_at' 		=> $datetime,
+					'device_type' 		=> '2',
+				];
+				$this->db->insert('custom_log', $custom_log);
+
 				$specialisations 				= explode(',', $userdata['specialisations']);
 				$post['company_details'] 		= 	$userdata['company_details'];
 
@@ -1823,9 +1869,28 @@ class Api extends CC_Controller
 					if ($cocData =='') {
 						$actiondata = $this->db->insert('coc_log', $request);
 						$jsonData['insertid'] 			= $this->db->insert_id();
+
+						$custom_log1 = [
+							'user_id' 			=> $plumberID,
+							'coc_id' 			=> $cocId,
+							'custom_statement' 	=> 'new select executed and inserted in log table',
+							'created_at' 		=> $datetime,
+							'device_type' 		=> '2',
+						];
+						$this->db->insert('custom_log', $custom_log1);
+
 					}else{
 						$this->db->update('coc_log', $request, ['id' => $cocData['id']]);
 						$jsonData['insertid'] 			= $cocData['id'];
+
+						$custom_log2 = [
+							'user_id' 			=> $plumberID,
+							'coc_id' 			=> $cocId,
+							'custom_statement' 	=> 'new select executed and updated in log table',
+							'created_at' 		=> $datetime,
+							'device_type' 		=> '2',
+						];
+						$this->db->insert('custom_log', $custom_log2);
 					}
 
 				}else{
@@ -1840,7 +1905,17 @@ class Api extends CC_Controller
 				$this->db->where('user_id', $plumberID); 
 				$increase_count = $this->db->update('coc_count'); 
 
-				if(isset($cocstatus)) $this->db->update('stock_management', ['coc_status' => $cocstatus], ['id' => $cocId]);
+				if(isset($cocstatus)){
+					$this->db->update('stock_management', ['coc_status' => $cocstatus], ['id' => $cocId]);
+					$custom_log3 = [
+						'user_id' 			=> $plumberID,
+						'coc_id' 			=> $cocId,
+						'custom_statement' 	=> 'Log coc action started logcoc_log end point hitted sucessfully and changed to status 2 in stock management',
+						'created_at' 		=> $datetime,
+						'device_type' 		=> '2',
+					];
+					$this->db->insert('custom_log', $custom_log3);
+				}
 				
 				$result							= $this->Coc_Model->getCOCList('row', ['id' => $cocId, 'user_id' => $plumberID]);
 
