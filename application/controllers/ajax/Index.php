@@ -529,5 +529,16 @@ class Index extends CC_Controller
 	
 		echo $result;
 	}
+
+	public function ajaxplumberidentitynumberprofile()
+	{
+		$post 	= $this->input->post();		
+		$result	= $this->Plumber_Model->plumberidentitynumberprofile($post);
+			
+		if($result) $result = "false";
+		else $result = "true";
+	
+		echo $result;
+	}
 	
 }

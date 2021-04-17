@@ -549,4 +549,38 @@ class Plumber_Model extends CC_Model
 			return false;
 		}
 	}
+
+	public function plumberidentitynumberprofile($data){
+
+		$this->db->select('ud.*, up.idcard, up.otheridcard, up.approval_status, u.formstatus');
+		$this->db->from('users_plumber as up');
+		$this->db->join('users_detail as ud', 'ud.user_id=up.user_id', 'left');
+		$this->db->join('users as u', 'u.id=up.user_id', 'left');
+		
+
+
+		if(isset($data['idcard'])) 		$this->db->where('up.idcard', $data['idcard']);
+		if(isset($data['otheridcard'])) $this->db->where('up.otheridcard', $data['otheridcard']);
+
+		$this->db->where('u.formstatus', '1');
+		$this->db->group_start();
+			$this->db->where('up.approval_status', '1');
+			$this->db->or_where('up.approval_status', '0');
+		$this->db->group_end();
+		$this->db->where('up.user_id !=', $data['id']);
+
+		$query 	= $this->db->get();
+		$result = $query->row_array();
+		// print_r($this->db->last_query());die;
+
+		/*if(isset($data['idcard'])) 		$post = ['idcard' => $data['idcard']];
+		if(isset($data['otheridcard'])) $post = ['otheridcard' => $data['otheridcard']];
+		
+		$result = $this->db->get_where('users_plumber', ['user_id !=' => $data['id']]+$post)->row_array();*/
+		if ($result) {
+			return true;
+		}else{
+			return false;
+		}
+	}
 }
