@@ -57,6 +57,8 @@ class Index extends CC_Controller
                     $cocstatus = "Logged";
                 } else if ($result['coc_status'] == '4') {
                     $cocstatus = "Non Logged";
+                } else if ($result['coc_status'] == '9') {
+                    $cocstatus = "Allocated (Company)";
                 }
 
                 if ($result['cl_address'] != '') {
