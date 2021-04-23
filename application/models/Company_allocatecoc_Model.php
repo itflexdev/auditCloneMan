@@ -48,7 +48,7 @@ class Company_allocatecoc_Model extends CC_Model
 		$this->db->join('users_plumber up', 'up.user_id=sm.user_id','left');
 		$this->db->join('users_detail pd', 'pd.user_id=pa.company_details', 'left');
 		$this->db->where('sm.type', '1');
-		$this->db->where('sm.coc_status', '8');
+		$this->db->where('sm.coc_status', '9');
 
 		if($type!=='count' && isset($requestdata['start']) && isset($requestdata['length'])){
 			$this->db->limit($requestdata['length'], $requestdata['start']);
