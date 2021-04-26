@@ -116,8 +116,8 @@ class Index extends CC_Controller
                 $totalrecord[] = [
                     'status'        => $this->config->item('plumberstatus')[$result['status']],
                     'namesurname'   => $result['name'].' '.$result['surname'],
-                    'rating'        => '<input type="hidden" value="'.$nationalrangking.'" class="'.$divclass.'">'.$nationalrangking.'',
-                    'rating1'        => '<input type="hidden" value="'.$reginalranking.'" class="'.$divclass.'">'.$reginalranking.'',
+                    // 'rating'        => '<input type="hidden" value="'.$nationalrangking.'" class="'.$divclass.'">'.$nationalrangking.'',
+                    // 'rating1'        => '<input type="hidden" value="'.$reginalranking.'" class="'.$divclass.'">'.$reginalranking.'',
                 ];
             }
         }

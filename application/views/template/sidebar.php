@@ -417,7 +417,7 @@ if(count($permission) > 0){
 						<?php } ?>
 						<?php if ($company_approval =='1') { ?>
 							<li><a href="<?php echo base_url().'company/accountdetails/index'; ?>">Account Details</a></li>
-						<li><a href="<?php echo base_url().'company/performancedetails/index'; ?>">Performance Details</a></li>
+						<!-- <li><a href="<?php// echo base_url().'company/performancedetails/index'; ?>">Performance Details</a></li> -->
 						<li><a href="<?php echo base_url().'company/documents/index'; ?>">Documents and Letters</a></li>
 						<?php } ?>
 						

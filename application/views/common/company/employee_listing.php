@@ -267,14 +267,14 @@ if (isset($logged)) {
 								<th>Status</th>
 								<th>Plumbers Name and Surname</th>
 								<th>CPD Status</th>
-								<th>Performance Status</th>
-								<th>Overall Industry Rating</th>
+								<!-- <th>Performance Status</th>
+								<th>Overall Industry Rating</th> -->
 								<th>Action</th>
 							</tr>
 						</thead>
 					</table>
 				</div>
-				<div class="row" style="padding:30px 0px;">
+				<div class="row displaynone" style="padding:30px 0px;">
 					<div class="col-md-6 align-self-center">
 						<h4 class="card-title app_status">Average Industry Rating of Company Employees</h4>
 						<label style="padding:6px 0px;">Licensed Plumber and above</label>
@@ -509,8 +509,8 @@ if (isset($logged)) {
 							{ "data": "status" },
 							{ "data": "namesurname" },
 							{ "data": "cpdstatus" },
-							{ "data": "perstatus" },
-							{ "data": "rating" },
+							// { "data": "perstatus" },
+							// { "data": "rating" },
 							{ "data": "action" }
 						],
 

@@ -188,8 +188,8 @@
 							<tr>
 								<th>Status</th>
 								<th>Plumbers Name and Surname</th>
-								<th>Industry Ranking - Regional</th>
-								<th>Industry Ranking - National</th>
+								<!-- <th>Industry Ranking - Regional</th>
+								<th>Industry Ranking - National</th> -->
 							</tr>
 						</thead>
 					</table>
@@ -307,8 +307,8 @@
 			columns : 	[
 							{ "data": "status" },
 							{ "data": "namesurname" },
-							{ "data": "rating" },
-							{ "data": "rating1" },
+							// { "data": "rating" },
+							// { "data": "rating1" },
 						],
 						
 		};

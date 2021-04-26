@@ -114,8 +114,8 @@ class Index extends CC_Controller
                                     'status'        => $this->config->item('plumberstatus')[$result['status']],
                                     'namesurname'   => $result['name'].' '.$result['surname'],
                                     'cpdstatus'     => round(($points),2),
-                                    'perstatus'     => '<input type="hidden" value="'.$performance.'" class="'.$divclass2.'">'.$performance.'',
-                                    'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
+                                    // 'perstatus'     => '<input type="hidden" value="'.$performance.'" class="'.$divclass2.'">'.$performance.'',
+                                    // 'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
                                     'action'        => '
                                                             <div class="table-action">
                                                                 <a href="' . base_url() . 'admin/company/index/empaction/'.$post['comp_id'].'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></a>

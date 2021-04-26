@@ -112,8 +112,8 @@ class Employee_listing extends CC_Controller
                     'status'        => $this->config->item('plumberstatus')[$result['status']],
                     'namesurname'   => $result['name'].' '.$result['surname'],
                     'cpdstatus'     => $points,
-                    'perstatus'     => '<input type="hidden" value="'.$performance.'" class="'.$divclass2.'">'.$performance.'',
-                    'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
+                    // 'perstatus'     => '<input type="hidden" value="'.$performance.'" class="'.$divclass2.'">'.$performance.'',
+                    // 'rating'        => '<input type="hidden" value="'.$overall.'" class="'.$divclass.'">'.$overall.'',
                     'nococ'     	=> $balace_coc,
                     'action'        => $action,
                 ];
