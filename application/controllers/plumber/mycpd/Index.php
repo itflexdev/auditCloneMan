@@ -104,6 +104,7 @@ class index extends CC_Controller
 
 		$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
 		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['expirydate']]+$post);
+		// print_r($this->db->last_query());die;
 		/*$totalcount 	= $this->Mycpd_Model->getQueueList('count', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['renewal_date']]+$post);
 		$results 		= $this->Mycpd_Model->getQueueList('all', ['status' => [$post['pagestatus']], 'user_id' => [$post['user_id']], 'dbexpirydate' => $userdetails['renewal_date']]+$post);*/
 
@@ -137,9 +138,14 @@ class index extends CC_Controller
 						$awardPts 	= 0;
 					}
 					
+					// $action 	= '
+					// <div class="table-action">
+					// <a href="'.base_url().'plumber/mycpd/index/index/'.$post['pagestatus'].'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></a>
+					// </div>
+					//';
 					$action 	= '
 					<div class="table-action">
-					<a href="'.base_url().'plumber/mycpd/index/index/'.$post['pagestatus'].'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></a>
+					<a href="'.base_url().'plumber/mycpd/index/index/'.$post['pagestatus'].'/'.$result['id'].'" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil-alt"></i></a>
 					</div>
 					';
 				}

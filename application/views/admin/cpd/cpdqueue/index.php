@@ -141,6 +141,9 @@ $heading 				= isset($result['id']) ? 'Update' : 'Add';
 										</div>
 										<div class="col-md-3">
 											<div class="custom-control custom-radio">
+												<!-- <input type="radio" id="rejected" name="status" value="2" <?php// if ($status==2) {
+													//echo 'checked="checked"';
+												//} ?> class="custom-control-input" > -->
 												<input type="radio" id="rejected" name="status" value="2" <?php if ($status==2) {
 													echo 'checked="checked"';
 												} ?> class="custom-control-input" >

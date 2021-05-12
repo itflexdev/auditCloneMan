@@ -219,6 +219,7 @@ class Mycpd_Model extends CC_Model
 		if(isset($requestdata['image1'])) 		 		$requestData1['file1'] 				= $requestdata['image1'];		
 		if(isset($requestdata['points'])) 		 		$requestData1['points'] 			= $requestdata['points'];		
 		if(isset($requestdata['hidden_stream_id'])) 	$requestData1['cpd_stream'] 		= $requestdata['hidden_stream_id'];
+		if(isset($requestdata['activity_id_hide'])) 	$requestData1['cpdtype_id']  		= $requestdata['activity_id_hide'];
 		$requestData1['status'] 															= '3';
 
 		

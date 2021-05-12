@@ -12,6 +12,8 @@ $cpd_stream 			= isset($result['cpd_stream']) ? $result['cpd_stream'] : '';
 $status 				= isset($result['status']) ? $result['status'] : '';
 $admin_comments 		= isset($result['admin_comments']) ? $result['admin_comments'] : '';
 
+$cpdtype_id 			= isset($result['cpdtype_id']) ? $result['cpdtype_id'] : '';
+
 $streamname 			= isset($strem_id) ? $strem_id : '';
 
 
@@ -75,18 +77,18 @@ $heading 				= isset($result['id']) ? 'Submit' : 'Submit';
 									echo "readonly";
 								}else{ echo 'onclick="search_activity();"'; } ?> autocomplete="off" onkeyup="search_activity(this.value);" value="<?php echo $cpd_activity; ?>">
 								</div>
-								<input type="hidden" id="activity_id_hide" name="activity_id_hide" value="<?php echo $cpd_activity; ?>">
+								<input type="hidden" id="activity_id_hide" name="activity_id_hide" value="<?php echo $cpdtype_id; ?>">
 								<div id="activity_suggesstion" style="display: none;"></div>								
 							</div>	
 							<div class="form-group col-md-12">
 								<label for="enddate">The Date on which the Activity took place or started:</label>
-								<input type="text" <?php if ($status=='1' || $status=='2') {
+								<input type="text" <?php if ($status=='1') {
 									echo "readonly";
 								} ?> autocomplete="off" class="form-control" id="startdate" name="startdate" placeholder="Enter Start Date *" value="<?php echo $cpd_start_date; ?>">						
 							</div>							
 							<div class="form-group col-md-12">
 								<label for="productcode">Comments</label>
-								<textarea class="form-control" <?php if ($status=='1' || $status=='2') {
+								<textarea class="form-control" <?php if ($status=='1') {
 									echo "readonly";
 								} ?> id="comments" placeholder="Enter Comments" name="comments" ><?php echo $comments; ?></textarea>
 							</div>
@@ -134,7 +136,7 @@ $heading 				= isset($result['id']) ? 'Submit' : 'Submit';
 									</div>
 
 							<label for="office2">Admin Comments:</label>
-							<textarea class="form-control" <?php if ($status=='1' || $status=='2') {
+							<textarea class="form-control" <?php if ($status=='1' || $status=='2' || $status=='3') {
 								echo "readonly";
 							} ?> id="admincomments" placeholder="Enter Comments" name="admincomments" ><?php echo $admincomments; ?></textarea>
 							</div>
@@ -153,7 +155,7 @@ $heading 				= isset($result['id']) ? 'Submit' : 'Submit';
 										</a>
 										
 									</div>
-									<?php if ($status!='1' && $status!='2') { ?>
+									<?php if ($status!='1') { ?>
 
 									<input type="file" id="file" class="document_file">
 									<label for="file" class="choose_file">Choose File</label>
@@ -177,7 +179,7 @@ $heading 				= isset($result['id']) ? 'Submit' : 'Submit';
 						</div>
 						
 					</div>
-				<?php if ($status!='1' && $status!='2') { ?>
+				<?php if ($status!='1') { ?>
 					<div class="row">
 						<div class="form-group col-md-6">
 							<div class="custom-control custom-checkbox mr-sm-2 mb-3 pt-2">
@@ -211,7 +213,7 @@ $heading 				= isset($result['id']) ? 'Submit' : 'Submit';
 							<input type="hidden" id="hidden_regnumber" name="hidden_regnumber" value="<?php echo $reg_number; ?>">
 							
 						</div>
-					<?php if ($status!='1' && $status!='2') { ?>
+					<?php if ($status!='1') { ?>
 						<div class="row">
 						<button type="submit" id="addupdate" name="submit" value="submit" class="btn btn-primary"><?php echo $heading; ?></button>
 						<?php if ($status!='0') { ?>
