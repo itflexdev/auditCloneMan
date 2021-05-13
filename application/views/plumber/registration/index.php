@@ -917,7 +917,7 @@ $(function(){
 				maxlength	: 	13,
 				minlength	: 	13,
 				remote		: 	{
-									url		: 	"<?php echo base_url().'ajax/index/ajaxplumberidentitynumber'; ?>",
+									url		: 	"<?php echo base_url().'ajax/index/ajaxplumberidentitynumberprofile'; ?>",
 									type	: 	"post",
 									async	: 	false,
 									data	: 	{
@@ -936,7 +936,7 @@ $(function(){
 									return $('#nationality').val() == "2";
 								},
 				remote		: 	{
-									url		: 	"<?php echo base_url().'ajax/index/ajaxplumberidentitynumber'; ?>",
+									url		: 	"<?php echo base_url().'ajax/index/ajaxplumberidentitynumberprofile'; ?>",
 									type	: 	"post",
 									async	: 	false,
 									data	: 	{
