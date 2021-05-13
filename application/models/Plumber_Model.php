@@ -563,10 +563,10 @@ class Plumber_Model extends CC_Model
 		if(isset($data['otheridcard'])) $this->db->where('up.otheridcard', $data['otheridcard']);
 
 		$this->db->where('u.formstatus', '1');
-		// $this->db->group_start();
+		$this->db->group_start();
 			$this->db->where('up.approval_status', '1');
-			// $this->db->or_where('up.approval_status', '0');
-		// $this->db->group_end();
+			$this->db->or_where('up.approval_status', '2');
+		$this->db->group_end();
 		$this->db->where('up.user_id !=', $data['id']);
 
 		$query 	= $this->db->get();
