@@ -571,7 +571,7 @@ class Plumber_Model extends CC_Model
 
 		$query 	= $this->db->get();
 		$result = $query->row_array();
-		// print_r($this->db->last_query());die;
+		print_r($this->db->last_query());die;
 
 		/*if(isset($data['idcard'])) 		$post = ['idcard' => $data['idcard']];
 		if(isset($data['otheridcard'])) $post = ['otheridcard' => $data['otheridcard']];
