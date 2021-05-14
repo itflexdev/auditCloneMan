@@ -199,7 +199,7 @@ class Users_Model extends CC_Model
 				
 				if ($queryresult) {
 					return false;
-					$messsage = 'email already exist';
+					$messsage = 'E-mail already exists';
 				}else{
 					$result 	= $this->db->insert('users', $users);
 					$insertid 	= $this->db->insert_id();
