@@ -198,8 +198,8 @@ class Users_Model extends CC_Model
 				$queryresult = $this->db->get()->result_array();
 				
 				if ($queryresult) {
-					$result = $this->db->update('users', $users, ['id' => $queryresult['id']]);
-					$insertid 	= $queryresult['id'];
+					return false;
+					$messsage = 'email already exist';
 				}else{
 					$result 	= $this->db->insert('users', $users);
 					$insertid 	= $this->db->insert_id();
