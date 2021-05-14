@@ -113,7 +113,7 @@ class Users_Model extends CC_Model
 		}
 	}
 	
-	public function actionUsers($data)
+	/*public function actionUsers($data)
 	{
 		$this->db->trans_begin();
 		
@@ -143,6 +143,72 @@ class Users_Model extends CC_Model
 			$users['updated_at'] 		= $datetime;
 			$result 	= $this->db->insert('users', $users);
 			$insertid 	= $this->db->insert_id();
+		}else{
+			$result = $this->db->update('users', $users, ['id' => $id]);
+			$insertid 	= $id;
+		}
+			
+		if(!$result || $this->db->trans_status() === FALSE)
+		{
+			$this->db->trans_rollback();
+			return false;
+		}
+		else
+		{
+			$this->db->trans_commit();
+			return $insertid;
+		}
+	}*/
+
+	public function actionUsers($data)
+	{
+
+		$this->db->trans_begin();
+		
+		$id 		= 	$data['id'];
+		$email 		= 	trim($data['email']);
+		$password 	= 	(isset($data['password']) ? $data['password'] : '');
+		$type 		= 	$data['type'];
+		$status 	= 	$data['status'];
+		$datetime	= 	date('Y-m-d H:i:s');
+		
+		$users		=	[
+							'email' 		=> $email,
+							'type' 			=> $type,
+							'status' 		=> $status
+						];
+		
+		if($password!=''){
+			$users['password_raw'] 	= $password;
+			$users['password'] 		= md5($password);
+		}
+		
+		if(isset($data['mailstatus'])) 	$users['mailstatus'] 		= $data['mailstatus'];
+		if(isset($data['formstatus'])) 	$users['formstatus'] 		= $data['formstatus'];
+		
+		if($id==''){
+			$users['created_at'] 		= $datetime;
+			$users['updated_at'] 		= $datetime;
+
+			if ($type =='4') {
+				$this->db->select('us.id,us.email');
+				$this->db->from('users us');
+				$this->db->where('us.type', '4');
+				$this->db->where('us.email', $email);
+				$queryresult = $this->db->get()->result_array();
+				
+				if ($queryresult) {
+					$result = $this->db->update('users', $users, ['id' => $queryresult['id']]);
+					$insertid 	= $queryresult['id'];
+				}else{
+					$result 	= $this->db->insert('users', $users);
+					$insertid 	= $this->db->insert_id();
+				}
+			}else{
+				$result 	= $this->db->insert('users', $users);
+				$insertid 	= $this->db->insert_id();
+			}
+			
 		}else{
 			$result = $this->db->update('users', $users, ['id' => $id]);
 			$insertid 	= $id;
