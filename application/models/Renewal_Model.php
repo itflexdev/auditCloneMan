@@ -71,7 +71,7 @@ class Renewal_Model extends CC_Model
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0', 'DATE_SUB(DATE(us.expirydate), INTERVAL 30 DAY) <=' => date('Y-m-d'), 'DATE(us.expirydate) >=' => date('Y-m-d')]);
 		$this->db->group_by('us.id');
-		$this->db->limit(20); // to get 20 members for live testing.
+		//$this->db->limit(20); // to get 20 members for live testing.
 		$result = $this->db->get()->result_array();		
 		echo $this->db->last_query();
 		return $result;

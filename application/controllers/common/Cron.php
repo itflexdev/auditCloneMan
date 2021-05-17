@@ -706,8 +706,8 @@ class Cron extends CC_Controller {
 							$array2 = [$insertimage, $difference];
 							$body 	= str_replace($array1, $array2, $template['email_body']);
 							$testmail = 'suresh@itflexsolutions.com';
-							// $this->CC_Model->sentMail($resultsvalue['email'],$template['subject'],$body);
-							$this->CC_Model->sentMail($testmail,$template['subject'],$body);
+							$this->CC_Model->sentMail($resultsvalue['email'],$template['subject'],$body);
+							// $this->CC_Model->sentMail($testmail,$template['subject'],$body);
 
 							$cpdremainderlog = [
 								'user_id' 		=> $resultsvalue['id'],
