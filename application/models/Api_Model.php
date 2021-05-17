@@ -1616,4 +1616,411 @@ class Api_Model extends CC_Model
 		
 		return $result;
 	}
+
+	public function suburbs($type, $requestdata = []){
+
+		$this->db->select('sub.*');
+		$this->db->from('suburb as sub');
+
+		$this->db->where('sub.status', '1');
+		$this->db->order_by('sub.name', 'ASC');
+
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		
+		return $result;
+
+	}
+
+	public function PlumbergetList($type, $requestdata=[], $querydata=[])
+	{ 
+		// print_r($requestdata['search']['value']);die;
+		$select = [];
+		
+		if(in_array('users', $querydata)){
+			$users 			= 	[ 
+									'u.id','u.email','u.formstatus','u.expirydate','u.type','u.status', 'u.renewal_date'
+								];
+								
+			$select[] 		= 	implode(',', $users);
+		}
+		
+		if(in_array('usersdetail', $querydata)){
+			$usersdetail 	= 	[ 
+									'ud.id as usersdetailid','ud.title','ud.name','ud.surname','ud.dob','ud.gender','ud.company_name','ud.reg_no','ud.vat_no','ud.billing_email','ud.billing_contact','ud.contact_person','ud.home_phone','ud.mobile_phone','ud.mobile_phone2','ud.work_phone','ud.email2','ud.file1','ud.file2','ud.coc_purchase_limit','ud.specialisations','ud.status as plumberstatus','ud.file1'
+								];
+								
+			$select[] 		= 	implode(',', $usersdetail);
+		}
+		
+		if(in_array('usersplumber', $querydata)){
+			$usersplumber 	= 	[ 
+									'up.id as usersplumberid','up.racial','up.nationality','up.othernationality','up.idcard','up.otheridcard','up.homelanguage','up.disability','up.citizen','up.registration_card','up.delivery_card','up.employment_details','up.company_details',
+									'up.registration_no','up.registration_date','up.designation','up.qualification_year','up.coc_electronic','up.message',
+									'up.application_received','up.application_status','up.approval_status','up.reject_reason','up.reject_reason_other', 'up.lms_registration', 'up.lms_status'
+								];
+								
+			$select[] 		= 	implode(',', $usersplumber);
+		}
+		
+		if(in_array('usersskills', $querydata)){
+			$select[]		= 	'group_concat(IF(COALESCE(ups.id, "")="", "", concat_ws("@@@", COALESCE(ups.id, ""), COALESCE(ups.user_id, ""), COALESCE(ups.date, ""), COALESCE(ups.certificate, ""), COALESCE(ups.qualification, ""), COALESCE(ups.skills, ""), COALESCE(ups.training, ""), COALESCE(ups.attachment, ""), COALESCE(qr.name, ""))) separator "@-@") as skills';
+		}
+		
+		if(in_array('company', $querydata)){
+			$userscompany	= 	[ 
+									'c.company as companyname',
+									'c.mobile_phone as companymobile', 'c.work_phone as cwork_phone'
+								];
+			
+			$select[] 		= 	implode(',', $userscompany);
+		}
+		
+		if(in_array('physicaladdress', $querydata)){
+			$select[] 		= 	'concat_ws("@-@", ua1.id, ua1.user_id, ua1.address, ua1.suburb, ua1.city, ua1.province, ua1.postal_code, ua1.type)  as physicaladdress';
+		}
+		
+		if(in_array('postaladdress', $querydata)){
+			$select[]		= 	'concat_ws("@-@", ua2.id, ua2.user_id, ua2.address, ua2.suburb, ua2.city, ua2.province, ua2.postal_code, ua2.type)  as postaladdress';
+		}
+		
+		if(in_array('billingaddress', $querydata)){
+			$select[]		= 	'concat_ws("@-@", ua3.id, ua3.user_id, ua3.address, ua3.suburb, ua3.city, ua3.province, ua3.postal_code, ua3.type)  as billingaddress';
+		}
+		
+		if(in_array('alllist', $querydata)){
+			$select 		= 	[];
+			$alllist		= 	[
+									'u.id','u.email','ud.name','ud.surname','ud.status as plumberstatus','up.designation','up.registration_no'
+								];
+			$select[] 		= 	implode(',', $alllist);
+		}
+		
+		$this->db->select(implode(',', $select));
+		$this->db->from('users u');
+		if(in_array('usersdetail', $querydata)) 		$this->db->join('users_detail ud', 'ud.user_id=u.id', 'left');
+		if(in_array('physicaladdress', $querydata)) 	$this->db->join('users_address ua1', 'ua1.user_id=u.id and ua1.type="1"', 'left');
+		if(in_array('postaladdress', $querydata)) 		$this->db->join('users_address ua2', 'ua2.user_id=u.id and ua2.type="2"', 'left');
+		if(in_array('billingaddress', $querydata)) 		$this->db->join('users_address ua3', 'ua3.user_id=u.id and ua3.type="3"', 'left');
+		if(in_array('usersplumber', $querydata)) 		$this->db->join('users_plumber up', 'up.user_id=u.id', 'left');
+		if(in_array('usersskills', $querydata)) 		$this->db->join('users_plumber_skill ups', 'ups.user_id=u.id', 'left');
+		if(in_array('usersskills', $querydata)) 		$this->db->join('qualificationroute qr', 'qr.id=ups.skills', 'left'); 
+		if(in_array('company', $querydata)) 			$this->db->join('users_detail c', 'c.user_id=up.company_details', 'left');
+		
+		if((isset($requestdata['search']['value']) && $requestdata['search']['value']!='') || (isset($requestdata['order']['0']['column']) && $requestdata['order']['0']['column']!='' && isset($requestdata['order']['0']['dir']) && $requestdata['order']['0']['dir']!='')){
+			if(isset($requestdata['page']) && $requestdata['page']=='adminplumberlist'){
+				$this->db->join('custom c1', 'c1.c_id=up.designation and c1.type="5"', 'left');
+				$this->db->join('custom c2', 'c2.c_id=ud.status and c2.type="6"', 'left');
+			}
+		}
+		
+		if(isset($requestdata['id'])) 					$this->db->where('u.id', $requestdata['id']);
+		if(isset($requestdata['type'])) 				$this->db->where('u.type', $requestdata['type']);
+		if(isset($requestdata['formstatus']))			$this->db->where_in('u.formstatus', $requestdata['formstatus']);
+		if(isset($requestdata['status']))				$this->db->where_in('u.status', $requestdata['status']);
+		if(isset($requestdata['approvalstatus']))		$this->db->where_in('up.approval_status', $requestdata['approvalstatus']);
+		if(isset($requestdata['plumberstatus']))		$this->db->where_in('ud.status', $requestdata['plumberstatus']);
+		if(isset($requestdata['gender']))				$this->db->where_in('ud.gender', $requestdata['gender']);
+		if(isset($requestdata['designation']))			$this->db->where_in('up.designation', $requestdata['designation']);
+		if(isset($requestdata['racial']))				$this->db->where_in('up.racial', $requestdata['racial']);
+		if(isset($requestdata['searchregno']))			$this->db->like('up.registration_no', $requestdata['searchregno']);
+		
+		
+		
+		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){
+			$searchvalue = $requestdata['search']['value'];
+				
+				$this->db->group_start();
+						$this->db->like('up.registration_no', $searchvalue);
+						$this->db->or_like('ud.name', $searchvalue);
+						$this->db->or_like('ud.surname', $searchvalue);
+						$this->db->or_like('ua2.postal_code', $searchvalue);
+						// $this->db->or_like('c1.name', $searchvalue);
+						// $this->db->or_like('u.email', $searchvalue);
+						// $this->db->or_like('c2.name', $searchvalue);
+				$this->db->group_end();
+		}
+		
+		$this->db->group_by('u.id');
+		
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		
+		return $result;
+	}
+
+	public function CompanygetList($type, $requestdata=[], $querydata=[])
+	{
+		$select = [];
+		
+		if(in_array('users', $querydata)){
+			$users 			= 	[ 
+									'u.id','u.email','u.formstatus','u.expirydate','u.type','u.status','u.created_at' 
+								];
+								
+			$select[] 		= 	implode(',', $users);
+		}
+		
+		if(in_array('usersdetail', $querydata)){
+			$usersdetail 	= 	[ 
+									'ud.id as usersdetailid','ud.company','ud.reg_no','ud.vat_no','ud.contact_person','ud.work_phone','ud.mobile_phone','ud.specialisations','ud.email2','ud.mobile_phone2','ud.home_phone','ud.status as companystatus', 'ud.file1 as file1','ud.billing_email','ud.billing_contact', 'ud.vat_vendor', 'ud.coc_purchase_limit, ud.company_name'
+								];
+			
+			$select[] 		= 	implode(',', $usersdetail);
+		}
+		
+		if(in_array('userscompany', $querydata)){
+			$userscompany 	= 	[ 
+									'uc.id as userscompanyid','uc.work_type','uc.message','uc.approval_status','uc.reject_reason','uc.reject_reason_other', 'uc.includeprofile as includeprofile', 'uc.company_description as companydescription', 'uc.websiteurl'
+								];
+			
+			$select[] 		= 	implode(',', $userscompany);
+		}	
+		
+		if(in_array('physicaladdress', $querydata)){
+			$select[] 		= 	'concat_ws("@-@", ua1.id, ua1.user_id, ua1.address, ua1.suburb, ua1.city, ua1.province, ua1.postal_code, ua1.type)  as physicaladdress';
+		}
+		
+		if(in_array('postaladdress', $querydata)){
+			$select[]		= 	'concat_ws("@-@", ua2.id, ua2.user_id, ua2.address, ua2.suburb, ua2.city, ua2.province, ua2.postal_code, ua2.type)  as postaladdress';
+		}
+
+		if(in_array('billingaddress', $querydata)){
+			$select[]		= 	'concat_ws("@-@", ua3.id, ua3.user_id, ua3.address, ua3.suburb, ua3.city, ua3.province, ua3.postal_code, ua3.type)  as billingaddress';
+		}
+
+		if(in_array('suburb', $querydata)){
+			$select[]		= 	's.name as suburbname,';
+		}
+		
+		if(in_array('lttqcount', $querydata)){
+			$select[]		= 	'
+									(
+										SELECT
+										count(lttq.id)
+										FROM users_plumber lttq
+										WHERE lttq.company_details = u.id and (lttq.designation="1" or lttq.designation="2" or lttq.designation="3" or lttq.designation="5")
+									) as lttqcount
+								';
+			$sortlttq 		= 	'lttqcount';
+		}else{
+			$sortlttq 		= 	'';
+		}
+		
+		if(in_array('lmcount', $querydata)){
+			$select[]		= 	'
+									(
+										SELECT
+										count(lm.id)
+										FROM users_plumber lm
+										WHERE lm.company_details = u.id and (lm.designation="4" or lm.designation="6")
+									) as lmcount
+								';
+		
+			$sortlm 		= 	'lmcount';
+		}else{
+			$sortlm 		= 	'';
+		}
+		
+		$this->db->select(implode(',', $select));
+		$this->db->from('users u');		
+		if(in_array('usersdetail', $querydata)) 		$this->db->join('users_detail ud', 'ud.user_id=u.id', 'left');
+		if(in_array('userscompany', $querydata))		$this->db->join('users_company uc', 'uc.user_id=u.id', 'left');
+		if(in_array('physicaladdress', $querydata))		$this->db->join('users_address ua1', 'ua1.user_id=u.id and ua1.type="1"', 'left');
+		if(in_array('postaladdress', $querydata))		$this->db->join('users_address ua2', 'ua2.user_id=u.id and ua2.type="2"', 'left');
+		if(in_array('billingaddress', $querydata)) 		$this->db->join('users_address ua3', 'ua3.user_id=u.id and ua3.type="3"', 'left');
+
+		if(in_array('suburb', $querydata)) 				$this->db->join('suburb s', 's.id=ua1.suburb', 'left');// $this->db->join('suburb sub1', 'sub1.id=ua2.suburb', 'left');
+
+		$this->db->where('uc.includeprofile', '1');
+			
+		if(isset($requestdata['id'])) 					$this->db->where('u.id', $requestdata['id']);
+		if(isset($requestdata['type'])) 				$this->db->where('u.type', $requestdata['type']);
+		if(isset($requestdata['formstatus']))			$this->db->where_in('u.formstatus', $requestdata['formstatus'][0]);
+		if(isset($requestdata['status']))				$this->db->where_in('u.status', $requestdata['status']);
+		if(isset($requestdata['companystatus']))		$this->db->where_in('ud.status', $requestdata['companystatus']);
+		if(isset($requestdata['approvalstatus']))		$this->db->where_in('uc.approval_status', $requestdata['approvalstatus']);
+
+		if(isset($requestdata['searchsuburb']) && $requestdata['searchsuburb'] !='')		$this->db->where_in('ua1.suburb', $requestdata['searchsuburb']);
+
+		if(isset($requestdata['searchspecialisation']) && $requestdata['searchspecialisation'] !=''){
+			// $this->db->where_in('ua1.suburb', $requestdata['searchsuburb']);
+			$specialisation = explode(',', $requestdata['searchspecialisation']);
+			foreach ($specialisation as $specialisationkey => $specialisationvalue) {
+				$this->db->group_start();
+					$this->db->where("find_in_set($specialisationvalue, ud.specialisations)");
+					// $this->db->or_where("find_in_set($specialisationvalue, uc.work_type)");
+				$this->db->group_end();
+			}
+			
+		}
+
+		
+		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){
+			$searchvalue = $requestdata['search']['value'];
+			$this->db->group_start(); // Open bracket
+			// $this->db->like('u.id', $searchvalue);
+				$this->db->like('ud.company', $searchvalue, 'both');
+				$this->db->or_like('u.status', $searchvalue, 'both');
+				$this->db->or_like('ua2.postal_code', $searchvalue, 'both');
+				$this->db->or_like('s.name', $searchvalue, 'both');
+				$this->db->or_like('ua1.suburb', $searchvalue, 'both');
+			$this->db->group_end(); // Open bracket
+		}
+		
+		$this->db->order_by('ud.company', 'DESC');
+		
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		return $result;
+	}
+
+	public function categotyCount($type, $requestdata=[], $querydata=[])
+	{
+		// print_r($requestdata);die;
+		$select = [];
+		
+		if(in_array('users', $querydata)){
+			$users 			= 	[ 
+									'u.id','u.email','u.formstatus','u.expirydate','u.type','u.status','u.created_at' 
+								];
+								
+			$select[] 		= 	implode(',', $users);
+		}
+		
+		if(in_array('usersdetail', $querydata)){
+			$usersdetail 	= 	[ 
+									'ud.id as usersdetailid','ud.company','ud.reg_no','ud.vat_no','ud.contact_person','ud.work_phone','ud.mobile_phone','ud.specialisations','ud.email2','ud.mobile_phone2','ud.home_phone','ud.status as companystatus', 'ud.file1 as file1','ud.billing_email','ud.billing_contact', 'ud.vat_vendor', 'ud.coc_purchase_limit, ud.company_name'
+								];
+			
+			$select[] 		= 	implode(',', $usersdetail);
+		}
+		
+		if(in_array('userscompany', $querydata)){
+			$userscompany 	= 	[ 
+									'uc.id as userscompanyid','uc.work_type','uc.message','uc.approval_status','uc.reject_reason','uc.reject_reason_other', 'uc.includeprofile as includeprofile', 'uc.company_description as companydescription', 'uc.websiteurl'
+								];
+			
+			$select[] 		= 	implode(',', $userscompany);
+		}	
+		
+		if(in_array('physicaladdress', $querydata)){
+			$select[] 		= 	'concat_ws("@-@", ua1.id, ua1.user_id, ua1.address, ua1.suburb, ua1.city, ua1.province, ua1.postal_code, ua1.type)  as physicaladdress';
+		}
+		
+		if(in_array('postaladdress', $querydata)){
+			$select[]		= 	'concat_ws("@-@", ua2.id, ua2.user_id, ua2.address, ua2.suburb, ua2.city, ua2.province, ua2.postal_code, ua2.type)  as postaladdress';
+		}
+
+		if(in_array('billingaddress', $querydata)){
+			$select[]		= 	'concat_ws("@-@", ua3.id, ua3.user_id, ua3.address, ua3.suburb, ua3.city, ua3.province, ua3.postal_code, ua3.type)  as billingaddress';
+		}
+
+		if(in_array('suburb', $querydata)){
+			$select[]		= 	's.name as suburbname,';
+		}
+		
+		if(in_array('lttqcount', $querydata)){
+			$select[]		= 	'
+									(
+										SELECT
+										count(lttq.id)
+										FROM users_plumber lttq
+										WHERE lttq.company_details = u.id and (lttq.designation="1" or lttq.designation="2" or lttq.designation="3" or lttq.designation="5")
+									) as lttqcount
+								';
+			$sortlttq 		= 	'lttqcount';
+		}else{
+			$sortlttq 		= 	'';
+		}
+		
+		if(in_array('lmcount', $querydata)){
+			$select[]		= 	'
+									(
+										SELECT
+										count(lm.id)
+										FROM users_plumber lm
+										WHERE lm.company_details = u.id and (lm.designation="4" or lm.designation="6")
+									) as lmcount
+								';
+		
+			$sortlm 		= 	'lmcount';
+		}else{
+			$sortlm 		= 	'';
+		}
+		
+		$this->db->select(implode(',', $select));
+		$this->db->from('users u');		
+		if(in_array('usersdetail', $querydata)) 		$this->db->join('users_detail ud', 'ud.user_id=u.id', 'left');
+		if(in_array('userscompany', $querydata))		$this->db->join('users_company uc', 'uc.user_id=u.id', 'left');
+		if(in_array('physicaladdress', $querydata))		$this->db->join('users_address ua1', 'ua1.user_id=u.id and ua1.type="1"', 'left');
+		if(in_array('postaladdress', $querydata))		$this->db->join('users_address ua2', 'ua2.user_id=u.id and ua2.type="2"', 'left');
+		if(in_array('billingaddress', $querydata)) 		$this->db->join('users_address ua3', 'ua3.user_id=u.id and ua3.type="3"', 'left');
+
+		if(in_array('suburb', $querydata)) 				$this->db->join('suburb s', 's.id=ua2.suburb', 'left');// $this->db->join('suburb sub1', 'sub1.id=ua2.suburb', 'left');
+
+		$this->db->where('uc.includeprofile', '1');
+			
+		if(isset($requestdata['id'])) 					$this->db->where('u.id', $requestdata['id']);
+		if(isset($requestdata['type'])) 				$this->db->where('u.type', $requestdata['type']);
+		if(isset($requestdata['formstatus']))			$this->db->where_in('u.formstatus', $requestdata['formstatus'][0]);
+		if(isset($requestdata['status']))				$this->db->where_in('u.status', $requestdata['status']);
+		if(isset($requestdata['companystatus']))		$this->db->where_in('ud.status', $requestdata['companystatus']);
+		if(isset($requestdata['approvalstatus']))		$this->db->where_in('uc.approval_status', $requestdata['approvalstatus']);
+
+		if(isset($requestdata['searchsuburb']) && $requestdata['searchsuburb'] !='')		$this->db->where_in('ua1.suburb', $requestdata['searchsuburb']);
+
+		if(isset($requestdata['worktype']) && $requestdata['worktype'] !=''){
+			// $this->db->where_in('ua1.suburb', $requestdata['searchsuburb']);
+			$specialisations = $requestdata['worktype'];
+			// foreach ($specialisations as $specialisationskey => $specialisation) {
+				$this->db->group_start();
+					$this->db->where("find_in_set($specialisations, ud.specialisations)");
+				$this->db->group_end();
+			// }
+			
+		}
+
+		if(isset($requestdata['worktype1']) && $requestdata['worktype1'] !=''){
+			// $this->db->where_in('ua1.suburb', $requestdata['searchsuburb']);
+			$specialisations1 = $requestdata['worktype1'];
+			// foreach ($specialisations1 as $specialisationskey1 => $specialisation1) {
+				$this->db->group_start();
+					$this->db->where("find_in_set($specialisations1, uc.work_type)");
+				$this->db->group_end();
+			// }
+			
+		}
+		
+		
+		$this->db->order_by('ud.company', 'DESC');
+		
+		if($type=='count'){
+			$result = $this->db->count_all_results();
+		}else{
+			$query = $this->db->get();
+			
+			if($type=='all') 		$result = $query->result_array();
+			elseif($type=='row') 	$result = $query->row_array();
+		}
+		return $result;
+	}
 }

@@ -267,7 +267,11 @@ class Company_Model extends CC_Model
 		}
 		
 		if(isset($data['worktype'])) 				$request3['work_type'] 				= implode(',', $data['worktype']);
-		if(isset($data['includeprofile'])) 			$request3['includeprofile'] 		= $data['includeprofile'];
+		if(isset($data['includeprofile'])){
+			$request3['includeprofile'] 		= $data['includeprofile'];	
+		}else{
+			$request3['includeprofile'] 		= '0';	
+		}
 		if(isset($data['companydescription'])) 		$request3['company_description'] 	= $data['companydescription'];
 		if(isset($data['websiteurl'])) 				$request3['websiteurl'] 			= $data['websiteurl'];
 		if(isset($data['approval_status']))			$request3['approval_status'] 		= $data['approval_status'];

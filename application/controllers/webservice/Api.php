@@ -5279,4 +5279,393 @@ class Api extends CC_Controller
 		}
 		echo json_encode($jsonData);
 	}
+
+	/*	PIRB.co.za API	*/
+
+	public function getCompanyServices(){
+
+		$result = $this->config->item('specialization');
+
+		$jsonData = array("status"=>'1', "message"=>'Company Service', "result"=> $result);
+		echo json_encode($jsonData);
+
+	}
+
+	public function getCompanySpecialisation(){
+
+		$result = $this->config->item('worktype1');
+
+		$jsonData = array("status"=>'1', "message"=>'Specialisations', "result"=> $result);
+		echo json_encode($jsonData);
+
+	}
+
+	public function getSuburbs(){
+		$results = $this->Api_Model->suburbs('all', []);
+
+		foreach ($results as $resultskey => $resultsvalue) {
+			$jsonData[] = [
+				'provinceid' 	=> $resultsvalue['province_id'],
+				'cityid' 		=> $resultsvalue['city_id'],
+				'suburbid' 		=> $resultsvalue['id'],
+				'suburbname' 	=> $resultsvalue['name'],
+			];
+		}
+
+		$jsonArray = array("status"=>'1', "message"=>'Suburbs', "result"=> $jsonData);
+		echo json_encode($jsonArray);
+	}
+
+	public function verifycoc(){
+		if ($this->input->post() && $this->input->post('cocnumber')) {
+			$post = $this->input->post();
+
+			$result = $this->Coc_Model->getCOCList('row', ['id' => $post['cocnumber'], 'coc_status' => ['2','4','5','7']], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'coclogcompany', 'reseller', 'resellerdetails', 'usersdetail', 'usersplumber']);
+
+			if ($result) {
+				
+				if ($result['cl_ncnotice'] =='1') $ncnotice = 'Yes';
+				else $ncnotice = 'No';
+
+				$company = $this->Company_Model->getList('row', ['id' => $result['company_details'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany']);
+
+				$jsonData = [
+					'coc_number' 	=> $result['id'],
+					'coc_status' 	=> $this->config->item('cocstatus')[$result['coc_status']],
+					'log_date' 		=> $result['cl_log_date'],
+					'companyid' 	=> $result['company_details'],
+					'companyname' 	=> $company['company'],
+					'plumberid' 	=> $result['user_id'],
+					'plumber' 		=> $result['u_name'],
+					'province' 		=> $result['cl_province_name'],
+					'suburb' 		=> $result['cl_suburb_name'],
+					'cl_ncnotice' 	=> $ncnotice,
+					'description' 	=> '',
+					'category' 		=> '',
+				];
+
+				$jsonArray = array("status"=>'1', "message"=>'CoC Result', "result"=> $jsonData);
+			}else{
+				$jsonArray = array("status"=>'0', "message"=>'No Result Found', "result"=> []);
+			}
+			
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function verifyplumbers(){
+		if ($this->input->post() && $this->input->post('keywords')) {
+
+			$post = $this->input->post();
+			$results = $this->Api_Model->PlumbergetList('all', ['type' => '3', 'approvalstatus' => ['1'], 'status' => ['1', '2'], 'search' => ['value' => $post['keywords']]], ['users', 'usersdetail', 'usersplumber', 'physicaladdress', 'postaladdress']);
+
+			if ($results) {
+
+				foreach ($results as $resultskey => $resultsvalue) {
+
+					if ($resultsvalue['designation'] =='4' || $resultsvalue['designation'] =='6') $cocComplaint = 'Yes';
+					else $cocComplaint = 'No';
+
+					$jsonData[] = [
+						'plumberid' 	=> $resultsvalue['id'],
+						'namesurname' 	=> $resultsvalue['name'].' '.$resultsvalue['surname'],
+						'profileimg' 	=> base_url().'assets/uploads/plumber/'.$resultsvalue['id'].'/'.$resultsvalue['file1'].'',
+						'regno' 		=> $resultsvalue['registration_no'],
+						'renewaldate' 	=> date('d-m-Y', strtotime($resultsvalue['expirydate'])),
+						'status' 		=> $this->config->item('plumberstatus')[$resultsvalue["plumberstatus"]],
+						'companyid' 	=> $resultsvalue["company_details"],
+						'coccomplain' 	=> $cocComplaint,
+						'rankhidden' 	=> '1',
+						'regionalrank' 	=> '0'
+					];
+				}
+
+				$jsonArray = array("status"=>'1', "message"=>'Plumber Lists', "result"=> $jsonData);
+			}else{
+				$jsonArray = array("status"=>'0', "message"=>'No record found', "result"=> []);
+			}
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function plumberdetails(){
+		if ($this->input->post() && $this->input->post('plumberid')) {
+
+			$post = $this->input->post();
+			$result = $this->Api_Model->PlumbergetList('row', ['id' => $post['plumberid'], 'type' => '3', 'approvalstatus' => ['1'], 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'physicaladdress', 'postaladdress']);
+			$specialisations 	= explode(',', $result['specialisations']);
+
+			if ($result['designation'] =='4' || $result['designation'] =='6') $cocComplaint = 'Yes';
+			else $cocComplaint = 'No';
+
+			$company = $this->Company_Model->getList('row', ['id' => $result['company_details'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany']);
+
+			foreach ($specialisations as $key => $specialisationsvalue) {
+				if (!empty($specialisationsvalue)) {
+					$jsonData['plumber_specialisations'][] 		= $this->config->item('specialisations')[$specialisationsvalue];
+				}else{
+					$jsonData['plumber_specialisations'][] 		= '';
+				}
+			}
+
+			$jsonData['plumberdetails'] = [
+						'plumberid' 	=> $result['id'],
+						'namesurname' 	=> $result['name'].' '.$result['surname'],
+						'profileimg' 	=> base_url().'assets/uploads/plumber/'.$result['id'].'/'.$result['file1'].'',
+						'regno' 		=> $result['registration_no'],
+						'designation' 	=> $this->config->item('designation2')[$result['designation']],
+						'renewaldate' 	=> date('d-m-Y', strtotime($result['expirydate'])),
+						'status' 		=> $this->config->item('plumberstatus')[$result["plumberstatus"]],
+						'companyid' 	=> $result["company_details"],
+						'companyname' 	=> $company["company"],
+						'coccomplain' 	=> $cocComplaint,
+						'rankhidden' 	=> '1',
+						'regionalrank' 	=> '0',
+						'countryrank' 	=> '0'
+					];
+
+			$jsonArray = array("status"=>'1', "message"=>'Plumber Details', "result"=> $jsonData);
+
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function getCompanyListApi(){
+
+		if ($this->input->post()) {
+			$post = $this->input->post();
+
+
+			$keyword 		= isset($post['keywords']) ? $post['keywords'] : '';
+			$allservice 	= isset($post['allservice']) ? $post['allservice'] : ''; // array
+			$allservicearea = isset($post['allservicearea']) ? $post['allservicearea'] : '';
+
+			$results = $this->Api_Model->CompanygetList('all', ['type' => '4', 'approvalstatus' => ['1'], 'formstatus' => ['1'], 'status' => ['1'], 'search' => ['value' => $keyword], 'searchsuburb' => $allservicearea, 'searchspecialisation' => $allservice], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress', 'suburb']);
+			// print_r($this->db->last_query());die;
+
+			$getcity = $this->Managearea_Model->getListCity('all', ['status' => ['1']]);
+			if(count($getcity) > 0) {
+				$citydata=  ['' => 'Select City']+array_column($getcity, 'name', 'id');
+			}else{
+				$citydata = [];
+			}
+			$getsuburb = $this->Managearea_Model->getListSuburb('all', ['status' => ['1']]);
+			if(count($getsuburb) > 0) {
+				$suburbdata=  ['' => 'Select City']+array_column($getsuburb, 'name', 'id');
+			}
+			else {
+				$suburbdata = [];
+			}
+
+			if ($results) {
+				foreach ($results as $resultskey => $resultsvalue) {
+
+					if ($resultsvalue['file1'] !='') $file = base_url().'assets/uploads/company/'.$resultsvalue['id'].'/'.$resultsvalue['file1'].'';
+					else $file = '';
+
+					// Physical address
+					$physicaladdress 		= isset($resultsvalue['physicaladdress']) ? explode('@-@', $resultsvalue['physicaladdress']) : [];
+					// $jsonData['physical']['addressid1'] 	= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
+					// $jsonData['physical']['address1']		= isset($physicaladdress[2]) ? $physicaladdress[2] : '';
+					// $jsonData['physical']['suburb1'] 		= isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '';
+					// $jsonData['physical']['city1'] 			= isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '';
+					// $jsonData['physical']['province1'] 		= isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '';
+					// $jsonData['physical']['postalcode1'] 	= isset($physicaladdress[6]) ? $physicaladdress[6] : '';
+					// $jsonData['physical']['type'] 			= isset($physicaladdress[6]) ? $physicaladdress[7] : '';
+					// $jsonData['physical']['id'] 			= isset($physicaladdress[6]) ? $physicaladdress[0] : '';
+
+
+					$emplist = $this->employeeListing(['compID' => $resultsvalue['id']]);
+					if ($emplist['licensed'] > 0) $cocComplaint = 'Yes';
+					else $cocComplaint = 'No';
+
+					$jsonData[] = [
+						'companyid' 	=> $resultsvalue['id'],
+						'companyname' 	=> $resultsvalue['company'],
+						'work_phone' 	=> $resultsvalue['work_phone'],
+						'work_phone' 	=> $resultsvalue['work_phone'],
+						'profile' 		=> $file,
+						'coccomplain' 	=> $cocComplaint,
+						'rankhidden' 	=> '0',
+						'regionalrank' 	=> '0',
+						'province1' 	=> isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '',
+						'city1' 		=> isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '',
+						'suburb1' 		=> isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '',
+						'address1' 		=> isset($physicaladdress[2]) ? $physicaladdress[2] : '',
+						'performancepoint' => '0',
+					];
+
+				}
+				$jsonArray = array("status"=>'1', "message"=>'Company List', "result"=> $jsonData);
+			}else{
+				$jsonArray = array("status"=>'0', "message"=>'No record found', "result"=> []);
+			}
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> []);
+		}
+		echo json_encode($jsonArray);
+		
+	}
+
+	public function companydetails(){
+		if ($this->input->post() && $this->input->post('companyid')) {
+
+			$post = $this->input->post();
+			$result = $this->Company_Model->getList('row', ['id' => $post['companyid'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress']);
+
+			$getcity = $this->Managearea_Model->getListCity('all', ['status' => ['1']]);
+			if(count($getcity) > 0) {
+				$citydata=  ['' => 'Select City']+array_column($getcity, 'name', 'id');
+			}else{
+				$citydata = [];
+			}
+			$getsuburb = $this->Managearea_Model->getListSuburb('all', ['status' => ['1']]);
+			if(count($getsuburb) > 0) {
+				$suburbdata=  ['' => 'Select City']+array_column($getsuburb, 'name', 'id');
+			}
+			else {
+				$suburbdata = [];
+			}
+
+			if ($result) {
+				$physicaladdress 		= isset($result['physicaladdress']) ? explode('@-@', $result['physicaladdress']) : [];
+				$service 				= explode(',', $result['specialisations']);
+
+				if ($result['file1'] !='') $file = base_url().'assets/uploads/company/'.$result['id'].'/'.$result['file1'].'';
+				else $file = '';
+
+				$emplist = $this->employeeListing(['compID' => $result['id']]);
+				if ($emplist['licensed'] > 0) $cocComplaint = 'Yes';
+				else $cocComplaint = 'No';
+
+
+				$jsonData['companydetails'] = [
+					'companyid' 			=> $result['id'],
+					'work_phone' 			=> $result['work_phone'],
+					'companyname' 			=> $result['company'],
+					'companydescription' 	=> $result['companydescription'],
+					'email' 				=> $result['email'],
+					'websiteurl' 			=> $result['websiteurl'],
+					'profile' 				=> $file,
+					'coccomplain' 			=> $cocComplaint,
+					'province1' 			=> isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '',
+					'city1' 				=> isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '',
+					'suburb1' 				=> isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '',
+					'address1' 				=> isset($physicaladdress[2]) ? $physicaladdress[2] : '',
+					'regionalrank' 			=> '0',
+					'countryrank' 			=> '0'
+				];
+
+				
+				foreach ($service as $key => $servicevalue) {
+					if (!empty($servicevalue)) {
+						$jsonData['company_service'][] 		= $this->config->item('specialization')[$servicevalue];
+					}else{
+						$jsonData['company_service'][] 		= '';
+					}
+				}
+
+				$employees = $this->CompanyEmployees(['compID' => $result['id']]);
+
+				$jsonData['company_employees'] = $employees;
+
+				$jsonArray = array("status"=>'1', "message"=>'Company Details', "result"=> $jsonData);
+			}else{
+				$jsonArray = array("status"=>'0', "message"=>'No Record Found', "result"=> []);	
+			}
+
+		}else{
+			$jsonArray = array("status"=>'0', "message"=>'Invalid API', "result"=> []);
+		}
+		echo json_encode($jsonArray);
+	}
+
+	public function CompanyEmployees($data = []){
+		$results        = $this->Company_Model->getEmpList('all', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2'], 'comp_id' => $data['compID']]);
+
+		if ($results) {
+			foreach ($results as $resultskey => $resultsvalue) {
+				if ($resultsvalue['file2'] !='') $file = base_url().'assets/uploads/plumber/'.$resultsvalue['user_id'].'/'.$resultsvalue['file2'].'';
+				else $file = '';
+
+				$plumberdata[] = [
+					'plumberid' 	=> $resultsvalue['id'],
+					'namesurname' 	=> $resultsvalue['name'].' '.$resultsvalue['surname'],
+					'designation' 	=> $this->config->item('designation2')[$resultsvalue['designation']],
+					'status' 		=> $this->config->item('plumberstatus')[$resultsvalue['status']],
+					'plumberprofile' => $file
+				];
+			}
+		}
+		return isset($plumberdata) ? $plumberdata : [];
+	}
+
+	public function employeeListing($data = []){
+		$results        = $this->Company_Model->getEmpList('all', ['type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2'], 'comp_id' => $data['compID']]);
+		
+		$lmplumber_count 		= 0;
+		$otherplumber_count 	= 0;
+
+		if (count($results) > 0) {
+			foreach ($results as $result) {
+				if ($result['designation']=='4') {
+                    
+                   $lm = $lmplumber_count+1;
+                }else{
+                    $other = $otherplumber_count+1;
+                }
+			}
+		}
+		$data['licensed'] 	= isset($lm) ? $lm : 0;
+		$data['other'] 		= isset($other) ? $other : 0;
+		
+		return $data;
+	}
+
+	public function countBrowseCategory(){
+		$worktype 	= $this->config->item('specialization');
+		$worktype1 	= $this->config->item('worktype1');
+
+		foreach ($worktype as $worktypekey => $worktypevalue) {
+			$key1[] = $worktypekey;
+
+			$worktypea = $this->Api_Model->categotyCount('count', ['type' => '4', 'approvalstatus' => ['1'], 'formstatus' => ['1'], 'status' => ['1'], 'worktype' => $worktypekey], ['users', 'usersdetail', 'userscompany']);
+			// $result1[$worktypevalue] = $worktypea;
+
+			$result1[] = [
+				'id' 		=> $worktypekey,
+				'count' 	=> $worktypea,
+				'category' 	=> $worktypevalue,
+			];
+		}
+
+		foreach ($worktype1 as $worktypekey1 => $worktypevalue1) {
+			$key2[] = $worktypekey1;
+
+			$worktypeb = $this->Api_Model->categotyCount('count', ['type' => '4', 'approvalstatus' => ['1'], 'formstatus' => ['1'], 'status' => ['1'], 'worktype' => $worktypekey1], ['users', 'usersdetail', 'userscompany']);
+			//$result2[$worktypevalue1] = $worktypeb;
+
+			$result2[] = [
+				'id' 		=> $worktypekey1,
+				'count' 	=> $worktypeb,
+				'category' 	=> $worktypevalue1,
+			];
+		}
+
+		$jsonData = [
+			'companycategory' 		=> $result1,
+			'companyspecialisation' => $result2,
+		];
+
+		$jsonArray = array("status"=>'1', "message"=>'Browse Category', "result"=> $jsonData);
+
+		echo json_encode($jsonArray);
+
+	}
 }
