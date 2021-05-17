@@ -704,8 +704,10 @@ class Cron extends CC_Controller {
 
 							$array1 = ['{insert image}','{points}'];
 							$array2 = [$insertimage, $difference];
-							$body = str_replace($array1, $array2, $template['email_body']);
-							$this->CC_Model->sentMail($resultsvalue['email'],$template['subject'],$body);
+							$body 	= str_replace($array1, $array2, $template['email_body']);
+							$testmail = 'suresh@itflexsolutions.com';
+							// $this->CC_Model->sentMail($resultsvalue['email'],$template['subject'],$body);
+							$this->CC_Model->sentMail($testmail,$template['subject'],$body);
 
 							$cpdremainderlog = [
 								'user_id' 		=> $resultsvalue['id'],
