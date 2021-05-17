@@ -659,6 +659,73 @@ class Cron extends CC_Controller {
 		return $otherfee;
 	}
 
+	public function cpdRemainder(){
+		$log 			= '';
+		$fileName 		= base_url().'common/cron/cpdRemainder';
+		$starttime 		= date('Y-m-d H:i:s');
+		
+		$results 		= $this->Renewal_Model->getUseridsNinetydays();
+		$settingsCPD 	= $this->db->select('*')->from('settings_cpd')->get()->result_array();
+		$template 		= $this->db->select('*')->from('email_notification')->where('id','25')->where('email_active','1')->get()->row_array();
+
+		if ($results) {
+			foreach ($results as $resultskey => $resultsvalue) {
+				$designationDB 	= $this->config->item('designation2')[$resultsvalue['designation']];
+
+				foreach ($settingsCPD as $key1 => $value1) {
+					$settingsplumberDetails[] = $value1['licensed'];
+				}
+				$totalDB = $settingsplumberDetails[0]+$settingsplumberDetails[1]+$settingsplumberDetails[2];
+
+
+				$developmentalpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $resultsvalue['expirydate']]);
+					
+					$individualpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $resultsvalue['expirydate']]);
+
+					$workbasedpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $resultsvalue['expirydate']]);
+
+					if (count($developmentalpts) > 0) $developmental 	= array_sum(array_column($developmentalpts, 'points'));
+					else $developmental 	= 0;
+
+					if (count($individualpts) > 0) $individual 	= array_sum(array_column($individualpts, 'points'));
+					else $individual 	= 0;
+
+					if (count($workbasedpts) > 0) $workbased 	= array_sum(array_column($workbasedpts, 'points'));
+					else $workbased 	= 0;
+					
+					$total 			= $developmental+$individual+$workbased;
+
+					$difference = $totalDB-$total;
+
+					if ($difference > 0) {
+						if ((isset($template['email_active']) && $template['email_active'] == '1')) {
+
+							$insertimage = '<img src='.base_url().'assets/images/cpd_remainder.png >';
+
+							$array1 = ['{insert image}','{points}'];
+							$array2 = [$insertimage, $difference];
+							$body = str_replace($array1, $array2, $template['email_body']);
+							$this->CC_Model->sentMail($resultsvalue['email'],$template['subject'],$body);
+
+							$cpdremainderlog = [
+								'user_id' 		=> $resultsvalue['id'],
+								'users_email' 	=> $resultsvalue['email'],
+								'created_at' 	=> date('Y-m-d H:i:s'),
+							];
+							$this->db->insert('cpd_remainder_log', $cpdremainderlog);
+							
+						}
+					}
+			}
+			// echo "<pre>";print_r($body);die;
+			//die;
+		}
+		$endtime = date('Y-m-d H:i:s');
+		if ($starttime && $endtime) {
+			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
+		}
+	}
+
 }
 
 	
