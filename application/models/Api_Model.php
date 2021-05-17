@@ -1880,7 +1880,7 @@ class Api_Model extends CC_Model
 			$this->db->group_end(); // Open bracket
 		}
 		
-		$this->db->order_by('ud.company', 'DESC');
+		$this->db->order_by('ud.company', 'ASC');
 		
 		if($type=='count'){
 			$result = $this->db->count_all_results();
