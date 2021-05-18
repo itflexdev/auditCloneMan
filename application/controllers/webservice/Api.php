@@ -5370,10 +5370,13 @@ class Api extends CC_Controller
 					if ($resultsvalue['designation'] =='4' || $resultsvalue['designation'] =='6') $cocComplaint = 'Yes';
 					else $cocComplaint = 'No';
 
+					if ($result['file1'] !='') $file = base_url().'assets/uploads/plumber/'.$resultsvalue['id'].'/'.$resultsvalue['file1'].'';
+					else $file = '';
+
 					$jsonData[] = [
 						'plumberid' 	=> $resultsvalue['id'],
 						'namesurname' 	=> $resultsvalue['name'].' '.$resultsvalue['surname'],
-						'profileimg' 	=> base_url().'assets/uploads/plumber/'.$resultsvalue['id'].'/'.$resultsvalue['file1'].'',
+						'profileimg' 	=> $file,
 						'regno' 		=> $resultsvalue['registration_no'],
 						'renewaldate' 	=> date('jS F Y', strtotime($resultsvalue['expirydate'])),
 						'status' 		=> $this->config->item('plumberstatus')[$resultsvalue["plumberstatus"]],
@@ -5416,10 +5419,13 @@ class Api extends CC_Controller
 				}
 			}
 
+			if ($result['file1'] !='') $file = base_url().'assets/uploads/plumber/'.$result['id'].'/'.$result['file1'].'';
+			else $file = '';
+
 			$jsonData['plumberdetails'] = [
 						'plumberid' 	=> $result['id'],
 						'namesurname' 	=> $result['name'].' '.$result['surname'],
-						'profileimg' 	=> base_url().'assets/uploads/plumber/'.$result['id'].'/'.$result['file1'].'',
+						'profileimg' 	=> $file,
 						'regno' 		=> $result['registration_no'],
 						'designation' 	=> $this->config->item('designation2')[$result['designation']],
 						'renewaldate' 	=> date('jS F Y', strtotime($result['expirydate'])),
