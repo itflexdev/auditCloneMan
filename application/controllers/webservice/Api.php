@@ -5331,6 +5331,19 @@ class Api extends CC_Controller
 					$company = $this->Company_Model->getList('row', ['id' => $result['company_details'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany']);
 				}
 
+				$cl_installationtype = explode(',', $result['cl_installationtype']);
+
+				$installation = $this->Installationtype_Model->getList('all', ['designation' => $result['designation'], 'specialisations' => [], 'ids' => $cl_installationtype]);
+
+				foreach ($installation as $installationkey => $installationvalue) {
+					if (!empty($installationvalue)) {
+						$installationcategory[] 		= $installationvalue['name'];
+					}else{
+						$installationcategory[] 		= '';
+					}
+				}
+				
+
 				$jsonData = [
 					'coc_number' 	=> $result['id'],
 					'coc_status' 	=> $this->config->item('cocstatus')[$result['coc_status']],
@@ -5342,8 +5355,8 @@ class Api extends CC_Controller
 					'province' 		=> $result['cl_province_name'],
 					'suburb' 		=> $result['cl_suburb_name'],
 					'cl_ncnotice' 	=> $ncnotice,
-					'description' 	=> '',
-					'category' 		=> '',
+					'description' 	=> $result['cl_installation_detail'],
+					'category' 		=> implode(',', $installationcategory)
 				];
 
 				$jsonArray = array("status"=>'1', "message"=>'CoC Result', "result"=> $jsonData);
