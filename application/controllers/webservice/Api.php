@@ -5370,7 +5370,7 @@ class Api extends CC_Controller
 					if ($resultsvalue['designation'] =='4' || $resultsvalue['designation'] =='6') $cocComplaint = 'Yes';
 					else $cocComplaint = 'No';
 
-					if ($resultsvalue['file1'] !='') $file = base_url().'assets/uploads/plumber/'.$resultsvalue['usersdetailid'].'/'.$resultsvalue['file1'].'';
+					if ($resultsvalue['file1'] !='') $file = base_url().'assets/uploads/plumber/'.$resultsvalue['id'].'/'.$resultsvalue['file1'].'';
 					else $file = '';
 
 					$jsonData[] = [
@@ -5419,7 +5419,7 @@ class Api extends CC_Controller
 				}
 			}
 
-			if ($result['file1'] !='') $file = base_url().'assets/uploads/plumber/'.$result['usersdetailid'].'/'.$result['file1'].'';
+			if ($result['file1'] !='') $file = base_url().'assets/uploads/plumber/'.$result['id'].'/'.$result['file1'].'';
 			else $file = '';
 
 			if (isset($result["company_details"])) {
