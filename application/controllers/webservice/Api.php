@@ -5485,10 +5485,18 @@ class Api extends CC_Controller
 					else $file = '';
 
 					// Physical address
-					print_r($results);
 
 					$physicaladdress 		= isset($resultsvalue['physicaladdress']) ? explode('@-@', $resultsvalue['physicaladdress']) : [];
-					print_r($physicaladdress);die;
+
+					if (isset($physicaladdress[3]) && (is_numeric($physicaladdress[3]) =='1')) $suburb = $suburbdata[$physicaladdress[3]];
+					else $suburb = '';
+
+					if (isset($physicaladdress[4]) && (is_numeric($physicaladdress[4]) =='1')) $city = $citydata[$physicaladdress[4]];
+					else $city = '';
+
+					if (isset($physicaladdress[5]) && (is_numeric($physicaladdress[5]) =='1')) $province = $this->getProvinceList()[$physicaladdress[5]];
+					else $province = '';
+
 					// $jsonData['physical']['addressid1'] 	= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
 					// $jsonData['physical']['address1']		= isset($physicaladdress[2]) ? $physicaladdress[2] : '';
 					// $jsonData['physical']['suburb1'] 		= isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '';
@@ -5512,9 +5520,9 @@ class Api extends CC_Controller
 						'coccomplain' 	=> $cocComplaint,
 						'rankhidden' 	=> '0',
 						'regionalrank' 	=> '0',
-						'province1' 	=> isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '',
-						'city1' 		=> isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '',
-						'suburb1' 		=> isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '',
+						'province1' 	=> isset($province) ? $province : '',
+						'city1' 		=> isset($city) ? $city : '',
+						'suburb1' 		=> isset($suburb) ? $suburb : '',
 						'address1' 		=> isset($physicaladdress[2]) ? $physicaladdress[2] : '',
 						'performancepoint' => '0',
 					];
@@ -5563,6 +5571,16 @@ class Api extends CC_Controller
 				else $cocComplaint = 'No';
 
 
+				if (isset($physicaladdress[3]) && (is_numeric($physicaladdress[3]) =='1')) $suburb = $suburbdata[$physicaladdress[3]];
+					else $suburb = '';
+
+					if (isset($physicaladdress[4]) && (is_numeric($physicaladdress[4]) =='1')) $city = $citydata[$physicaladdress[4]];
+					else $city = '';
+
+					if (isset($physicaladdress[5]) && (is_numeric($physicaladdress[5]) =='1')) $province = $this->getProvinceList()[$physicaladdress[5]];
+					else $province = '';
+
+
 				$jsonData['companydetails'] = [
 					'companyid' 			=> $result['id'],
 					'work_phone' 			=> $result['work_phone'],
@@ -5572,9 +5590,9 @@ class Api extends CC_Controller
 					'websiteurl' 			=> $result['websiteurl'],
 					'profile' 				=> $file,
 					'coccomplain' 			=> $cocComplaint,
-					'province1' 			=> isset($physicaladdress[5]) ? $this->getProvinceList()[$physicaladdress[5]] : '',
-					'city1' 				=> isset($physicaladdress[4]) ? $citydata[$physicaladdress[4]] : '',
-					'suburb1' 				=> isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '',
+					'province1' 			=> isset($province) ? $province : '',
+					'city1' 				=> isset($city) ? $city : '',
+					'suburb1' 				=> isset($suburb) ? $suburb : '',
 					'address1' 				=> isset($physicaladdress[2]) ? $physicaladdress[2] : '',
 					'regionalrank' 			=> '0',
 					'countryrank' 			=> '0'
