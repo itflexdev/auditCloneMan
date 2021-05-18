@@ -18,7 +18,7 @@ class Coc_Model extends CC_Model
 		}
 		
 		if(in_array('usersplumber', $querydata)){
-			$usersplumber 		= 	['up.registration_no as plumberregno'];								
+			$usersplumber 		= 	['up.registration_no as plumberregno', 'up.company_details', 'up.designation as designation'];								
 			$select[] 			= 	implode(',', $usersplumber);
 		}
 		
