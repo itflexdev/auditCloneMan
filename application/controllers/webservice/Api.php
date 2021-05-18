@@ -5422,6 +5422,10 @@ class Api extends CC_Controller
 			if ($result['file1'] !='') $file = base_url().'assets/uploads/plumber/'.$result['usersdetailid'].'/'.$result['file1'].'';
 			else $file = '';
 
+			if (isset($result["company_details"])) {
+				$includeprofile = $this->Api_Model->CompanygetList('row', ['id' => $result["company_details"], 'type' => '4', 'approvalstatus' => ['1'], 'formstatus' => ['1'], 'status' => ['1']], ['users', 'usersdetail', 'userscompany']);
+			}
+
 			$jsonData['plumberdetails'] = [
 						'plumberid' 	=> $result['id'],
 						'namesurname' 	=> $result['name'].' '.$result['surname'],
@@ -5435,7 +5439,8 @@ class Api extends CC_Controller
 						'coccomplain' 	=> $cocComplaint,
 						'rankhidden' 	=> '1',
 						'regionalrank' 	=> '0',
-						'countryrank' 	=> '0'
+						'countryrank' 	=> '0',
+						'includeprofile'=> isset($includeprofile["id"]) ? 'yes' : 'no',
 					];
 
 			$jsonArray = array("status"=>'1', "message"=>'Plumber Details', "result"=> $jsonData);
