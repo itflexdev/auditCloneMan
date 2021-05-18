@@ -5348,7 +5348,7 @@ class Api extends CC_Controller
 				$jsonData = [
 					'coc_number' 	=> $result['id'],
 					'coc_status' 	=> $this->config->item('cocstatus')[$result['coc_status']],
-					'log_date' 		=> $result['cl_log_date'],
+					'log_date' 		=> date('jS F Y', strtotime($result['cl_log_date'])),
 					'companyid' 	=> isset($result['company_details']) ? $result['company_details'] : '',
 					'companyname' 	=> isset($company['company']) ? $company['company'] : '',
 					'plumberid' 	=> $result['user_id'],
