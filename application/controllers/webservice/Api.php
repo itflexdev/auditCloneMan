@@ -5485,7 +5485,10 @@ class Api extends CC_Controller
 					else $file = '';
 
 					// Physical address
+					print_r($results);
+
 					$physicaladdress 		= isset($resultsvalue['physicaladdress']) ? explode('@-@', $resultsvalue['physicaladdress']) : [];
+					print_r($physicaladdress);die;
 					// $jsonData['physical']['addressid1'] 	= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
 					// $jsonData['physical']['address1']		= isset($physicaladdress[2]) ? $physicaladdress[2] : '';
 					// $jsonData['physical']['suburb1'] 		= isset($physicaladdress[3]) ? $suburbdata[$physicaladdress[3]] : '';
