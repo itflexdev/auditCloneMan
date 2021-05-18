@@ -5327,14 +5327,16 @@ class Api extends CC_Controller
 				if ($result['cl_ncnotice'] =='1') $ncnotice = 'Yes';
 				else $ncnotice = 'No';
 
-				$company = $this->Company_Model->getList('row', ['id' => $result['company_details'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany']);
+				if (isset($result['company_details'])) {
+					$company = $this->Company_Model->getList('row', ['id' => $result['company_details'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany']);
+				}
 
 				$jsonData = [
 					'coc_number' 	=> $result['id'],
 					'coc_status' 	=> $this->config->item('cocstatus')[$result['coc_status']],
 					'log_date' 		=> $result['cl_log_date'],
-					'companyid' 	=> $result['company_details'],
-					'companyname' 	=> $company['company'],
+					'companyid' 	=> isset($result['company_details']) ? $result['company_details'] : '',
+					'companyname' 	=> isset($company['company']) ? $company['company'] : '',
 					'plumberid' 	=> $result['user_id'],
 					'plumber' 		=> $result['u_name'],
 					'province' 		=> $result['cl_province_name'],
@@ -5373,9 +5375,9 @@ class Api extends CC_Controller
 						'namesurname' 	=> $resultsvalue['name'].' '.$resultsvalue['surname'],
 						'profileimg' 	=> base_url().'assets/uploads/plumber/'.$resultsvalue['id'].'/'.$resultsvalue['file1'].'',
 						'regno' 		=> $resultsvalue['registration_no'],
-						'renewaldate' 	=> date('d-m-Y', strtotime($resultsvalue['expirydate'])),
+						'renewaldate' 	=> date('jS F Y', strtotime($resultsvalue['expirydate'])),
 						'status' 		=> $this->config->item('plumberstatus')[$resultsvalue["plumberstatus"]],
-						'companyid' 	=> $resultsvalue["company_details"],
+						'companyid' 	=> isset($resultsvalue["company_details"]) ? $resultsvalue["company_details"] : '',
 						'coccomplain' 	=> $cocComplaint,
 						'rankhidden' 	=> '1',
 						'regionalrank' 	=> '0'
@@ -5402,7 +5404,9 @@ class Api extends CC_Controller
 			if ($result['designation'] =='4' || $result['designation'] =='6') $cocComplaint = 'Yes';
 			else $cocComplaint = 'No';
 
-			$company = $this->Company_Model->getList('row', ['id' => $result['company_details'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany']);
+			if (isset($result['company_details'])) {
+				$company = $this->Company_Model->getList('row', ['id' => $result['company_details'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany']);
+			}
 
 			foreach ($specialisations as $key => $specialisationsvalue) {
 				if (!empty($specialisationsvalue)) {
@@ -5418,10 +5422,10 @@ class Api extends CC_Controller
 						'profileimg' 	=> base_url().'assets/uploads/plumber/'.$result['id'].'/'.$result['file1'].'',
 						'regno' 		=> $result['registration_no'],
 						'designation' 	=> $this->config->item('designation2')[$result['designation']],
-						'renewaldate' 	=> date('d-m-Y', strtotime($result['expirydate'])),
+						'renewaldate' 	=> date('jS F Y', strtotime($result['expirydate'])),
 						'status' 		=> $this->config->item('plumberstatus')[$result["plumberstatus"]],
-						'companyid' 	=> $result["company_details"],
-						'companyname' 	=> $company["company"],
+						'companyid' 	=> isset($result["company_details"]) ? $result["company_details"] : '',
+						'companyname' 	=> isset($company["company"]) ? $company["company"] : '',
 						'coccomplain' 	=> $cocComplaint,
 						'rankhidden' 	=> '1',
 						'regionalrank' 	=> '0',
