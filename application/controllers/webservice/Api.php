@@ -5323,9 +5323,6 @@ class Api extends CC_Controller
 			$result = $this->Coc_Model->getCOCList('row', ['id' => $post['cocnumber'], 'coc_status' => ['2','4','5','7']], ['coclog', 'coclogprovince', 'coclogcity', 'coclogsuburb', 'coclogcompany', 'reseller', 'resellerdetails', 'usersdetail', 'usersplumber']);
 
 			if ($result) {
-				
-				if ($result['cl_ncnotice'] =='1') $ncnotice = 'Yes';
-				else $ncnotice = 'No';
 
 				if (isset($result['company_details'])) {
 					$company = $this->Company_Model->getList('row', ['id' => $result['company_details'], 'type' => '4', 'approvalstatus' => ['0', '1'], 'formstatus' => ['1'], 'status' => ['0', '1', '2']], ['users', 'usersdetail', 'userscompany']);
@@ -5342,7 +5339,11 @@ class Api extends CC_Controller
 						$installationcategory[] 		= '';
 					}
 				}
-				
+
+				$noncompliance	= $this->Noncompliance_Model->getList('count', ['coc_id' => $result['id'], 'user_id' => $result['user_id']]);
+
+				if ($noncompliance >'0') $ncnotice = 'Yes';
+				else $ncnotice = 'No';
 
 				$jsonData = [
 					'coc_number' 	=> $result['id'],
