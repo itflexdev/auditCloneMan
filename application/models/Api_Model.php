@@ -1737,10 +1737,10 @@ class Api_Model extends CC_Model
 			$searchvalue = $requestdata['search']['value'];
 				
 				$this->db->group_start();
-						$this->db->like('up.registration_no', $searchvalue);
-						$this->db->or_like('ud.name', $searchvalue);
-						$this->db->or_like('ud.surname', $searchvalue);
-						$this->db->or_like('ua2.postal_code', $searchvalue);
+						$this->db->like('up.registration_no', $searchvalue, 'both');
+						$this->db->or_like('ud.name', $searchvalue, 'both');
+						$this->db->or_like('ud.surname', $searchvalue, 'both');
+						$this->db->or_like('ua2.postal_code', $searchvalue, 'both');
 						// $this->db->or_like('c1.name', $searchvalue);
 						// $this->db->or_like('u.email', $searchvalue);
 						// $this->db->or_like('c2.name', $searchvalue);
@@ -1871,7 +1871,7 @@ class Api_Model extends CC_Model
 		if(isset($requestdata['search']['value']) && $requestdata['search']['value']!=''){
 			$searchvalue = $requestdata['search']['value'];
 			$this->db->group_start(); // Open bracket
-			// $this->db->like('u.id', $searchvalue);
+				$this->db->like('u.id', $searchvalue, 'both');
 				$this->db->like('ud.company', $searchvalue, 'both');
 				$this->db->or_like('u.status', $searchvalue, 'both');
 				$this->db->or_like('ua2.postal_code', $searchvalue, 'both');
