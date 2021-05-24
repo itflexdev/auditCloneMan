@@ -176,7 +176,11 @@
 				<div class="steps active" data-id="1">
 					<h4 class="card-title">Registered Company Details</h4>
 					<p>
-						Donec augue enim, volutpat at ligula et, dictum laoreet sapien. Sed maximus feugiat tincidunt. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla eu mollis leo, eu elementum nisl. Curabitur cursus turpis nibh, egestas efficitur diam tristique non. Proin faucibus erat ligula, nec interdum odio rhoncus vel. Nulla facilisi. Nulla vehicula felis lorem, sed molestie lacus maximus quis. Mauris dolor enim, fringilla ut porta sed, ullamcorper id quam. Integer in eleifend justo, quis cursus odio. Pellentesque fermentum sapien elit, aliquam rhoncus neque semper in. Duis id consequat nisl, vitae semper elit. Nulla tristique lorem sem, et pretium magna cursus sit amet. Maecenas malesuada fermentum mauris, at vestibulum arcu vulputate a.
+						Welcome to the PIRB’s Company Registration! Along with the PIRB’s consumer focus drive, a consumer tends to engage with a plumbing company rather than individual plumbers. As a result, the PIRB has introduced the ability to search for plumbing companies which in turn allows for the consumer to search for a PIRB registered company. Registered PIRB companies will ultimately allow:</p>
+
+						<p>•	A company to manage and monitor their PIRB registered plumbers, PIRB licensed plumbers.</p>
+						<p>•	A company to purchase, manage and allocate Certificate of Compliance (CoC’s) to the company’s active licensed plumbers.</p>
+						<p>•	A company to manage their own company profile showing the type of work activities and specialisations that the company undertakes and the area they operate in.
 					</p>
 				</div>
 				<div class="steps displaynone" data-id="2">
@@ -248,7 +252,7 @@
 
 								<div class="custom-control custom-radio cust_btmsp">
 								<input type="checkbox" name="includeprofile" id="includeprofile" class="custom-control-input" value="1" <?php if($includeprofile =='1'){ echo 'checked="checked"'; } if($result['formstatus'] == '1'){ echo "disabled"; } ?>>
-								<label class="custom-control-label" for="includeprofile">Include profile in PIRB company listings <a href="javascript:void(0)" id="executequery" data-toggle="tooltip" data-placement="top" title='kindly replace the new content on "inclue profile in PIRB " popup When enabled, your company will appear on www.pirb.co.za's Company Search Engine'><i class="fa fa-exclamation-circle"></i></a></label>
+								<label class="custom-control-label" for="includeprofile">Include profile in PIRB company listings <a href="javascript:void(0)" id="executequery" data-toggle="tooltip" data-placement="top" title='When enabled, your company will appear on pirb.co.za'><i class="fa fa-exclamation-circle"></i></a></label>
 								
 							</div>
 						</div>
@@ -643,28 +647,29 @@
 							<?php echo $registerprocedure; ?>
 							<label class="checkbox">
 								<input type="checkbox" name="registerprocedure" data-checkbox="checkbox1">
-								<p>I declare that I have fully read and understood the Procedure of Registration</p>
+								<p class="registration-para" style="margin-left: 30px !important; margin-top: -23px !important;">The company declares that I/we have fully read and understood the Procedure of Registration</p>
 							</label>
 							<?php  echo $acknowledgement; ?>
 							<label class="checkbox">
 								<input type="checkbox" name="acknowledgement" data-checkbox="checkbox1">
-								<p>I declare that I have fully read and understood the Procedure of Acknowledgement</p>
+								<p class="acknowledgement-para" style="margin-left: 30px !important; margin-top: -23px !important;">The company declares that I/we have fully read and understood the Procedure of Acknowledgement</p>
 							</label>
 							 <?php  echo $codeofconduct; ?>
 							<div class="col-md-12">
 								<label class="checkbox">
 									<input type="checkbox" name="codeofconduct" data-checkbox="checkbox1">
-									<p>I declare that I have fully read and understood the PIRB's Code of Conduct</p>
+									<p class="codeofconduct-para" style="margin-left: 30px !important; margin-top: -23px !important;">The company declares that I/we have fully read and understood the PIRB's Company Code of Conduct</p>
 								</label>
 							</div>
 							<div class="col-md-12">
 								<label class="checkbox">								
 									<input type="checkbox" name="declaration" data-checkbox="checkbox1">
-									<p class="inlineblock">I</p>
-									<input type="text" class="declarationname" name="declarationname" data-textbox="textbox1" placeholder="Name and surname"> 
+									<p class="inlineblock">The company</p>
+									<input type="text" class="declarationname" name="declarationname" data-textbox="textbox1" placeholder="Name and surname">  hereby declares that the information contained in this application, or attached to this application, is complete, accurate and true to the best of the company’s knowledge. The company further declares that by forwarding this application form to the PIRB, the company acknowledge that representatives of the company have read and fully understood what is required as a PIRB registered company and that the company and individual plumbers of the company will aim to follow the PIRB’s Company Code of Conduct. The company hereby gives permission to the PIRB to conduct enquiries for verification purposes to be made into any information the company shared on this application.
 								</label>
+
 							</div>
-							<?php echo $declaration; ?>
+							
 							<div class="col-md-12 text-right">
 								<input type="hidden" name="application_received" value="<?php echo date('Y-m-d'); ?>">
 								<input type="hidden" name="usersdetailid" id="usersdetailid" value="<?php echo $usersdetailid; ?>">
@@ -679,7 +684,7 @@
 					<input type="hidden" name="user_id" value="<?php echo $id; ?>">
 					<input type="hidden" name="usersdetailid" value="<?php echo $usersdetailid; ?>">
 					<input type="hidden" name="userscompanyid" value="<?php echo $userscompanyid; ?>">
-
+					<input type="hidden" name="declarationdate" id="declarationdate" value="">
 
 					<div id="skillmodal" class="modal fade" role="dialog">
 						<div class="modal-dialog modal-lg">
@@ -1044,7 +1049,12 @@ $('#submit').click(function(e){
 	
 	if(formvalid==0){		
 		for(var i=2; i<=5; i++){
-			var data = $('#submit'+i).parents('form').serialize()+'&'+$.param({ 'usersdetailid': $('#usersdetailid').val(), 'userscompanyid': $('#userscompanyid').val(), 'vatvendor' : $('#vatvendor-fr2').val() });
+
+			if (i>3) {
+				$('#declarationdate').val('<?php echo date('Y-m-d H:i:s'); ?>');
+			}
+
+			var data = $('#submit'+i).parents('form').serialize()+'&'+$.param({ 'usersdetailid': $('#usersdetailid').val(), 'userscompanyid': $('#userscompanyid').val(), 'vatvendor' : $('#vatvendor-fr2').val(), 'declarationdate' : $('#declarationdate').val() });
 			ajax('<?php echo base_url()."company/registration/index/ajaxregistration"; ?>', data, registration, { asynchronous : 1 });				
 		}
 		
@@ -1078,6 +1088,7 @@ $(document).on('click', '.verify', function(){
 			if (data == 0) {
 				$('#otpnumber').parent().append('<p class="tagline error_otp">Incorrect OTP</p>');
 			}else{
+				
 				$('#completeapplication').click();
 			}
 		}

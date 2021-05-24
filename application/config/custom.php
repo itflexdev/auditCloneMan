@@ -382,6 +382,95 @@ $config['declaration'] 				= 	'
 											<div class="info_text">Declare that the information contained in this application, or attached by me to this application, is complete, accurate and true to the best of my knowledge. I further declare that by forwarding this completed application form to the PIRB I am acknowledging that I have read and fully understood what is required of me as a PIRB registered and professional plumber and that I adhere to all aims and objectives of the PIRB and the PIRB’s Plumber Code of Conduct. I give consent for enquiries for verification purposes to be made into any information I have given on this application.</div>
 										';
 
+$config['companyregisterprocedure'] 		= 	'
+											<div class="des_points">
+											<h4 class="card-title">The Registered Procedure</h4>
+											<ul style = "margin-left: 30px;">
+												<li>PIRB company registration is free. However, a PIRB registered company must have at least one active PIRB licensed plumber reflecting (employed) in their company profile, to be active.</li>
+												<li>Only active licensed plumbers are allowed to log CoC’s. However, a PIRB company registration company will be allowed to purchase electronic CoC’s and in turn, manage and allocate to the COC’s to the company’s active licensed plumbers.</li>
+												<li>Please note that all active licensed plumbers are still able to purchase CoC’s.</li>
+												<li>Updating your company profile allows for better search results to be returned to a consumer searching for a plumbing service. For example: if your company does leak detection and this is not indicated on your profile, when a consumer searches for a leak detection your company will not be returned to the consumer. Alternate if you do not indicate the area your company operates in when a consumer searches for plumbers operating in their area, your company will not be returned to the consumer.</li>
+												<li>Further information can be obtained from www.pirb.co.za or you may email companies@pirb.co.za</li>
+											</ul>
+											</div>
+										';
+
+$config['companyacknowledgement'] 			= 	'
+											<div class="des_points">
+											<h4 class="card-title">Acknowledgement</h4>
+											<ul style = "margin-left: 30px;">
+												<li>The company acknowledges that a PIRB registered company must have at least one active PIRB licensed plumber reflecting (employed) in their company profile, to be active.</li>
+												<li>The company acknowledge that the PIRB has the authority to suspend or terminate registration if the company act against the best interest of the PIRB, its aims and objectives and the PIRB’s Company Code of Conduct. The company further acknowledge that in the event of a suspension and or termination the PIRB’s reserves the right to notify this fact publicly and the reason for the suspension and/or termination.</li>
+												<li>The company acknowledge that upon registration, a licensed plumber agrees to issue a PIRB Plumbing Certificate of Compliance (COC) on all plumbing works undertaken, that the issuing of the PIRB Plumbing COC shall be done in the strict defined terms of the prescribe requirements for issuing of a PIRB Plumbing COC and that random audits will take place on the COC’s.</li>
+												<li>The company acknowledge that if a licensed plumber fails to issue a PIRB Plumbing Certificate of Compliance (COC) for work undertaken, carried out and or work adequately supervised; and a complaint is raised against the said plumbing works and the plumber’s actions; or if the said plumbing works and the plumber’s actions are found to be in contrast to the PIRB’s Company Code of Conduct, the company may and can be held accountable for all cost incurred in resolving the said complaint.</li>
+												
+											</ul>
+											</div>
+										';
+
+$config['companycodeofconduct'] 			= 	"
+											<div class='des_points'>
+											<h4 class='card-title'>PIRBs Code of Conduct</h4>
+											<ul style = 'margin-left: 30px;'>
+												<li>Companies registered with the PIRB agree to conduct themselves and their business in a professional manner which shall be seen by those they serve as being honorable, transparent and fair.</li>
+												<li>Companies registered with the PIRB agree to proactively perform, work and act to promote plumbing practices that protect the health and safety of the community and the integrity of the water supply and wastewater systems.</li>
+												<li>Companies registered with the PIRB agree to promote, protect and encourage the upliftment and advancement of the skills development and training in terms of the National Skills ACT. for themselves and individuals in the plumbing sector or wishing to join the plumbing industry.</li>
+												<li>Companies registered with the PIRB agree to monitor and enforce compliance with technical standards of plumbing work that comply with all requirements of the relevant SANS codes of practice and regulations set out in the compulsory National Standards of the Water Service Act 1997 Amended (8th June 2001) as well as relevant local municipal bylaws.</li>
+												<li>Companies registered with the PIRB agree to actively promote and support a consistent and effective regulatory plumbing environment throughout South Africa.</li>
+												<li>Companies registered with the PIRB agree to regularly consult and liaise with the plumbing industry in an open forum free of any political or commercial agenda for the discussion of matters affecting the plumbing industry and the role of plumbing for the well-being of the community and the integrity of the water supply and wastewater systems.</li>
+												<li>Companies registered with the PIRB agree to promote, monitor and maintain expertise and competencies among registered and non-registered plumbing professionals.</li>
+												<li>Companies registered with the PIRB agree to issue a PIRB Plumbing Certificate of Compliance (COC) on all plumbing works undertaken and shall further issue the COC in terms of the prescribe requirements for issuing of a PIRB Plumbing COC.</li>
+											</ul>
+											</div>
+										";
+
+$config['companydeclaration'] 				= 	'
+											<div class="info_text"> hereby declares that the information contained in this application, or attached to this application, is complete, accurate and true to the best of the company’s knowledge. The company further declares that by forwarding this application form to the PIRB, the company acknowledge that representatives of the company have read and fully understood what is required as a PIRB registered company and that the company and individual plumbers of the company will aim to follow the PIRB’s Company Code of Conduct. The company hereby gives permission to the PIRB to conduct enquiries for verification purposes to be made into any information the company shared on this application.</div>
+										';
+
+$config['companyregisterprocedure1'] 		= 	'
+											<div class="des_points">
+											<h4 class="card-title">The Registered Procedure</h4>
+											<ul style = "margin-left: 30px;">
+												<li>PIRB company registration is free. However, a PIRB registered company must have at least one active PIRB licensed plumber reflecting (employed) in their company profile, to be active.</li>
+												<li>Only active licensed plumbers are allowed to log CoC’s. However, a PIRB company registration company will be allowed to purchase electronic CoC’s and in turn, manage and allocate to the COC’s to the company’s active licensed plumbers.</li>
+												<li>Please note that all active licensed plumbers are still able to purchase CoC’s.</li>
+												<li>Updating your company profile allows for better search results to be returned to a consumer searching for a plumbing service. For example: if your company does leak detection and this is not indicated on your profile, when a consumer searches for a leak detection your company will not be returned to the consumer. Alternate if you do not indicate the area your company operates in when a consumer searches for plumbers operating in their area, your company will not be returned to the consumer.</li>
+												<li>Further information can be obtained from www.pirb.co.za or you may email companies@pirb.co.za</li>
+												
+											</ul>
+											</div>
+										';
+
+$config['companyacknowledgement1'] 			= 	'
+											<div class="des_points">
+											<h4 class="card-title">Acknowledgement</h4>
+											<ul style = "margin-left: 30px;">
+												<li>The company acknowledges that a PIRB registered company must have at least one active PIRB licensed plumber reflecting (employed) in their company profile, to be active.</li>
+												<li>The company acknowledge that the PIRB has the authority to suspend or terminate registration if the company act against the best interest of the PIRB, its aims and objectives and the PIRB’s Company Code of Conduct. The company further acknowledge that in the event of a suspension and or termination the PIRB’s reserves the right to notify this fact publicly and the reason for the suspension and/or termination.</li>
+												<li>The company acknowledge that upon registration, a licensed plumber agrees to issue a PIRB Plumbing Certificate of Compliance (COC) on all plumbing works undertaken, that the issuing of the PIRB Plumbing COC shall be done in the strict defined terms of the prescribe requirements for issuing of a PIRB Plumbing COC and that random audits will take place on the COC’s.</li>
+												<li>The company acknowledge that if a licensed plumber fails to issue a PIRB Plumbing Certificate of Compliance (COC) for work undertaken, carried out and or work adequately supervised; and a complaint is raised against the said plumbing works and the plumber’s actions; or if the said plumbing works and the plumber’s actions are found to be in contrast to the PIRB’s Company Code of Conduct, the company may and can be held accountable for all cost incurred in resolving the said complaint.</li>
+												
+											</ul>
+											</div>
+										';
+
+$config['companycodeofconduct1'] 			= 	"
+											<div class='des_points'>
+											<h4 class='card-title'>PIRBs Code of Conduct</h4>
+											<ul style = 'margin-left: 30px;'>
+												<li>Companies registered with the PIRB agree to conduct themselves and their business in a professional manner which shall be seen by those they serve as being honorable, transparent and fair.</li>
+												<li>Companies registered with the PIRB agree to proactively perform, work and act to promote plumbing practices that protect the health and safety of the community and the integrity of the water supply and wastewater systems.</li>
+												<li>Companies registered with the PIRB agree to promote, protect and encourage the upliftment and advancement of the skills development and training in terms of the National Skills ACT. for themselves and individuals in the plumbing sector or wishing to join the plumbing industry.</li>
+												<li>Companies registered with the PIRB agree to monitor and enforce compliance with technical standards of plumbing work that comply with all requirements of the relevant SANS codes of practice and regulations set out in the compulsory National Standards of the Water Service Act 1997 Amended (8th June 2001) as well as relevant local municipal bylaws.</li>
+												<li>Companies registered with the PIRB agree to actively promote and support a consistent and effective regulatory plumbing environment throughout South Africa.</li>
+												<li>Companies registered with the PIRB agree to regularly consult and liaise with the plumbing industry in an open forum free of any political or commercial agenda for the discussion of matters affecting the plumbing industry and the role of plumbing for the well-being of the community and the integrity of the water supply and wastewater systems.</li>
+												<li>Companies registered with the PIRB agree to promote, monitor and maintain expertise and competencies among registered and non-registered plumbing professionals.</li>
+												<li>Companies registered with the PIRB agree to issue a PIRB Plumbing Certificate of Compliance (COC) on all plumbing works undertaken and shall further issue the COC in terms of the prescribe requirements for issuing of a PIRB Plumbing COC.</li>
+											</ul>
+											</div>
+										";										
+
 
 $config['applicationstatus'] 		= 	[
 											'1' => 'ID Attached',

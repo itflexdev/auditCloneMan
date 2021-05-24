@@ -288,6 +288,7 @@ class Company_Model extends CC_Model
 				$usersdetail = $this->db->insert('users_company', $request3);
 				$userscompanyinsertids = $this->db->insert_id();
 			}else{
+				if(isset($data['declarationdate'])) 		$request3['declarationdate'] 	= $data['declarationdate'];
 				$usersdetail = $this->db->update('users_company', $request3, ['id' => $userscompanyid]);
 				$userscompanyinsertids = $userscompanyid;
 			}
