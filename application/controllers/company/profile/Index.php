@@ -37,5 +37,17 @@ class Index extends CC_Controller
     	echo json_encode($json);
 
     }
+
+    public function updateDeclaration(){
+    	$post = $this->input->post();
+
+    	$data = [
+    		'declarationdate' => $post['declarationdate'],
+    	];
+
+    	$query = $this->db->update('users_company', $data, ['id' => $post['userscompanyid']]);
+
+    	echo "1";
+    }
 	
 }
