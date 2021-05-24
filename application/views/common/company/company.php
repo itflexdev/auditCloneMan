@@ -17,6 +17,8 @@
 	$home_phone 			= isset($result['home_phone']) ? $result['home_phone'] : '';
 	$companystatusid 		= isset($result['companystatus']) ? $result['companystatus'] : '';
 
+	$declarationdate 		= isset($result['declarationdate']) ? $result['declarationdate'] : '';
+
 	$description 			= isset($result['companydescription']) ? $result['companydescription'] : '';
 	$websiteurl 			= isset($result['websiteurl']) ? $result['websiteurl'] : '';
 	$vat_vendor 			= isset($result['vat_vendor']) ? $result['vat_vendor'] : '0';
@@ -299,7 +301,7 @@
 
 												<div class="custom-control custom-radio cust_btmsp">
 												<input type="checkbox" name="includeprofile" id="includeprofile" class="custom-control-input" value="1" <?php if($includeprofile =='1'){ echo 'checked="checked"'; }  ?>>
-												<label class="custom-control-label" for="includeprofile">Include profile in PIRB company listings <a href="javascript:void(0)" id="executequery" data-toggle="tooltip" data-placement="top" title='kindly replace the new content on "inclue profile in PIRB " popup When enabled, your company will appear on www.pirb.co.za's Company Search Engine'><i class="fa fa-exclamation-circle"></i></a></label>
+												<label class="custom-control-label" for="includeprofile">Include profile in PIRB company listings <a href="javascript:void(0)" id="executequery" data-toggle="tooltip" data-placement="top" title='When enabled, your company will appear on pirb.co.za'><i class="fa fa-exclamation-circle"></i></a></label>
 											</div>
 										</div>
 										<div class="col-md-6">
@@ -754,6 +756,55 @@
 						<?php } ?>
 					</div>
 				</form>
+
+				<div id="declarationmodal" tabindex="-1" data-backdrop="static" data-keyboard="false" class="modal fade" role="dialog">
+					<div class="modal-dialog modal-xl">
+						<div class="modal-content">
+							<form class="declarationform">
+								<div class="modal-header">
+									<h4 class="modal-title add-title">Declaration</h4>
+									<button type="button"><a href="<?php echo base_url().'authentication/logout'; ?>" class="dropdown-item"><i class="fa fa-power-off"></i> Logout</a></button>
+									
+								</div>
+								<div class="modal-body">
+									<div class="row">
+										<?php echo $registerprocedure; ?>
+										<label class="checkbox">
+											<input type="checkbox" name="registerprocedure" data-checkbox="checkbox1">
+											<p style="margin-left: 30px !important; margin-top: -23px !important;">The company declares that I/we have fully read and understood the Procedure of Registration</p>
+										</label>
+										<?php  echo $acknowledgement; ?>
+										<label class="checkbox">
+											<input type="checkbox" name="acknowledgement" data-checkbox="checkbox1">
+											<p style="margin-left: 30px !important; margin-top: -23px !important;">The company declares that I/we have fully read and understood the Procedure of Acknowledgement</p>
+										</label>
+										 <?php  echo $codeofconduct; ?>
+										<div class="col-md-12">
+											<label class="checkbox">
+												<input type="checkbox" name="codeofconduct" data-checkbox="checkbox1">
+												<p style="margin-left: 30px !important; margin-top: -23px !important;">The company declares that I/we have fully read and understood the PIRB's Company Code of Conduct</p>
+											</label>
+										</div>
+										<div class="col-md-12">
+											<label class="checkbox">								
+												<input type="checkbox" name="declaration" data-checkbox="checkbox1">
+												<p class="inlineblock">The company</p>
+												<input type="text" class="declarationname" name="declarationname" data-textbox="textbox1" placeholder="Name and surname" value="<?php echo $company; ?>">  hereby declares that the information contained in this application, or attached to this application, is complete, accurate and true to the best of the company’s knowledge. The company further declares that by forwarding this application form to the PIRB, the company acknowledge that representatives of the company have read and fully understood what is required as a PIRB registered company and that the company and individual plumbers of the company will aim to follow the PIRB’s Company Code of Conduct. The company hereby gives permission to the PIRB to conduct enquiries for verification purposes to be made into any information the company shared on this application.
+
+											</label>
+
+										</div>
+										
+										<div class="col-md-12 text-center">
+											
+											<button type="button" class="btn btn-success submitdeclaration">Submit</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 				
 <?php if($pagetype!='registration'){ ?>			
 			</div>
@@ -768,8 +819,14 @@ var filepath 			= '<?php echo $filepath; ?>';
 var pdfimg				= '<?php echo $pdfimg; ?>';
 var companyid			= '<?php echo $id; ?>';
 var doctype				= JSON.parse('<?php echo json_encode($documenttype); ?>');
+var roletype 			= '<?php echo $roletype; ?>';
+var declarationdate 	= '<?php echo $declarationdate; ?>';
 
 $(function(){
+
+	if (roletype =='4' && declarationdate =='') {
+		$('#declarationmodal').modal('show');
+	}
 
 
 	var documentlist = $.parseJSON('<?php echo addslashes(json_encode($documentlist)); ?>');
@@ -1003,6 +1060,50 @@ $(function(){
 		}
 	);
 
+	validation( 
+		'.declarationform',
+		{
+			registerprocedure : {
+				required	: true,
+			},
+			acknowledgement : {
+				required	: true,
+			},
+			codeofconduct : {
+				required	: true,
+			},
+			declaration : {
+				required	: true,
+			},
+			declarationname : {
+				required	: true,
+			},
+			declarationidno : {
+				required	: true,
+			}
+		},
+		{
+			registerprocedure 	: {
+				required	: "Please Check registration process.",
+			},
+			acknowledgement 	: {
+				required	: "Please Check acknowledgement.",
+			},
+			codeofconduct 	: {
+				required	: "Please Check code of conduct.",
+			},
+			declaration 	: {
+				required	: "Please Check declaration.",
+			},
+			declarationname : {
+				required	: "Please enter name.",
+			},
+			declarationidno : {
+				required	: "Please enter ID number.",
+			}
+		},
+	);
+
 	$('#submit1').click(function(e){
 		$('.form1').valid()==true
 	});
@@ -1019,6 +1120,29 @@ $(function(){
 
 	$('#submit').click(function(e){
 		$('.form2').valid()==true
+	});
+
+	$('.submitdeclaration').click(function(e){
+		if ($('.declarationform').valid()==true) {
+			var declarationdate = '<?php echo date('Y-m-d H:i:s'); ?>';
+			var userscompanyid = '<?php echo $userscompanyid; ?>';
+
+			$.ajax({
+
+		      	data: {'declarationdate' : declarationdate, 'userscompanyid' : userscompanyid},
+		        type: 'POST',
+		        url: '<?php echo base_url().'company/profile/index/updateDeclaration'; ?>',
+	            
+	            success:function(data)
+		        {
+		        	sweetalertautoclose('Declaration Update successfully.');
+		         	$('#declarationmodal').modal('hide');
+		        }
+		      });
+
+		}else{
+			return false;
+		}
 	});
 
 	$('.deletedoc').click(function(e){

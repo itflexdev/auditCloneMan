@@ -617,6 +617,12 @@ class CC_Controller extends CI_Controller
 		$pagedata['documenttype'] 			= $this->config->item('document_type');
 		$pagedata['specialization']			= $this->config->item('specialization');
 		$pagedata['companystatus']			= $this->config->item('companystatus');
+
+		$pagedata['declaration'] 		= $this->config->item('companydeclaration');
+		$pagedata['registerprocedure'] 	= $this->config->item('companyregisterprocedure1');
+		$pagedata['acknowledgement'] 	= $this->config->item('companyacknowledgement1');
+		$pagedata['codeofconduct'] 		= $this->config->item('companycodeofconduct1');
+		
 		$pagedata['comments'] 				= $this->Comment_Model->getList('all', ['user_id' => $id]);
 		$pagedata['result'] 				= $result;
 		$pagedata['menu']					= $this->load->view('common/company/menu', ['id'=>$id],true);
