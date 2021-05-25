@@ -2028,13 +2028,18 @@ class Api_Model extends CC_Model
 
 		$this->db->select('ud.id, ud.name, udCOm.*, concat_ws("@-@", ua1.id, ua1.user_id, ua1.address, ua1.suburb, ua1.city, ua1.province, ua1.postal_code, ua1.type)  as physicaladdress, concat_ws("@-@", ua2.id, ua2.user_id, ua2.address, ua2.suburb, ua2.city, ua2.province, ua2.postal_code, ua2.type)  as postaladdress, s.name as suburbname');
 		$this->db->from('users u');
-		$this->db->join('users_detail ud', 'ud.user_id = u.id');
-		$this->db->join('users_plumber up', 'up.user_id = ud.user_id');
-		$this->db->join('users_company uc', 'uc.user_id = up.company_details');
-		$this->db->join('users_detail udCOm', 'udCOm.user_id = up.company_details');
+		$this->db->join('users_detail ud', 'ud.user_id = u.id', 'left');
+
+		$this->db->join('users_plumber up', 'up.user_id = ud.user_id', 'left');
+		$this->db->join('users_company uc', 'uc.user_id = up.company_details', 'left');
+		$this->db->join('users_detail udCOm', 'udCOm.user_id = up.company_details', 'left');
 
 		$this->db->join('users_address ua1', 'ua1.user_id = up.company_details and ua1.type="1"', 'left');
 		$this->db->join('users_address ua2', 'ua2.user_id = up.company_details and ua2.type="2"', 'left');
+
+		// $this->db->join('users_address ua11', 'ua11.user_id = ud.user_id and ua11.type="1"', 'left');
+		// $this->db->join('users_address ua22', 'ua22.user_id = ud.user_id and ua22.type="2"', 'left');
+
 		$this->db->join('suburb s', 's.id=ua1.suburb', 'left');
 
 		if(isset($requestdata['searchsuburb']) && $requestdata['searchsuburb'] !='')		$this->db->where_in('ua1.suburb', $requestdata['searchsuburb']);
@@ -2043,6 +2048,10 @@ class Api_Model extends CC_Model
 		$this->db->where_in('u.formstatus', '1');
 		$this->db->where_in('u.status', '1');
 		$this->db->where_in('uc.approval_status', '1');
+
+		if ($requestdata['search']['value']=='' && $requestdata['searchspecialisation'] =='' && $requestdata['searchsuburb'] =='') {
+			$this->db->where('u.type', '4');
+		}
 
 
 		if(isset($requestdata['searchspecialisation']) && $requestdata['searchspecialisation'] !=''){
@@ -2068,8 +2077,14 @@ class Api_Model extends CC_Model
 			$this->db->group_end(); // Open bracket
 		}
 
-		$this->db->group_by('udCOm.company');
-		$this->db->order_by('udCOm.company', 'ASC');
+		if ($requestdata['search']['value'] !='' || $requestdata['searchspecialisation'] !='' || $requestdata['searchsuburb'] !='') {
+			$this->db->group_by('udCOm.company');
+			$this->db->order_by('udCOm.company', 'ASC');
+		}else{
+			$this->db->group_by('ud.company');
+			$this->db->order_by('ud.company', 'ASC');
+		}
+		
 
 		if($type=='count'){
 			$result = $this->db->count_all_results();

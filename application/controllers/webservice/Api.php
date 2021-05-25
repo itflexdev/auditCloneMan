@@ -5475,10 +5475,9 @@ class Api extends CC_Controller
 			$allservice 	= isset($post['allservice']) ? $post['allservice'] : ''; // array
 			$allservicearea = isset($post['allservicearea']) ? $post['allservicearea'] : '';
 
-			// $results = $this->Api_Model->CompanygetList('all', ['type' => '4', 'approvalstatus' => ['1'], 'formstatus' => ['1'], 'status' => ['1'], 'search' => ['value' => $keyword], 'searchsuburb' => $allservicearea, 'searchspecialisation' => $allservice], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress', 'suburb']);
-			// print_r($this->db->last_query());die;
-
+			// $results = $this->Api_Model->CompanygetList('all', ['type' => '4', 'approvalstatus' => ['1'], 'formstatus' => ['1'], 'status' => ['1'], 'search' => ['value' => $keyword], 'searchsuburb' => $allservicearea, 'searchspecialisation' => $allservice], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress', 'suburb', 'employees', 'usersplumber']);
 			$results = $this->Api_Model->customGetcompany('all', ['search' => ['value' => $keyword], 'searchsuburb' => $allservicearea, 'searchspecialisation' => $allservice]);
+			// print_r($this->db->last_query());die;
 
 			$getcity = $this->Managearea_Model->getListCity('all', ['status' => ['1']]);
 			if(count($getcity) > 0) {
@@ -5528,7 +5527,7 @@ class Api extends CC_Controller
 					else $cocComplaint = 'No';
 
 					$jsonData[] = [
-						'companyid' 	=> $resultsvalue['id'],
+						'companyid' 	=> $resultsvalue['user_id'],
 						'companyname' 	=> $resultsvalue['company'],
 						'work_phone' 	=> $resultsvalue['work_phone'],
 						'work_phone' 	=> $resultsvalue['work_phone'],
