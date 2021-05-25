@@ -5475,8 +5475,10 @@ class Api extends CC_Controller
 			$allservice 	= isset($post['allservice']) ? $post['allservice'] : ''; // array
 			$allservicearea = isset($post['allservicearea']) ? $post['allservicearea'] : '';
 
-			$results = $this->Api_Model->CompanygetList('all', ['type' => '4', 'approvalstatus' => ['1'], 'formstatus' => ['1'], 'status' => ['1'], 'search' => ['value' => $keyword], 'searchsuburb' => $allservicearea, 'searchspecialisation' => $allservice], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress', 'suburb']);
+			// $results = $this->Api_Model->CompanygetList('all', ['type' => '4', 'approvalstatus' => ['1'], 'formstatus' => ['1'], 'status' => ['1'], 'search' => ['value' => $keyword], 'searchsuburb' => $allservicearea, 'searchspecialisation' => $allservice], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress', 'suburb']);
 			// print_r($this->db->last_query());die;
+
+			$results = $this->Api_Model->customGetcompany('all', ['search' => ['value' => $keyword], 'searchsuburb' => $allservicearea, 'searchspecialisation' => $allservice]);
 
 			$getcity = $this->Managearea_Model->getListCity('all', ['status' => ['1']]);
 			if(count($getcity) > 0) {
