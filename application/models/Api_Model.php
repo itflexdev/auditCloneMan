@@ -2030,12 +2030,25 @@ class Api_Model extends CC_Model
 		$this->db->from('users u');
 		$this->db->join('users_detail ud', 'ud.user_id = u.id', 'left');
 
-		$this->db->join('users_plumber up', 'up.user_id = ud.user_id', 'left');
-		$this->db->join('users_company uc', 'uc.user_id = up.company_details', 'left');
-		$this->db->join('users_detail udCOm', 'udCOm.user_id = up.company_details', 'left');
+		if ($requestdata['search']['value'] !='' || $requestdata['searchsuburb'] !='' || $requestdata['searchspecialisation'] !='') {
+			$this->db->join('users_plumber up', 'up.user_id = ud.user_id', 'left');
+			$this->db->join('users_company uc', 'uc.user_id = up.company_details', 'left');
 
-		$this->db->join('users_address ua1', 'ua1.user_id = up.company_details and ua1.type="1"', 'left');
-		$this->db->join('users_address ua2', 'ua2.user_id = up.company_details and ua2.type="2"', 'left');
+
+			$this->db->join('users_detail udCOm', 'udCOm.user_id = up.company_details', 'left');
+
+			$this->db->join('users_address ua1', 'ua1.user_id = up.company_details and ua1.type="1"', 'left');
+			$this->db->join('users_address ua2', 'ua2.user_id = up.company_details and ua2.type="2"', 'left');
+		}
+		elseif($requestdata['search']['value'] =='' && $requestdata['searchsuburb'] =='' && $requestdata['searchspecialisation'] ==''){
+			$this->db->join('users_company uc', 'uc.user_id = ud.user_id', 'left');
+			$this->db->join('users_detail udCOm', 'udCOm.user_id = ud.user_id', 'left');
+
+			$this->db->join('users_address ua1', 'ua1.user_id = ud.user_id and ua1.type="1"', 'left');
+			$this->db->join('users_address ua2', 'ua2.user_id = ud.user_id and ua2.type="2"', 'left');
+		}
+
+		
 
 		// $this->db->join('users_address ua11', 'ua11.user_id = ud.user_id and ua11.type="1"', 'left');
 		// $this->db->join('users_address ua22', 'ua22.user_id = ud.user_id and ua22.type="2"', 'left');
