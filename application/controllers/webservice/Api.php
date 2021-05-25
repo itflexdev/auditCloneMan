@@ -5509,7 +5509,7 @@ class Api extends CC_Controller
 					if (isset($physicaladdress[4]) && ((is_numeric($physicaladdress[4]) =='1') && ($physicaladdress[4] >= '1'))) $city = $citydata[$physicaladdress[4]];
 					else $city = '';
 
-					if (isset($physicaladdress[5]) && ((is_numeric($physicaladdress[5]) =='1') && ($physicaladdress[5] >= '1'))) $province = $this->getProvinceList()[$physicaladdress[5]];
+					if (isset($physicaladdress[5]) && ((is_numeric($physicaladdress[5]) =='1') && ($physicaladdress[5] >= '1' && $physicaladdress[5] <= '9'))) $province = $this->getProvinceList()[$physicaladdress[5]];
 					else $province = '';
 
 					// $jsonData['physical']['addressid1'] 	= isset($physicaladdress[0]) ? $physicaladdress[0] : '';
