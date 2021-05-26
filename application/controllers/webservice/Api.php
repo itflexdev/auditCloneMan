@@ -5646,7 +5646,7 @@ class Api extends CC_Controller
 				else $file = '';
 
 				$plumberdata[] = [
-					'plumberid' 	=> $resultsvalue['id'],
+					'plumberid' 	=> $resultsvalue['user_id'],
 					'namesurname' 	=> $resultsvalue['name'].' '.$resultsvalue['surname'],
 					'designation' 	=> $this->config->item('designation2')[$resultsvalue['designation']],
 					'status' 		=> $this->config->item('plumberstatus')[$resultsvalue['status']],
