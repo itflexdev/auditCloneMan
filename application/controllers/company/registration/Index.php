@@ -9,12 +9,14 @@ class Index extends CC_Controller
 		$this->load->model('CC_Model');
 		$this->load->model('Company_Model');
 		$this->load->model('Communication_Model');
+		$this->load->model('Systemsettings_Model');
 	}
 	
 	public function index()
 	{
 		$userid		= 	$this->getUserID();
 		$result		= 	$this->Company_Model->getList('row', ['id' => $userid, 'type' => '4', 'status' => ['0','1']], ['users', 'usersdetail', 'userscompany', 'physicaladdress', 'postaladdress', 'billingaddress']);
+		$settings 	= $this->Systemsettings_Model->getList('row');
 		//die;
 		
 		if(!$result){
@@ -71,6 +73,7 @@ class Index extends CC_Controller
 		$pagedata['pagetype'] 			= 'registration';
 		$pagedata['roletype'] 			= $this->config->item('rolecompany');
 		$pagedata['result'] 			= $result;
+		$pagedata['coclimit']			= $settings['reseller_certificate'];
 		$pagedata['declaration'] 		= $this->config->item('companydeclaration');
 		$pagedata['registerprocedure'] 	= $this->config->item('companyregisterprocedure');
 		$pagedata['acknowledgement'] 	= $this->config->item('companyacknowledgement');

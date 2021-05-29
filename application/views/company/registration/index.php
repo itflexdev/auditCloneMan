@@ -65,6 +65,8 @@
 	$filepath				= base_url().'assets/uploads/company/'.$id.'/';
 	$pdfimg 				= base_url().'assets/images/pdf.png';
 	$profileimg 			= base_url().'assets/images/profile.jpg';
+
+	$coclimit 				= isset($coclimit) ? $coclimit : '0';
 	
 	if($file1!=''){
 		$explodefile2 	= explode('.', $file1);
@@ -530,6 +532,7 @@
 						<?php }
 						 } ?>
 						 <input type="hidden" name="vatvendor" id="vatvendor-fr2">
+						 <input type="hidden" name="coc_purchase_limit" id="coc_purchase_limit" value="<?php echo $coclimit; ?>">
 				</form>
 				</div>
 				<div class="steps displaynone" data-id="3">
