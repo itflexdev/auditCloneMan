@@ -290,7 +290,7 @@ td {
 
 	/// Payments
 
-	public function returnurl(){
+	/*public function returnurl(){
 		$userid = $this->getUserID();
 		$current_date = date('Y-m-d H:i:s');
 		$invId 	= $this->session->userdata('pay_purchaseorder');
@@ -302,6 +302,41 @@ td {
 		$requestData1['expirydate'] = $futureDate;
 		$requestData1['renewal_date'] = $current_date;
 
+		$query 	= $this->db->update('invoice', $requestData, ['inv_id' => $invId,'user_id' => $userid]);
+		$query2 = $this->db->update('users', $requestData1, ['id' => $userid]);
+		//$query3 = $this->db->update('cpd_activity_form', $requestData3);
+		
+		$result = $this->Plumber_Model->getList('row', ['id' => $userid, 'type' => '3', 'status' => ['1', '2']], ['users', 'usersdetail', 'usersplumber', 'usersskills', 'company', 'physicaladdress', 'postaladdress', 'billingaddress']);
+		//$this->plumberregistrationdocument($result);
+		
+		if ($query && $query2) {
+			$this->session->set_flashdata('success','Registration Renewed Sucessfully.');
+			redirect('plumber/profile/Index');
+		}
+		
+	}*/
+
+	public function returnurl(){
+		$userid = $this->getUserID();
+		$userdata = $this->getUserDetails();
+		$dbexpirydate = $userdata['expirydate'];
+		$current_date = date('Y-m-d H:i:s');
+		$invId 	= $this->session->userdata('pay_purchaseorder');
+		$requestData['status'] = '1';
+		$requestData3['flag'] 	= '2';
+		// $futureDate = date('Y-m-d H:i:s', strtotime('+1 year', strtotime($current_date)) );
+		//print_r($futureDate);die;
+
+		if (strtotime(date('Y-m-d', strtotime($current_date))) <= strtotime(date('Y-m-d', strtotime($dbexpirydate)))) {
+			$futureDate = date('Y-m-d H:i:s', strtotime('+1 year', strtotime($dbexpirydate)) );
+		}else{
+			$futureDate = date('Y-m-d H:i:s', strtotime('+1 year', strtotime($current_date)) );
+		}
+
+		$requestData1['expirydate'] = $futureDate;
+		$requestData1['renewal_date'] = $current_date;
+		$requestData1['old_expirydate'] = $dbexpirydate;
+		
 		$query 	= $this->db->update('invoice', $requestData, ['inv_id' => $invId,'user_id' => $userid]);
 		$query2 = $this->db->update('users', $requestData1, ['id' => $userid]);
 		//$query3 = $this->db->update('cpd_activity_form', $requestData3);
