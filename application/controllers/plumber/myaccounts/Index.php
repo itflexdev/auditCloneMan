@@ -327,7 +327,7 @@ td {
 		// $futureDate = date('Y-m-d H:i:s', strtotime('+1 year', strtotime($current_date)) );
 		//print_r($futureDate);die;
 
-		if (strtotime(date('Y-m-d', strtotime($current_date))) <= strtotime(date('Y-m-d', strtotime($dbexpirydate)))) {
+		if (strtotime(date('Y-m-d', strtotime($current_date))) >= strtotime(date('Y-m-d', strtotime($dbexpirydate)))) {
 			$futureDate = date('Y-m-d H:i:s', strtotime('+1 year', strtotime($dbexpirydate)) );
 		}else{
 			$futureDate = date('Y-m-d H:i:s', strtotime('+1 year', strtotime($current_date)) );
