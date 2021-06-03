@@ -27,10 +27,14 @@ class Index extends CC_Controller
 		
 		$id 										= $this->getUserID();
 		$history									= $this->Auditor_Model->getReviewHistoryCount(['plumberid' => $id]);
+		$loggedcoc									= $this->Coc_Model->getCOCList('count', ['user_id' => $id, 'coc_status' => ['2']]);
+		if($loggedcoc > 0 && $history['count'] > 0) $auditorratio 	= round(($history['count']/$loggedcoc)*100,2).'%';
+		
 		$pagedata['auditcoc'] 						= $history['total'];
 		$pagedata['auditrefixincomplete'] 			= $history['refixincomplete'];
-		$auditorratio								= $this->Auditor_Model->getAuditorRatio('row', ['userid' => $id]);
-		$pagedata['auditorratio']					= ($auditorratio) ? $auditorratio['audit'].'%' : '0%';
+		$pagedata['auditorratio']					= ($auditorratio) ? $auditorratio : '0%';
+		// $auditorratio								= $this->Auditor_Model->getAuditorRatio('row', ['userid' => $id]);
+		// $pagedata['auditorratio']					= ($auditorratio) ? $auditorratio['audit'].'%' : '0%';
 		
 		
 		$pagedata['notification'] 	= $this->getNotification();
