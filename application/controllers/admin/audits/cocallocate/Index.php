@@ -111,6 +111,10 @@ class Index extends CC_Controller
 				$user_id 		= $result['user_id']; 
 				$performance 	= $this->Plumber_Model->performancestatus('all', ['plumberid' => $user_id, 'archive' => '0', 'date' => $date]);
 				$overallpoint 	= array_sum(array_column($performance, 'point'));
+
+				$history		= $this->Auditor_Model->getReviewHistoryCount(['plumberid' => $user_id]);
+				$loggedcoc		= $this->Coc_Model->getCOCList('count', ['user_id' => $user_id, 'coc_status' => ['2']]);
+				if($loggedcoc > 0 && $history['count'] > 0) $auditorratio 	= round(($history['count']/$loggedcoc)*100,2).'%';
 				
 				$checkcocranking 	= [];
 				if($post['compulsory_audit']=='1') 									$checkcocranking[] = ($result['auditassign'] <= $result['auditcomplete']) ? '0' : '1';
@@ -137,7 +141,8 @@ class Index extends CC_Controller
 										'company' 				=> 	$result['company'],
 										'city' 					=> 	$result['cityname'],
 										'province' 				=> 	$result['provincename'],
-										'audit' 				=> 	($result['audit']!='') ? $result['audit'].'%' : '',
+										// 'audit' 				=> 	($result['audit']!='') ? $result['audit'].'%' : '',
+										'audit' 				=> 	($auditorratio) ? $auditorratio : '',
 										'cautionary' 			=> 	($result['cautionary']!='') ? $result['cautionary'].'%' : '',
 										'refix_incomplete' 		=> 	($result['refix_incomplete']!='') ? $result['refix_incomplete'].'%' : '',
 										'refix_complete' 		=> 	($result['refix_complete']!='') ? $result['refix_complete'].'%' : '',
