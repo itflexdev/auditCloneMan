@@ -728,6 +728,231 @@ class Cron extends CC_Controller {
 		}
 	}
 
+	public function cpdSuspend(){
+		$log 			= '';
+		$fileName 		= base_url().'common/cron/cpdSuspend';
+		$starttime 		= date('Y-m-d H:i:s');
+		
+		$results 		= $this->Renewal_Model->getRenewalPlumbers();
+
+		$settingsCPD 	= $this->db->select('*')->from('settings_cpd')->get()->result_array();
+		$template 		= $this->db->select('*')->from('email_notification')->where('id','26')->where('email_active','1')->get()->row_array();
+		
+
+		if ($results) {
+			foreach ($results as $resultskey => $resultsvalue) {
+				$designationDB 	= $this->config->item('designation2')[$resultsvalue['designation']];
+
+				if ($designationDB == 'Learner Plumber') {
+					$designation = 'learner';
+				}elseif($designationDB == 'Technical Assistant Practitioner'){
+					$designation = 'assistant';
+				}elseif($designationDB == 'Technical Operator Practitioner'){
+					$designation = 'operating';
+				}elseif($designationDB == 'Licensed Plumber'){
+					$designation = 'licensed';
+				}elseif($designationDB == 'Registered Plumber'){ //Qualified Plumber
+					$designation = 'qualified';
+				}elseif($designationDB == 'Master Plumber'){
+					$designation = 'master';				
+				}
+
+				foreach ($settingsCPD as $key1 => $value1) {
+					$settingsplumberDetails[] = $value1[$designation];
+				}
+				// $totalDB = $settingsplumberDetails[0]+$settingsplumberDetails[1]+$settingsplumberDetails[2];
+				$totalDB = array_sum(array_column($settingsCPD, 'licensed'));
+
+				$developmentalpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $resultsvalue['expirydate']]);
+					
+					$individualpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $resultsvalue['expirydate']]);
+
+					$workbasedpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $resultsvalue['expirydate']]);
+
+					if (count($developmentalpts) > 0) $developmental 	= array_sum(array_column($developmentalpts, 'points'));
+					else $developmental 	= 0;
+
+					if (count($individualpts) > 0) $individual 	= array_sum(array_column($individualpts, 'points'));
+					else $individual 	= 0;
+
+					if (count($workbasedpts) > 0) $workbased 	= array_sum(array_column($workbasedpts, 'points'));
+					else $workbased 	= 0;
+					
+					$total 			= $developmental+$individual+$workbased;
+
+					$difference = $totalDB-$total;
+
+					if ($difference > 0) {
+						if ((isset($template['email_active']) && $template['email_active'] == '1')) {
+
+							$insertimage1 	= '<img src='.base_url().'assets/images/cpdimage.png style="margin-left: -306px !important;">';
+							$insertimage2 	= '<img src='.base_url().'assets/images/cpdimage1.png style="margin-left: -70px !important;">';
+							$name_surname 	= $resultsvalue['name'].' '.$resultsvalue['surname'];
+
+							$dbexpirydate 	= $resultsvalue['expirydate'];
+							$minusoneyear 	= date('Y-m-d H:i:s', strtotime('-1 year', strtotime($dbexpirydate)));
+							$datetime 		= date('Y-m-d H:i:s');
+							$old_expirydate = $resultsvalue['old_expirydate'];
+							$renewaldate 	= $resultsvalue['renewal_date'];
+
+
+							if (date('d-m-Y', strtotime($datetime)) == date('d-m-Y', strtotime($dbexpirydate))) {
+
+								$cyclestart 	= date('d-m-Y', strtotime('-1 year', strtotime($dbexpirydate)));
+								$cycleend 		= date('d-m-Y', strtotime($dbexpirydate));
+
+							}elseif(date('d-m-Y', strtotime($datetime)) == date('d-m-Y', strtotime($old_expirydate))){
+
+								$cyclestart 	= date('d-m-Y', strtotime('-1 year', strtotime($old_expirydate)));
+								$cycleend 		= date('d-m-Y', strtotime($old_expirydate));
+
+							}else{
+
+								$cyclestart 	= date('d-m-Y', strtotime('-1 year', strtotime($dbexpirydate)));
+								$cycleend 		= date('d-m-Y', strtotime($dbexpirydate));
+
+							}
+
+							$array1 = ['{Image 1}', '{Registration Number}', '{Current Points}', '{Current Cycle start Year}', '{Current Cycle end year}', '{Total Target as per designation}', '{Plumber Name}', '{Image 2}'];
+							$array2 = [$insertimage1, $resultsvalue['registration_no'], $total, $cyclestart, $cycleend, $difference, $name_surname, $insertimage2];
+							$body = str_replace($array1, $array2, $template['email_body']);
+
+							$plumberstatus = [
+								'status' => '2',
+							];
+
+							$this->CC_Model->sentMail($resultsvalue['email'],$template['subject'],$body);
+							$this->db->update('users_detail', $plumberstatus, ['user_id' => $resultsvalue['id']]);
+
+							$cpdsuspenlog = [
+								'user_id' 		=> $resultsvalue['id'],
+								'users_email' 	=> $resultsvalue['email'],
+								'created_at' 	=> date('Y-m-d H:i:s'),
+							];
+							$this->db->insert('cpd_suspend_log', $cpdsuspenlog);
+							
+						}
+					}
+			}
+		}
+		$endtime = date('Y-m-d H:i:s');
+		if ($starttime && $endtime) {
+			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
+		}
+	}
+
+
+	public function generateCpdCertificate(){
+		$log 			= '';
+		$fileName 		= base_url().'common/cron/generateCpdCertificate';
+		$starttime 		= date('Y-m-d H:i:s');
+		
+		$results 		= $this->Renewal_Model->getRenewalPlumbers1();
+		$settingsCPD 	= $this->db->select('*')->from('settings_cpd')->get()->result_array();
+
+		if ($results) {
+			foreach ($results as $resultskey => $resultsvalue) {
+
+				$designationDB 	= $this->config->item('designation2')[$resultsvalue['designation']];
+
+				if ($designationDB == 'Learner Plumber') {
+					$designation = 'learner';
+				}elseif($designationDB == 'Technical Assistant Practitioner'){
+					$designation = 'assistant';
+				}elseif($designationDB == 'Technical Operator Practitioner'){
+					$designation = 'operating';
+				}elseif($designationDB == 'Licensed Plumber'){
+					$designation = 'licensed';
+				}elseif($designationDB == 'Registered Plumber'){ //Qualified Plumber
+					$designation = 'qualified';
+				}elseif($designationDB == 'Master Plumber'){
+					$designation = 'master';				
+				}
+
+				$totalDB = array_sum(array_column($settingsCPD, $designation));
+
+				$developmentalpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $resultsvalue['expirydate']]);
+					
+					$individualpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'individual', 'dbexpirydate' => $resultsvalue['expirydate']]);
+
+					$workbasedpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'workbased', 'dbexpirydate' => $resultsvalue['expirydate']]);
+
+					if (count($developmentalpts) > 0) $developmental 	= array_sum(array_column($developmentalpts, 'points'));
+					else $developmental 	= 0;
+
+					if (count($individualpts) > 0) $individual 	= array_sum(array_column($individualpts, 'points'));
+					else $individual 	= 0;
+
+					if (count($workbasedpts) > 0) $workbased 	= array_sum(array_column($workbasedpts, 'points'));
+					else $workbased 	= 0;
+					
+					$total 			= $developmental+$individual+$workbased;
+
+					$difference = $totalDB-$total;
+
+					if ($difference <= 0) {
+
+						$dbexpirydate 	= $resultsvalue['expirydate'];
+						$minusoneyear 	= date('Y-m-d H:i:s', strtotime('-1 year', strtotime($dbexpirydate)));
+						$datetime 		= date('Y-m-d H:i:s');
+
+						$minusoneyearTotime = date('Y-m-d H:i:s', strtotime($minusoneyear));
+						$datetimeTotime 	= date('Y-m-d H:i:s', strtotime($datetime));
+
+						if ($minusoneyearTotime > $datetimeTotime) {
+							$cyclestart 	= date('d-m-Y', strtotime('-1 year', strtotime($minusoneyear)));
+							$cycleend 		= date('d-m-Y', strtotime($dbexpirydate));
+						}elseif($minusoneyearTotime < $datetimeTotime){
+							$cyclestart 	= date('d-m-Y', strtotime($minusoneyear));
+							$cycleend 		= date('d-m-Y', strtotime($dbexpirydate));
+						}else{
+							$cyclestart 	= date('d-m-Y', strtotime($datetime));
+							$cycleend 		= date('d-m-Y', strtotime($dbexpirydate));
+						}
+
+						$name_surname = $resultsvalue['name'].' '.$resultsvalue['surname'];
+
+						$pdf 		= FCPATH.'assets/uploads/temp/'.$resultsvalue['name'].' '.$resultsvalue['surname'].'.pdf';
+						$this->pdfcpdcertificate($name_surname, $cyclestart, $cycleend, $pdf);
+
+						$subject 	= 'CPD points certificate';
+						$body 		= '';
+
+						$this->CC_Model->sentMail($resultsvalue['email'], $subject, $body, $pdf);
+						if(file_exists($pdf)) unlink($pdf);
+
+						$cpdsuspenlog = [
+							'user_id' 		=> $resultsvalue['id'],
+							'users_email' 	=> $resultsvalue['email'],
+							'created_at' 	=> date('Y-m-d H:i:s'),
+						];
+						$this->db->insert('cpd_cetificate_log', $cpdsuspenlog);
+					}
+			}
+		}
+		$endtime = date('Y-m-d H:i:s');
+		if ($starttime && $endtime) {
+			$this->cronLog(['filename' => $fileName, 'start_time' => $starttime, 'end_time' => $endtime]);
+		}
+	}
+
+	public function pdfcpdcertificate($plumbername , $cyclestart, $cycleend, $save='')
+	{
+		$pagedata['plumbername']	= $plumbername;
+		$pagedata['cyclestart'] 	= date('Y', strtotime($cyclestart));
+		$pagedata['cycleend'] 		= date('Y', strtotime($cycleend));;
+
+		$html = $this->load->view('pdf/cpd_certificate', (isset($pagedata) ? $pagedata : ''), true);
+
+		$this->pdf->loadHtml($html);
+		$this->pdf->setPaper('A3', 'landscape');
+		$this->pdf->render();
+		$output = $this->pdf->output();
+
+		file_put_contents($save, $output);
+		return $save;
+	}
+
 }
 
 	

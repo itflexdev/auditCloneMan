@@ -90,6 +90,43 @@ class Renewal_Model extends CC_Model
 		return $result;
 	}
 
+	public function getRenewalPlumbers()
+	{
+		$date = date('Y-m-d');
+		$this->db->select('us.id, us.email, us.expirydate, us.old_expirydate, us.renewal_date, up.designation, up.registration_no, ud.name, ud.surname, us.old_expirydate, ud.status');		
+		$this->db->from('users us');
+		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
+		$this->db->join('users_detail as ud', 'ud.user_id=us.id', 'inner');
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0']);
+		$this->db->where('ud.status !=', '2');
+		$this->db->group_start();
+				$this->db->where('DATE(us.expirydate) <= DATE(curdate())');
+				// $this->db->or_where('DATE(us.old_expirydate) <= DATE(curdate())');
+				$this->db->or_where('DATE(us.old_expirydate) >= DATE(curdate())');
+		$this->db->group_end();
+		$this->db->group_by('us.id');
+		$result = $this->db->get()->result_array();		
+		// echo '<pre>'.$this->db->last_query();die;
+		return $result;
+	}
+
+	public function getRenewalPlumbers1()
+	{
+		$this->db->select('us.id, us.email, us.expirydate, us.old_expirydate, us.renewal_date, up.designation, up.registration_no, ud.name, ud.surname, us.old_expirydate, ud.status');
+		$this->db->from('users us');
+		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
+		$this->db->join('users_detail as ud', 'ud.user_id=us.id', 'inner');
+		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0']);
+		$this->db->group_start();
+				$this->db->where('DATE(us.expirydate) = DATE(curdate())');
+				$this->db->or_where('DATE(us.old_expirydate) = DATE(curdate())');
+		$this->db->group_end();
+		$this->db->group_by('us.id');
+		$result = $this->db->get()->result_array();		
+		// echo '<pre>'.$this->db->last_query();die;
+		return $result;
+	}
+
 	public function getUserids_alert2() 
 	{	
 		$this->db->select('us.id, us.expirydate, up.designation, inv.inv_id, coc.id as cocid');	
