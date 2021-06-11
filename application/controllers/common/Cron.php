@@ -761,7 +761,7 @@ class Cron extends CC_Controller {
 					$settingsplumberDetails[] = $value1[$designation];
 				}
 				// $totalDB = $settingsplumberDetails[0]+$settingsplumberDetails[1]+$settingsplumberDetails[2];
-				$totalDB = array_sum(array_column($settingsCPD, 'licensed'));
+				$totalDB = array_sum(array_column($settingsCPD, $designation));
 
 				$developmentalpts 				= $this->Auditor_Model->admingetcpdpoints('all', ['pagestatus' => '1', 'plumberid' => $resultsvalue['id'], 'status' => ['1'], 'cpd_stream' => 'developmental', 'dbexpirydate' => $resultsvalue['expirydate']]);
 					
