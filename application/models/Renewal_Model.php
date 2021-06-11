@@ -82,6 +82,7 @@ class Renewal_Model extends CC_Model
 		$this->db->select('us.id, us.email, us.expirydate, up.designation');		
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
+		// $this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0', 'up.designation' => '4']);
 		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0', 'up.designation' => '4']);
 		$this->db->where('DATE(us.expirydate) = DATE_ADD(DATE(curdate()), INTERVAL 90 DAY)');
 		$this->db->group_by('us.id');
@@ -97,6 +98,7 @@ class Renewal_Model extends CC_Model
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->join('users_detail as ud', 'ud.user_id=us.id', 'inner');
+		// $this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0']);
 		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0']);
 		$this->db->where('ud.status !=', '2');
 		$this->db->group_start();
@@ -116,6 +118,7 @@ class Renewal_Model extends CC_Model
 		$this->db->from('users us');
 		$this->db->join('users_plumber as up', 'up.user_id=us.id', 'inner');
 		$this->db->join('users_detail as ud', 'ud.user_id=us.id', 'inner');
+		// $this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0']);
 		$this->db->where(['us.type' => '3', 'us.status' => '1', 'us.expirystatus' => '0']);
 		$this->db->group_start();
 				$this->db->where('DATE(us.expirydate) = DATE(curdate())');
