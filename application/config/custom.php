@@ -695,7 +695,8 @@ $config['auditstatus'] 			=		[
 											'2'		=>	'Pending',
 											'3'		=>	'Refix Required',
 											'4'		=>	'Audit Complete (Refix Incomplete)',
-											'5'		=>	'On hold'
+											'5'		=>	'On hold',
+											'6'		=>	'Pending (Submitted)',
 										];
 										
 $config['audits_status1'] 		= 		[
