@@ -1187,7 +1187,8 @@ $(document).on('change', '.reviewstatus', function(){
 			}
 
 			/* Get review deatails */
-			ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : r_id, 'action' : 'edit', 'action2' : 'reviewstatus', "roletype" : roletype}, fetchReviewData);
+			// ajax('<?php //echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : r_id, 'action' : 'edit', 'action2' : 'reviewstatus', "roletype" : roletype}, fetchReviewData);
+			fetchReviewData();
 
 			$('#changestatusmodal').modal('show');
 			$('.proceed_status').click(function(){
@@ -1206,9 +1207,10 @@ $(document).on('change', '.reviewstatus', function(){
 							$('#admin_review_status').val(function(i,val) {
 								return val + (!val ? '' : ',') + _this.parent().parent().attr('data-id');
 							});
-					}
-				});
-			}});
+						}
+					});
+				}
+			});
 		/*}else{
 			alert('Please fill the Reason');
 			$(this).val('0');
@@ -1241,44 +1243,36 @@ $(document).on('change', '.reviewstatus', function(){
 })
 
 function fetchReviewData(data){
-	console.log(data);
-	if(data.status==1){
-		var result 	= 	data.result;
 
-		$('#reviewreason1').val('');
-		$('.photo_image3').attr('src', '<?php echo $profileimg; ?>');
-		$('.photo3').val('');
-		
-		/*if (result.image2 =='') {
-			$('.photo_image1').attr('src', '<?php// echo base_url().'assets/images/profile.jpg'?>');
-		}else{
-			$('.photo_image1').attr('src', '<?php// echo base_url().'assets/uploads/auditor/statement/'?>'+result.image2);
-		}
+	$('#reviewreason1').val('');
+	$('.photo_image3').attr('src', '<?php echo $profileimg; ?>');
+	$('.photo3').val('');
+	
+	/*if (result.image2 =='') {
+		$('.photo_image1').attr('src', '<?php// echo base_url().'assets/images/profile.jpg'?>');
+	}else{
+		$('.photo_image1').attr('src', '<?php// echo base_url().'assets/uploads/auditor/statement/'?>'+result.image2);
+	}
 
-		$('.photo3').val(result.image2);
-		// $('#reviewreason').val(result.reason);
-		$('#reviewreason1').val(result.reason);*/
-	} 
+	$('.photo3').val(result.image2);
+	// $('#reviewreason').val(result.reason);
+	$('#reviewreason1').val(result.reason);*/
 }
 
 function fetchdeleteReviewData(data){
-	console.log(data);
-	if(data.status==1){
-		var result 	= 	data.result;
 
-		$('#reviewreason2').val('');
-		$('.photo_image2').attr('src', '<?php echo $profileimg; ?>');
-		$('.photo2').val('');
-		
-		/*if (result.image2 =='') {
-			$('.photo_image2').attr('src', '<?php// echo base_url().'assets/images/profile.jpg'?>');
-		}else{
-			$('.photo_image2').attr('src', '<?php// echo base_url().'assets/uploads/auditor/statement/'?>'+result.image2);
-		}
-		$('.photo2').val(result.image2);
-		// $('#reviewreason').val(result.reason);
-		$('#reviewreason2').val(result.reason);*/
-	} 
+	$('#reviewreason2').val('');
+	$('.photo_image2').attr('src', '<?php echo $profileimg; ?>');
+	$('.photo2').val('');
+	
+	/*if (result.image2 =='') {
+		$('.photo_image2').attr('src', '<?php// echo base_url().'assets/images/profile.jpg'?>');
+	}else{
+		$('.photo_image2').attr('src', '<?php// echo base_url().'assets/uploads/auditor/statement/'?>'+result.image2);
+	}
+	$('.photo2').val(result.image2);
+	// $('#reviewreason').val(result.reason);
+	$('#reviewreason2').val(result.reason);*/
 }
 
 
