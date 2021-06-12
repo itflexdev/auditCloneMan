@@ -606,7 +606,11 @@ class Auditor_Model extends CC_Model
 		if(isset($data['complimentpoint'])) 			$request['compliment_point'] 	= $data['complimentpoint'];
 		if(isset($data['noauditpoint'])) 				$request['noaudit_point'] 		= $data['noauditpoint'];
 		if(isset($data['point'])) 						$request['point'] 				= $data['point'];
+		if(isset($data['point'])) 						$request['reportlisting_point'] = $data['point'];
 		if(isset($data['status'])) 						$request['status'] 				= $data['status'];
+
+		if(isset($data['reviewreason'])) 				$request['reason'] 				= $data['reviewreason'];
+		if(isset($data['image2'])) 						$request['image2'] 				= $data['image2'];
 		
 		if($id==''){
 			$request['created_at'] = $datetime;
@@ -992,7 +996,7 @@ class Auditor_Model extends CC_Model
 	}*/
 	
 	
-	public function actionStatement($data)
+	/*public function actionStatement($data)
 	{
 		$this->db->trans_begin();
 		
@@ -1026,6 +1030,79 @@ class Auditor_Model extends CC_Model
 
 		$request['refixcompletedate'] 	= (isset($data['refixcompletedate']) && $data['refixcompletedate']!='') ? date('Y-m-d', strtotime($data['refixcompletedate'])) : NULL;	
 		$request['hold'] 				= (isset($data['hold'])) ? $data['hold'] : '0';
+		
+		if($id==''){
+			$request['created_at'] = $datetime;
+			$request['created_by'] = $userid;
+			$this->db->insert('auditor_statement', $request);
+		}else{
+			$this->db->update('auditor_statement', $request, ['id' => $id]);
+		}
+
+		if($this->db->trans_status() === FALSE)
+		{
+			$this->db->trans_rollback();
+			return false;
+		}
+		else
+		{
+			$this->db->trans_commit();
+			return true;
+		}
+	}*/
+
+	public function actionStatement($data)
+	{
+		$this->db->trans_begin();
+		
+		$userid			= 	$this->getUserID();
+		$id 			= 	$data['id'];
+		$datetime		= 	date('Y-m-d H:i:s');
+		
+		$request		=	[
+			'updated_at' 		=> $datetime,
+			'updated_by' 		=> $userid
+		];
+
+		if(isset($data['cocid']))		 				$request['coc_id'] 						= $data['cocid'];
+		if(isset($data['auditorid']))		 			$request['auditor_id'] 					= $data['auditorid'];
+		if(isset($data['plumberid']))		 			$request['plumber_id'] 					= $data['plumberid'];
+		if(isset($data['auditdate']))		 			$request['audit_date'] 					= date('Y-m-d', strtotime($data['auditdate']));
+		if(isset($data['workmanship'])) 				$request['workmanship'] 				= $data['workmanship'];
+		if(isset($data['plumberverification'])) 		$request['plumber_verification'] 		= $data['plumberverification'];
+		if(isset($data['cocverification'])) 			$request['coc_verification'] 			= $data['cocverification'];
+		if(isset($data['workmanshippoint'])) 			$request['workmanship_point'] 			= $data['workmanshippoint'];
+		if(isset($data['plumberverificationpoint']))	$request['plumberverification_point'] 	= $data['plumberverificationpoint'];
+		if(isset($data['cocverificationpoint'])) 		$request['cocverification_point'] 		= $data['cocverificationpoint'];
+		if(isset($data['reviewpoint'])) 				$request['review_point'] 				= $data['reviewpoint'];
+		if(isset($data['point'])) 						$request['point'] 						= $data['point'];
+		if(isset($data['point'])) 						$request['point'] 						= $data['point'];
+		if(isset($data['reportdate']))		 			$request['reportdate'] 					= date('Y-m-d H:i:s');
+
+		if(isset($data['reasontext']))		 			$request['admin_comments'] 				= $data['reasontext'];
+		if(isset($data['image2']))		 				$request['admin_image'] 				= $data['image2'];
+		// if(isset($data['refuserefix']))		 			$request['refix_refuse'] 				= $data['refuserefix'];
+
+		if (isset($data['submit']) && $data['submit']=='finalizereport') {
+			$buttonstatus = '1';
+		}elseif(isset($data['submit']) && $data['submit']=='submitreport'){
+			$buttonstatus = '2';
+		}else{
+			$buttonstatus = '0';
+		}
+
+		$request['buttonstatus'] 					= $buttonstatus;
+		
+		$request['refix_refuse'] 				= (isset($data['refuserefix'])) ? $data['refuserefix'] : '0';
+		if(isset($data['auditcomplete']) && isset($data['submit']) && $data['submit']=='finalizereport')	$request['auditcomplete'] 		= $data['auditcomplete'];
+		if(isset($data['auditcomplete']) && isset($data['submit']) && $data['submit']=='finalizereport') 	$request['status'] 				= '1';
+		if(isset($data['auditcomplete']) && isset($data['submit']) && $data['submit']=='finalizereport') 	$request['auditcompletedate'] 	= date('Y-m-d');
+
+		$request['refixcompletedate'] 	= (isset($data['refixcompletedate']) && $data['refixcompletedate']!='') ? date('Y-m-d', strtotime($data['refixcompletedate'])) : NULL;	
+		$request['hold'] 				= (isset($data['hold'])) ? $data['hold'] : '0';
+
+		if(isset($data['adminid']))		 				$request['update_admin_id'] 			= $data['adminid'];
+		if(isset($data['update_device']))		 		$request['update_device_type'] 			= $data['update_device'];
 		
 		if($id==''){
 			$request['created_at'] = $datetime;

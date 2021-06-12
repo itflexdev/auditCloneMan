@@ -195,7 +195,7 @@ class Index extends CC_Controller
 		echo json_encode($json);
 	}
 	
-	public function ajaxreviewaction()
+	/*public function ajaxreviewaction()
 	{
 		$post 				= $this->input->post();
 		
@@ -206,6 +206,160 @@ class Index extends CC_Controller
 				$result = $post['id'];
 			}else{
 				$result = $this->Auditor_Model->actionReview($post);
+			}
+			
+			$result = $this->Auditor_Model->getReviewList('row', ['id' => $result]);
+		}
+		
+		if($result){
+			$json = ['status' => '1', 'result' => $result];
+		}else{
+			$json = ['status' => '0'];
+		}
+		
+		echo json_encode($json);
+	}*/
+
+	public function ajaxreviewaction()
+	{
+		$post 				= $this->input->post();
+		$created_by 		= $this->getuserID();
+		$datetime 			=  date('Y-m-d H:i:s');
+		// print_r($post);die;
+		if(isset($post['action']) && $post['action']=='delete'){
+
+			if (isset($post['roletype']) && $post['roletype'] =='1') {
+				$review_data = $this->Auditor_Model->getReviewList('row', ['id' => $post['id']]);
+				if (isset($post['image3']) && $post['image3'] !=''){
+					$imagedata = '- <a href='.base_url().'/assets/uploads/auditor/statement/'.$post['image3'].''.' target="_blank">'.'Reason file link'.'</a>';
+				}else{
+					$imagedata = '';
+				}
+
+				$message = 'Review '.$review_data['statementname'].' '.$this->config->item('reviewtype')[$review_data['reviewtype']].' removed - '.$post['reasontext'].' '.$imagedata.'';
+
+				$commentdata = [
+					'auditor_id' 	=> $review_data['auditor_id'],
+					'coc_id' 		=> $review_data['coc_id'],
+					'plumber_id' 	=> $review_data['plumber_id'],
+					'admin_id' 		=> $created_by,
+					'message' 		=> $message,
+					'type' 			=> '1',
+					'action' 		=> '1',
+					'datetime' 		=> $datetime,
+					];
+					$this->db->insert('diary',$commentdata);
+			}
+			
+			$result = $this->Auditor_Model->deleteReview($post['id']);
+
+		}else{
+			if(isset($post['action']) && $post['action']=='edit'){
+				$result = $post['id'];
+
+				/*if ((isset($post['roletype']) && $post['roletype'] =='1') && (isset($post['reviewreason']) && isset($post['image2']))) {
+					$AddedreviewData = $this->Auditor_Model->getReviewList('row', ['id' => $result]);
+					if (isset($post['image2']) && $post['image2'] !=''){
+						$imagedata = '- <a href='.base_url().'/assets/uploads/auditor/statement/'.$post['image2'].''.' target="_blank">'.'Reason file link'.'</a>';
+					}else{
+						$imagedata = '';
+					}
+
+					$message = 'Review '.$AddedreviewData['statementname'].' '.$this->config->item('reviewtype')[$AddedreviewData['reviewtype']].' edited - '.$post['reviewreason'].' '.$imagedata.'';
+
+
+							$commentdata = [
+							'auditor_id' 	=> $AddedreviewData['auditor_id'],
+							'coc_id' 		=> $AddedreviewData['coc_id'],
+							'plumber_id' 	=> $AddedreviewData['plumber_id'],
+							'admin_id' 		=> $created_by,
+							'message' 		=> $message,
+							'type' 			=> '1',
+							'action' 		=> '1',
+							'datetime' 		=> $datetime,
+							];
+							print_r($commentdata);die;
+							$this->db->insert('diary',$commentdata);
+				}*/
+			}else{
+				// print_r($post);die;
+				$result = $this->Auditor_Model->actionReview($post);
+
+				// if (isset($post['roletype']) && $post['roletype'] =='1' && $post['rqst_type'] !='change_status' && $post['id'] =='') {
+				if ((isset($post['hiddenroletype']) && $post['hiddenroletype'] =='1') && $post['id'] =='') {
+					$AddedreviewData = $this->Auditor_Model->getReviewList('row', ['id' => $result]);
+					if (isset($post['image2']) && $post['image2'] !=''){
+						$imagedata = '- <a href='.base_url().'/assets/uploads/auditor/statement/'.$post['image2'].''.' target="_blank">'.'Reason file link'.'</a>';
+					}else{
+						$imagedata = '';
+					}
+
+					$message = 'Review '.$AddedreviewData['statementname'].' '.$this->config->item('reviewtype')[$AddedreviewData['reviewtype']].' added - '.$post['reviewreason'].' '.$imagedata.'';
+
+
+							$commentdata = [
+							'auditor_id' 	=> $post['auditorid'],
+							'coc_id' 		=> $post['cocid'],
+							'plumber_id' 	=> $post['plumberid'],
+							'admin_id' 		=> $created_by,
+							'message' 		=> $message,
+							'type' 			=> '1',
+							'action' 		=> '1',
+							'datetime' 		=> $datetime,
+							];
+							$this->db->insert('diary',$commentdata);
+				}elseif(isset($post['roletype']) && $post['roletype'] =='1' && $post['rqst_type'] =='change_status' && $post['id'] !=''){
+					if ($post['status'] =='1') {
+						$update_status = "Completed";
+					}else{
+						$update_status = "Incomplete";
+					}
+
+					$AddedreviewData = $this->Auditor_Model->getReviewList('row', ['id' => $post['id']]);
+					if (isset($post['image2']) && $post['image2'] !=''){
+						$imagedata = '- <a href='.base_url().'/assets/uploads/auditor/statement/'.$post['image2'].''.' target="_blank">'.'Reason file link'.'</a>';
+					}else{
+						$imagedata = '';
+					}
+
+					$message = 'Review '.$AddedreviewData['statementname'].' '.$this->config->item('reviewtype')[$AddedreviewData['reviewtype']].' updated to '.$update_status.' - '.$post['reviewreason'].' '.$imagedata.'';
+
+
+							$commentdata = [
+							'auditor_id' 	=> $post['auditorid'],
+							'coc_id' 		=> $post['cocid'],
+							'plumber_id' 	=> $post['plumberid'],
+							'admin_id' 		=> $created_by,
+							'message' 		=> $message,
+							'type' 			=> '1',
+							'action' 		=> '1',
+							'datetime' 		=> $datetime,
+							];
+							$this->db->insert('diary',$commentdata);
+				}elseif((isset($post['hiddenroletype']) && isset($post['id'])) && ($post['hiddenroletype'] =='1' && $post['id'] !='')){
+
+					$AddedreviewData = $this->Auditor_Model->getReviewList('row', ['id' => $post['id']]);
+					if (isset($post['image2']) && $post['image2'] !=''){
+						$imagedata = '- <a href='.base_url().'/assets/uploads/auditor/statement/'.$post['image2'].''.' target="_blank">'.'Reason file link'.'</a>';
+					}else{
+						$imagedata = '';
+					}
+
+					$message = 'Review '.$AddedreviewData['statementname'].' '.$this->config->item('reviewtype')[$AddedreviewData['reviewtype']].' edited - '.$post['reviewreason'].' '.$imagedata.'';
+
+
+							$commentdata = [
+							'auditor_id' 	=> $AddedreviewData['auditor_id'],
+							'coc_id' 		=> $AddedreviewData['coc_id'],
+							'plumber_id' 	=> $AddedreviewData['plumber_id'],
+							'admin_id' 		=> $created_by,
+							'message' 		=> $message,
+							'type' 			=> '1',
+							'action' 		=> '1',
+							'datetime' 		=> $datetime,
+							];
+							$this->db->insert('diary',$commentdata);
+				}
 			}
 			
 			$result = $this->Auditor_Model->getReviewList('row', ['id' => $result]);

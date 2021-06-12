@@ -73,7 +73,7 @@ class Coc_Model extends CC_Model
 		
 		if(in_array('auditorstatement', $querydata)){
 			$auditorstatement 	= 	[ 
-										'aas.id as_id','aas.audit_date as_audit_date','aas.workmanship as_workmanship','aas.plumber_verification as_plumber_verification','aas.coc_verification as_coc_verification','aas.hold as_hold','aas.reason as_reason','aas.auditcomplete as_auditcomplete','aas.refixcompletedate as_refixcompletedate'
+										'aas.id as_id','aas.audit_date as_audit_date','aas.workmanship as_workmanship','aas.plumber_verification as_plumber_verification','aas.coc_verification as_coc_verification','aas.hold as_hold','aas.reason as_reason','aas.auditcomplete as_auditcomplete','aas.refixcompletedate as_refixcompletedate','aas.refix_refuse as_refix_refuse', 'aas.buttonstatus as_buttonstatus', 'aas.admin_comments admin_comments', 'aas.admin_image admin_image'
 									];						
 			$select[] 			= 	implode(',', $auditorstatement);
 		}

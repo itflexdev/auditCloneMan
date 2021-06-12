@@ -1,6 +1,25 @@
 <?php
+
+// echo "<pre>";print_r($result);die;
 	$pdfimg 				= base_url().'assets/images/pdf.png';
 	$profileimg 			= base_url().'assets/images/profile.jpg';
+	$opprofileimg 			= base_url().'assets/images/profile.jpg';
+	$opfile2 				= isset($result['admin_image']) ? $result['admin_image'] : '';
+	$pdfimg 				= base_url().'assets/images/pdf.png';
+	$filepath1				= base_url().'assets/uploads/auditor/statement/';
+	$adminreason 			= isset($result['admin_comments']) ? $result['admin_comments'] : '';
+	$opphotoidurl			= $profileimg;
+
+	/*if($opfile2!=''){
+		$explodefile1 	= explode('.', $opfile2);
+		$extfile1 		= array_pop($explodefile1);
+		$opprofileimg 	= (in_array($extfile1, ['pdf', 'tiff'])) ? $pdfimg : $filepath1.$opfile2;
+		$opphotoidurl 	= $filepath1.$opfile2;
+	}else{
+		$opprofileimg 	= $profileimg;
+		$opphotoidurl	= 'javascript:void(0);';
+	}*/
+
 	$reviewpath 			= base_url().'assets/uploads/auditor/statement/';
 	$datetime 				= date('d-m-Y H:i:s');
 	
@@ -28,6 +47,8 @@
 	$auditormobile 			= isset($result['auditormobile']) ? $result['auditormobile'] : '';
 	$auditordate 			= isset($result['audit_allocation_date']) && $result['audit_allocation_date']!='1970-01-01' ? date('d-m-Y', strtotime($result['audit_allocation_date'])) : '';
 	$auditorstatus 			= isset($this->config->item('auditstatus')[$result['audit_status']]) ? $this->config->item('auditstatus')[$result['audit_status']] : '';
+	$audit_statusid 		= isset($result['audit_status']) ? $result['audit_status'] : '';
+	$auditstatus_array 		= $this->config->item('auditstatus');
 	
 	$completiondate 		= isset($result['cl_completion_date']) && $result['cl_completion_date']!='1970-01-01' ? date('d-m-Y', strtotime($result['cl_completion_date'])) : '';
 	$name 					= isset($result['cl_name']) ? $result['cl_name'] : '';
@@ -41,7 +62,7 @@
 	$alternateno 			= isset($result['cl_alternate_no']) ? $result['cl_alternate_no'] : '';
 	
 	$statementid 			= isset($result['as_id']) ? $result['as_id'] : '';
-	$auditdate 				= isset($result['as_audit_date']) && $result['as_audit_date']!='1970-01-01' ? date('d-m-Y', strtotime($result['as_audit_date'])) : '';
+	$auditdate 				= isset($result['as_audit_date']) && ($result['as_audit_date']!='1970-01-01' && $result['as_audit_date']!='0000-00-00') ? date('d-m-Y', strtotime($result['as_audit_date'])) : '';
 	$workmanshipid 			= isset($result['as_workmanship']) ? $result['as_workmanship'] : '';
 	$plumberverification 	= isset($result['as_plumber_verification']) ? $result['as_plumber_verification'] : '';
 	$cocverification 		= isset($result['as_coc_verification']) ? $result['as_coc_verification'] : '';
@@ -50,13 +71,18 @@
 	$auditcomplete 			= isset($result['as_auditcomplete']) ? $result['as_auditcomplete'] : '';
 	$refixrefuse 			= isset($result['as_refix_refuse']) ? $result['as_refix_refuse'] : '';
 	$refixcompletedate 		= isset($result['as_refixcompletedate']) && $result['as_refixcompletedate']!='' ? date('d-m-Y', strtotime($result['as_refixcompletedate'])) : date('d-m-Y');
+	$as_buttonstatus 			= isset($result['as_buttonstatus']) ? $result['as_buttonstatus'] : '';
 	
 	$reviewtableclass		= ['1' => 'review_failure', '2' => 'review_cautionary', '3' => 'review_compliment', '4' => 'review_noaudit'];
 	
-	if($pagetype=='action'){
+	if($pagetype=='action' && ($as_buttonstatus =='0' || $as_buttonstatus =='')){
 		$pagetype 		= '1';
 		$disabled1 		= '';
 		$disabled1array = [];
+	}else if($pagetype=='action' && $as_buttonstatus !='0'){
+		$pagetype 		= '1';
+		$disabled1 		= 'disabled';
+		$disabled1array	= ['disabled' => 'disabled'];
 	}else if($pagetype=='view'){
 		$pagetype 		= '2';
 		$disabled1 		= 'disabled';
@@ -74,6 +100,13 @@
 	
 	$chatfilepath	= base_url().'assets/uploads/chat/'.$cocid.'/';
 	$downloadurl	= base_url().(isset($downloadattachment) ? $downloadattachment : '');
+
+
+	$strrefixdate 	= date('d-m-Y', strtotime($result['ar1_refix_date']));
+	$curdatestr 	= date('d-m-Y', strtotime($datetime))
+
+	
+
 ?>
 
 <div class="row page-titles">
@@ -228,7 +261,12 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label>Audit Status</label>
-								<input type="text" class="form-control" value="<?php echo $auditorstatus; ?>" disabled>
+								<?php
+								if ($roletype =='1') $disableFlag = 'disabled';
+								else $disableFlag = ['disabled' => 'disabled'];
+
+								//echo form_dropdown('auditorstatus', $auditstatus_array, $audit_statusid, ['id' => 'auditorstatus', 'class'=>'form-control', $disableFlag]); ?>
+								 <input type="text" class="form-control" value="<?php echo $auditorstatus; ?>" <?php if ($roletype=='1' || $roletype=='3') { ?> disabled <?php } ?>> 
 							</div>
 						</div>
 						<div class="col-md-6">
@@ -287,7 +325,7 @@
 					</div>					
 					<div class="col-md-6">
 						<div class="row">	
-							<?php if($roletype=='5' && $pagetype=='1'){ ?>
+							<?php if(($roletype=='5' && $pagetype=='1') && ($as_buttonstatus == '0' || $hold=='1')){ ?>
 								<div class="col-md-12">
 									<div class="form-group custom-control custom-radio">							
 										<input type="radio" class="custom-control-input" name="hold" id="hold" value="1" <?php if($hold=='1'){ echo 'checked'; } ?>>
@@ -339,7 +377,7 @@
 									<th>Images</th>
 									<th>Performance Points</th>
 									<th style="min-width:160px!important;">Refix Status</th>
-									<?php if($roletype=='5' && $pagetype=='1'){ ?>
+									<?php if(($roletype=='5' && $pagetype=='1') || ($roletype=='1' && $pagetype=='2')){ ?>
 										<th>Action</th>
 									<?php } ?>
 								</tr>
@@ -347,12 +385,17 @@
 									<td colspan="9">No Record Found</td>
 								</tr>
 							</table>
-							<input type="hidden" class="attachmenthidden" name="attachmenthidden"> 
+							<input type="hidden" class="attachmenthidden" name="attachmenthidden">
 						</div>
+						<?php  if($pagetype=='2'){
+								if($refixrefuse =='1'){ ?>
+									<div style="font-weight:900 !important;"><h3>The Client has refused refix</h3></div>
+								<?php }
+							}?>
 					</div>
-					<?php if($roletype=='5' && $pagetype=='1'){ ?>
+					<?php if((($roletype=='5' && $pagetype=='1') && ($as_buttonstatus =='0' || $as_buttonstatus =='')) || (($roletype=='1' && $pagetype=='2') && ($result['audit_status'] !='4' && $result['audit_status'] !='1'))){ ?>
 						<div class="row text-right">
-							<button type="button" data-toggle="modal" data-target="#reviewmodal" class="btn btn-primary">Add a Review</button>
+							<button type="button" data-toggle="modal" id="addreviews" data-target="#reviewmodal" class="btn btn-primary">Add a Review</button>
 						</div>
 					<?php } ?>
 				</div>
@@ -380,7 +423,6 @@
 									<input type="text" class="form-control" name="refixperiod" id="refixperiod" value="<?php echo $settings['refix_period']; ?>" readonly>
 								</div>
 							</div>
-							
 							<?php if($pagetype=='1'){ ?>
 								<div class="col-md-12 report_wrapper displaynone">
 									<div class="form-group">
@@ -391,7 +433,6 @@
 							<?php } ?>
 						</div>
 					</div>
-					
 					<?php if($roletype=='5' && $pagetype=='1'){ ?>
 						<div class="col-md-6 auditcomplete_wrapper displaynone">
 							<div class="custom-control custom-checkbox">
@@ -408,21 +449,70 @@
 						<p>It is your responsible to complete your refix's with in the allocted time. Failure to do so within the alloated time will result in the refix being marked as Audit Complete (with Refix(s)) and relevant remedial action will follow.</p>
 					</div>
 				<?php } ?>
+				<!-- <?php
+					//if ($pagetype=='2' && $roletype =='1') { ?>
+						<div class="row">
+							<div class="col-md-6">
+								<h4 class="card-title">Reason</h4>
+								<div class="form-group">
+									<textarea class="form-control chattext" id="reasontext" name="reasontext" placeholder="Type your reason here"><?php// echo $adminreason; ?></textarea> 
+								</div>
+							</div>
+							<div class="col-md-3">
+								<h4 class="card-title">Photo</h4>
+								<div class="form-group">
+									<div>
+										<a href="<?php// echo $opphotoidurl; ?>" target="_blank"><img src="<?php// echo $opprofileimg; ?>" class="photo_image" width="100"></a>
+									</div>
+									<input type="file" id="file_2" class="photo_file">
+									<label for="file_2" class="choose_file">Choose File</label>
+									<input type="hidden" name="image2" class="photo" value="<?php// echo $opfile2; ?>">
+									<p>(Image/File Size Smaller than 5mb)</p>
+								</div>
+							</div>
+						</div>
+						
+				<?php// } ?> -->
 				
-				<?php if($pagetype=='1'){ ?>
+				<?php if(($pagetype=='1' && $roletype !='1') || ($pagetype=='2' && $roletype =='1')){ ?>
 					<div class="col-md-12 text-right">					
 						<input type="hidden" value="<?php echo $statementid; ?>" name="id">
 						<input type="hidden" value="<?php echo $cocid; ?>" name="cocid">
 						<input type="hidden" value="<?php echo $userid; ?>" name="auditorid">
+						<?php if (isset($adminid)) { ?>
+							<input type="hidden" value="<?php echo $adminid; ?>" name="adminid">
+							<input type="hidden" value="1" name="update_device">
+						<?php } ?>
 						<input type="hidden" value="<?php echo $plumberid; ?>" name="plumberid">
 						<input type="hidden" name="workmanshippoint" id="workmanshippoint">
 						<input type="hidden" name="plumberverificationpoint" id="plumberverificationpoint">
 						<input type="hidden" name="cocverificationpoint" id="cocverificationpoint">
 						<input type="hidden" name="reviewpoint" id="reviewpoint">
 						<input type="hidden" name="point" id="point">
+						<input type="hidden" name="refuse_point" id="refuse_point">
 						<input type="hidden" name="auditstatus" id="auditstatus" value="1">
-						<button type="button" id="submitreport" class="btn btn-primary displaynone">Submit Report</button>
-						<button type="button" id="save"  class="btn btn-primary">Save/Update</button>
+
+						<?php if ($roletype !='1') { ?>
+
+							<button type="button" id="submitreport1" class="btn btn-primary displaynone">Finalize Audit</button>
+							<?php if ($as_buttonstatus =='0' || $as_buttonstatus =='') { ?>
+								<button type="button" id="submitreport" class="btn btn-primary displaynone">Send Report</button>
+								<button type="button" id="save"  class="btn btn-primary">Save for later</button>
+							<?php } ?>
+
+						<?php }elseif($roletype =='1'){ ?>
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" id="applychanges" class="custom-control-input applychanges" name="applychanges" value="1">
+								<label class="custom-control-label" for="applychanges">Apply changes</label>
+							</div>
+							<button type="button" id="adminsubmit"  class="btn btn-primary admin-btn displaynone">Finalize Audit</button>
+							<input type="hidden" name="edit_reviewid" id="edit_reviewid">
+							<!-- <input type="hidden" name="admin_addreview" id="admin_addreview"> -->
+							<input type="hidden" name="admin_review_status" id="admin_review_status">
+							<!-- <input type="hidden" name="delete_reviewstmt" id="delete_reviewstmt"> -->
+							<!-- <input type="hidden" name="delete_reviewtype" id="delete_reviewtype"> -->
+						<?php } ?>
+						
 						<input type="submit" name="submit" id="submit" class="displaynone">
 					</div>		
 				<?php } ?>
@@ -465,8 +555,8 @@
 		<div class="modal-content">
 			<form class="reviewform">
 				<div class="modal-header">
+					<h4 class="modal-title add-title">Review</h4>
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Review</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">
@@ -476,11 +566,17 @@
 								<div class="row">
 									<?php
 										foreach($reviewtype as $key => $value){
+											if ($value =='No Audit Findings') {
+												$newvalue = 'no_audit_findings';
+											}else{
+												$newvalue = $value;
+											}
+											
 									?>
 											<div class="col-md-3 reviewtyperadio" data-reviewtyperadio="<?php echo $key; ?>">
 												<div class="custom-control custom-radio">
-													<input type="radio" name="reviewtype" id="r_reviewtype<?php echo $key.'-'.$value; ?>" class="custom-control-input r_reviewtype" value="<?php echo $key; ?>">
-													<label class="custom-control-label" for="r_reviewtype<?php echo $key.'-'.$value; ?>"><?php echo $value; ?></label>
+													<input type="radio" name="reviewtype" id="r_reviewtype<?php echo $key.'-'.$newvalue; ?>" class="custom-control-input r_reviewtype" value="<?php echo $key; ?>">
+													<label class="custom-control-label" for="r_reviewtype<?php echo $key.'-'.$newvalue; ?>"><?php echo $value; ?></label>
 												</div>
 											</div>
 									<?php
@@ -560,6 +656,32 @@
 								<input type="text" name="point" class="r_point form-control" id="r_point" readonly>
 							</div>
 						</div>
+
+						<?php
+						if ($pagetype=='2' && $roletype =='1') { ?>
+							<!-- <div class="row"> -->
+								<div class="col-md-6">
+									<h4 class="card-title">Reason</h4>
+									<div class="form-group">
+										<textarea class="form-control" id="reviewreason" name="reviewreason" placeholder="Type your reason here"></textarea> 
+									</div>
+								</div>
+								<div class="col-md-6 up1" style="margin-left: 538px;margin-top: -165px;">
+									<h4 class="card-title">Photo</h4>
+									<div class="form-group">
+										<div>
+											<a href="<?php echo $opphotoidurl; ?>" target="_blank"><img src="<?php echo $opprofileimg; ?>" class="photo_image" width="100"></a>
+										</div>
+										<input type="file" id="file_2" class="photo_file">
+										<label for="file_2" class="choose_file">Choose File</label>
+										<input type="hidden" name="image2" class="photo" value="">
+										<p>(Image/File Size Smaller than 5mb)</p>
+									</div>
+								</div>
+							<!-- </div> -->
+							
+					<?php } ?>
+
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -573,8 +695,115 @@
 					<input type="hidden" value="0" name="cautionarypoint" id="cautionarypoint">
 					<input type="hidden" value="0" name="complimentpoint" id="complimentpoint">
 					<input type="hidden" value="0" name="noauditpoint" id="noauditpoint">
+
+					<input type="hidden" value="<?php echo $roletype; ?>" name="hiddenroletype" id="hiddenroletype">
+
 					<input type="hidden" value="<?php echo $settings['refix_period']; ?>" name="refixperiod">
 					<button type="button" class="btn btn-success reviewsubmit">Submit</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div id="changestatusmodal" class="modal fade" role="dialog">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form class="statusform">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<?php
+						if ($pagetype=='2' && $roletype =='1') { ?>
+							<!-- <div class="row"> -->
+								<div class="col-md-6">
+									<h4 class="card-title">Reason</h4>
+									<div class="form-group">
+										<textarea class="form-control" id="reviewreason1" name="reviewreason1" placeholder="Type your reason here"></textarea> 
+									</div>
+								</div>
+								<div class="col-md-6" style="margin-left: 538px;margin-top: -165px;">
+									<h4 class="card-title">Photo</h4>
+									<div class="form-group">
+										<div>
+											<a href="<?php echo $opphotoidurl; ?>" target="_blank"><img src="<?php echo $opprofileimg; ?>" class="photo_image3" width="100"></a>
+										</div>
+										<input type="file" id="file_2" class="photo_file">
+										<label for="file_2" class="choose_file">Choose File</label>
+										<input type="hidden" name="image2" class="photo3" value="<?php echo $opfile2; ?>">
+										<p>(Image/File Size Smaller than 5mb)</p>
+									</div>
+								</div>
+							<!-- </div> -->
+							
+					<?php } ?>
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="hidden" value="<?php echo $cocid; ?>" name="cocid">
+					<input type="hidden" value="<?php echo $userid; ?>" name="auditorid">
+					<input type="hidden" value="<?php echo $plumberid; ?>" name="plumberid">
+
+					<input type="hidden" value="1" name="adminreview">
+
+					<input type="hidden" value="<?php echo $roletype; ?>" name="hiddenroletype" id="hiddenroletype">
+					
+					<button type="button" class="btn btn-success proceed_status">Proceed</button>
+					<button type="button" class="btn btn-default" id="cancel_status" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div id="deletemodal" class="modal fade" role="dialog">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form class="statusform">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<?php
+						if ($pagetype=='2' && $roletype =='1') { ?>
+							<!-- <div class="row"> -->
+								<div class="col-md-6">
+									<h4 class="card-title">Reason</h4>
+									<div class="form-group">
+										<textarea class="form-control" id="reviewreason2" name="reviewreason2" placeholder="Type your reason here"></textarea> 
+									</div>
+								</div>
+								<div class="col-md-6" style="margin-left: 538px;margin-top: -165px;">
+									<h4 class="card-title">Photo</h4>
+									<div class="form-group">
+										<div>
+											<a href="<?php echo $opphotoidurl; ?>" target="_blank"><img src="<?php echo $opprofileimg; ?>" class="photo_image2" width="100"></a>
+										</div>
+										<input type="file" id="file_2" class="photo_file">
+										<label for="file_2" class="choose_file">Choose File</label>
+										<input type="hidden" name="image3" class="photo2" value="<?php echo $opfile2; ?>">
+										<p>(Image/File Size Smaller than 5mb)</p>
+									</div>
+								</div>
+							<!-- </div> -->
+							
+					<?php } ?>
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="hidden" value="<?php echo $cocid; ?>" name="cocid">
+					<input type="hidden" value="<?php echo $userid; ?>" name="auditorid">
+					<input type="hidden" value="<?php echo $plumberid; ?>" name="plumberid">
+					
+					<button type="button" class="btn btn-success proceed_delete">Proceed</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</form>
@@ -625,24 +854,34 @@ var auditorid 	= '<?php echo $auditorid; ?>';
 var fromid		= (roletype=='3') ? plumberid : auditorid;
 var toid		= (roletype=='3') ? auditorid : plumberid;
 var validator;
+var as_buttonstatus = '<?php echo $as_buttonstatus; ?>';
+var auditstatus = '<?php echo $result['audit_status']; ?>';
+
+var strrefixdate	= '<?php echo $strrefixdate; ?>';
+var curdatestr 		= '<?php echo $curdatestr; ?>';
 
 $(function(){
 	if($('#hold').is(':checked')) $('#hold').data('approvalHoldValue', true);
 	reason()
 	
+	// submitRerpotFunc();
 	datepicker('#refixcompletedate', ['enddate']);
 	datepicker('.auditdate', ['enddate'], {'customstartdate' : '<?php echo date('Y-m-d', strtotime($completiondate)); ?>'});	
 	select2('#workmanship, #plumberverification, #cocverification, #province, #city, #suburb');
 	citysuburb(['#province','#city', '#suburb'], ['<?php echo $cityid; ?>', '<?php echo $suburbid; ?>']);
 	subtypereportinglist(['#r_installationtype','#r_subtype','#r_statement'], ['', ''], reviewpoint);
 	fileupload(["#r_file", "./assets/uploads/auditor/statement/", ['jpg','gif','jpeg','png','pdf','tiff']], ['file[]', '.rfileappend', reviewpath, pdfimg], 'multiple');
+	fileupload([".photo_file", "./assets/uploads/auditor/statement/", ['jpg','gif','jpeg','png','pdf','tiff']], ['.photo1', '.photo_image1', reviewpath, pdfimg]);
+	fileupload([".photo_file", "./assets/uploads/auditor/statement/", ['jpg','gif','jpeg','png','pdf','tiff']], ['.photo', '.photo_image', reviewpath, pdfimg]);
+	fileupload([".photo_file", "./assets/uploads/auditor/statement/", ['jpg','gif','jpeg','png','pdf','tiff']], ['.photo2', '.photo_image2', reviewpath, pdfimg]);
+	fileupload([".photo_file", "./assets/uploads/auditor/statement/", ['jpg','gif','jpeg','png','pdf','tiff']], ['.photo3', '.photo_image3', reviewpath, pdfimg]);
 	chat(['.chattext', '.chatcontent'], [cocid, fromid, toid], [chatpath, pdfimg, downloadurl]);
 	
 	var reviewlist = $.parseJSON('<?php echo addslashes(json_encode($reviewlist)); ?>');
 	if(reviewlist.length > 0){
 		$(reviewlist).each(function(i, v){
 			var reviewlistdata 	= {status : 1, result : { id: v.id, reviewtype: v.reviewtype, statementname: v.statementname, comments: v.comments, file: v.file, point: v.point, status: v.status, incomplete_point: v.incomplete_point, complete_point: v.complete_point, reference: v.reference, link: v.link, created_at: v.created_at }}
-			review(reviewlistdata);
+			review(reviewlistdata, 'pageload');
 		})
 	}
 
@@ -650,8 +889,6 @@ $(function(){
 		$('.auditcomplete_wrapper').removeClass('displaynone');
 	}
 
-	
-	
 	validator = validation(
 		'.form',
 		{
@@ -676,6 +913,12 @@ $(function(){
 				required	: true
 			},
 			auditcomplete : {
+				// required	: true
+				required:  	function() {
+								return $('#refuserefix').is(':checked');
+							}
+			},
+			refixcompletedate : {
 				required	: true
 			}
 		},
@@ -765,6 +1008,30 @@ $(function(){
 			}
 		}
 	);
+
+	submitBtn();
+
+	// if($('.form').valid()){
+	// 	$("p.error_class_1").css("display", "none");
+	//     $('#submitreport').removeClass('displaynone');
+	// }else {
+	// 	$("p.error_class_1").css("display", "none");
+	//     $('#submitreport').addClass('displaynone');
+	// }
+
+	// if (auditstatus !=='4' && auditstatus !=='1') {
+	// 	$('.admin-btn').removeClass('displaynone');
+	// }else{
+	// 	$('.admin-btn').addClass('displaynone');
+	// }
+
+	$('#addreviews').click(function(){
+		$('#reviewreason').val('');
+		$('.photo_image').attr('src', '<?php echo $profileimg; ?>');
+		$('.photo').val('');
+		//$profileimg
+	});
+
 });
 
 window.addEventListener('message', function(e) {
@@ -776,16 +1043,86 @@ function processparent(id) {
 	chat(['.chattext', '.chatcontent'], [cocid, fromid, toid, id], [chatpath, pdfimg, downloadurl], 'childparent');
 }
 
-$('#save').click(function(){
-	//validator.destroy();
-	$('#auditcomplete').rules('remove', 'required');
-	if($('.form').valid())
-	{
-		$('#submit').attr('value', 'save').click();
+$('#workmanship, .auditdate, #plumberverification, #cocverification').on('keyup, change', function() {
+    /*if($('.form').valid()){
+    	$("p.error_class_1").css("display", "none");
+        $('#submitreport').removeClass('displaynone');
+    }else {
+    	$("p.error_class_1").css("display", "none");
+        $('#submitreport').addClass('displaynone');
+    }*/
+    submitBtn();
+});
+
+/*$('#auditorstatus').on('change', function() {
+    if($(this).val() !== '4' && $(this).val() !=='1'){
+    	$('.admin-btn').removeClass('displaynone');
+    }else {
+    	$('.admin-btn').addClass('displaynone');
+    }
+});*/
+
+
+
+if (($('#auditcomplete').is(':checked'))) {
+	$('#submitreport1').removeClass('displaynone');
+}else{
+	$('#submitreport1').addClass('displaynone');
+}
+
+$('#auditcomplete').click(function(){
+	if ($(this).is(':checked')) {
+		$('#submitreport1').removeClass('displaynone');
+	}else{
+		$('#submitreport1').addClass('displaynone');
 	}
 })
 
-$('#submitreport').click(function(){
+$('#applychanges').click(function(){
+	if ($(this).is(':checked')) {
+		$('#adminsubmit').removeClass('displaynone');
+	}else{
+		$('#adminsubmit').addClass('displaynone');
+	}
+})
+
+$('#adminsubmit').click(function(){
+	// $('#auditstatus').val(1);
+	if ($('.refixcompletedate_wrapper').hasClass('displaynone') == true) {
+		$(".form").validate().cancelSubmit = true;	
+	}
+	
+	// if ($('#reasontext').val() !='') {
+		$('#submit').attr('value', 'adminsubmitreport').click();
+	// }else{
+		// alert('Reason Required');
+		// return false;
+	// }
+	
+})
+
+$('#save').click(function(){
+	// validator.destroy();
+	// $('.form').rules('remove');
+	$(".form").validate().cancelSubmit = true;
+	// if($('.form').valid())
+	// {
+		$('#submit').attr('value', 'save').click();
+	// }
+})
+
+/*$('#submitreport').click(function(){
+	if($('.form').valid())
+	{
+		$('#confirmmodal').modal('show');
+	}
+})*/
+$('#submitreport1').click(function(){
+
+	if (($('#refuserefix').is(':checked')) || (curdatestr > strrefixdate)) {
+		$('#refixcompletedate').rules('remove', 'required');
+	}
+
 	if($('.form').valid())
 	{
 		$('#confirmmodal').modal('show');
@@ -795,9 +1132,21 @@ $('#submitreport').click(function(){
 $('.confirmsubmit').click(function(){
 	if($('.form').valid())
 	{
-		$('#submit').attr('value', 'submitreport').click();
+		// $('#submit').attr('value', 'submitreport').click();
+		$('#submit').attr('value', 'finalizereport').click();
 	}
 })
+$('#submitreport').click(function(){
+	// if($('.form').valid())
+	// {
+		if ($('.refixcompletedate_wrapper').hasClass('displaynone') === true) {
+			$('#refixcompletedate').rules('remove', 'required');
+		}
+		$('#submit').attr('value', 'submitreport').click();
+	// }
+})
+
+
 
 
 $('#hold').click(function(){
@@ -826,19 +1175,111 @@ function reason(){
 $(document).on('change', '.reviewstatus', function(){
 	var _this 		= $(this);
 	var refixperiod = '<?php echo $settings['refix_period']; ?>';
-	
-	if(_this.val()==0){
-		var point = _this.parent().parent().attr('data-incompletept');
-	}else{
-		var point = _this.parent().parent().attr('data-completept');
+	var r_id 		= _this.parent().parent().attr('data-id');
+	var statusVal 	= _this.val();
+
+	if (roletype ==='1') {
+		// if ($('#reasontext').val() !=='' || $('#reasontext').val() ==='NaN') {
+			if(_this.val()==0){
+				var point = _this.parent().parent().attr('data-incompletept');
+			}else{
+				var point = _this.parent().parent().attr('data-completept');
+			}
+
+			/* Get review deatails */
+			ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : r_id, 'action' : 'edit', 'action2' : 'reviewstatus', "roletype" : roletype}, fetchReviewData);
+
+			$('#changestatusmodal').modal('show');
+			$('.proceed_status').click(function(){
+				if ($('#reviewreason1').val() === '' && $('#reviewreason1').val() === '') {
+					alert('Please enter reason before submit the review');
+					return false;
+				}else{
+
+					ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.parent().parent().attr('data-id'), 'point' : point, 'refixperiod' : refixperiod, 'status' : _this.val(), "roletype" : roletype, 'reviewreason' : $('#reviewreason1').val(), 'image2' : $('.photo3').val(), 'rqst_type' : "change_status", 'auditorid' : "<?php echo $auditorid; ?>", 'cocid' : "<?php echo $cocid; ?>", 'plumberid' : "<?php echo $plumberid; ?>"}, '', { success : function(data){ 
+							sweetalertautoclose('successfully saved'); 
+							refixcheck(); 
+							_this.parent().parent().find('td:eq(6)').text(point);
+							$('.photo3').val('');
+							$('#changestatusmodal').modal('hide');
+
+							$('#admin_review_status').val(function(i,val) {
+								return val + (!val ? '' : ',') + _this.parent().parent().attr('data-id');
+							});
+					}
+				});
+			}});
+		/*}else{
+			alert('Please fill the Reason');
+			$(this).val('0');
+			return false;
+		}*/
+
+		$('#cancel_status').click(function(){
+			if (statusVal ==='1') {
+				_this.val('0');
+			}else{
+				_this.val('1');
+			}
+		});
+
+	}else if(roletype ==='5'){
+		if(_this.val()==0){
+			var point = _this.parent().parent().attr('data-incompletept');
+		}else{
+			var point = _this.parent().parent().attr('data-completept');
+		}
+		
+		ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.parent().parent().attr('data-id'), 'point' : point, 'refixperiod' : refixperiod, 'status' : _this.val()}, '', { success : function(data){ 
+			sweetalertautoclose('successfully saved'); 
+			refixcheck(); 
+			_this.parent().parent().find('td:eq(6)').text(point)
+		}});
 	}
 	
-	ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.parent().parent().attr('data-id'), 'point' : point, 'refixperiod' : refixperiod, 'status' : _this.val()}, '', { success : function(data){ 
-		sweetalertautoclose('successfully saved'); 
-		refixcheck(); 
-		_this.parent().parent().find('td:eq(6)').text(point)
-	}});
+	
 })
+
+function fetchReviewData(data){
+	console.log(data);
+	if(data.status==1){
+		var result 	= 	data.result;
+
+		$('#reviewreason1').val('');
+		$('.photo_image3').attr('src', '<?php echo $profileimg; ?>');
+		$('.photo3').val('');
+		
+		/*if (result.image2 =='') {
+			$('.photo_image1').attr('src', '<?php// echo base_url().'assets/images/profile.jpg'?>');
+		}else{
+			$('.photo_image1').attr('src', '<?php// echo base_url().'assets/uploads/auditor/statement/'?>'+result.image2);
+		}
+
+		$('.photo3').val(result.image2);
+		// $('#reviewreason').val(result.reason);
+		$('#reviewreason1').val(result.reason);*/
+	} 
+}
+
+function fetchdeleteReviewData(data){
+	console.log(data);
+	if(data.status==1){
+		var result 	= 	data.result;
+
+		$('#reviewreason2').val('');
+		$('.photo_image2').attr('src', '<?php echo $profileimg; ?>');
+		$('.photo2').val('');
+		
+		/*if (result.image2 =='') {
+			$('.photo_image2').attr('src', '<?php// echo base_url().'assets/images/profile.jpg'?>');
+		}else{
+			$('.photo_image2').attr('src', '<?php// echo base_url().'assets/uploads/auditor/statement/'?>'+result.image2);
+		}
+		$('.photo2').val(result.image2);
+		// $('#reviewreason').val(result.reason);
+		$('#reviewreason2').val(result.reason);*/
+	} 
+}
 
 
 $('.r_reviewtype').click(function(){
@@ -847,7 +1288,7 @@ $('.r_reviewtype').click(function(){
 })
 
 function reviewtoggle(data){
-	reviewmodalclear(1);
+	// reviewmodalclear(1);
 	
 	if(data==1 || data==2 || data==3){
 		$('.section1, .section2, .section3').removeClass('displaynone');
@@ -914,12 +1355,25 @@ $('#reviewmodal').on('hidden.bs.modal', function(){
 $('.reviewsubmit').click(function(){
 	if($('.reviewform').valid())
 	{
-		var data = $('.reviewform').serialize();
-		ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', data, review);
+		if (roletype ==='1') {
+			if ($('#reviewreason').val() === '' && $('#reviewreason').val() === '') {
+				alert('Please enter reason before submit the review');
+				return false;
+			}else{
+				// $('#reasontext1').val($('#reasontext').text());
+				// $('#photo1').val($('.photo').val());
+				var data = $('.reviewform').serialize();
+				ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', data, review);
+			}
+		}else{
+			var data = $('.reviewform').serialize();
+			ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', data, review);
+		}
 	}
 })
 
-function review(data){
+function review(data, type =''){
+
 	if(data.status==1){		
 		var extrafield	= 	'';
 		var dropdown	= 	'';
@@ -939,16 +1393,28 @@ function review(data){
 									<option value="0" '+((status=='0') ? "selected" : "")+'>Incomplete</option>\
 									<option value="1" '+((status=='1') ? "selected" : "")+'>Complete</option>\
 								</select>';		
+			}else if(pagetype=='2' && roletype =='1'){
+				dropdown	= 	'<select class="form-control reviewstatus">\
+									<option value="0" '+((status=='0') ? "selected" : "")+'>Incomplete</option>\
+									<option value="1" '+((status=='1') ? "selected" : "")+'>Complete</option>\
+								</select>';		
 			}else{
 				dropdown	=	(status=='0') ? '<i class="fa fa-times"></i><p>Incomplete</p>' : '<i class="fa fa-check"></i><p>Complete</p>';
 			}							
 		}
 		
-		if(pagetype=='1'){
+		if(pagetype=='1' && (as_buttonstatus =='0' || as_buttonstatus =='') && roletype !='1'){
 			action 	= 	'<td>\
 							<a href="javascript:void(0);" class="reviewedit" data-id="'+result.id+'"><i class="fa fa-pencil-alt"></i></a>\
 							<a href="javascript:void(0);" class="reviewremove" data-id="'+result.id+'"><i class="fa fa-trash"></i></a>\
 						</td>';
+		}else if(pagetype=='2' && roletype =='1'){
+			action 	= 	'<td>\
+							<a href="javascript:void(0);" class="reviewedit" data-id="'+result.id+'"><i class="fa fa-pencil-alt"></i></a>\
+							<a href="javascript:void(0);" class="reviewremove" data-id="'+result.id+'" data-stmt-name="'+result.statementname+'" data-rtype="'+reviewtype[result.reviewtype]+'"><i class="fa fa-trash"></i></a>\
+						</td>';
+		}else{
+			action 	= '<td></td>';
 		}
 		
 		var appenddata 	= 	'\
@@ -965,6 +1431,16 @@ function review(data){
 							';
 					
 		$('.reviewtable').append(appenddata);
+		submitBtn();
+		if (result.reviewtype =='1' && type !== 'pageload') {
+			
+			$('#refuse_point').val(function(i,val) { 
+			     return val + (!val ? '' : ',') + result.id;
+			});
+		}
+		// if (roletype ==='1' && type !== 'pageload') {
+		// 	$('#admin_addreview').val(result.id);
+		// }
 				
 		if(result.file!='') mutiplereviewfile(result.file, 2, result.id);
 	}
@@ -975,8 +1451,42 @@ function review(data){
 }
 
 $(document).on('click', '.reviewedit', function(){
-	ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : $(this).attr('data-id'), 'action' : 'edit'}, reviewedit);
+	var _this = $(this);
+	if (roletype ==='1') {
+		// if ($('#reasontext').val() !='') {
+			ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : $(this).attr('data-id'), 'action' : 'edit', "roletype" : roletype}, reviewedit);
+
+			$('#edit_reviewid').val(function(i,val) { 
+			    return val + (!val ? '' : ',') + _this.attr('data-id');
+			});
+
+		/*}else{
+			alert('Please fill the Reason');
+			return false;
+		}*/
+	}else if(roletype ==='5'){
+		ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : $(this).attr('data-id'), 'action' : 'edit'}, reviewedit);
+	}
+	
 })
+
+function submitBtn(){
+	
+	var reviewlgth 			= $(document).find('.reviewappend').length;
+	var workmanship 		= $('#workmanship').val();
+	var auditdate 			= $('.auditdate').val();
+	var plumberverification = $('#plumberverification').val();
+	var cocverification 	= $('#cocverification').val();
+
+	if (reviewlgth =='1' && workmanship !='' && auditdate !='' && plumberverification !='' && cocverification !='') {
+
+		if ($('.refixcompletedate_wrapper').hasClass('displaynone') ===true) {
+			$('#submitreport').removeClass('displaynone');
+		}else{
+		 	$('#submitreport').addClass('displaynone');
+		}
+	}
+}
 
 function reviewedit(data){
 	if(data.status==1){
@@ -993,6 +1503,19 @@ function reviewedit(data){
 		$('.r_comments').val(result.comments);
 		$('.r_point').val(result.point);
 		$('.r_id').val(result.id);
+
+		$('#reviewreason').val('');
+		$('.photo_image').attr('src', '<?php echo $profileimg; ?>');
+		$('.photo').val('');
+
+		
+		/*if (result.image2 =='') {
+			$('.photo_image').attr('src', '<?php// echo base_url().'assets/images/profile.jpg'?>');
+		}else{
+			$('.photo_image').attr('src', '<?php// echo base_url().'assets/uploads/auditor/statement/'?>'+result.image2);
+		}
+		$('.photo').val(result.image2);
+		$('#reviewreason').val(result.reason);*/
 		
 		if(result.file!='') mutiplereviewfile(result.file, 1);
 		
@@ -1027,11 +1550,72 @@ function mutiplereviewfile(file, type, id=''){
 
 
 $(document).on('click', '.reviewremove', function(){
-	ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : $(this).attr('data-id'), 'action' : 'delete'}, reviewremove);
-	$(this).parent().parent().remove();
-	reviewextras();
+
+	var last_reviewID = $(".reviewtable").find("tr").last().find(':last-child').find('.reviewremove').attr('data-id');
+	var _this = $(this);
+	if (roletype ==='1') {
+		if ($('#reasontext').val() !=='' || $('#reasontext').val() ==='NaN') {
+
+			if ($(this).attr('data-id') === last_reviewID) {
+				alert('Please choose other review to delete or add new review to delete this review');
+				return false;
+			}else{
+				/*$('#delete_reviewstmt').val(function(i,val) { 
+				    return val + (!val ? '' : ',') + _this.attr('data-stmt-name');
+				});
+				$('#delete_reviewtype').val(function(i,val) { 
+				    return val + (!val ? '' : ',') + _this.attr('data-rtype');
+				});*/
+
+				/* Get review deatails */
+				ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.attr('data-id'), 'action' : 'edit', 'action2' : 'deleterview', "roletype" : roletype}, fetchdeleteReviewData);
+				$('#deletemodal').modal('show');
+
+				$('.proceed_delete').click(function(){
+					if ($('#reviewreason2').val() === '' && $('#reviewreason2').val() === '') {
+						alert('Please enter reason before delete the review');
+						return false;
+					}else{
+						ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.attr('data-id'), 'action' : 'delete', 'reasontext' : $('#reviewreason2').val(), 'image3' : $('.photo').val(), "roletype" : roletype}, reviewremove);
+						_this.parent().parent().remove();
+						reviewextras();
+						
+						$('.attachmenthidden').valid();
+
+						var str = $('#refuse_point').val();
+						var strArray = str.split(',');
+					    for (var i = 0; i < strArray.length; i++) {
+					        if (strArray[i] === $(this).attr('data-id')) {
+					            strArray.splice(i, 1);
+					            $('#refuse_point').val(strArray.join(","));
+					        }
+					    }
+					    $('#deletemodal').modal('hide');
+					}
+				});
+			}
+
+		}else{
+			alert('Please fill the Reason');
+			return false;
+		}
+	}else if(roletype ==='5'){
+		ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : $(this).attr('data-id'), 'action' : 'delete'}, reviewremove);
+			$(this).parent().parent().remove();
+			reviewextras();
+			
+			$('.attachmenthidden').valid();
+
+			var str = $('#refuse_point').val();
+			var strArray = str.split(',');
+		    for (var i = 0; i < strArray.length; i++) {
+		        if (strArray[i] === $(this).attr('data-id')) {
+		            strArray.splice(i, 1);
+		            $('#refuse_point').val(strArray.join(","));
+		        }
+		    }
+	}
 	
-	$('.attachmenthidden').valid();
 })
 
 function reviewremove(data){}
@@ -1063,8 +1647,12 @@ function reviewextras(){
 }
 
 function refixcheck(){
-	var refuserefix = '<?php echo $refixrefuse ; ?>';
-	$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport, .refixcompletedate_wrapper').addClass('displaynone');
+	var refuserefix 	= '<?php echo $refixrefuse ; ?>';
+	var refixperiod 	= '<?php echo $settings['refix_period']; ?>';
+	var dbrefixdate 	= '<?php echo $result['ar1_refix_date']; ?>';
+	
+
+	$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport1, .refixcompletedate_wrapper').addClass('displaynone');
 	$('#refixcompletedate').val('');
 	$('.reviewtyperadio').removeClass('displaynone');
 
@@ -1074,19 +1662,25 @@ function refixcheck(){
 	}else if(refixperiod !='0'){
 		if(refuserefix !='1'){
 			$('#refuserefix').prop('checked',false);
-		}else if(refuserefix =='1'){
-			$('#submitreport').removeClass('displaynone');
+			$('#refuserefix').val(0);
 		}
+		// else if(refuserefix =='1'){
+		// 	$('#submitreport1').removeClass('displaynone');
+		// }
 	}
+	
 
 	$('#refuserefix').click(function() {
-	    if($(this).is(':checked'))
-	        $('#submitreport, .auditcomplete_wrapper').removeClass('displaynone');
-	    else
-	        $('#submitreport, .auditcomplete_wrapper').addClass('displaynone');
+	    if($(this).is(':checked')){
+	    	// $('#submitreport1, .auditcomplete_wrapper').removeClass('displaynone');
+	    	$('.auditcomplete_wrapper').removeClass('displaynone');
+	   		$('#refuserefix').val(1);
+	    }else{
+	    	$('#submitreport1, .auditcomplete_wrapper').addClass('displaynone');
+	    	$('#refuserefix').val(0);
+	    }
+	        
 	});
-
-	
 	
 	var reportcheck = 0;
 	var newdate;
@@ -1099,11 +1693,13 @@ function refixcheck(){
 		newdate			= date.setDate(date.getDate() + Number($('#refixperiod').val()));
 		var todaydate 	= new Date();
 		var expirydate 	= new Date(formatdate(newdate, 2));
-		
+		// alert(reviewtypecolumn);
 		if(reviewtypecolumn==1 || reviewtypecolumn==2){
 			$('div[data-reviewtyperadio="4"]').addClass('displaynone');
 		}else if(reviewtypecolumn==4){
-			$('div[data-reviewtyperadio="4"], div[data-reviewtyperadio="1"], div[data-reviewtyperadio="2"]').addClass('displaynone');
+			// $('div[data-reviewtyperadio="4"], div[data-reviewtyperadio="1"], div[data-reviewtyperadio="2"]').addClass('displaynone');
+			$('div[data-reviewtyperadio="1"], div[data-reviewtyperadio="2"]').addClass('displaynone');
+			$('#r_reviewtype4-no_audit_findings').prop('disabled', true)
 		}
 		
 		if(reviewtypecolumn==1 && statuscolumn==0){
@@ -1118,45 +1714,105 @@ function refixcheck(){
 			reportcheck = 3;
 		}
 	})
-	
+
 	$('#auditstatus').val(1);
-	
+
 	if($('#hold').is(':checked')){
-		$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport').addClass('displaynone');
+		$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport1, .refuserefix_wrapper').addClass('displaynone');
 		$('#auditcomplete').prop('checked', false);
 		
 		if(reportcheck==1){
 			$('#auditstatus').val(0);
 		}else if(reportcheck==1){
 			if($('.attachmenthidden').val()!=''){
-				$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport').removeClass('displaynone');
+				$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport1, .refuserefix_wrapper').removeClass('displaynone');
+				// if ($('#refuserefix').is(':checked')) {
+				if ($('#auditcomplete').is(':checked')) {
+					$('.auditcomplete_wrapper, #submitreport1').removeClass('displaynone');
+					$('#refuserefix').val(1);
+				}else{
+					$('.auditcomplete_wrapper, #submitreport1').addClass('displaynone');
+					$('#refuserefix').val(0);
+				}
 				$('.refixdateappend').text(formatdate(newdate, 1));
 				$('#auditstatus').val(0);
 			}
 		}
 	}else{
 		if(reportcheck==1){
+			$('#refuserefix').prop('checked',false);
 			$('.refix_wrapper').removeClass('displaynone');
 			$('.refixdateappend').text(formatdate(newdate, 1));
 			$('#auditstatus').val(0);
 			$('.refuserefix_wrapper').removeClass('displaynone');
-
+			// if ($('#refuserefix').is(':checked')) {
+			if ($('#auditcomplete').is(':checked')) {
+				$('.auditcomplete_wrapper, #submitreport1').removeClass('displaynone');
+				$('#refuserefix').val(1);
+			}else{
+				$('.auditcomplete_wrapper, #submitreport1').addClass('displaynone');
+				$('#refuserefix').val(0);
+			}
+			
+			
+			
 		}else if(reportcheck==2){
 			if($('.attachmenthidden').val()!=''){
-				$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, #submitreport').removeClass('displaynone');
+				$('.refix_wrapper, .report_wrapper, .auditcomplete_wrapper, .refixmodaltext, .refuserefix_wrapper').removeClass('displaynone');
+
+				if(refuserefix ==='0'){
+					if (curdatestr > strrefixdate) {
+						$('#refuserefix').prop('checked',false);
+						$('#refuserefix').val(0);
+						$('.auditcomplete_wrapper').removeClass('displaynone');
+						$('.refuserefix_wrapper').addClass('displaynone');
+					}else{
+						$('#refuserefix').prop('checked',false);
+						$('#refuserefix').val(0);
+						$('.auditcomplete_wrapper, #submitreport1').addClass('displaynone');
+					}
+			}else{
+				$('#refuserefix').prop('checked',true);
+				$('#refuserefix').val(1);
+				$('.auditcomplete_wrapper, #submitreport1').removeClass('displaynone');
+			}
+
 				$('.refixdateappend').text(formatdate(newdate, 1));
 				$('#auditstatus').val(0);
 			}
 		}else if(reportcheck==3){
 			// $('#refixcompletedate').val(refixcompletedate);
 			$('#refixcompletedate').val('');
-			if($('.attachmenthidden').val()!='') $('.report_wrapper, .auditcomplete_wrapper, #submitreport, .refixcompletedate_wrapper').removeClass('displaynone');
-		}else{
-			$('.refuserefix_wrapper').removeClass('displaynone');
-			if($('.attachmenthidden').val()!=''){
-				$('.report_wrapper, .auditcomplete_wrapper, #submitreport').removeClass('displaynone');
-			}
+			if(refuserefix ==='0'){
+				$('#refuserefix').prop('checked',false);
+				$('#refuserefix').val(0);
+				if($('.attachmenthidden').val()!=''){
+					// $('.report_wrapper, .auditcomplete_wrapper, #submitreport, .refixcompletedate_wrapper').removeClass('displaynone');
+					// $('.auditcomplete_wrapper, #submitreport').addClass('displaynone');
+					$('.auditcomplete_wrapper').removeClass('displaynone');
+					$('.report_wrapper, .refixcompletedate_wrapper').removeClass('displaynone');
 
+				} 
+			}else{
+				$('#refuserefix').prop('checked',true);
+				$('#refuserefix').val(1);
+				if($('.attachmenthidden').val()!=''){
+					$('.report_wrapper, .auditcomplete_wrapper, .refixcompletedate_wrapper').removeClass('displaynone');
+				} 
+			}
+			// $('#refuserefix').prop('checked',true);
+			// $('#refuserefix').val(1);
+			// if($('.attachmenthidden').val()!='') $('.report_wrapper, .auditcomplete_wrapper, #submitreport, .refixcompletedate_wrapper').removeClass('displaynone');
+		}else{
+
+			if (reportcheck==0) {
+				$('.refuserefix_wrapper').addClass('displaynone');
+			}
+			
+			if($('.attachmenthidden').val()!=''){
+				// $('.refuserefix_wrapper').removeClass('displaynone');
+				$('.report_wrapper, .auditcomplete_wrapper').removeClass('displaynone');
+			} 
 		}
 	}
 }
@@ -1178,6 +1834,11 @@ function pointcalculation(){
 	$(document).find('.reviewappend').each(function(){
 		reviewval += parseFloat($(this).find('td:eq(6)').text().replace("+", ""));
 	})
+
+	// console.log(workmanshipval);
+	// console.log(plumberverificationval);
+	// console.log(cocverificationval);
+	// console.log(reviewval);
 	
 	$('#workmanshippoint').val(workmanshipval);
 	$('#plumberverificationpoint').val(plumberverificationval);
