@@ -1157,6 +1157,8 @@ class CC_Controller extends CI_Controller
 					}elseif($requestData['auditstatus']=='0'){
 						$this->db->update('stock_management', ['audit_status' => '4', 'notification' => '1'], ['id' => $requestData['cocid']]);
 					}
+					
+					// $this->db->update('stock_management', ['audit_status' => $requestData['auditorstatus']], ['id' => $requestData['cocid']]);
 
 					$created_by = $this->getuserID();
 
@@ -1179,7 +1181,7 @@ class CC_Controller extends CI_Controller
 					];
 					$this->db->insert('diary',$commentdata);
 				}
-
+				
 				if($requestData['submit']=='submitreport' && isset($requestData['hold'])){
 					$this->db->update('stock_management', ['audit_status' => '5', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
 					$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '13', 'type' => '4']);
@@ -1291,12 +1293,14 @@ class CC_Controller extends CI_Controller
 						
 						// Stock
 						$this->db->update('stock_management', ['audit_status' => '1', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
-
+						
+						// $this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '9', 'type' => '4']);
 						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '12', 'type' => '4']);
 					}elseif($requestData['auditstatus']=='0'){
 						$this->db->update('stock_management', ['audit_status' => '4', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
-
-						$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '11', 'type' => '4']);
+						
+						// $this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '10', 'type' => '4']);
+						// $this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '11', 'type' => '4']);
 					}
 					
 					$this->Auditor_Model->actionRatio($requestData['plumberid']);
@@ -1331,7 +1335,7 @@ class CC_Controller extends CI_Controller
 							$this->db->update('stock_management', ['audit_status' => '3', 'notification' => '1'], ['id' => $pagedata['result']['id']]);
 
 							$auditreviewrow = $this->Auditor_Model->getReviewList('row', ['coc_id' => $pagedata['result']['id'], 'reviewtype' => '1', 'status' => '0']);
-							$this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '11', 'type' => '4']);
+							// $this->CC_Model->diaryactivity(['plumberid' => $pagedata['result']['user_id'], 'auditorid' => $pagedata['result']['auditorid'], 'cocid' => $pagedata['result']['id'], 'action' => '11', 'type' => '4']);
 
 						}else{
 							$this->db->update('stock_management', ['audit_status' => '6', 'notification' => '1'], ['id' => $pagedata['result']['id']]);

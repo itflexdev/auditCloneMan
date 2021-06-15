@@ -1177,6 +1177,7 @@ $(document).on('change', '.reviewstatus', function(){
 	var refixperiod = '<?php echo $settings['refix_period']; ?>';
 	var r_id 		= _this.parent().parent().attr('data-id');
 	var statusVal 	= _this.val();
+	var itration 	= 0 // to avoid multipl ajax from the admin interface
 
 	if (roletype ==='1') {
 		// if ($('#reasontext').val() !=='' || $('#reasontext').val() ==='NaN') {
@@ -1197,18 +1198,23 @@ $(document).on('change', '.reviewstatus', function(){
 					return false;
 				}else{
 
-					ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.parent().parent().attr('data-id'), 'point' : point, 'refixperiod' : refixperiod, 'status' : _this.val(), "roletype" : roletype, 'reviewreason' : $('#reviewreason1').val(), 'image2' : $('.photo3').val(), 'rqst_type' : "change_status", 'auditorid' : "<?php echo $auditorid; ?>", 'cocid' : "<?php echo $cocid; ?>", 'plumberid' : "<?php echo $plumberid; ?>"}, '', { success : function(data){ 
-							sweetalertautoclose('successfully saved'); 
-							refixcheck(); 
-							_this.parent().parent().find('td:eq(6)').text(point);
-							$('.photo3').val('');
-							$('#changestatusmodal').modal('hide');
+					if (itration === 0) {
+							ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.parent().parent().attr('data-id'), 'point' : point, 'refixperiod' : refixperiod, 'status' : _this.val(), "roletype" : roletype, 'reviewreason' : $('#reviewreason1').val(), 'image2' : $('.photo3').val(), 'rqst_type' : "change_status", 'auditorid' : "<?php echo $auditorid; ?>", 'cocid' : "<?php echo $cocid; ?>", 'plumberid' : "<?php echo $plumberid; ?>"}, '', { success : function(data){ 
+								sweetalertautoclose('successfully saved'); 
+								refixcheck(); 
+								_this.parent().parent().find('td:eq(6)').text(point);
+								$('.photo3').val('');
+								$('#changestatusmodal').modal('hide');
 
-							$('#admin_review_status').val(function(i,val) {
-								return val + (!val ? '' : ',') + _this.parent().parent().attr('data-id');
-							});
-						}
-					});
+								$('#admin_review_status').val(function(i,val) {
+									return val + (!val ? '' : ',') + _this.parent().parent().attr('data-id');
+								});
+							}
+						});
+					}
+					itration = parseInt(itration)+1;
+
+					
 				}
 			});
 		/*}else{
@@ -1446,14 +1452,18 @@ function review(data, type =''){
 
 $(document).on('click', '.reviewedit', function(){
 	var _this = $(this);
+	var itration 	= 0
 	if (roletype ==='1') {
 		// if ($('#reasontext').val() !='') {
-			ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : $(this).attr('data-id'), 'action' : 'edit', "roletype" : roletype}, reviewedit);
+			if (itration === 0) {
+				ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : $(this).attr('data-id'), 'action' : 'edit', "roletype" : roletype}, reviewedit);
+			}
+			
 
 			$('#edit_reviewid').val(function(i,val) { 
 			    return val + (!val ? '' : ',') + _this.attr('data-id');
 			});
-
+			itration = parseInt(itration)+1;
 		/*}else{
 			alert('Please fill the Reason');
 			return false;
@@ -1562,7 +1572,7 @@ $(document).on('click', '.reviewremove', function(){
 				});*/
 
 				/* Get review deatails */
-				ajax('<?php echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.attr('data-id'), 'action' : 'edit', 'action2' : 'deleterview', "roletype" : roletype}, fetchdeleteReviewData);
+				/*ajax('<?php// echo base_url()."ajax/index/ajaxreviewaction"; ?>', {'id' : _this.attr('data-id'), 'action' : 'edit', 'action2' : 'deleterview', "roletype" : roletype}, fetchdeleteReviewData);*/
 				$('#deletemodal').modal('show');
 
 				$('.proceed_delete').click(function(){
